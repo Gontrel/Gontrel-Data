@@ -8,6 +8,7 @@ import {
   ColumnDef,
   SortingState,
   RowSelectionState,
+  flexRender,
 } from '@tanstack/react-table';
 import { RestaurantChange } from '../../types/restaurant';
 import { Button } from '../ui/Button';
@@ -74,8 +75,8 @@ export function PendingChangesTable({
       accessorKey: 'changes',
       header: 'Changes',
       cell: ({ row }) => {
-        const change = row.getValue('changes') as RestaurantChange;
-        const changeSummary = `${change.changes.length} changes`;
+        const changes = row.getValue('changes') as RestaurantChange['changes'];
+        const changeSummary = `${changes.length} field${changes.length > 1 ? 's' : ''} changed`;
 
         return (
           <div className="text-sm text-gray-600 max-w-xs">
@@ -176,7 +177,10 @@ export function PendingChangesTable({
                     key={header.id}
                     className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    {header.isPlaceholder ? null : header.column.id}
+                    {header.isPlaceholder ? null : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                   </th>
                 ))}
               </tr>
@@ -193,7 +197,7 @@ export function PendingChangesTable({
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-4 py-3 text-sm">
-                    {cell.renderValue() as React.ReactNode}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
               </tr>

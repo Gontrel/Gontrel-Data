@@ -8,12 +8,12 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   ColumnDef,
-  SortingState,
   RowSelectionState,
 } from '@tanstack/react-table';
 import { Restaurant } from '../../types/restaurant';
 import { RestaurantRow } from './RestaurantRow';
 import { RestaurantTableHeader } from './RestaurantTableHeader';
+import { ChevronDown, SquareArrowOutUpRight } from 'lucide-react';
 
 interface RestaurantTableProps {
   restaurants: Restaurant[];
@@ -32,6 +32,7 @@ export function RestaurantTable({
   showSelection = false
 }: RestaurantTableProps) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Define table columns
   const columns = useMemo<ColumnDef<Restaurant>[]>(() => [
@@ -62,7 +63,7 @@ export function RestaurantTable({
       accessorKey: 'id',
       header: 'No.',
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-gray-600">
+        <span className="text-sm text-[#181D1F]">
           {row.getValue('id')}
         </span>
       ),
@@ -71,35 +72,75 @@ export function RestaurantTable({
       accessorKey: 'name',
       header: 'Restaurant name',
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('name')}</div>
+        <div className="text-sm text-[#181D1F]">{row.getValue('name')}</div>
       ),
+      minSize: 200, // Minimum width in pixels
     },
     {
       accessorKey: 'address',
       header: 'Map Address',
       cell: ({ row }) => (
-        <div className="max-w-xs truncate text-sm text-gray-600">
+        <div className="max-w-xs truncate text-sm text-[#181D1F]">
           {row.getValue('address')}
         </div>
       ),
+      minSize: 250, // Minimum width in pixels
     },
     {
       accessorKey: 'tiktokLinks',
       header: 'TikTok links',
       cell: ({ row }) => {
         const links = row.getValue('tiktokLinks') as string[];
+        const isExpanded = expandedRows.has(row.id);
+
         return (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-700">{links.length} links</span>
-            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+          <div className="relative">
+            <button
+              onClick={() => {
+                const newExpanded = new Set(expandedRows);
+                if (isExpanded) {
+                  newExpanded.delete(row.id);
+                } else {
+                  newExpanded.add(row.id);
+                }
+                setExpandedRows(newExpanded);
+              }}
+              className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
+            >
+              <SquareArrowOutUpRight className='w-4 h-4 text-blue-500' />
+              <span className="text-sm text-[#181D1F]">
+                {links.length} link{links.length !== 1 ? 's' : ''}
+              </span>
+              <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isExpanded && links.length > 0 && (
+              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-64 max-w-96">
+                <div className="p-2">
+                  <div className="text-xs font-medium text-gray-500 mb-2 px-2">
+                    TikTok Links
+                  </div>
+                  <div className="space-y-1">
+                    {links.map((link, index) => (
+                      <a
+                        key={index}
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block px-2 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded truncate"
+                        title={link}
+                      >
+                        {link}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
       },
+      minSize: 150,
     },
     {
       accessorKey: 'tags',
@@ -108,13 +149,10 @@ export function RestaurantTable({
         const tags = row.getValue('tags') as string[];
         return (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 max-w-xs truncate">
+            <span className="text-sm text-[#181D1F] max-w-xs truncate">
               {tags.slice(0, 3).join(' ')}
               {tags.length > 3 && '...'}
             </span>
-            <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
           </div>
         );
       },
@@ -127,10 +165,7 @@ export function RestaurantTable({
         const truncatedUrl = url.length > 20 ? url.substring(0, 20) + '...' : url;
         return (
           <div className="flex items-center gap-2">
-            <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            <span className="text-sm text-blue-600 hover:underline truncate max-w-xs" title={url}>
+            <span className="text-sm text-[#181D1F] hover:underline truncate max-w-xs" title={url}>
               {truncatedUrl}
             </span>
           </div>
@@ -145,24 +180,21 @@ export function RestaurantTable({
         const truncatedUrl = url.length > 20 ? url.substring(0, 20) + '...' : url;
         return (
           <div className="flex items-center gap-2">
-            <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            <span className="text-sm text-blue-600 hover:underline truncate max-w-xs" title={url}>
+            <span className="text-sm text-[#181D1F] hover:underline truncate max-w-xs" title={url}>
               {truncatedUrl}
             </span>
           </div>
         );
       },
     },
-  ], []);
+  ], [expandedRows]);
 
   // Create table instance
   const table = useReactTable({
     data: restaurants,
     columns: showSelection ? columns : columns.filter(col => col.id !== 'select'),
     state: {
-      rowSelection,
+      rowSelection
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -181,7 +213,7 @@ export function RestaurantTable({
   if (loading) {
     return (
       <div className="w-full">
-        <div className="rounded-md border">
+        <div className="rounded-2xl border border-[#DDDDDD]">
           <div className="p-4">
             <div className="animate-pulse space-y-4">
               {[...Array(5)].map((_, i) => (
@@ -202,15 +234,18 @@ export function RestaurantTable({
 
   return (
     <div className="w-full">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <RestaurantTableHeader table={table} />
-          <tbody className="divide-y divide-gray-100">
-            {table.getRowModel().rows.map((row) => (
-              <RestaurantRow key={row.id} row={row} />
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-2xl border border-[#DDDDDD] overflow-hidden">
+        {/* Responsive scroll container */}
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-[#DDDDDD] scrollbar-track-[#F8F8F8]">
+          <table className="w-full min-w-max">
+            <RestaurantTableHeader table={table} />
+            <tbody className="divide-y divide-[#DDDDDD]">
+              {table.getRowModel().rows.map((row) => (
+                <RestaurantRow key={row.id} row={row} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

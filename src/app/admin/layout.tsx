@@ -10,7 +10,7 @@ export default function AdminRootLayout({
 }) {
   return (
     <main>
-      <section>{children}</section>
+      <section className="ms-64">{children}</section>
       <aside className="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white">
         <nav className="p-4">
           <ul>
