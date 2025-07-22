@@ -5,7 +5,6 @@ import { Restaurant } from '../types/restaurant';
  * Updated with real restaurant names and addresses from Ireland
  */
 export const mockRestaurants: Restaurant[] = [
-  // Dublin Restaurants (10)
   {
     id: '00001',
     name: 'Chapter One',
@@ -126,8 +125,6 @@ export const mockRestaurants: Restaurant[] = [
     createdAt: new Date('2024-01-24'),
     updatedAt: new Date('2024-01-24')
   },
-
-  // Cork Restaurants (5)
   {
     id: '00011',
     name: 'Ichigo Ichie',
@@ -188,8 +185,6 @@ export const mockRestaurants: Restaurant[] = [
     createdAt: new Date('2024-01-29'),
     updatedAt: new Date('2024-01-29')
   },
-
-  // Limerick Restaurants (2)
   {
     id: '00016',
     name: 'The French Table',
