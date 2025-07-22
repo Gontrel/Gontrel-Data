@@ -1,7 +1,7 @@
 /**
  * Restaurant data model representing the production/live data
  */
-export interface Restaurant {
+export type Restaurant = {
   id: string;
   name: string;
   address: string;
@@ -12,12 +12,12 @@ export interface Restaurant {
   city: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 /**
  * Represents a single field change in a restaurant record
  */
-export interface FieldChange {
+export type FieldChange = {
   field: keyof Restaurant;
   oldValue: unknown;
   newValue: unknown;
@@ -27,7 +27,7 @@ export interface FieldChange {
 /**
  * Restaurant change record for pending changes awaiting approval
  */
-export interface RestaurantChange {
+export type RestaurantChange = {
   id: string;
   restaurantId: string;
   analystId: string;
@@ -39,12 +39,12 @@ export interface RestaurantChange {
   notes?: string;
   restaurantName: string; // Denormalized for easier querying
   analystName: string; // Denormalized for easier querying
-}
+};
 
 /**
  * Change history record for audit trail
  */
-export interface ChangeHistory {
+export type ChangeHistory = {
   id: string;
   restaurantId: string;
   changeId: string;
@@ -53,7 +53,7 @@ export interface ChangeHistory {
   newValues?: Partial<Restaurant>;
   userId: string;
   timestamp: Date;
-}
+};
 
 /**
  * User roles for authorization
@@ -63,23 +63,23 @@ export type UserRole = 'analyst' | 'manager' | 'admin';
 /**
  * User model
  */
-export interface User {
+export type User = {
   id: string;
   name: string;
   email: string;
   role: UserRole;
-}
+};
 
 /**
  * API response types
  */
-export interface ApiResponse<T> {
+export type ApiResponse<T> = {
   data: T;
   success: boolean;
   message?: string;
-}
+};
 
-export interface PaginatedResponse<T> {
+export type PaginatedResponse<T> = {
   data: T[];
   pagination: {
     page: number;
@@ -87,4 +87,4 @@ export interface PaginatedResponse<T> {
     total: number;
     totalPages: number;
   };
-}
+};

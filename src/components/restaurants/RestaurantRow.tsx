@@ -14,7 +14,7 @@ export function RestaurantRow({ row }: RestaurantRowProps) {
   return (
     <tr>
       {row.getVisibleCells().map(cell => {
-        return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+        return <td key={cell.id} className='p-4 text-left'>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
       })}
     </tr>
   );
