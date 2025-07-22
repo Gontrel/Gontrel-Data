@@ -1,16 +1,20 @@
 import images from "../constant/images";
 import logo from "../assets/icons/logo.svg";
 import googleIcon from "../assets/icons/google-icon.svg";
+import Image from "next/image";
 
 export default function Home() {
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="flex flex-row items-center justify-center w-full max-w-4xl bg-white rounded-[16px] shadow-xl overflow-hidden">
         {/* Left Section */}
         <div className="hidden md:flex w-1/2 items-center justify-center p-8">
-          <img
+          <Image
             src={images.LandingScreen.src}
             alt="Login"
+            width={320}
+            height={320}
             className="w-[320px] h-[320px]"
           />
         </div>
@@ -21,7 +25,7 @@ export default function Home() {
         {/* Form Section */}
         <div className="w-full md:w-1/2 p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 gap-1 flex items-center flex-row">
-            <img src={logo.src} alt="" className="w-[107px] h-[24px]" />
+            <Image src={logo.src} alt="" width={107} height={24} className="w-[107px] h-[24px]" />
             <p className="text-[#3D3D3D] font-semibold pl-4">Admin</p>
           </h2>
 
@@ -63,8 +67,8 @@ export default function Home() {
           </div>
 
           <div className="mt-4">
-            <button className="w-full border border-[#F0F1F2] py-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100 transition">
-              <img src={googleIcon.src} alt="Google" className="w-5 h-5" />
+            <button className="w-full border border-[#F0F1F2] py-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100 transition" title="Google Sign In">
+              <Image src={googleIcon.src} alt="Google" width={20} height={20} className="w-5 h-5" />
             </button>
           </div>
         </div>
