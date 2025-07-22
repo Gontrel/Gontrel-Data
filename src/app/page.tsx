@@ -1,17 +1,9 @@
 import images from "../constant/images";
 import logo from "../assets/icons/logo.svg";
 import googleIcon from "../assets/icons/google-icon.svg";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import Image from "next/image";
 
 export default function Home() {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to admin page
-    router.push('/admin');
-  }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
