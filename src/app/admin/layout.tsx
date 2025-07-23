@@ -8,6 +8,7 @@ export default function AdminRootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
   return (
     <main>
       <section className="ms-64">{children}</section>
