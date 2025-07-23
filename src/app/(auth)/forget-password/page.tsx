@@ -5,11 +5,10 @@ import Image from "next/image";
 import logo from "../../../assets/images/logo.png";
 import Link from "next/link";
 import Button from "@/components/button/Button";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 const ForgetPassword = () => {
-
-   const router = useRouter();
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -27,9 +26,8 @@ const ForgetPassword = () => {
     try {
       //TODO:  API call
       console.log("Request to reset password for:", email);
-        router.push("/reset-password"); 
+      router.push("/reset-password");
     } catch (error) {
-
       console.error("Error resetting password:", error);
     } finally {
       setIsLoading(false);
@@ -68,7 +66,8 @@ const ForgetPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px] placeholder-gray-400 placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px] 
+                   placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
 
@@ -86,7 +85,7 @@ const ForgetPassword = () => {
           </form>
 
           <Link href="/" passHref>
-            <p className="text-[#0070F3] font-medium text-center transition-all duration-300 ease-out cursor-pointer hover:underline">
+            <p className="text-[#0070F3] font-medium leading-[100%] text-center transition-all duration-300 ease-out cursor-pointer hover:underline">
               Back to sign in
             </p>
           </Link>

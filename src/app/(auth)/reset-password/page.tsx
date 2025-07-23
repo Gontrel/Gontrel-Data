@@ -60,7 +60,7 @@ const ResetPassword = () => {
         <section className="mt-[60px] min-w-[559px] md:w-1/2 ">
           <form className="" onSubmit={handleSubmit}>
             {/*  New Password field */}
-            <div>
+            <div className="mb-[30px]">
               <label className="text-xl font-medium text-[#444] ">
                 New Password
               </label>
@@ -69,7 +69,8 @@ const ResetPassword = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px] placeholder-gray-400 placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px] 
+                  placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
 
                 <button
@@ -93,7 +94,9 @@ const ResetPassword = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px] placeholder-gray-400 placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
+                   placeholder-[#8A8A8A] placeholder:text-lg 
+                  placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
                   type="button"
@@ -105,13 +108,43 @@ const ResetPassword = () => {
                 </button>
               </div>
             </div>
+
+            <div className="w-full mt-[30px]">
+              <div className="flex flex-row items-center justify-between ">
+                <p className="text-[#444] font-medium text-[20px]">
+                  Enter code
+                </p>
+                <button
+                  //   onSubmit={}
+                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline"
+                >
+                  <p> Resend code</p>
+                </button>
+              </div>
+
+              <div className="relative mt-[19px]">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your code"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
+                   placeholder-[#8A8A8A] placeholder:text-lg 
+                  placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                />
+              </div>
+            </div>
             <Button
               type="submit"
-              className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
+              className="cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
             >
-              Sign Up
+              Continue
             </Button>
           </form>
+
+          <Link href="/" passHref>
+            <p className="text-[#0070F3] font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
+              Back to sign in
+            </p>
+          </Link>
         </section>
       </section>
     </main>

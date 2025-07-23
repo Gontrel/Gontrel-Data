@@ -8,7 +8,6 @@ import { Eye, EyeOff } from "lucide-react";
 import Button from "../components/button/Button";
 
 export default function Home() {
-
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
 
@@ -53,7 +52,8 @@ export default function Home() {
               <input
                 type="email"
                 placeholder="Your email"
-                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px] placeholder-gray-400 placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px]
+                    placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
 
@@ -74,7 +74,8 @@ export default function Home() {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px] placeholder-gray-400 placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
+                      placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
                   type="button"
@@ -90,7 +91,7 @@ export default function Home() {
               type="submit"
               className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
             >
-              Sign Up
+              Sign In
             </Button>
           </form>
         </section>
