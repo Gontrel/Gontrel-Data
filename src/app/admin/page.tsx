@@ -2,12 +2,10 @@
 
 import { useState } from 'react';
 import { RestaurantTable } from '../../components/restaurants/RestaurantTable';
-import { TableTabs } from '../../components/admin/TableTabs';
 import { SearchBar } from '../../components/admin/SearchBar';
 import { useRestaurants } from '../../hooks/useRestaurants';
-import { useTables } from '../../hooks/useTables';
+import { useTable } from '../../hooks/useTables';
 import { Restaurant } from '../../types/restaurant';
-import { getDefaultTable } from '../../data/mockTables';
 import { LogOut } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '../../assets/icons/logo.svg';
@@ -16,24 +14,18 @@ import Logo from '../../assets/icons/logo.svg';
  * Main admin page showing restaurant data with dynamic table filtering and search
  */
 export default function AdminPage() {
-  const [selectedTable, setSelectedTable] = useState<string>(getDefaultTable().id);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch data
   const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-    tableId: selectedTable,
+    // tableId: 'all',
     search: searchTerm,
     page: currentPage,
     limit: 10
   });
 
-  const { data: tablesData, isLoading: tablesLoading } = useTables();
-
-  const handleTableChange = (tableId: string) => {
-    setSelectedTable(tableId);
-    setCurrentPage(1); // Reset to first page when changing tables
-  };
+  const { data: tableData, isLoading: tableLoading } = useTable();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -43,10 +35,6 @@ export default function AdminPage() {
   const handleRowSelect = (selectedRows: Restaurant[]) => {
     console.log('Selected restaurants:', selectedRows);
     // Handle bulk actions here
-  };
-
-  const handleAddTable = () => {
-    console.log('Add new table');
   };
 
   return (
@@ -72,17 +60,6 @@ export default function AdminPage() {
 
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-5">
-        {/* Table Tabs */}
-        <div>
-          <TableTabs
-            tables={tablesData || []}
-            selectedTable={selectedTable}
-            onTableChange={handleTableChange}
-            loading={tablesLoading}
-            onAddTable={handleAddTable}
-          />
-        </div>
-
         {/* Search and Actions */}
         <div className="flex items-center justify-between">
           <div className="flex-1 max-w-md">

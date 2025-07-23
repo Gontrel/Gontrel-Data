@@ -74,7 +74,8 @@
 }
 
 * {
-  border-color: hsl(var(--border));
+  /* border-color: hsl(var(--border)); */
+  font-family: "Figtree", sans-serif;
 }
 
 body {
@@ -82,3 +83,12 @@ body {
   background: hsl(var(--background));
 }
 
+input.no-spinners::-webkit-outer-spin-button,
+input.no-spinners::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input.no-spinners {
+  -moz-appearance: textfield; /* Firefox */
+}
