@@ -10,7 +10,7 @@ export type Restaurant = {
   reservationUrl: string;
   addedBy: {
     userId: string;
-    username: string;
+    name: string;
     profileImage: string;
   };
   status: 'active' | 'inactive' | 'pending';
@@ -23,6 +23,7 @@ export type Restaurant = {
     saturday: string;
     sunday: string;
   };
+  dateAdded: Date;
   createdAt: Date;
   updatedAt: Date;
 };

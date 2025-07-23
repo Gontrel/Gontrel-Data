@@ -13,7 +13,8 @@ import {
 import { Restaurant } from '../../types/restaurant';
 import { RestaurantRow } from './RestaurantRow';
 import { RestaurantTableHeader } from './RestaurantTableHeader';
-import { ChevronDown, ExternalLink, Clock, User, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, ExternalLink, Clock, User, Globe, MapPin, Utensils, Calendar, Link } from 'lucide-react';
+import Image from 'next/image';
 
 interface RestaurantTableProps {
   restaurants: Restaurant[];
@@ -21,6 +22,22 @@ interface RestaurantTableProps {
   onRowSelect?: (selectedRows: Restaurant[]) => void;
   showSelection?: boolean;
 }
+
+/**
+ * Format date to "January 3 2025 4:30pm" format
+ */
+const formatDate = (date: Date): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  };
+
+  return date.toLocaleDateString('en-US', options);
+};
 
 /**
  * Main restaurant table component with sorting, filtering, and pagination
@@ -36,43 +53,31 @@ export function RestaurantTable({
 
   // Define table columns
   const columns = useMemo<ColumnDef<Restaurant>[]>(() => [
-    // {
-    //   id: 'select',
-    //   header: ({ table }) => (
-    //     <input
-    //       type="checkbox"
-    //       checked={table.getIsAllPageRowsSelected()}
-    //       onChange={table.getToggleAllPageRowsSelectedHandler()}
-    //       className="rounded border-gray-300"
-    //       aria-label="Select all rows"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <input
-    //       type="checkbox"
-    //       checked={row.getIsSelected()}
-    //       onChange={row.getToggleSelectedHandler()}
-    //       className="rounded border-gray-300"
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: 'name',
-      header: 'Restaurant Name',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <span>Restaurant name</span>
+        </div>
+      ),
       cell: ({ row }) => (
-        <div className="text-sm font-medium text-[#181D1F]">{row.getValue('name')}</div>
+        <div className="font-medium text-[#181D1F] max-w-60 truncate">{row.getValue('name')}</div>
       ),
       minSize: 200,
+      meta: {
+        sticky: true
+      }
     },
     {
       accessorKey: 'address',
-      header: 'Address',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <MapPin className="w-4.5 h-4.5 text-[#8A8A8A]" />
+          <span>Address</span>
+        </div>
+      ),
       cell: ({ row }) => {
         const address = row.getValue('address') as string;
-        const truncatedAddress = address.length > 25 ? address.substring(0, 25) + '...' : address;
         const maplink = row.original.maplink;
 
         return (
@@ -80,87 +85,99 @@ export function RestaurantTable({
             href={maplink}
             target="_blank"
             rel="noopener noreferrer"
-            className="max-w-xs truncate text-sm text-blue-600 hover:underline hover:text-blue-800 transition-colors cursor-pointer"
+            className="text-black font-medium cursor-pointer flex items-center justify-between gap-3.5 max-w-68"
             title={`View ${address} on Google Maps`}
           >
-            {truncatedAddress}
+            <span className="text-black truncate max-w-60">{address}</span>
+            <ExternalLink className="w-4.5 h-4.5 text-[#AF08FD]" />
           </a>
         );
       },
-      minSize: 250,
+      minSize: 200,
     },
     {
       accessorKey: 'website',
-      header: 'Website',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Link className="w-4.5 h-4.5 text-[#8A8A8A]" />
+          <span>Website</span>
+        </div>
+      ),
       cell: ({ row }) => {
         const url = row.getValue('website') as string;
-        const truncatedUrl = url.length > 25 ? url.substring(0, 25) + '...' : url;
         return (
-          <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-gray-500" />
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline truncate max-w-xs"
-              title={url}
-            >
-              {truncatedUrl}
-            </a>
-          </div>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black font-medium cursor-pointer flex items-center justify-between gap-3.5"
+            title={url}
+          >
+            <span className="text-black">View website</span>
+            <ExternalLink className="w-4.5 h-4.5 text-[#AF08FD]" />
+          </a>
         );
       },
       minSize: 180,
     },
     {
       accessorKey: 'menuUrl',
-      header: 'Menu',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Link className="w-4.5 h-4.5 text-[#8A8A8A]" />
+          <span>Menu link</span>
+        </div>
+      ),
       cell: ({ row }) => {
         const url = row.getValue('menuUrl') as string;
-        const truncatedUrl = url.length > 20 ? url.substring(0, 20) + '...' : url;
         return (
-          <div className="flex items-center gap-2">
-            <ExternalLink className="w-4 h-4 text-gray-500" />
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline truncate max-w-xs"
-              title={url}
-            >
-              {truncatedUrl}
-            </a>
-          </div>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3.5 justify-between font-medium"
+            title={url}
+          >
+            <span className="text-black">View link</span>
+            <ExternalLink className="w-4.5 h-4.5 text-[#AF08FD]" />
+          </a>
         );
       },
       minSize: 150,
     },
     {
       accessorKey: 'reservationUrl',
-      header: 'Reservation',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Link className="w-5 h-5 text-[#8A8A8A]" />
+          <span>Reservation link</span>
+        </div>
+      ),
       cell: ({ row }) => {
         const url = row.getValue('reservationUrl') as string;
-        const truncatedUrl = url.length > 20 ? url.substring(0, 20) + '...' : url;
         return (
-          <div className="flex items-center gap-2">
-            <ExternalLink className="w-4 h-4 text-gray-500" />
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline truncate max-w-xs"
-              title={url}
-            >
-              {truncatedUrl}
-            </a>
-          </div>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3.5 justify-between font-medium"
+            title={url}
+          >
+            <span className="text-black">View link</span>
+            <ExternalLink className="w-4.5 h-4.5 text-[#AF08FD]" />
+          </a>
         );
       },
       minSize: 150,
     },
     {
       accessorKey: 'openingHours',
-      header: 'Opening Hours',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Clock className="w-4.5 h-4.5 text-[#8A8A8A]" />
+          <span>Opening hours</span>
+        </div>
+      ),
       cell: ({ row }) => {
         const openingHours = row.getValue('openingHours') as Record<string, string>;
         const isExpanded = expandedRows.has(`hours-${row.id}`);
@@ -191,7 +208,7 @@ export function RestaurantTable({
               <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-80">
                 <div className="p-3">
                   <div className="text-xs font-medium text-gray-500 mb-2">
-                    Opening Hours
+                    Opening hours
                   </div>
                   <div className="space-y-1 text-sm">
                     {Object.entries(openingHours).map(([day, hours]) => (
@@ -214,29 +231,15 @@ export function RestaurantTable({
       minSize: 150,
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        const statusColors = {
-          active: 'bg-green-100 text-green-800',
-          inactive: 'bg-red-100 text-red-800',
-          pending: 'bg-yellow-100 text-yellow-800'
-        };
-
-        return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800'}`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </span>
-        );
-      },
-      minSize: 100,
-    },
-    {
       accessorKey: 'addedBy',
-      header: 'Added By',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
+          <span>Added by</span>
+        </div>
+      ),
       cell: ({ row }) => {
-        const addedBy = row.getValue('addedBy') as { username: string; profileImage: string };
+        const addedBy = row.getValue('addedBy') as { name: string; profileImage: string };
         const isExpanded = expandedRows.has(row.id);
 
         return (
@@ -253,34 +256,91 @@ export function RestaurantTable({
               }}
               className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
             >
-              <User className="w-4 h-4 text-gray-500" />
+              <img
+                src={addedBy.profileImage}
+                alt={addedBy.name}
+                width={40}
+                height={40}
+                className="rounded-full object-cover"
+              />
               <span className="text-sm text-[#181D1F]">
-                {addedBy.username}
+                {addedBy.name}
               </span>
-              <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
             </button>
+          </div>
+        );
+      },
+      minSize: 150,
+    },
+    {
+      accessorKey: 'dateAdded',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
+          <span>Date added</span>
+        </div>
+      ),
+      cell: ({ row }) => {
+        const dateAdded = row.getValue('dateAdded') as Date;
+        const isExpanded = expandedRows.has(row.id);
 
-            {isExpanded && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-64">
-                <div className="p-3">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img
-                      src={addedBy.profileImage}
-                      alt={addedBy.username}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <div className="font-medium text-sm text-[#181D1F]">
-                        {addedBy.username}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Analyst
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+        return (
+          <div className="relative">
+            <button
+              onClick={() => {
+                const newExpanded = new Set(expandedRows);
+                if (isExpanded) {
+                  newExpanded.delete(row.id);
+                } else {
+                  newExpanded.add(row.id);
+                }
+                setExpandedRows(newExpanded);
+              }}
+              className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
+            >
+              <span className="text-[#181D1F] font-medium">
+                {formatDate(dateAdded)}
+              </span>
+            </button>
+          </div>
+        );
+      },
+      minSize: 150,
+    },
+    {
+      id: 'action',
+      header: () => (
+        <div className="flex items-center gap-2">
+          <span className="text-black font-medium">Actions</span>
+        </div>
+      ),
+      cell: () => {
+        return (
+          <div className="relative flex flex-row gap-2.5">
+            <button
+              onClick={() => {
+
+              }}
+              className="flex items-center gap-2 font-medium bg-[#F9F9F9] border-[#F0EEEE] rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center text-[#009543] cursor-pointer"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => {
+
+              }}
+              className="flex items-center gap-2 font-medium bg-[#F9F9F9] border-[#F0EEEE] rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center text-[#0070F3] cursor-pointer"
+            >
+              Update &amp; approve
+            </button>
+            <button
+              onClick={() => {
+
+              }}
+              className="flex items-center gap-2 font-medium bg-[#F9F9F9] border-[#F0EEEE] rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center text-[#C50000] cursor-pointer"
+            >
+              Decline
+            </button>
           </div>
         );
       },
@@ -317,7 +377,7 @@ export function RestaurantTable({
   if (loading) {
     return (
       <div className="w-full">
-        <div className="rounded-2xl border border-[#DDDDDD]">
+        <div className="rounded-2xl">
           <div className="p-4">
             <div className="animate-pulse space-y-4">
               {[...Array(5)].map((_, i) => (
@@ -338,12 +398,12 @@ export function RestaurantTable({
 
   return (
     <div className="w-full">
-      <div className="rounded-2xl border border-[#DDDDDD] overflow-hidden">
+      <div className="rounded-2xl p-5 bg-white overflow-hidden">
         {/* Responsive scroll container */}
-        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-[#DDDDDD] scrollbar-track-[#F8F8F8]">
+        <div className="rounded-2xl overflow-x-auto scrollbar-thin scrollbar-thumb-[#DDDDDD] scrollbar-track-[#F8F8F8]">
           <table className="w-full min-w-max">
             <RestaurantTableHeader table={table} />
-            <tbody className="divide-y divide-[#DDDDDD]">
+            <tbody className="divide-y divide-[#EBEBEB]">
               {table.getRowModel().rows.map((row) => (
                 <RestaurantRow key={row.id} row={row} />
               ))}
@@ -381,35 +441,8 @@ export function RestaurantTable({
             <span className="font-medium text-black">Entries per page</span>
           </div>
 
-          {/* Pagination Info */}
-          {/* <div className="text-sm text-gray-700">
-            Showing{' '}
-            <span className="font-medium">
-              {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
-            </span>{' '}
-            to{' '}
-            <span className="font-medium">
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                table.getFilteredRowModel().rows.length
-              )}
-            </span>{' '}
-            of{' '}
-            <span className="font-medium">{table.getFilteredRowModel().rows.length}</span>{' '}
-            results
-          </div> */}
-
           {/* Pagination Navigation */}
           <div className="flex items-center gap-1">
-            {/* <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="flex items-center justify-center w-8 h-8 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Previous page"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button> */}
-
             {/* Page Numbers */}
             <div className="flex items-center gap-1">
               {(() => {
@@ -486,15 +519,6 @@ export function RestaurantTable({
                 return pages;
               })()}
             </div>
-
-            {/* <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="flex items-center justify-center w-8 h-8 text-sm border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              aria-label="Next page"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button> */}
           </div>
         </div>
       </div>

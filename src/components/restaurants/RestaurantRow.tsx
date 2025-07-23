@@ -13,8 +13,19 @@ interface RestaurantRowProps {
 export function RestaurantRow({ row }: RestaurantRowProps) {
   return (
     <tr>
-      {row.getVisibleCells().map(cell => {
-        return <td key={cell.id} className='p-4 text-left'>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+      {row.getVisibleCells().map((cell, index) => {
+        const isSticky = cell.column.columnDef.meta?.sticky;
+        return (
+          <td
+            key={cell.id}
+            className={`py-5 px-2.5 text-left ${isSticky
+                ? 'sticky left-0 z-10 bg-white border-r border-gray-200'
+                : ''
+              }`}
+          >
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </td>
+        );
       })}
     </tr>
   );

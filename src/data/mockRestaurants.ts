@@ -14,7 +14,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.chapteronerestaurant.com/reservations',
     addedBy: {
       userId: 'user-001',
-      username: 'sarah.analyst',
+      name: 'Sarah Johnson',
       profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -27,6 +27,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:00 PM - 2:30 PM, 6:00 PM - 9:30 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-15T16:30:00'),
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-15')
   },
@@ -39,7 +40,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.thegreenhouserestaurant.ie/book',
     addedBy: {
       userId: 'user-002',
-      username: 'mike.analyst',
+      name: 'Mike Chen',
       profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -52,6 +53,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '6:00 PM - 9:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-16T14:15:00'),
     createdAt: new Date('2024-01-16'),
     updatedAt: new Date('2024-01-16')
   },
@@ -64,7 +66,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.lecrivain.com/reservations',
     addedBy: {
       userId: 'user-003',
-      username: 'emma.analyst',
+      name: 'Emma Rodriguez',
       profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -77,6 +79,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:30 PM - 2:00 PM, 6:30 PM - 9:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-17T09:45:00'),
     createdAt: new Date('2024-01-17'),
     updatedAt: new Date('2024-01-17')
   },
@@ -89,7 +92,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.restaurantpatrickguilbaud.ie/book',
     addedBy: {
       userId: 'user-004',
-      username: 'david.analyst',
+      name: 'David Thompson',
       profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -102,6 +105,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:30 PM - 2:00 PM, 7:00 PM - 9:30 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-18T11:20:00'),
     createdAt: new Date('2024-01-18'),
     updatedAt: new Date('2024-01-18')
   },
@@ -114,7 +118,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.winding-stair.com/reservations',
     addedBy: {
       userId: 'user-005',
-      username: 'lisa.analyst',
+      name: 'Lisa Wang',
       profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -127,6 +131,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:00 PM - 10:00 PM',
       sunday: '12:00 PM - 10:00 PM'
     },
+    dateAdded: new Date('2024-01-19T13:10:00'),
     createdAt: new Date('2024-01-19'),
     updatedAt: new Date('2024-01-19')
   },
@@ -139,7 +144,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.bunsen.ie/order',
     addedBy: {
       userId: 'user-006',
-      username: 'john.analyst',
+      name: 'John Smith',
       profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -152,6 +157,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:00 PM - 11:00 PM',
       sunday: '12:00 PM - 10:00 PM'
     },
+    dateAdded: new Date('2024-01-20T15:25:00'),
     createdAt: new Date('2024-01-20'),
     updatedAt: new Date('2024-01-20')
   },
@@ -164,7 +170,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.unomas.ie/book',
     addedBy: {
       userId: 'user-007',
-      username: 'anna.analyst',
+      name: 'Anna Kowalski',
       profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -177,6 +183,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '5:00 PM - 10:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-21T10:40:00'),
     createdAt: new Date('2024-01-21'),
     updatedAt: new Date('2024-01-21')
   },
@@ -189,7 +196,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.picklerestaurant.ie/reservations',
     addedBy: {
       userId: 'user-008',
-      username: 'tom.analyst',
+      name: 'Tom O\'Connor',
       profileImage: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -202,6 +209,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '5:30 PM - 10:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-22T12:55:00'),
     createdAt: new Date('2024-01-22'),
     updatedAt: new Date('2024-01-22')
   },
@@ -214,7 +222,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.thepigsear.ie/book',
     addedBy: {
       userId: 'user-009',
-      username: 'rachel.analyst',
+      name: 'Rachel Green',
       profileImage: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -227,6 +235,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:00 PM - 2:30 PM, 6:00 PM - 9:30 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-23T08:30:00'),
     createdAt: new Date('2024-01-23'),
     updatedAt: new Date('2024-01-23')
   },
@@ -239,7 +248,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.777.ie/reservations',
     addedBy: {
       userId: 'user-010',
-      username: 'kevin.analyst',
+      name: 'Kevin Murphy',
       profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -252,6 +261,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '5:00 PM - 11:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-24T17:15:00'),
     createdAt: new Date('2024-01-24'),
     updatedAt: new Date('2024-01-24')
   },
@@ -264,7 +274,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.ichigoichie.ie/book',
     addedBy: {
       userId: 'user-011',
-      username: 'sophie.analyst',
+      name: 'Sophie Williams',
       profileImage: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -277,6 +287,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '6:00 PM - 9:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-25T14:20:00'),
     createdAt: new Date('2024-01-25'),
     updatedAt: new Date('2024-01-25')
   },
@@ -289,7 +300,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.marketlane.ie/reservations',
     addedBy: {
       userId: 'user-012',
-      username: 'paul.analyst',
+      name: 'Paul Davis',
       profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -302,6 +313,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:00 PM - 10:00 PM',
       sunday: '12:00 PM - 10:00 PM'
     },
+    dateAdded: new Date('2024-01-26T11:45:00'),
     createdAt: new Date('2024-01-26'),
     updatedAt: new Date('2024-01-26')
   },
@@ -314,7 +326,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.elbowlane.ie/book',
     addedBy: {
       userId: 'user-013',
-      username: 'maria.analyst',
+      name: 'Maria Garcia',
       profileImage: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -327,6 +339,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '5:00 PM - 10:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-27T16:30:00'),
     createdAt: new Date('2024-01-27'),
     updatedAt: new Date('2024-01-27')
   },
@@ -339,7 +352,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.caskcork.com/reservations',
     addedBy: {
       userId: 'user-014',
-      username: 'james.analyst',
+      name: 'James Wilson',
       profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -352,6 +365,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '5:00 PM - 12:00 AM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-28T13:50:00'),
     createdAt: new Date('2024-01-28'),
     updatedAt: new Date('2024-01-28')
   },
@@ -364,7 +378,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.theglasscurtain.ie/book',
     addedBy: {
       userId: 'user-015',
-      username: 'fiona.analyst',
+      name: 'Fiona O\'Brien',
       profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -377,6 +391,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '6:00 PM - 9:00 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-29T10:25:00'),
     createdAt: new Date('2024-01-29'),
     updatedAt: new Date('2024-01-29')
   },
@@ -389,7 +404,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.thefrenchtable.ie/reservations',
     addedBy: {
       userId: 'user-016',
-      username: 'claire.analyst',
+      name: 'Claire Taylor',
       profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -402,6 +417,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '6:00 PM - 9:30 PM',
       sunday: 'Closed'
     },
+    dateAdded: new Date('2024-01-30T15:40:00'),
     createdAt: new Date('2024-01-30'),
     updatedAt: new Date('2024-01-30')
   },
@@ -414,7 +430,7 @@ export const mockRestaurants: Restaurant[] = [
     reservationUrl: 'https://www.curragower.ie/book',
     addedBy: {
       userId: 'user-017',
-      username: 'brian.analyst',
+      name: 'Brian Anderson',
       profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
     },
     status: 'active',
@@ -427,6 +443,7 @@ export const mockRestaurants: Restaurant[] = [
       saturday: '12:00 PM - 10:00 PM',
       sunday: '12:00 PM - 10:00 PM'
     },
+    dateAdded: new Date('2024-01-31T12:05:00'),
     createdAt: new Date('2024-01-31'),
     updatedAt: new Date('2024-01-31')
   }
