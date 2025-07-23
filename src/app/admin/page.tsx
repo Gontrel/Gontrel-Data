@@ -10,7 +10,7 @@ import { Restaurant } from '../../types/restaurant';
 import { getDefaultTable } from '../../data/mockTables';
 import { LogOut } from 'lucide-react';
 import Image from 'next/image';
-import Logo from '../../assets/icons/logo.svg';
+import Logo from '../../assets/images/logo.png';
 
 /**
  * Main admin page showing restaurant data with dynamic table filtering and search
