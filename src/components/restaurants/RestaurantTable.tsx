@@ -197,9 +197,8 @@ export function RestaurantTable({
               }}
               className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
             >
-              <Clock className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-[#181D1F]">
-                View Hours
+              <span className="text-black font-medium">
+                View working hours
               </span>
               <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
             </button>
@@ -208,12 +207,12 @@ export function RestaurantTable({
               <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-80">
                 <div className="p-3">
                   <div className="text-xs font-medium text-gray-500 mb-2">
-                    Opening hours
+                    Working hours
                   </div>
                   <div className="space-y-1 text-sm">
                     {Object.entries(openingHours).map(([day, hours]) => (
                       <div key={day} className="flex justify-between">
-                        <span className="font-medium capitalize text-[#181D1F]">
+                        <span className="font-medium capitalize text-black">
                           {day}
                         </span>
                         <span className="text-gray-600">
@@ -240,33 +239,21 @@ export function RestaurantTable({
       ),
       cell: ({ row }) => {
         const addedBy = row.getValue('addedBy') as { name: string; profileImage: string };
-        const isExpanded = expandedRows.has(row.id);
 
         return (
-          <div className="relative">
-            <button
-              onClick={() => {
-                const newExpanded = new Set(expandedRows);
-                if (isExpanded) {
-                  newExpanded.delete(row.id);
-                } else {
-                  newExpanded.add(row.id);
-                }
-                setExpandedRows(newExpanded);
-              }}
-              className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
-            >
-              <img
-                src={addedBy.profileImage}
-                alt={addedBy.name}
-                width={40}
-                height={40}
-                className="rounded-full object-cover"
-              />
-              <span className="text-sm text-[#181D1F]">
-                {addedBy.name}
-              </span>
-            </button>
+          <div
+            className="flex items-center gap-2 px-2 py-1 w-full text-left"
+          >
+            <img
+              src={addedBy.profileImage}
+              alt={addedBy.name}
+              width={40}
+              height={40}
+              className="rounded-full object-cover"
+            />
+            <span className="text-black font-medium">
+              {addedBy.name}
+            </span>
           </div>
         );
       },
