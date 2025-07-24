@@ -40,6 +40,12 @@ const ResetPassword = () => {
     return `${firstChar}*****@${domain}`;
   };
 
+  const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setOtpCode(numericValue);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -185,9 +191,11 @@ const ResetPassword = () => {
               <div className="relative mt-[19px]">
                 <input
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   placeholder="Enter your code"
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
+                  onChange={handleOtpChange}
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
                    placeholder-[#8A8A8A] placeholder:text-lg 
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
