@@ -7,53 +7,32 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Button from "../components/button/Button";
 import { useRouter } from "next/navigation";
-import APIRequest from "@/api/service";
 import { asyncLocalStorage } from "@/helpers/storage";
 import { errorToast, successToast } from "@/utils/toast";
-import { AxiosError } from "axios";
+import { trpc } from "@/lib/trpc-client";
 
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
   const togglePassword = () => setShowPassword((prev) => !prev);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const { mutate: login, isPending: isLoading } = trpc.auth.login.useMutation({
+    onSuccess: async (data) => {
+      await asyncLocalStorage.setItem("user_token", data.token);
+      successToast("Login successful!");
+      router.push("/admin");
+    },
+    onError: (error) => {
+      errorToast(error.message);
+    },
+  });
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    const apiRequest = new APIRequest();
-
-    try {
-      const response = await apiRequest.login({ email, password});
-     
-      if (response) {
-        await asyncLocalStorage.setItem("user_token", response?.data?.token);
-        successToast("Login successful!");
-        router.push("/admin");
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError<{ message: string }>;
-      let errorMessage = "An error occurred. Please try again.";
-
-      if (axiosError.response) {
-        errorMessage =
-          axiosError.response.data.message ||
-          `Server responded with status ${axiosError.response.status}`;
-      } else if (axiosError.request) {
-        errorMessage =
-          "No response from server. Check your network connection.";
-      } else {
-        errorMessage = axiosError.message;
-      }
-
-      errorToast(errorMessage);
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    login({ email, password });
   };
 
   return (
@@ -129,8 +108,8 @@ export default function Home() {
             <Button
               type="submit"
               className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white font-figtree"
-              disabled={loading}
-              loading={loading}
+              disabled={isLoading}
+              loading={isLoading}
             >
               Sign In
             </Button>

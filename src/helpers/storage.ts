@@ -1,13 +1,25 @@
+import { rejects } from "assert";
+
+const isBrowser = typeof window !== "undefined";
+
 export const asyncLocalStorage = {
   //Set local storage item with a delay to simulate async behavior
   setItem: <T>(key: string, value: T): Promise<void> => {
     return new Promise((resolve, reject) => {
+      if (!isBrowser) {
+        return resolve();
+      }
       setTimeout(() => {
         try {
           if (value === undefined) {
+            console.warn(
+              `Attempted to set undefined value for key "${key}". Removing item.`
+            );
             localStorage.removeItem(key);
           } else {
-            localStorage.setItem(key, JSON.stringify(value));
+            const valueToStore =
+              typeof value === "string" ? value : JSON.stringify(value);
+            localStorage.setItem(key, valueToStore);
           }
           resolve();
         } catch (error) {
@@ -20,15 +32,19 @@ export const asyncLocalStorage = {
   //Get local storage item with a delay to simulate async behavior
   getItem: <T>(key: string): Promise<T | null> => {
     return new Promise((resolve, reject) => {
+      if (!isBrowser) {
+        return resolve(null);
+      }
       setTimeout(() => {
         const value = localStorage.getItem(key);
         if (value) {
           try {
+            // Try to parse it as JSON
             resolve(JSON.parse(value) as T);
           } catch (error) {
-            // If parsing fails, return null and log the error
-            console.error("Error parsing JSON from localStorage:", error);
-            resolve(null);
+            // If it fails, it's likely a raw string, so return it as is
+            resolve(value as T);
+            reject(error)
           }
         } else {
           resolve(null);
@@ -40,6 +56,9 @@ export const asyncLocalStorage = {
   //Remove local storage item with a delay to simulate async behavior
   removeItem: (key: string): Promise<void> => {
     return new Promise((resolve, reject) => {
+      if (!isBrowser) {
+        return resolve();
+      }
       setTimeout(() => {
         try {
           localStorage.removeItem(key);
@@ -52,8 +71,11 @@ export const asyncLocalStorage = {
   },
 
   //Clear local storage item with a delay to simulate async behavior
-  clear: (key: string): Promise<void> => {
+  clear: (): Promise<void> => {
     return new Promise((resolve, reject) => {
+      if (!isBrowser) {
+        return resolve();
+      }
       setTimeout(() => {
         try {
           localStorage.clear();

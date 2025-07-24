@@ -7,10 +7,9 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import Button from "@/components/button/Button";
 import { Eye, EyeOff } from "lucide-react";
-import APIRequest from "@/api/service";
 import { errorToast, successToast } from "@/utils/toast";
-import { AxiosError } from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
+import { trpc } from "@/lib/trpc-client";
 
 const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,10 +19,20 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otpCode, setOtpCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const { mutate: resetPassword, isPending: isLoading } =
+    trpc.auth.resetPassword.useMutation({
+      onSuccess: () => {
+        successToast("Password reset successful!");
+        router.push("/");
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
 
   useEffect(() => {
     const email = searchParams.get("email");
@@ -48,51 +57,18 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     if (!newPassword || !confirmPassword || !otpCode) {
       errorToast("Please fill in all fields.");
-      setIsLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
       errorToast("Passwords do not match.");
-      setIsLoading(false);
       return;
     }
 
-    const apiRequest = new APIRequest();
-
-    try {
-      const response = await apiRequest.resetPassword({
-        newPassword,
-        otpCode,
-      });
-      if (response) {
-        successToast("Password reset successful!");
-        router.push("/");
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError<{ message: string }>;
-      let errorMessage = "An error occurred. Please try again.";
-
-      if (axiosError.response) {
-        errorMessage =
-          axiosError.response.data.message ||
-          `Server responded with status ${axiosError.response.status}`;
-      } else if (axiosError.request) {
-        errorMessage =
-          "No response from server. Check your network connection.";
-      } else {
-        errorMessage = axiosError.message;
-      }
-
-      errorToast(errorMessage);
-      console.error("Error resetting password:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    resetPassword({ newPassword, otpCode });
   };
   return (
     <main className=" flex min-h-screen items-center justify-center ">

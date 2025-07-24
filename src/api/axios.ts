@@ -9,12 +9,18 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
     "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
   },
-  transformResponse: [(data) => data],
+});
+
+const resetAxiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+  },
 });
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    console.log("Request made with ", config);
     const token = await asyncLocalStorage.getItem("user_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -42,4 +48,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export { axiosInstance };
+export { axiosInstance, resetAxiosInstance };
