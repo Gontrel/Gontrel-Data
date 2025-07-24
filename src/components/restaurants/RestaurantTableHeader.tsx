@@ -13,15 +13,25 @@ interface RestaurantTableHeaderProps {
  */
 export function RestaurantTableHeader({ table }: RestaurantTableHeaderProps) {
   return (
-    <thead className='bg-gray-100 border-b border-[#BABFC7]'>
+    <thead className='bg-[#F9F9F9] border-b border-[#EBEBEB]'>
       {table.getHeaderGroups().map(headerGroup => {
         return (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => ( // map over the headerGroup headers array
-              <th key={header.id} colSpan={header.colSpan} className='p-4 text-left text-sm text-[#181D1F]'>
-                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
+            {headerGroup.headers.map(header => {
+              const isSticky = header.column.columnDef.meta?.sticky;
+              return (
+                <th
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  className={`px-2.5 py-5.5 text-left text-lg text-black font-semibold ${isSticky
+                      ? 'sticky left-0 z-20 bg-[#F9F9F9] border-r border-[#EBEBEB]'
+                      : ''
+                    }`}
+                >
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              );
+            })}
           </tr>
         )
       })}
