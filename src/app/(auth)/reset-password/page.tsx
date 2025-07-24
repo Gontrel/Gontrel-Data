@@ -4,15 +4,33 @@ import React from "react";
 import Image from "next/image";
 import logo from "../../../assets/images/reset-logo.png";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@/components/button/Button";
 import { Eye, EyeOff } from "lucide-react";
+import APIRequest from "@/api/service";
+import { errorToast, successToast } from "@/utils/toast";
+import { AxiosError } from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
 
-  const [userEmail, setUserEmail] = useState("brianxcode21@gmail.com"); // TODO:
+  const [userEmail, setUserEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const email = searchParams.get("email");
+    if (email) {
+      setUserEmail(email);
+    }
+  }, [searchParams]);
 
   const maskEmail = (email: string) => {
     if (!email || !email.includes("@")) return "*****@*****";
@@ -22,14 +40,52 @@ const ResetPassword = () => {
     return `${firstChar}*****@${domain}`;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validation using Zod
+    setIsLoading(true);
+
+    if (!newPassword || !confirmPassword || !otpCode) {
+      errorToast("Please fill in all fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      errorToast("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    const apiRequest = new APIRequest();
 
     try {
+      const response = await apiRequest.resetPassword({
+        newPassword,
+        otpCode,
+      });
+      if (response) {
+        successToast("Password reset successful!");
+        router.push("/");
+      }
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      let errorMessage = "An error occurred. Please try again.";
+
+      if (axiosError.response) {
+        errorMessage =
+          axiosError.response.data.message ||
+          `Server responded with status ${axiosError.response.status}`;
+      } else if (axiosError.request) {
+        errorMessage =
+          "No response from server. Check your network connection.";
+      } else {
+        errorMessage = axiosError.message;
+      }
+
+      errorToast(errorMessage);
       console.error("Error resetting password:", error);
     } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -69,6 +125,8 @@ const ResetPassword = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px] 
                   placeholder-[#8A8A8A] placeholder:font-figtree placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
@@ -94,6 +152,8 @@ const ResetPassword = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
                    placeholder-[#8A8A8A] placeholder:text-lg placeholder:font-figtree
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
@@ -124,9 +184,10 @@ const ResetPassword = () => {
 
               <div className="relative mt-[19px]">
                 <input
-                
-                  type={showPassword ? "text" : "password"}
+                  type="text"
                   placeholder="Enter your code"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
                    placeholder-[#8A8A8A] placeholder:text-lg 
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
@@ -135,6 +196,7 @@ const ResetPassword = () => {
             </div>
             <Button
               type="submit"
+              loading={isLoading}
               className="cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white font-figtree"
             >
               Continue

@@ -3,24 +3,35 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Icon from "@/components/svgs/Icons";
-// import { FiUsers, FiSettings, FiMenu, FiX, FiBriefcase } from "react-icons/fi";
+import {
+  Users,
+  Settings,
+  Menu,
+  X,
+  Building,
+  ClipboardList,
+} from "lucide-react";
 
 const navLinks = [
   {
-    name: "Merchant Management",
-    href: "/admin/merchant-management",
-    icon: <Icon name="dashboardIcon" />,
+    name: "Restaurant Management",
+    href: "/admin/restaurant-management",
+    icon: <Building />,
   },
   {
     name: "User Management",
     href: "/admin/user-management",
-    // icon: <FiUsers />,
+    icon: <Users />,
+  },
+  {
+    name: "Pending Changes",
+    href: "/admin/pending-changes",
+    icon: <ClipboardList />,
   },
   {
     name: "Settings",
     href: "/admin/settings",
-    // icon: <FiSettings />,
+    icon: <Settings />,
   },
 ];
 
@@ -37,16 +48,16 @@ export default function AdminRootLayout({
       {/* Sidebar */}
       <aside
         className={`bg-gray-800 text-white transition-all duration-300 ease-in-out ${
-          isOpen ? "w-64" : "w-16"
+          isOpen ? "w-64" : "w-20"
         }`}
       >
         {/* Toggle button */}
-        <div className="flex justify-end p-4">
+        <div className="flex justify-center p-4">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-white text-2xl"
           >
-            {/* {isOpen ? <FiX /> : <FiMenu />} */}
+            {isOpen ? <X /> : <Menu />}
           </button>
         </div>
 
@@ -63,7 +74,7 @@ export default function AdminRootLayout({
                       isActive
                         ? "bg-blue-500 text-white "
                         : "hover:bg-gray-700 text-gray-300"
-                    }`}
+                    } ${!isOpen && "justify-center"}`}
                   >
                     <span className="text-xl font-figtree">{icon}</span>
                     {isOpen && (

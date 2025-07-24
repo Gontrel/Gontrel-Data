@@ -6,6 +6,10 @@ import logo from "../../../assets/images/logo.png";
 import Link from "next/link";
 import Button from "@/components/button/Button";
 import { useRouter } from "next/navigation";
+import APIRequest from "@/api/service";
+import { errorToast, successToast } from "@/utils/toast";
+import { AxiosError } from "axios";
+import { asyncLocalStorage } from "@/helpers/storage";
 
 const ForgetPassword = () => {
   const router = useRouter();
@@ -13,21 +17,41 @@ const ForgetPassword = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("Request to reset password for:", email);
     e.preventDefault();
     setIsLoading(true);
 
-    // Validation
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorToast("Please enter a valid email address.");
       setIsLoading(false);
       return;
     }
 
+    const apiRequest = new APIRequest();
+
     try {
-      //TODO:  API call
-      console.log("Request to reset password for:", email);
-      router.push("/reset-password");
+      const response = await apiRequest.forgetPassword({ email });
+      if (response) {
+        await asyncLocalStorage.setItem("user_token", response.token);
+        successToast("Password reset email sent successfully!");
+        console.log("response data", response)
+        router.push(`/reset-password?email=${email}`);
+      }
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      let errorMessage = "An error occurred. Please try again.";
+
+      if (axiosError.response) {
+        errorMessage =
+          axiosError.response.data.message ||
+          `Server responded with status ${axiosError.response.status}`;
+      } else if (axiosError.request) {
+        errorMessage =
+          "No response from server. Check your network connection.";
+      } else {
+        errorMessage = axiosError.message;
+      }
+
+      errorToast(errorMessage);
       console.error("Error resetting password:", error);
     } finally {
       setIsLoading(false);
@@ -74,11 +98,8 @@ const ForgetPassword = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className={`cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              } `}
+              loading={isLoading}
+              className={`cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white`}
             >
               Continue
             </Button>

@@ -6,18 +6,53 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Button from "../components/button/Button";
+import { useRouter } from "next/navigation";
+import APIRequest from "@/api/service";
+import { asyncLocalStorage } from "@/helpers/storage";
+import { errorToast, successToast } from "@/utils/toast";
+import { AxiosError } from "axios";
 
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
   const togglePassword = () => setShowPassword((prev) => !prev);
 
-  // TODO: write the login handler
-  const handleLogin = () => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const apiRequest = new APIRequest();
+
     try {
-      //TODO:  Api call and state update logic here
+      const response = await apiRequest.login({ email, password});
+     
+      if (response) {
+        await asyncLocalStorage.setItem("user_token", response?.data?.token);
+        successToast("Login successful!");
+        router.push("/admin");
+      }
     } catch (error) {
-      //TODO: handle error, using customized toast or aler
+      const axiosError = error as AxiosError<{ message: string }>;
+      let errorMessage = "An error occurred. Please try again.";
+
+      if (axiosError.response) {
+        errorMessage =
+          axiosError.response.data.message ||
+          `Server responded with status ${axiosError.response.status}`;
+      } else if (axiosError.request) {
+        errorMessage =
+          "No response from server. Check your network connection.";
+      } else {
+        errorMessage = axiosError.message;
+      }
+
+      errorToast(errorMessage);
+      console.log(error);
     } finally {
+      setLoading(false);
     }
   };
 
@@ -43,7 +78,7 @@ export default function Home() {
 
         {/* Form section */}
         <section className="mt-[60px] min-w-[559px] md:w-1/2 ">
-          <form className="">
+          <form className="" onSubmit={handleLogin}>
             {/* Email field */}
             <div className="mb-[30px]">
               <label className="text-xl font-medium text-[#444 font-figtree]">
@@ -51,6 +86,8 @@ export default function Home() {
               </label>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
                 className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px]
                     placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
@@ -73,6 +110,8 @@ export default function Home() {
               <div className="relative mt-[19px]">
                 <input
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Your password"
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
                       placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
@@ -90,6 +129,8 @@ export default function Home() {
             <Button
               type="submit"
               className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white font-figtree"
+              disabled={loading}
+              loading={loading}
             >
               Sign In
             </Button>
