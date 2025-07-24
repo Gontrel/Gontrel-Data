@@ -2,14 +2,28 @@
  * Restaurant data model representing the production/live data
  */
 export type Restaurant = {
-  id: string;
   name: string;
   address: string;
-  tiktokLinks: string[];
-  tags: string[];
+  maplink: string;
+  website: string;
   menuUrl: string;
   reservationUrl: string;
-  city: string;
+  addedBy: {
+    userId: string;
+    name: string;
+    profileImage: string;
+  };
+  status: 'active' | 'inactive' | 'pending';
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  dateAdded: Date;
   createdAt: Date;
   updatedAt: Date;
 };

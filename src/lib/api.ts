@@ -1,8 +1,7 @@
 import { Restaurant, RestaurantChange, ApiResponse, PaginatedResponse } from '../types/restaurant';
-import { TableTab } from '../data/mockTables';
 import { mockRestaurants } from '../data/mockRestaurants';
 import { mockPendingChanges, mockApprovedChanges, mockRejectedChanges } from '../data/mockChanges';
-import { mockTables } from '../data/mockTables';
+import { mockUsers, getCurrentUser, type User } from '../data/mockUsers';
 
 /**
  * Simulate API delay for realistic development experience
@@ -10,80 +9,44 @@ import { mockTables } from '../data/mockTables';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
+ * Table-like structure based on user IDs
+ */
+export type RestaurantTable = {
+  id: string;
+  name: string;
+  count: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/**
  * Table management API service
  */
 export class TableApi {
   /**
-   * Get all available tables
+   * Get table (based on unique users who have added restaurants)
    */
-  static async getTables(): Promise<TableTab[]> {
+  static async getTable(currentUserId?: string): Promise<Restaurant[]> {
     await delay(200);
-    return mockTables;
-  }
 
-  /**
-   * Get table by ID
-   */
-  static async getTable(id: string): Promise<TableTab | null> {
-    await delay(100);
-    return mockTables.find(table => table.id === id) || null;
-  }
+    const currentUser = currentUserId ? mockUsers.find(u => u.id === currentUserId) : getCurrentUser();
 
-  /**
-   * Create a new table
-   */
-  static async createTable(table: Omit<TableTab, 'id' | 'count' | 'createdAt' | 'updatedAt'>): Promise<TableTab> {
-    await delay(500);
-
-    const newTable: TableTab = {
-      ...table,
-      id: `table-${Date.now()}`,
-      count: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    // In a real app, this would be saved to the database
-    console.log('Table created:', newTable);
-
-    return newTable;
-  }
-
-  /**
-   * Update table
-   */
-  static async updateTable(id: string, updates: Partial<TableTab>): Promise<TableTab> {
-    await delay(400);
-
-    const tableIndex = mockTables.findIndex(table => table.id === id);
-    if (tableIndex === -1) {
-      throw new Error('Table not found');
+    if (!currentUser) {
+      return [];
     }
 
-    const updatedTable = {
-      ...mockTables[tableIndex],
-      ...updates,
-      updatedAt: new Date()
-    };
-
-    mockTables[tableIndex] = updatedTable;
-
-    return updatedTable;
-  }
-
-  /**
-   * Delete table
-   */
-  static async deleteTable(id: string): Promise<void> {
-    await delay(300);
-
-    const tableIndex = mockTables.findIndex(table => table.id === id);
-    if (tableIndex === -1) {
-      throw new Error('Table not found');
+    // If user is analyst, only show their own table
+    if (currentUser.role === 'analyst') {
+      return mockRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
     }
 
-    mockTables.splice(tableIndex, 1);
-    console.log('Table deleted:', id);
+    // If user is manager or admin, show all users who have added restaurants
+    const usersWithRestaurants = mockUsers.filter(user => {
+      const hasRestaurants = mockRestaurants.some(restaurant => restaurant.addedBy.userId === user.id);
+      return hasRestaurants;
+    });
+
+    return usersWithRestaurants.map(user => mockRestaurants.filter(restaurant => restaurant.addedBy.userId === user.id)).flat();
   }
 }
 
@@ -95,24 +58,35 @@ export class RestaurantApi {
    * Get restaurants by table with optional search and pagination
    */
   static async getRestaurants(params: {
-    tableId?: string;
     search?: string;
     page?: number;
     limit?: number;
+    currentUserId?: string;
   }): Promise<PaginatedResponse<Restaurant>> {
     await delay(300); // Simulate network delay
 
+    const currentUser = params.currentUserId ? mockUsers.find(u => u.id === params.currentUserId) : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
     let filteredRestaurants = [...mockRestaurants];
 
-    // Filter by table (in this case, we'll use city as a proxy for table)
-    if (params.tableId) {
-      const table = mockTables.find(t => t.id === params.tableId);
-      if (table) {
-        filteredRestaurants = filteredRestaurants.filter(
-          restaurant => restaurant.city.toLowerCase() === table.name.toLowerCase()
-        );
-      }
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      // Analysts can only see their own restaurants
+      filteredRestaurants = filteredRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
     }
+    // Managers and admins can see all restaurants
 
     // Filter by search term
     if (params.search) {
@@ -121,7 +95,7 @@ export class RestaurantApi {
         restaurant =>
           restaurant.name.toLowerCase().includes(searchTerm) ||
           restaurant.address.toLowerCase().includes(searchTerm) ||
-          restaurant.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+          restaurant.website.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -144,11 +118,29 @@ export class RestaurantApi {
   }
 
   /**
-   * Get restaurant by ID
+   * Get restaurant by name (since we removed ID)
    */
-  static async getRestaurant(id: string): Promise<Restaurant | null> {
+  static async getRestaurant(name: string, currentUserId?: string): Promise<Restaurant | null> {
     await delay(200);
-    return mockRestaurants.find(restaurant => restaurant.id === id) || null;
+
+    const currentUser = currentUserId ? mockUsers.find(u => u.id === currentUserId) : getCurrentUser();
+
+    if (!currentUser) {
+      return null;
+    }
+
+    const restaurant = mockRestaurants.find(restaurant => restaurant.name === name);
+
+    if (!restaurant) {
+      return null;
+    }
+
+    // Role-based access control
+    if (currentUser.role === 'analyst' && restaurant.addedBy.userId !== currentUser.id) {
+      return null; // Analysts can only see their own restaurants
+    }
+
+    return restaurant;
   }
 }
 
