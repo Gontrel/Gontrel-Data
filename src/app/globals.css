@@ -3,34 +3,12 @@
 /* Global Font family */
 @font-face {
   font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght") format("woff2");
+  src: url("../assets/fonts/Figtree-VariableFont_wght.ttf") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 :root {
   --background: 0 0% 100%;
@@ -55,7 +33,7 @@
   --radius: 0.5rem;
 
   /* Global Font Family */
-  --font-sans: "Figtree", sans-serif;
+  font-family: "Figtree", sans-serif;
 }
 
 .dark {

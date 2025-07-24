@@ -44,12 +44,12 @@ const ResetPassword = () => {
             alt="Reset Logo"
             className="mx-auto"
           />
-          <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold">
+          <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold font-figtree">
             Email Sent
           </h1>
-          <p className="pt-[12px] text-center text-[22px] font-medium">
+          <p className="pt-[12px] text-center text-[22px] font-medium font-figtree">
             We have sent a 4-digit code to your email{" "}
-            <span className="font-semibold text-[22px]">
+            <span className="font-semibold text-[22px] font-figtree">
               {maskEmail(userEmail)}
             </span>
             . Use it to confirm password change
@@ -61,7 +61,7 @@ const ResetPassword = () => {
           <form className="" onSubmit={handleSubmit}>
             {/*  New Password field */}
             <div className="mb-[30px]">
-              <label className="text-xl font-medium text-[#444] ">
+              <label className="text-xl font-medium text-[#444] font-figtree">
                 New Password
               </label>
 
@@ -70,7 +70,7 @@ const ResetPassword = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px] 
-                  placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  placeholder-[#8A8A8A] placeholder:font-figtree placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
 
                 <button
@@ -86,7 +86,7 @@ const ResetPassword = () => {
 
             {/* Confirm new Password field */}
             <div>
-              <label className="text-xl font-medium text-[#444]">
+              <label className="text-xl font-medium text-[#444] font-figtree">
                 Confirm new Password
               </label>
 
@@ -95,7 +95,7 @@ const ResetPassword = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                   placeholder-[#8A8A8A] placeholder:text-lg 
+                   placeholder-[#8A8A8A] placeholder:text-lg placeholder:font-figtree
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
@@ -111,19 +111,20 @@ const ResetPassword = () => {
 
             <div className="w-full mt-[30px]">
               <div className="flex flex-row items-center justify-between ">
-                <p className="text-[#444] font-medium text-[20px]">
+                <p className="text-[#444] font-medium text-[20px] font-figtree">
                   Enter code
                 </p>
                 <button
                   //   onSubmit={}
-                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline"
+                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline font-figtree"
                 >
-                  <p> Resend code</p>
+                  Resend code
                 </button>
               </div>
 
               <div className="relative mt-[19px]">
                 <input
+                
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your code"
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
@@ -134,14 +135,14 @@ const ResetPassword = () => {
             </div>
             <Button
               type="submit"
-              className="cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
+              className="cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white font-figtree"
             >
               Continue
             </Button>
           </form>
 
           <Link href="/" passHref>
-            <p className="text-[#0070F3] font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
+            <p className="text-[#0070F3] font-figtree font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
               Back to sign in
             </p>
           </Link>

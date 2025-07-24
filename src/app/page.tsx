@@ -36,7 +36,7 @@ export default function Home() {
           <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold font-figtree">
             Welcome back
           </h1>
-          <p className="pt-[12px] text-center text-[20px] font-medium">
+          <p className="pt-[12px] text-center text-[20px] font-medium font-figtree">
             Let’s get you signed in
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function Home() {
           <form className="">
             {/* Email field */}
             <div className="mb-[30px]">
-              <label className="text-xl font-medium text-[#444]">
+              <label className="text-xl font-medium text-[#444 font-figtree]">
                 Email Address
               </label>
               <input
@@ -60,11 +60,11 @@ export default function Home() {
             {/* Password field */}
             <div>
               <div className="flex flex-row justify-between">
-                <label className="text-xl font-medium text-[#444]">
+                <label className="text-xl font-medium text-[#444] font-figtree">
                   Password
                 </label>
                 <Link href="/forget-password">
-                  <p className="text-[#0070F3] font-medium text-[20px]">
+                  <p className="text-[#0070F3] font-medium text-[20px] font-figtree">
                     Forgot Password?
                   </p>
                 </Link>
@@ -89,7 +89,7 @@ export default function Home() {
             </div>
             <Button
               type="submit"
-              className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
+              className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white font-figtree"
             >
               Sign In
             </Button>
