@@ -23,7 +23,7 @@ export function ExternalLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`text-black font-medium cursor-pointer flex items-center justify-between gap-3.5 ${className}`}
+      className={`text-black font-medium cursor-pointer flex items-center justify-start gap-3.5 ${className}`}
       title={title}
     >
       {children}
