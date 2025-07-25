@@ -1,17 +1,16 @@
 'use client';
 
 import { Table } from '@tanstack/react-table';
-import { Restaurant } from '../../types/restaurant';
 import { flexRender } from '@tanstack/react-table';
 
-interface RestaurantTableHeaderProps {
-  table: Table<Restaurant>;
+interface RestaurantTableHeaderProps<T> {
+  table: Table<T>;
 }
 
 /**
  * Table header component with sortable columns
  */
-export function RestaurantTableHeader({ table }: RestaurantTableHeaderProps) {
+export function RestaurantTableHeader<T>({ table }: RestaurantTableHeaderProps<T>) {
   return (
     <thead className='bg-[#F9F9F9] border-b border-[#EBEBEB]'>
       {table.getHeaderGroups().map(headerGroup => {

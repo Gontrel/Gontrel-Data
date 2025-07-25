@@ -1,16 +1,15 @@
 'use client';
 
 import { flexRender, Row } from '@tanstack/react-table';
-import { Restaurant } from '../../types/restaurant';
 
-interface RestaurantRowProps {
-  row: Row<Restaurant>;
+interface RestaurantRowProps<T> {
+  row: Row<T>;
 }
 
 /**
  * Individual restaurant table row component
  */
-export function RestaurantRow({ row }: RestaurantRowProps) {
+export function RestaurantRow<T>({ row }: RestaurantRowProps<T>) {
   return (
     <tr>
       {row.getVisibleCells().map((cell, index) => {

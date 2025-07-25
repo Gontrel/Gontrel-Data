@@ -10,18 +10,17 @@ import {
   ColumnDef,
   RowSelectionState,
 } from '@tanstack/react-table';
-import { Restaurant } from '../../types/restaurant';
 import { RestaurantRow } from './RestaurantRow';
 import { RestaurantTableHeader } from './RestaurantTableHeader';
 import { TablePagination } from '../ui/TablePagination';
 import { TableSkeleton } from '../ui/TableSkeleton';
 
-interface RestaurantTableProps {
-  restaurants: Restaurant[];
+interface RestaurantTableProps<T> {
+  restaurants: T[];
   loading?: boolean;
-  onRowSelect?: (selectedRows: Restaurant[]) => void;
+  onRowSelect?: (selectedRows: T[]) => void;
   showSelection?: boolean;
-  columns: ColumnDef<Restaurant>[];
+  columns: ColumnDef<T>[];
   currentPage?: number;
   pageSize?: number;
   totalPages?: number;
@@ -32,7 +31,7 @@ interface RestaurantTableProps {
 /**
  * Main restaurant table component with sorting, filtering, and pagination
  */
-export function RestaurantTable({
+export function RestaurantTable<T>({
   restaurants,
   loading = false,
   onRowSelect,
@@ -43,7 +42,7 @@ export function RestaurantTable({
   totalPages = 1,
   onPageSizeChange,
   onPageChange
-}: RestaurantTableProps) {
+}: RestaurantTableProps<T>) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   // Create table instance
@@ -83,10 +82,10 @@ export function RestaurantTable({
         {/* Responsive scroll container */}
         <div className="rounded-2xl overflow-x-auto scrollbar-thin scrollbar-thumb-[#DDDDDD] scrollbar-track-[#F8F8F8]">
           <table className="w-full min-w-max">
-            <RestaurantTableHeader table={table} />
+            <RestaurantTableHeader<T> table={table} />
             <tbody className="divide-y divide-[#EBEBEB]">
               {table.getRowModel().rows.map((row) => (
-                <RestaurantRow key={row.id} row={row} />
+                <RestaurantRow<T> key={row.id} row={row} />
               ))}
             </tbody>
           </table>

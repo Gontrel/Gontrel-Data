@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { RestaurantTable } from './RestaurantTable'
 import { useRestaurants } from '@/hooks/useRestaurants';
 import { formatDate } from '@/lib/utils';
-import { Restaurant } from '@/types/restaurant';
+import { PendingVideoType } from '@/types/restaurant';
 import { ColumnDef } from '@tanstack/react-table';
 import { MapPin, Calendar, Video } from 'lucide-react';
 import { ActionButtons } from '../ui/ActionButtons';
@@ -21,63 +21,53 @@ interface PendingVideosProps {
 const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, handlePageSize }: PendingVideosProps) => {
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-    const handleRowSelect = (selectedRows: Restaurant[]) => {
-        console.log('Selected restaurants:', selectedRows);
+    const handleRowSelect = (selectedRows: PendingVideoType[]) => {
+        console.log('Selected videos:', selectedRows);
         // Handle bulk actions here
     };
 
-    const columns = useMemo<ColumnDef<Restaurant>[]>(() => [
+    const columns = useMemo<ColumnDef<PendingVideoType>[]>(() => [
         {
-            accessorKey: 'name',
+            accessorKey: 'id',
             header: () => (
                 <div className="flex items-center gap-2">
-                    <span>Restaurant name</span>
+                    <span>#</span>
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="font-medium text-[#181D1F] max-w-60 truncate">{row.getValue('name')}</div>
-            ),
-            minSize: 200,
-            meta: {
-                sticky: true
-            }
-        },
-        {
-            accessorKey: 'address',
-            header: () => (
-                <div className="flex items-center gap-2">
-                    <MapPin className="w-4.5 h-4.5 text-[#8A8A8A]" />
-                    <span>Address</span>
+                <div className="font-medium text-[#181D1F] max-w-60 truncate">
+                    {row.index + 1}
                 </div>
             ),
-            cell: ({ row }) => {
-                const address = row.getValue('address') as string;
-                const maplink = row.original.maplink;
-
-                return (
-                    <ExternalLink
-                        href={maplink}
-                        className="max-w-68"
-                        title={`View ${address} on Google Maps`}
-                    >
-                        <span className="text-black truncate max-w-60">{address}</span>
-                    </ExternalLink>
-                );
-            },
-            minSize: 200,
+            minSize: 80,
+            meta: { sticky: true }
         },
         {
-            accessorKey: 'tiktokUrl',
+            accessorKey: 'restaurantId',
+            header: () => (
+                <div className="flex items-center gap-2">
+                    <span>Restaurant ID</span>
+                </div>
+            ),
+            cell: ({ row }) => (
+                <div className="font-medium text-[#181D1F] max-w-60 truncate">
+                    {row.getValue('restaurantId')}
+                </div>
+            ),
+            minSize: 150,
+        },
+        {
+            accessorKey: 'video',
             header: () => (
                 <div className="flex items-center gap-2">
                     <Video className="w-4.5 h-4.5 text-[#8A8A8A]" />
-                    <span>TikTok URL</span>
+                    <span>Video</span>
                 </div>
             ),
             cell: ({ row }) => {
-                const url = row.getValue('tiktokUrl') as string;
+                const video = row.getValue('video') as { videoUrl: string };
                 return (
-                    <ExternalLink href={url} title={url}>
+                    <ExternalLink href={video.videoUrl} title={video.videoUrl}>
                         <span className="text-black">View video</span>
                     </ExternalLink>
                 );
@@ -156,13 +146,14 @@ const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, h
                     <span className="text-black font-medium">Actions</span>
                 </div>
             ),
-            cell: () => (
+            cell: ({ row }) => (
                 <ActionButtons
                     actions={[
                         {
                             label: 'Approve',
                             onClick: () => {
                                 // Handle approve action
+                                console.log('Approving video:', row.original.id);
                             },
                             variant: 'success'
                         },
@@ -170,6 +161,7 @@ const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, h
                             label: 'Decline',
                             onClick: () => {
                                 // Handle decline action
+                                console.log('Declining video:', row.original.id);
                             },
                             variant: 'danger'
                         }
@@ -185,11 +177,11 @@ const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, h
         tableId: ManagerTableTabs.PENDING_VIDEOS,
         search: searchTerm,
         page: currentPage,
-        limit: pageSize // Use the pageSize prop instead of hardcoded 10
+        limit: pageSize
     });
 
     return (
-        <RestaurantTable
+        <RestaurantTable<PendingVideoType>
             restaurants={restaurantsData?.data || []}
             loading={restaurantsLoading}
             onRowSelect={handleRowSelect}

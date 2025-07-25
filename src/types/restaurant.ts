@@ -1,7 +1,7 @@
 /**
  * Restaurant data model representing the production/live data
  */
-export type Restaurant = {
+export type ActiveRestaurantType = {
   name: string;
   address: string;
   maplink: string;
@@ -28,21 +28,61 @@ export type Restaurant = {
   updatedAt: Date;
 };
 
+export type Video = {
+  id: string;
+  videoUrl: string;
+  tags: Tag[];
+  status: TableStatus;
+};
 
+export type TableStatus = 'pending' | 'approved' | 'declined';
 
-/**
- * Change history record for audit trail
- */
-export type ChangeHistory = {
+export type Tag = {
+  id: string;
+  name: string;
+};
+
+export type PendingRestaurantType = {
+  restaurantId: string;
+  name: string;
+  videos: Video[];
+  address: string;
+  maplink: string;
+  website: string;
+  menuUrl: string;
+  reservationUrl: string;
+  addedBy: {
+    userId: string;
+    name: string;
+    profileImage: string;
+  };
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  dateAdded: Date;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PendingVideoType = {
   id: string;
   restaurantId: string;
-  changeId: string;
-  action: 'created' | 'approved' | 'rejected';
-  oldValues?: Partial<Restaurant>;
-  newValues?: Partial<Restaurant>;
-  userId: string;
-  timestamp: Date;
+  name: string;
+  video: Video;
+  dateAdded: Date;
+  addedBy: {
+    userId: string;
+    name: string;
+    profileImage: string;
+  };
 };
+export type RestaurantTypes = ActiveRestaurantType | PendingRestaurantType | PendingVideoType ;
 
 /**
  * User roles for authorization
