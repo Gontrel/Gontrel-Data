@@ -1,6 +1,5 @@
-import { axiosInstance } from "./axios";
+import { unauthenticatedClient } from "./axios";
 import { AxiosResponse } from "axios";
-import { asyncLocalStorage } from "@/helpers/storage";
 
 export default class APIRequest {
   private handleResponse(response: AxiosResponse) {
@@ -16,28 +15,29 @@ export default class APIRequest {
   }
   // forget password
   forgetPassword = async (data: { email: string }) => {
-    const response = await axiosInstance.post(`/admin-forgot-password`, data);
+    const response = await unauthenticatedClient.post(
+      `/admin-forgot-password`,
+      data
+    );
     return this.handleResponse(response);
   };
 
   // reset password
-  resetPassword = async (data: { newPassword: string; otpCode: string }) => {
-    const token = await asyncLocalStorage.getItem<string>("reset_token");
-    if (!token) {
-      throw new Error(
-        "Reset token is missing. Please try the 'forgot password' process again."
-      );
-    }
-    const response = await axiosInstance.post(`/admin-reset-password`, {
-      ...data,
-      token,
-    });
+  resetPassword = async (data: {
+    newPassword: string;
+    otpCode: string;
+    token: string;
+  }) => {
+    const response = await unauthenticatedClient.post(
+      `/admin-reset-password`,
+      data
+    );
     return this.handleResponse(response);
   };
 
   // login
   login = async (data: { email: string; password: string }) => {
-    const response = await axiosInstance.post(`/admin-login`, data);
+    const response = await unauthenticatedClient.post(`/admin-login`, data);
     return this.handleResponse(response);
   };
 }

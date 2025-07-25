@@ -34,6 +34,16 @@ const ResetPassword = () => {
       },
     });
 
+  const { mutate: resendCode, isPending: isResending } =
+    trpc.auth.forgetPassword.useMutation({
+      onSuccess: async () => {
+        successToast("A new code has been sent.");
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
+
   useEffect(() => {
     const email = searchParams.get("email");
     if (email) {
@@ -67,9 +77,17 @@ const ResetPassword = () => {
       errorToast("Passwords do not match.");
       return;
     }
-
     resetPassword({ newPassword, otpCode });
   };
+
+  const handleResendCode = () => {
+    if (userEmail) {
+      resendCode({ email: userEmail });
+    } else {
+      errorToast("Email is not available to resend the code.");
+    }
+  };
+
   return (
     <main className=" flex min-h-screen items-center justify-center ">
       <section className="flex flex-col items-center max-w-[559px] h-full">
@@ -156,12 +174,15 @@ const ResetPassword = () => {
                 <p className="text-[#444] font-medium text-[20px] font-figtree">
                   Enter code
                 </p>
-                <button
-                  //   onSubmit={}
-                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline font-figtree"
+                <Button
+                  clickFunc={handleResendCode}
+                  disabled={isResending}
+                  loading={isResending}
+                  loadingText="Resending..."
+                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline font-figtree disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   Resend code
-                </button>
+                </Button>
               </div>
 
               <div className="relative mt-[19px]">

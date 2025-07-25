@@ -2,30 +2,18 @@
  * Restaurant data model representing the production/live data
  */
 export type Restaurant = {
-  name: string;
+  id: string;
+  restaurantName: string;
+  image: string;
   address: string;
-  maplink: string;
   website: string;
-  menuUrl: string;
-  reservationUrl: string;
+  totalVideos: number;
+  trend: "Popular searches" | "Trending TikTok #" | "None";
   addedBy: {
-    userId: string;
     name: string;
-    profileImage: string;
+    avatar: string;
   };
-  status: 'active' | 'inactive' | 'pending';
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  dateAdded: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  dateAdded: string;
 };
 
 /**
@@ -35,8 +23,8 @@ export type FieldChange = {
   field: keyof Restaurant;
   oldValue: unknown;
   newValue: unknown;
-  changeType: 'update' | 'add' | 'remove';
-}
+  changeType: "update" | "add" | "remove";
+};
 
 /**
  * Restaurant change record for pending changes awaiting approval
@@ -47,7 +35,7 @@ export type RestaurantChange = {
   analystId: string;
   managerId?: string;
   changes: FieldChange[];
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   createdAt: Date;
   reviewedAt?: Date;
   notes?: string;
@@ -62,7 +50,7 @@ export type ChangeHistory = {
   id: string;
   restaurantId: string;
   changeId: string;
-  action: 'created' | 'approved' | 'rejected';
+  action: "created" | "approved" | "rejected";
   oldValues?: Partial<Restaurant>;
   newValues?: Partial<Restaurant>;
   userId: string;
@@ -72,7 +60,7 @@ export type ChangeHistory = {
 /**
  * User roles for authorization
  */
-export type UserRole = 'analyst' | 'manager' | 'admin';
+export type UserRole = "analyst" | "manager" | "admin";
 
 /**
  * User model

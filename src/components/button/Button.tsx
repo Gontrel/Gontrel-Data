@@ -8,6 +8,7 @@ interface ButtonProps {
   children?: React.ReactNode;
   className?: string;
   loading?: boolean;
+  loadingText?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -17,6 +18,7 @@ const Button: React.FC<ButtonProps> = ({
   children = "Sign Up",
   className = "",
   loading = false,
+  loadingText = "Loading...",
 }) => {
   return (
     <button
@@ -28,7 +30,7 @@ const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <>
           <Loader className="animate-spin mr-2" />
-          Loading...
+          {loadingText}
         </>
       ) : (
         children

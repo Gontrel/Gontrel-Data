@@ -7,11 +7,10 @@ import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import Button from "../components/button/Button";
 import { useRouter } from "next/navigation";
-import { asyncLocalStorage } from "@/helpers/storage";
 import { errorToast, successToast } from "@/utils/toast";
 import { trpc } from "@/lib/trpc-client";
 
-export default function Home() {
+export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,8 +19,7 @@ export default function Home() {
   const togglePassword = () => setShowPassword((prev) => !prev);
 
   const { mutate: login, isPending: isLoading } = trpc.auth.login.useMutation({
-    onSuccess: async (data) => {
-      await asyncLocalStorage.setItem("user_token", data.token);
+    onSuccess: () => {
       successToast("Login successful!");
       router.push("/admin");
     },

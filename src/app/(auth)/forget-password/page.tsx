@@ -7,7 +7,6 @@ import Link from "next/link";
 import Button from "@/components/button/Button";
 import { useRouter } from "next/navigation";
 import { errorToast, successToast } from "@/utils/toast";
-import { asyncLocalStorage } from "@/helpers/storage";
 import { trpc } from "@/lib/trpc-client";
 
 const ForgetPassword = () => {
@@ -16,8 +15,7 @@ const ForgetPassword = () => {
 
   const { mutate: forgetPassword, isPending: isLoading } =
     trpc.auth.forgetPassword.useMutation({
-      onSuccess: async (data) => {
-        await asyncLocalStorage.setItem("reset_token", data.token);
+      onSuccess: () => {
         successToast("Password reset email sent successfully!");
         router.push(`/reset-password?email=${email}`);
       },
@@ -34,7 +32,6 @@ const ForgetPassword = () => {
     }
     forgetPassword({ email });
   };
-
   return (
     <main className=" flex min-h-screen items-center justify-center ">
       <section className="flex flex-col items-center min-w-[559px] min-h-[640px]">
@@ -56,7 +53,7 @@ const ForgetPassword = () => {
         </div>
 
         {/* Form section */}
-        <section className="mt-[60px] min-w-[559px] md:w-1/2 ">
+        <section className="mt-[60px] min-w-[559px] md:w-1-2 ">
           <form className="" onSubmit={handleSubmit}>
             {/* Email field */}
             <div className="mb-[30px]">
