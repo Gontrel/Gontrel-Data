@@ -28,32 +28,7 @@ export type Restaurant = {
   updatedAt: Date;
 };
 
-/**
- * Represents a single field change in a restaurant record
- */
-export type FieldChange = {
-  field: keyof Restaurant;
-  oldValue: unknown;
-  newValue: unknown;
-  changeType: 'update' | 'add' | 'remove';
-}
 
-/**
- * Restaurant change record for pending changes awaiting approval
- */
-export type RestaurantChange = {
-  id: string;
-  restaurantId: string;
-  analystId: string;
-  managerId?: string;
-  changes: FieldChange[];
-  status: 'pending' | 'approved' | 'rejected';
-  createdAt: Date;
-  reviewedAt?: Date;
-  notes?: string;
-  restaurantName: string; // Denormalized for easier querying
-  analystName: string; // Denormalized for easier querying
-};
 
 /**
  * Change history record for audit trail
