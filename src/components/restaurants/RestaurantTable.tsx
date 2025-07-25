@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -15,10 +15,6 @@ import { RestaurantRow } from './RestaurantRow';
 import { RestaurantTableHeader } from './RestaurantTableHeader';
 import { TablePagination } from '../ui/TablePagination';
 import { TableSkeleton } from '../ui/TableSkeleton';
-import { ExpandableContent } from '../ui/ExpandableContent';
-import { ActionButtons } from '../ui/ActionButtons';
-import { ExternalLink } from '../ui/ExternalLink';
-import { Clock, Calendar, MapPin, Link } from 'lucide-react';
 
 interface RestaurantTableProps {
   restaurants: Restaurant[];
@@ -26,23 +22,12 @@ interface RestaurantTableProps {
   onRowSelect?: (selectedRows: Restaurant[]) => void;
   showSelection?: boolean;
   columns: ColumnDef<Restaurant>[];
+  currentPage?: number;
+  pageSize?: number;
+  totalPages?: number;
+  onPageSizeChange?: (pageSize: number) => void;
+  onPageChange?: (pageIndex: number) => void;
 }
-
-/**
- * Format date to "January 3 2025 4:30pm" format
- */
-const formatDate = (date: Date): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  };
-
-  return date.toLocaleDateString('en-US', options);
-};
 
 /**
  * Main restaurant table component with sorting, filtering, and pagination
@@ -52,7 +37,12 @@ export function RestaurantTable({
   loading = false,
   onRowSelect,
   showSelection = false,
-  columns
+  columns,
+  currentPage = 1,
+  pageSize = 10,
+  totalPages = 1,
+  onPageSizeChange,
+  onPageChange
 }: RestaurantTableProps) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
@@ -61,7 +51,11 @@ export function RestaurantTable({
     data: restaurants,
     columns: showSelection ? columns : columns.filter(col => col.id !== 'select'),
     state: {
-      rowSelection
+      rowSelection,
+      pagination: {
+        pageIndex: currentPage - 1, // Convert to 0-based index
+        pageSize: pageSize,
+      },
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -69,11 +63,8 @@ export function RestaurantTable({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: showSelection,
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
+    manualPagination: true, // Tell React Table we're handling pagination externally
+    pageCount: totalPages, // Set the total number of pages
   });
 
   // Notify parent of selected rows
@@ -102,7 +93,11 @@ export function RestaurantTable({
         </div>
 
         {/* Pagination Controls */}
-        <TablePagination table={table} />
+        <TablePagination
+          table={table}
+          onPageSizeChange={onPageSizeChange}
+          onPageChange={onPageChange}
+        />
       </div>
     </div>
   );

@@ -18,14 +18,9 @@ const headerConfigs: Record<string, HeaderConfig> = {
   }
 };
 
-/**
- * Dynamic header component that changes based on the current route
- * This is a client component that only handles the dynamic header logic
- */
 export function DynamicHeader() {
   const pathname = usePathname();
 
-  // Get header config for current path, fallback to admin default
   const config = headerConfigs[pathname] || {
     title: 'Admin',
     description: 'Manage your application settings and data.'

@@ -1,6 +1,7 @@
-import { Restaurant, ApiResponse, PaginatedResponse } from '../types/restaurant';
+import { Restaurant, PaginatedResponse } from '../types/restaurant';
 import { mockRestaurants } from '../data/mockRestaurants';
-import { mockUsers, getCurrentUser, type User } from '../data/mockUsers';
+import { mockUsers, getCurrentUser } from '../data/mockUsers';
+import { AnalyticsTableTabs, ManagerTableTabs } from '@/constant/table';
 
 /**
  * Simulate API delay for realistic development experience
@@ -119,7 +120,7 @@ export class RestaurantApi {
   /**
    * Get restaurant by name (since we removed ID)
    */
-  static async getRestaurant(name: string, currentUserId?: string): Promise<Restaurant | null> {
+  static async getRestaurant(tableId: ManagerTableTabs | AnalyticsTableTabs, name: string, currentUserId?: string): Promise<Restaurant | null> {
     await delay(200);
 
     const currentUser = currentUserId ? mockUsers.find(u => u.id === currentUserId) : getCurrentUser();

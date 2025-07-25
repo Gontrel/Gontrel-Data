@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { RestaurantApi } from '../lib/api';
 import { Restaurant } from '../types/restaurant';
+import { AnalyticsTableTabs, ManagerTableTabs } from '@/constant/table';
 
 /**
  * Hook for fetching restaurants with role-based filtering
  */
 export function useRestaurants(params: {
-  tableId?: string;
+  tableId: ManagerTableTabs | AnalyticsTableTabs;
   search?: string;
   page?: number;
   limit?: number;
@@ -16,17 +17,6 @@ export function useRestaurants(params: {
     queryKey: ['restaurants', params],
     queryFn: () => RestaurantApi.getRestaurants(params),
     staleTime: 2 * 60 * 1000, // Cache for 2 minutes
-  });
-}
-
-/**
- * Hook for fetching a single restaurant by name
- */
-export function useRestaurant(name: string, currentUserId?: string) {
-  return useQuery<Restaurant | null>({
-    queryKey: ['restaurant', name, currentUserId],
-    queryFn: () => RestaurantApi.getRestaurant(name, currentUserId),
-    enabled: !!name,
   });
 }
 

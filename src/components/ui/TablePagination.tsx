@@ -1,10 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Table } from '@tanstack/react-table';
 
 interface TablePaginationProps<TData> {
   table: Table<TData>;
   showPageSizeSelector?: boolean;
+  onPageSizeChange?: (pageSize: number) => void;
+  onPageChange?: (pageIndex: number) => void;
 }
 
 /**
@@ -12,10 +15,80 @@ interface TablePaginationProps<TData> {
  */
 export function TablePagination<TData>({
   table,
-  showPageSizeSelector = true
+  showPageSizeSelector = true,
+  onPageSizeChange,
+  onPageChange
 }: TablePaginationProps<TData>) {
   const pageCount = table.getPageCount();
   const currentPage = table.getState().pagination.pageIndex;
+  const currentPageSize = table.getState().pagination.pageSize;
+
+  // Local state for the input value
+  const [inputValue, setInputValue] = useState<string>(currentPageSize.toString());
+
+  // Update input value when page size changes externally
+  useEffect(() => {
+    setInputValue(currentPageSize.toString());
+  }, [currentPageSize]);
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    table.setPageSize(newPageSize);
+    // Notify parent component about page size change
+    if (onPageSizeChange) {
+      onPageSizeChange(newPageSize);
+    }
+  };
+
+  const handlePageChange = (pageIndex: number) => {
+    table.setPageIndex(pageIndex);
+    // Notify parent component about page change
+    if (onPageChange) {
+      onPageChange(pageIndex);
+    }
+  };
+
+  /**
+   * Apply the page size change with validation
+   */
+  const applyPageSizeChange = (value: string) => {
+    const parsedValue = parseInt(value);
+
+    // Validate and apply the change
+    if (!parsedValue || parsedValue < 1) {
+      setInputValue('10');
+      handlePageSizeChange(10);
+    } else if (parsedValue > 50) {
+      setInputValue('50');
+      handlePageSizeChange(50);
+    } else {
+      setInputValue(parsedValue.toString());
+      handlePageSizeChange(parsedValue);
+    }
+  };
+
+  /**
+   * Handle input change (only updates local state)
+   */
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  /**
+   * Handle input blur event
+   */
+  const handleInputBlur = () => {
+    applyPageSizeChange(inputValue);
+  };
+
+  /**
+   * Handle key down event for Enter key
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyPageSizeChange(inputValue);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between px-4 py-3">
@@ -27,21 +100,10 @@ export function TablePagination<TData>({
             type="number"
             min="1"
             max="50"
-            value={table.getState().pagination.pageSize}
-            onChange={e => {
-              const value = parseInt(e.target.value);
-              if (value > 0 && value <= 50) {
-                table.setPageSize(value);
-              }
-            }}
-            onBlur={e => {
-              const value = parseInt(e.target.value);
-              if (!value || value < 1) {
-                table.setPageSize(10);
-              } else if (value > 50) {
-                table.setPageSize(50);
-              }
-            }}
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            onKeyDown={handleKeyDown}
             className="border border-[#83A8FF] focus:border-blue-500 rounded-lg font-medium bg-white focus:outline-none w-9 h-8 text-center no-spinners"
             aria-label="Page size"
           />
@@ -59,7 +121,7 @@ export function TablePagination<TData>({
             pages.push(
               <button
                 key={0}
-                onClick={() => table.setPageIndex(0)}
+                onClick={() => handlePageChange(0)}
                 className={`flex items-center justify-center w-9 h-8 border border-[#83A8FF] rounded-lg transition-colors ${
                   currentPage === 0
                     ? 'bg-blue-500 text-white border-blue-500'
@@ -85,7 +147,7 @@ export function TablePagination<TData>({
                 pages.push(
                   <button
                     key={i}
-                    onClick={() => table.setPageIndex(i)}
+                    onClick={() => handlePageChange(i)}
                     className={`flex items-center justify-center w-9 h-8 border border-[#83A8FF] rounded-lg transition-colors ${
                       currentPage === i
                         ? 'bg-blue-500 text-white border-blue-500'
@@ -112,7 +174,7 @@ export function TablePagination<TData>({
               pages.push(
                 <button
                   key={pageCount - 1}
-                  onClick={() => table.setPageIndex(pageCount - 1)}
+                  onClick={() => handlePageChange(pageCount - 1)}
                   className={`flex items-center justify-center w-9 h-8 border border-[#83A8FF] rounded-lg transition-colors ${
                     currentPage === pageCount - 1
                       ? 'bg-blue-500 text-white border-blue-500'
