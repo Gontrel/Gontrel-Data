@@ -7,7 +7,7 @@ import { columns } from "@/components/admin/columns";
 import { DataTable } from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/Button";
 
-const AdminPage = () => {
+const Dashboard = () => {
   const barData = [
     { day: "Mon", value: 190, type: "TikTok sourced" },
     { day: "Mon", value: 160, type: "User-generated" },
@@ -53,7 +53,7 @@ const AdminPage = () => {
           </Button>
         </div>
       </header>
-     
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-gray-500">Total restaurants</h3>
@@ -125,4 +125,4 @@ const AdminPage = () => {
   );
 };
 
-export default AdminPage;
+export default Dashboard;

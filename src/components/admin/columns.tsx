@@ -77,7 +77,7 @@ export const columns: ColumnDef<Restaurant>[] = [
       <div className="flex items-center gap-2">
         <Image
           src={row.original.addedBy.avatar || placeholder}
-          alt={row.original.addedBy.name}
+          alt={row.original.addedBy.name || "alt"}
           width={24}
           height={24}
           className="rounded-full"

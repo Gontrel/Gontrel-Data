@@ -23,21 +23,21 @@ const navSections: NavSection[] = [
   {
     title: "MAIN",
     links: [
-      { href: "/admin/dashboard", label: "Dashboard", icon: "dashboardIcon" },
+      { href: "/dashboard", label: "Dashboard", icon: "dashboardIcon" },
       {
-        href: "/admin/restaurant-management",
+        href: "/restaurant-management",
         label: "Restaurants",
         icon: "restaurantIcon",
       },
-      { href: "/admin/user-management", label: "Users", icon: "userIcon" },
-      { href: "/admin/pending-changes", label: "Reports", icon: "userIcon" },
+      { href: "/user-management", label: "Users", icon: "userIcon" },
+      { href: "/report-management", label: "Reports", icon: "reportIcon" },
     ],
   },
   {
     title: "MANAGEMENT",
     links: [
-      { href: "/admin/staff", label: "Staffs", icon: "userIcon" },
-      { href: "/admin/settings", label: "Settings", icon: "dashboardIcon" },
+      { href: "/staff-management", label: "Staffs", icon: "groupUserIcon" },
+      { href: "/settings-management", label: "Settings", icon: "settingsIcon" },
     ],
   },
 ];
@@ -46,40 +46,51 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
-      <div className="flex items-center gap-2 mb-12">
-        <Image src={logo} alt="Gontrel Logo" width={40} height={40} />
-      </div>
+    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col items-center">
+      <section className="w-[246px]">
+        <div className="mt-[60px] w-[60px] h-auto aspect-square">
+          <Image src={logo} alt="Gontrel Logo" width={60} height={60} />
+        </div>
 
-      <nav className="flex flex-col gap-8">
-        {navSections.map((section) => (
-          <div key={section.title}>
-            <h2 className="text-gray-400 font-semibold mb-4 uppercase tracking-wider">
-              {section.title}
-            </h2>
-            <ul className="flex flex-col gap-2">
-              {section.links.map((link) => {
-                const isActive = pathname === link.href;
-                return (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className={`flex items-center gap-4 p-3 rounded-lg transition-all duration-200 ${
-                        isActive
-                          ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      <Icon name={link.icon} />
-                      <span className="font-medium">{link.label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-      </nav>
+        <nav className="flex flex-col gap-8 mt-[41px]">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <h2 className="text-[#9DA1A5] leading-[100%] text-[22px] font-semibold mb-[25px] uppercase tracking-wider">
+                {section.title}
+              </h2>
+              <ul className="flex flex-col gap-[38px]">
+                {section.links.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4  rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
+                            : "text-[#9DA1A5]  hover:bg-gray-100 "
+                        }`}
+                      >
+                        <Icon
+                          name={link.icon}
+                          stroke={`${isActive ? "#FFFFFF" : "#8A8A8A"}`}
+                        />
+                        <span
+                          className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${
+                            isActive ? "text-white" : "text-[#9DA1A5]"
+                          }  `}
+                        >
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </section>
     </aside>
   );
 };
