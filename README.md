@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gontrel Admin Dashboard
+
+This is the admin dashboard for Gontrel, a platform for managing restaurant data. It is built with Next.js, TypeScript, and Tailwind CSS, and it uses tRPC for type-safe API communication.
 
 ## Getting Started
 
-First, run the development server:
+To get the project up and running on your local machine, follow these steps.
+
+### Prerequisites
+
+- Node.js (v18 or later recommended)
+- npm or yarn
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Gontrel/Gontrel-Data.git
+    cd Gontrel-Data
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+### Environment Variables
+
+Before you can run the application, you need to set up your environment variables.
+
+1.  Create a new file named `.env.local` in the root of the project.
+2.  Add the following variables to the file, replacing the placeholder values with your actual API credentials:
+
+    ```
+    NEXT_PUBLIC_API_BASE_URL=add_server_based_url
+    API_KEY=add_secret_key
+    ```
+
+    **Important:** The `API_KEY` is a secret and should **not** be prefixed with `NEXT_PUBLIC_`. This ensures it is only available on the server and is not exposed to the browser.
+
+### Running the Development Server
+
+Once you've installed the dependencies and set up your environment variables, you can start the development server:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application. The page will auto-update as you edit the files.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Key Technologies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Next.js:** A React framework for building server-side rendered and static web applications.
+- **TypeScript:** A statically typed superset of JavaScript that adds type safety.
+- **Tailwind CSS:** A utility-first CSS framework for rapid UI development.
+- **tRPC:** A library for building end-to-end type-safe APIs.
+- **TanStack Table:** A headless UI library for building powerful data tables.
+- **Ant Design Charts:** A library for creating beautiful and interactive charts.

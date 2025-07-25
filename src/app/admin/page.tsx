@@ -5,7 +5,6 @@ import { Column, Pie } from "@ant-design/charts";
 import { mockRestaurants } from "@/data/mockRestaurants";
 import { columns } from "@/components/admin/columns";
 import { DataTable } from "@/components/ui/DataTable";
-import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 
 const AdminPage = () => {

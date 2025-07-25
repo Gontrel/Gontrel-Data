@@ -6,7 +6,7 @@ export default class APIRequest {
     if (typeof response.data === "string") {
       try {
         return JSON.parse(response.data);
-      } catch (e) {
+      } catch {
         // Not a valid JSON string, return as is
         return response.data;
       }
