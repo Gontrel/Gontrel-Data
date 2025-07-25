@@ -1,4 +1,5 @@
-import { ActiveRestaurantType, PendingRestaurantType, PendingVideoType, Video, Tag } from '../types/restaurant';
+import { TableStatus } from '@/constant/table';
+import { ActiveRestaurantType, PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
 
 /**
  * Mock restaurant data matching the Gontrel Admin interface
@@ -17,7 +18,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Sarah Johnson',
       profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '12:00 PM - 2:30 PM, 6:00 PM - 9:30 PM',
@@ -43,7 +43,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Mike Chen',
       profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '6:00 PM - 9:00 PM',
@@ -69,7 +68,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Emma Rodriguez',
       profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '12:30 PM - 2:00 PM, 6:30 PM - 9:00 PM',
@@ -95,7 +93,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'David Thompson',
       profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '12:30 PM - 2:00 PM, 7:00 PM - 9:30 PM',
@@ -121,7 +118,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Lisa Wang',
       profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: '12:00 PM - 10:00 PM',
       tuesday: '12:00 PM - 10:00 PM',
@@ -147,7 +143,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'John Smith',
       profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: '12:00 PM - 10:00 PM',
       tuesday: '12:00 PM - 10:00 PM',
@@ -173,7 +168,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Anna Kowalski',
       profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '5:00 PM - 10:00 PM',
@@ -199,7 +193,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Tom O\'Connor',
       profileImage: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '5:30 PM - 10:00 PM',
@@ -225,7 +218,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Rachel Green',
       profileImage: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '12:00 PM - 2:30 PM, 6:00 PM - 9:30 PM',
@@ -251,7 +243,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Kevin Murphy',
       profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '5:00 PM - 11:00 PM',
@@ -277,7 +268,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Sophie Williams',
       profileImage: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '6:00 PM - 9:00 PM',
@@ -303,7 +293,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Paul Davis',
       profileImage: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: '12:00 PM - 10:00 PM',
       tuesday: '12:00 PM - 10:00 PM',
@@ -329,7 +318,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Maria Garcia',
       profileImage: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '5:00 PM - 10:00 PM',
@@ -355,7 +343,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'James Wilson',
       profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '5:00 PM - 12:00 AM',
@@ -381,7 +368,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Fiona O\'Brien',
       profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '6:00 PM - 9:00 PM',
@@ -407,7 +393,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Claire Taylor',
       profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: 'Closed',
       tuesday: '6:00 PM - 9:30 PM',
@@ -433,7 +418,6 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
       name: 'Brian Anderson',
       profileImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
     },
-    status: 'active',
     openingHours: {
       monday: '12:00 PM - 10:00 PM',
       tuesday: '12:00 PM - 10:00 PM',
@@ -456,11 +440,20 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
   {
     restaurantId: 'pending-001',
     name: 'The Ivy Dublin',
-    address: '13-17 Dawson Street, Dublin 2',
+    address: {
+      status: TableStatus.PENDING,
+      name: '13-17 Dawson Street, Dublin 2'
+    },
     maplink: 'https://maps.google.com/?q=13-17+Dawson+Street,+Dublin+2,+Ireland',
     website: 'https://www.theivydublin.com',
-    menuUrl: 'https://www.theivydublin.com/menu',
-    reservationUrl: 'https://www.theivydublin.com/reservations',
+    menuUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.theivydublin.com/menu'
+    },
+    reservationUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.theivydublin.com/reservations'
+    },
     addedBy: {
       userId: 'user-101',
       name: 'Jennifer Walsh',
@@ -484,7 +477,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-002', name: 'Irish Cuisine' },
           { id: 'tag-003', name: 'Dublin' }
         ],
-        status: 'pending'
+        status: TableStatus.APPROVED
       },
       {
         id: 'video-002',
@@ -493,7 +486,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-004', name: 'Interior Design' },
           { id: 'tag-005', name: 'Atmosphere' }
         ],
-        status: 'pending'
+        status: TableStatus.APPROVED
       }
     ],
     dateAdded: new Date('2024-02-01T10:30:00'),
@@ -503,11 +496,20 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
   {
     restaurantId: 'pending-002',
     name: 'Forest Avenue',
-    address: '8 Sussex Terrace, Dublin 4',
+    address: {
+      status: TableStatus.PENDING,
+      name: '8 Sussex Terrace, Dublin 4'
+    },
     maplink: 'https://maps.google.com/?q=8+Sussex+Terrace,+Dublin+4,+Ireland',
     website: 'https://www.forestavenue.ie',
-    menuUrl: 'https://www.forestavenue.ie/menu',
-    reservationUrl: 'https://www.forestavenue.ie/book',
+    menuUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.forestavenue.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.forestavenue.ie/book'
+    },
     addedBy: {
       userId: 'user-102',
       name: 'Michael O\'Sullivan',
@@ -531,7 +533,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-007', name: 'Seasonal' },
           { id: 'tag-008', name: 'Dublin 4' }
         ],
-        status: 'pending'
+        status: TableStatus.PENDING
       }
     ],
     dateAdded: new Date('2024-02-02T14:15:00'),
@@ -541,11 +543,20 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
   {
     restaurantId: 'pending-003',
     name: 'Liath',
-    address: '19A Main Street, Blackrock, Co. Dublin',
+    address: {
+      status: TableStatus.PENDING,
+      name: '19A Main Street, Blackrock, Co. Dublin'
+    },
     maplink: 'https://maps.google.com/?q=19A+Main+Street,+Blackrock,+Co.+Dublin,+Ireland',
     website: 'https://www.liathrestaurant.com',
-    menuUrl: 'https://www.liathrestaurant.com/menu',
-    reservationUrl: 'https://www.liathrestaurant.com/reservations',
+    menuUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.liathrestaurant.com/menu'
+    },
+    reservationUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.liathrestaurant.com/reservations'
+    },
     addedBy: {
       userId: 'user-103',
       name: 'Aoife Murphy',
@@ -569,7 +580,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-010', name: 'Blackrock' },
           { id: 'tag-011', name: 'Contemporary Irish' }
         ],
-        status: 'pending'
+        status: TableStatus.PENDING
       },
       {
         id: 'video-005',
@@ -578,7 +589,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-012', name: 'Chef Interview' },
           { id: 'tag-013', name: 'Behind the Scenes' }
         ],
-        status: 'pending'
+        status: TableStatus.PENDING
       }
     ],
     dateAdded: new Date('2024-02-03T16:45:00'),
@@ -588,11 +599,20 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
   {
     restaurantId: 'pending-004',
     name: 'Variety Jones',
-    address: '78 Thomas Street, Dublin 8',
+    address: {
+      status: TableStatus.PENDING,
+      name: '78 Thomas Street, Dublin 8'
+    },
     maplink: 'https://maps.google.com/?q=78+Thomas+Street,+Dublin+8,+Ireland',
     website: 'https://www.varietyjones.ie',
-    menuUrl: 'https://www.varietyjones.ie/menu',
-    reservationUrl: 'https://www.varietyjones.ie/book',
+    menuUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.varietyjones.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.varietyjones.ie/book'
+    },
     addedBy: {
       userId: 'user-104',
       name: 'Sean Kelly',
@@ -616,7 +636,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-015', name: 'Thomas Street' },
           { id: 'tag-016', name: 'Local Favorite' }
         ],
-        status: 'pending'
+        status: TableStatus.PENDING
       }
     ],
     dateAdded: new Date('2024-02-04T11:20:00'),
@@ -626,11 +646,20 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
   {
     restaurantId: 'pending-005',
     name: 'Aimsir',
-    address: 'Cliff at Lyons, Lyons Demesne, Celbridge, Co. Kildare',
+    address: {
+      status: TableStatus.PENDING,
+      name: 'Cliff at Lyons, Lyons Demesne, Celbridge, Co. Kildare'
+    },
     maplink: 'https://maps.google.com/?q=Cliff+at+Lyons,+Lyons+Demesne,+Celbridge,+Co.+Kildare,+Ireland',
     website: 'https://www.aimsir.ie',
-    menuUrl: 'https://www.aimsir.ie/menu',
-    reservationUrl: 'https://www.aimsir.ie/reservations',
+    menuUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.aimsir.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatus.PENDING,
+      url: 'https://www.aimsir.ie/reservations'
+    },
     addedBy: {
       userId: 'user-105',
       name: 'Niamh O\'Connor',
@@ -655,7 +684,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-019', name: 'Countryside' },
           { id: 'tag-020', name: 'Luxury Dining' }
         ],
-        status: 'pending'
+        status: TableStatus.PENDING
       },
       {
         id: 'video-008',
@@ -664,7 +693,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
           { id: 'tag-021', name: 'Garden Tour' },
           { id: 'tag-022', name: 'Sustainability' }
         ],
-        status: 'pending'
+        status: TableStatus.PENDING
       }
     ],
     dateAdded: new Date('2024-02-05T13:55:00'),
@@ -681,7 +710,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-001',
     restaurantId: 'rest-001',
     name: 'Chapter One - New Menu Feature',
-    video: {
+    videos: [{
       id: 'video-009',
       videoUrl: 'https://www.youtube.com/watch?v=chapter_one_new_dish',
       tags: [
@@ -689,8 +718,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-024', name: 'Chef Special' },
         { id: 'tag-025', name: 'Seasonal' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-06T09:30:00'),
     addedBy: {
       userId: 'user-106',
@@ -702,7 +731,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-002',
     restaurantId: 'rest-002',
     name: 'The Greenhouse - Wine Pairing Guide',
-    video: {
+    videos: [{
       id: 'video-010',
       videoUrl: 'https://www.youtube.com/watch?v=greenhouse_wine_pairing',
       tags: [
@@ -710,8 +739,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-027', name: 'Sommelier' },
         { id: 'tag-028', name: 'Fine Dining' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-07T15:45:00'),
     addedBy: {
       userId: 'user-107',
@@ -723,7 +752,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-003',
     restaurantId: 'rest-003',
     name: 'L\'Ecrivain - Kitchen Tour',
-    video: {
+    videos: [{
       id: 'video-011',
       videoUrl: 'https://www.youtube.com/watch?v=lecrivain_kitchen_tour',
       tags: [
@@ -731,8 +760,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-030', name: 'Behind the Scenes' },
         { id: 'tag-031', name: 'French Cuisine' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-08T12:20:00'),
     addedBy: {
       userId: 'user-108',
@@ -744,7 +773,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-004',
     restaurantId: 'rest-004',
     name: 'Patrick Guilbaud - Service Excellence',
-    video: {
+    videos: [{
       id: 'video-012',
       videoUrl: 'https://www.youtube.com/watch?v=patrick_guilbaud_service',
       tags: [
@@ -752,8 +781,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-033', name: 'Fine Dining' },
         { id: 'tag-034', name: 'Dublin 2' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-09T17:10:00'),
     addedBy: {
       userId: 'user-109',
@@ -765,7 +794,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-005',
     restaurantId: 'rest-005',
     name: 'The Winding Stair - Live Music Night',
-    video: {
+    videos: [{
       id: 'video-013',
       videoUrl: 'https://www.youtube.com/watch?v=winding_stair_live_music',
       tags: [
@@ -773,8 +802,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-036', name: 'Atmosphere' },
         { id: 'tag-037', name: 'Cultural' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-10T14:35:00'),
     addedBy: {
       userId: 'user-110',
@@ -786,7 +815,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-006',
     restaurantId: 'rest-006',
     name: 'Bunsen - Burger Making Process',
-    video: {
+    videos: [{
       id: 'video-014',
       videoUrl: 'https://www.youtube.com/watch?v=bunsen_burger_making',
       tags: [
@@ -794,8 +823,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-039', name: 'Behind the Scenes' },
         { id: 'tag-040', name: 'Casual Dining' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-11T10:50:00'),
     addedBy: {
       userId: 'user-111',
@@ -807,7 +836,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-007',
     restaurantId: 'rest-007',
     name: 'Uno Mas - Tapas Tour',
-    video: {
+    videos: [{
       id: 'video-015',
       videoUrl: 'https://www.youtube.com/watch?v=uno_mas_tapas_tour',
       tags: [
@@ -815,8 +844,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-042', name: 'Spanish Cuisine' },
         { id: 'tag-043', name: 'Aungier Street' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-12T16:25:00'),
     addedBy: {
       userId: 'user-112',
@@ -828,7 +857,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     id: 'pending-video-008',
     restaurantId: 'rest-008',
     name: 'Pickle - Restaurant Review',
-    video: {
+    videos: [{
       id: 'video-016',
       videoUrl: 'https://www.youtube.com/watch?v=pickle_restaurant_review',
       tags: [
@@ -836,8 +865,8 @@ export const mockPendingVideos: PendingVideoType[] = [
         { id: 'tag-045', name: 'Camden Street' },
         { id: 'tag-046', name: 'Food Blog' }
       ],
-      status: 'pending'
-    },
+      status: TableStatus.PENDING
+    }],
     dateAdded: new Date('2024-02-13T11:40:00'),
     addedBy: {
       userId: 'user-113',

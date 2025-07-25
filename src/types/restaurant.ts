@@ -1,3 +1,6 @@
+import { TableStatus } from "@/constant/table";
+import { UserRoleEnum } from "@/constant/user";
+
 /**
  * Restaurant data model representing the production/live data
  */
@@ -13,7 +16,6 @@ export type ActiveRestaurantType = {
     name: string;
     profileImage: string;
   };
-  status: 'active' | 'inactive' | 'pending';
   openingHours: {
     monday: string;
     tuesday: string;
@@ -28,14 +30,13 @@ export type ActiveRestaurantType = {
   updatedAt: Date;
 };
 
-export type Video = {
+export type VideoType = {
   id: string;
   videoUrl: string;
   tags: Tag[];
   status: TableStatus;
 };
 
-export type TableStatus = 'pending' | 'approved' | 'declined';
 
 export type Tag = {
   id: string;
@@ -45,12 +46,21 @@ export type Tag = {
 export type PendingRestaurantType = {
   restaurantId: string;
   name: string;
-  videos: Video[];
-  address: string;
+  videos: VideoType[];
+  address: {
+    status: TableStatus;
+    name: string;
+  };
   maplink: string;
   website: string;
-  menuUrl: string;
-  reservationUrl: string;
+  menuUrl: {
+    status: TableStatus;
+    url: string;
+  };
+  reservationUrl: {
+    status: TableStatus;
+    url: string;
+  };
   addedBy: {
     userId: string;
     name: string;
@@ -74,7 +84,7 @@ export type PendingVideoType = {
   id: string;
   restaurantId: string;
   name: string;
-  video: Video;
+  videos: VideoType[];
   dateAdded: Date;
   addedBy: {
     userId: string;
@@ -87,7 +97,6 @@ export type RestaurantTypes = ActiveRestaurantType | PendingRestaurantType | Pen
 /**
  * User roles for authorization
  */
-export type UserRole = 'analyst' | 'manager' | 'admin';
 
 /**
  * User model
@@ -96,7 +105,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRoleEnum;
 };
 
 /**

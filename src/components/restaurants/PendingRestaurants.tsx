@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { RestaurantTable } from './RestaurantTable';
 import { useRestaurants } from '@/hooks/useRestaurants';
 import { ManagerTableTabs } from '@/constant/table';
@@ -27,10 +27,13 @@ const PendingRestaurants = ({
     const {
         expandedRows,
         setExpandedRows,
+        restaurants,
+        setRestaurantsData,
         handleRowSelect,
         handleApprove,
-        handleUpdateAndApprove,
         handleDecline,
+        handleSendFeedback,
+        handleSave
     } = usePendingRestaurants();
 
     // Create columns with proper dependencies
@@ -39,10 +42,11 @@ const PendingRestaurants = ({
             expandedRows,
             setExpandedRows,
             handleApprove,
-            handleUpdateAndApprove,
-            handleDecline
+            handleDecline,
+            handleSendFeedback,
+            handleSave
         ),
-        [expandedRows, setExpandedRows, handleApprove, handleUpdateAndApprove, handleDecline]
+        [expandedRows, setExpandedRows, handleApprove, handleDecline, handleSendFeedback, handleSave]
     );
 
     // Fetch data
@@ -53,9 +57,16 @@ const PendingRestaurants = ({
         limit: pageSize
     });
 
+    // Update local state when data changes
+    useEffect(() => {
+        if (restaurantsData?.data) {
+            setRestaurantsData(restaurantsData.data);
+        }
+    }, [restaurantsData?.data, setRestaurantsData]);
+
     return (
         <RestaurantTable<PendingRestaurantType>
-            restaurants={restaurantsData?.data || []}
+            restaurants={restaurants}
             loading={restaurantsLoading}
             onRowSelect={handleRowSelect}
             showSelection={true}

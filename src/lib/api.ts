@@ -126,7 +126,7 @@ export class RestaurantApi {
       const searchTerm = params.search.toLowerCase();
       filteredRestaurants = filteredRestaurants.filter((restaurant: PendingRestaurantType) =>
         (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
-        (typeof restaurant.address === 'string' && restaurant.address.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.address.name === 'string' && restaurant.address.name.toLowerCase().includes(searchTerm)) ||
         (typeof restaurant.website === 'string' && restaurant.website.toLowerCase().includes(searchTerm))
       );
     }

@@ -10,13 +10,19 @@ export enum AnalystTableTabs {
     SUBMITTED_VIDEOS = 'submitted_videos'
 }
 
+export enum TableStatus {
+    PENDING = 'pending',
+    APPROVED = 'approved',
+    DECLINED = 'declined'
+}
+
 /**
  * Table column sizes for consistent layout
  */
 export const TABLE_COLUMN_SIZES = {
     ID: 50,
     NAME: 200,
-    VIDEO: 180,
+    VIDEO: 150,
     WEBSITE: 180,
     ADDRESS: 200,
     MENU_LINK: 150,
