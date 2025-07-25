@@ -56,7 +56,7 @@ const updatePropertyStatus =(
     ...restaurant,
     [propertyKey]: {
       ...restaurant[propertyKey],
-      status: newStatus
+      status: restaurant[propertyKey].status === newStatus ? TableStatus.PENDING : newStatus
     }
   };
 };
