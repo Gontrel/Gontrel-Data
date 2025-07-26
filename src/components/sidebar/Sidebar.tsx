@@ -23,21 +23,25 @@ const navSections: NavSection[] = [
   {
     title: "MAIN",
     links: [
-      { href: "/admin/dashboard", label: "Dashboard", icon: "dashboardIcon" },
       {
-        href: "/admin/restaurant-management",
+        href: "/dashboard",
+        label: "Dashboard",
+        icon: "dashboardIcon"
+      },
+      {
+        href: "/restaurants",
         label: "Restaurants",
         icon: "restaurantIcon",
       },
-      { href: "/admin/user-management", label: "Users", icon: "userIcon" },
-      { href: "/admin/pending-changes", label: "Reports", icon: "userIcon" },
+      { href: "/users", label: "Users", icon: "userIcon" },
+      { href: "/reports", label: "Reports", icon: "userIcon" },
     ],
   },
   {
     title: "MANAGEMENT",
     links: [
-      { href: "/admin/staff", label: "Staffs", icon: "userIcon" },
-      { href: "/admin/settings", label: "Settings", icon: "dashboardIcon" },
+      { href: "/staffs", label: "Staffs", icon: "userIcon" },
+      { href: "/settings", label: "Settings", icon: "dashboardIcon" },
     ],
   },
 ];
@@ -46,7 +50,7 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
+    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col z-50">
       <div className="flex items-center gap-2 mb-12">
         <Image src={logo} alt="Gontrel Logo" width={40} height={40} />
       </div>

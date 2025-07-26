@@ -3,29 +3,28 @@
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import Link from "next/link";
-import { Restaurant } from "@/types/restaurant";
+import { ActiveRestaurantType } from "@/types/restaurant";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import placeholder from "@/assets/images/placeholder.svg";
 
-export const columns: ColumnDef<Restaurant>[] = [
+export const columns: ColumnDef<ActiveRestaurantType>[] = [
   {
-    accessorKey: "restaurantName",
+    accessorKey: "name",
     header: "Restaurant name",
     cell: ({ row }) => {
       const restaurant = row.original;
       return (
         <div className="flex items-center gap-3">
-          <Image
+          {/* <Image
             src={restaurant.image || placeholder}
-            alt={restaurant.restaurantName}
+            alt={restaurant.name}
             width={40}
             height={40}
             className="rounded-lg"
-          />
+          /> */}
           <div>
-            <div className="font-semibold">{restaurant.restaurantName}</div>
-            <div className="text-sm text-gray-500">#{restaurant.id}</div>
+            <div className="font-semibold">{restaurant.name}</div>
           </div>
         </div>
       );
