@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
-import { serialize } from "cookie";
+import { serialize, parse } from "cookie";
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -90,11 +90,9 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const cookieHeader = ctx.req.headers.get("cookie");
-      const token = cookieHeader
-        ?.split("; ")
-        .find((c) => c.startsWith("reset_token="))
-        ?.split("=")[1];
+      const cookieHeader = ctx.req.headers.get("cookie") ?? "";
+      const cookies = parse(cookieHeader);
+      const token = cookies.reset_token;
 
       if (!token) {
         throw new TRPCError({
