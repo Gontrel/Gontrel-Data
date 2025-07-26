@@ -1,7 +1,7 @@
-import { Restaurant, RestaurantChange, ApiResponse, PaginatedResponse } from '../types/restaurant';
-import { mockRestaurants } from '../data/mockRestaurants';
-import { mockPendingChanges, mockApprovedChanges, mockRejectedChanges } from '../data/mockChanges';
-import { mockUsers, getCurrentUser, type User } from '../data/mockUsers';
+import { PaginatedResponse, ActiveRestaurantType, RestaurantTypes, PendingRestaurantType, PendingVideoType } from '../types/restaurant';
+import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants } from '../data/mockRestaurants';
+import { mockUsers, getCurrentUser } from '../data/mockUsers';
+import { AnalystTableTabs, ManagerTableTabs } from '@/constant/table';
 
 /**
  * Simulate API delay for realistic development experience
@@ -26,7 +26,7 @@ export class TableApi {
   /**
    * Get table (based on unique users who have added restaurants)
    */
-  static async getTable(currentUserId?: string): Promise<Restaurant[]> {
+  static async getTable(tableId: ManagerTableTabs | AnalystTableTabs, currentUserId?: string): Promise<RestaurantTypes[]> {
     await delay(200);
 
     const currentUser = currentUserId ? mockUsers.find(u => u.id === currentUserId) : getCurrentUser();
@@ -37,16 +37,29 @@ export class TableApi {
 
     // If user is analyst, only show their own table
     if (currentUser.role === 'analyst') {
-      return mockRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
+      if (tableId === AnalystTableTabs.ACTIVE_RESTAURANTS) {
+        return mockActiveRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
+      }
+      if (tableId === AnalystTableTabs.SUBMITTED_RESTAURANTS) {
+        return mockPendingRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
+      }
+      if (tableId === AnalystTableTabs.SUBMITTED_VIDEOS) {
+        return mockPendingVideos.filter(video => video.addedBy.userId === currentUser.id);
+      }
+      return [];
     }
 
     // If user is manager or admin, show all users who have added restaurants
-    const usersWithRestaurants = mockUsers.filter(user => {
-      const hasRestaurants = mockRestaurants.some(restaurant => restaurant.addedBy.userId === user.id);
-      return hasRestaurants;
-    });
-
-    return usersWithRestaurants.map(user => mockRestaurants.filter(restaurant => restaurant.addedBy.userId === user.id)).flat();
+    if (tableId === ManagerTableTabs.ACTIVE_RESTAURANTS) {
+      return mockActiveRestaurants;
+    }
+    if (tableId === ManagerTableTabs.PENDING_RESTAURANTS) {
+      return mockPendingRestaurants;
+    }
+    if (tableId === ManagerTableTabs.PENDING_VIDEOS) {
+      return mockPendingVideos;
+    }
+    return [];
   }
 }
 
@@ -56,16 +69,25 @@ export class TableApi {
 export class RestaurantApi {
   /**
    * Get restaurants by table with optional search and pagination
+   * @template PendingRestaurant
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<PendingRestaurant>>}
    */
-  static async getRestaurants(params: {
+  static async getPendingRestaurants(params: {
     search?: string;
     page?: number;
     limit?: number;
     currentUserId?: string;
-  }): Promise<PaginatedResponse<Restaurant>> {
-    await delay(300); // Simulate network delay
+  }): Promise<PaginatedResponse<PendingRestaurantType>> {
+      await delay(300); // Simulate network delay
 
-    const currentUser = params.currentUserId ? mockUsers.find(u => u.id === params.currentUserId) : getCurrentUser();
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
 
     if (!currentUser) {
       return {
@@ -79,29 +101,39 @@ export class RestaurantApi {
       };
     }
 
-    let filteredRestaurants = [...mockRestaurants];
+    // Type validation for mockPendingRestaurants
+    if (!Array.isArray(mockPendingRestaurants)) {
+      throw new Error('"mockPendingRestaurants" is not an array');
+    }
+
+    let filteredRestaurants = [...mockPendingRestaurants] as PendingRestaurantType[];
 
     // Role-based filtering
     if (currentUser.role === 'analyst') {
-      // Analysts can only see their own restaurants
-      filteredRestaurants = filteredRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
     }
-    // Managers and admins can see all restaurants
 
     // Filter by search term
     if (params.search) {
       const searchTerm = params.search.toLowerCase();
-      filteredRestaurants = filteredRestaurants.filter(
-        restaurant =>
-          restaurant.name.toLowerCase().includes(searchTerm) ||
-          restaurant.address.toLowerCase().includes(searchTerm) ||
-          restaurant.website.toLowerCase().includes(searchTerm)
+      filteredRestaurants = filteredRestaurants.filter((restaurant: PendingRestaurantType) =>
+        (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.address.name === 'string' && restaurant.address.name.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.website === 'string' && restaurant.website.toLowerCase().includes(searchTerm))
       );
     }
 
     // Pagination
-    const page = params.page || 1;
-    const limit = params.limit || 10;
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
@@ -118,185 +150,164 @@ export class RestaurantApi {
   }
 
   /**
-   * Get restaurant by name (since we removed ID)
+   * Get pending videos with optional search and pagination
+   * @template PendingVideo
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<PendingVideo>>}
    */
-  static async getRestaurant(name: string, currentUserId?: string): Promise<Restaurant | null> {
-    await delay(200);
+  static async getPendingVideos(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<PendingVideoType>> {
+    await delay(300); // Simulate network delay
 
-    const currentUser = currentUserId ? mockUsers.find(u => u.id === currentUserId) : getCurrentUser();
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
 
     if (!currentUser) {
-      return null;
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
     }
 
-    const restaurant = mockRestaurants.find(restaurant => restaurant.name === name);
-
-    if (!restaurant) {
-      return null;
+    // Type validation for mockPendingVideos
+    if (!Array.isArray(mockPendingVideos)) {
+      throw new Error('"mockPendingVideos" is not an array');
     }
 
-    // Role-based access control
-    if (currentUser.role === 'analyst' && restaurant.addedBy.userId !== currentUser.id) {
-      return null; // Analysts can only see their own restaurants
+    let filteredPendingVideos = [...mockPendingVideos] as PendingVideoType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
     }
 
-    return restaurant;
-  }
-}
-
-/**
- * Change management API service
- */
-export class ChangeApi {
-  /**
-   * Get pending changes for managers to review
-   */
-  static async getPendingChanges(): Promise<RestaurantChange[]> {
-    await delay(400);
-    return mockPendingChanges;
-  }
-
-  /**
-   * Get changes by restaurant ID
-   */
-  static async getChangesByRestaurant(restaurantId: string): Promise<RestaurantChange[]> {
-    await delay(300);
-    return [
-      ...mockPendingChanges,
-      ...mockApprovedChanges,
-      ...mockRejectedChanges
-    ].filter(change => change.restaurantId === restaurantId);
-  }
-
-  /**
-   * Get changes by status
-   */
-  static async getChangesByStatus(status: 'pending' | 'approved' | 'rejected'): Promise<RestaurantChange[]> {
-    await delay(300);
-
-    switch (status) {
-      case 'pending':
-        return mockPendingChanges;
-      case 'approved':
-        return mockApprovedChanges;
-      case 'rejected':
-        return mockRejectedChanges;
-      default:
-        return [];
-    }
-  }
-
-  /**
-   * Submit a new change (analyst action)
-   */
-  static async submitChange(change: Omit<RestaurantChange, 'id' | 'status' | 'createdAt'>): Promise<RestaurantChange> {
-    await delay(500);
-
-    const newChange: RestaurantChange = {
-      ...change,
-      id: `change-${Date.now()}`,
-      status: 'pending',
-      createdAt: new Date()
-    };
-
-    // In a real app, this would be saved to the database
-    console.log('Change submitted:', newChange);
-
-    return newChange;
-  }
-
-  /**
-   * Approve a change (manager action)
-   */
-  static async approveChange(changeId: string, managerId: string, notes?: string): Promise<ApiResponse<RestaurantChange>> {
-    await delay(600);
-
-    // Find the change in pending changes
-    const changeIndex = mockPendingChanges.findIndex(change => change.id === changeId);
-
-    if (changeIndex === -1) {
-      throw new Error('Change not found');
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredPendingVideos = filteredPendingVideos.filter((pendingVideo: PendingVideoType) =>
+        pendingVideo.name.toLowerCase().includes(searchTerm) || pendingVideo.restaurantId.toLowerCase().includes(searchTerm)
+      );
     }
 
-    const change = mockPendingChanges[changeIndex];
-    const updatedChange: RestaurantChange = {
-      ...change,
-      status: 'approved',
-      managerId,
-      reviewedAt: new Date(),
-      notes
-    };
-
-    // Remove from pending and add to approved
-    mockPendingChanges.splice(changeIndex, 1);
-    mockApprovedChanges.push(updatedChange);
-
-    // In a real app, this would update the production restaurant data
-    console.log('Change approved:', updatedChange);
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedVideos = filteredPendingVideos.slice(startIndex, endIndex);
 
     return {
-      data: updatedChange,
-      success: true,
-      message: 'Change approved successfully'
-    };
-  }
-
-  /**
-   * Reject a change (manager action)
-   */
-  static async rejectChange(changeId: string, managerId: string, notes?: string): Promise<ApiResponse<RestaurantChange>> {
-    await delay(600);
-
-    // Find the change in pending changes
-    const changeIndex = mockPendingChanges.findIndex(change => change.id === changeId);
-
-    if (changeIndex === -1) {
-      throw new Error('Change not found');
-    }
-
-    const change = mockPendingChanges[changeIndex];
-    const updatedChange: RestaurantChange = {
-      ...change,
-      status: 'rejected',
-      managerId,
-      reviewedAt: new Date(),
-      notes
-    };
-
-    // Remove from pending and add to rejected
-    mockPendingChanges.splice(changeIndex, 1);
-    mockRejectedChanges.push(updatedChange);
-
-    console.log('Change rejected:', updatedChange);
-
-    return {
-      data: updatedChange,
-      success: true,
-      message: 'Change rejected'
-    };
-  }
-
-  /**
-   * Bulk approve multiple changes
-   */
-  static async bulkApproveChanges(changeIds: string[], managerId: string): Promise<ApiResponse<RestaurantChange[]>> {
-    await delay(1000);
-
-    const approvedChanges: RestaurantChange[] = [];
-
-    for (const changeId of changeIds) {
-      try {
-        const result = await this.approveChange(changeId, managerId);
-        approvedChanges.push(result.data);
-      } catch (error) {
-        console.error(`Failed to approve change ${changeId}:`, error);
+      data: paginatedVideos,
+      pagination: {
+        page,
+        limit,
+        total: filteredPendingVideos.length,
+        totalPages: Math.ceil(filteredPendingVideos.length / limit)
       }
+    };
+  }
+
+  /**
+   * Get active restaurants with optional search and pagination
+   * @template ActiveRestaurant
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<ActiveRestaurant>>}
+   */
+  static async getActiveRestaurants(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<ActiveRestaurantType>> {
+    await delay(300); // Simulate network delay
+
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: mockActiveRestaurants,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: mockActiveRestaurants.length,
+          totalPages: Math.ceil(mockActiveRestaurants.length / 10)
+        }
+      };
     }
 
+    // Type validation for mockActiveRestaurants
+    if (!Array.isArray(mockActiveRestaurants)) {
+      throw new Error('"mockActiveRestaurants" is not an array');
+    }
+
+    let filteredRestaurants = [...mockActiveRestaurants] as ActiveRestaurantType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: filteredRestaurants,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: filteredRestaurants.length,
+          totalPages: Math.ceil(filteredRestaurants.length / 10)
+        }
+      };
+    }
+
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredRestaurants = filteredRestaurants.filter((restaurant: ActiveRestaurantType) =>
+        (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.address === 'string' && restaurant.address.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
+
     return {
-      data: approvedChanges,
-      success: true,
-      message: `Successfully approved ${approvedChanges.length} changes`
+      data: paginatedRestaurants,
+      pagination: {
+        page,
+        limit,
+        total: filteredRestaurants.length,
+        totalPages: Math.ceil(filteredRestaurants.length / limit)
+      }
     };
   }
 }
+

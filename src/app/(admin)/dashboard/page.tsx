@@ -2,9 +2,6 @@
 
 import { Bell, UserCircle, ChevronDown, Plus } from "lucide-react";
 import { Column, Pie } from "@ant-design/charts";
-import { mockRestaurants } from "@/data/mockRestaurants";
-import { columns } from "@/components/admin/columns";
-import { DataTable } from "@/components/ui/DataTable";
 import { Button } from "@/components/ui/Button";
 
 const Dashboard = () => {
@@ -119,7 +116,6 @@ const Dashboard = () => {
         </div>
       </div>
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <DataTable columns={columns} data={mockRestaurants} />
       </div>
     </div>
   );

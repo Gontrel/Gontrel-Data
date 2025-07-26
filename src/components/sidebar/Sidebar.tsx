@@ -25,19 +25,19 @@ const navSections: NavSection[] = [
     links: [
       { href: "/dashboard", label: "Dashboard", icon: "dashboardIcon" },
       {
-        href: "/restaurant-management",
+        href: "/restaurants",
         label: "Restaurants",
         icon: "restaurantIcon",
       },
-      { href: "/user-management", label: "Users", icon: "userIcon" },
-      { href: "/report-management", label: "Reports", icon: "reportIcon" },
+      { href: "/users", label: "Users", icon: "userIcon" },
+      { href: "/reports", label: "Reports", icon: "reportIcon" },
     ],
   },
   {
     title: "MANAGEMENT",
     links: [
-      { href: "/staff-management", label: "Staffs", icon: "groupUserIcon" },
-      { href: "/settings-management", label: "Settings", icon: "settingsIcon" },
+      { href: "/staffs", label: "Staffs", icon: "groupUserIcon" },
+      { href: "/settings", label: "Settings", icon: "settingsIcon" },
     ],
   },
 ];

@@ -7,4 +7,5 @@ export type TIconNames =
   | "userIcon"
   | "reportIcon"
   | "settingsIcon"
+  | "websiteLinkIcon"
   | "groupUserIcon";

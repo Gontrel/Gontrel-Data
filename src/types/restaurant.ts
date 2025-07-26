@@ -1,66 +1,105 @@
+import { TableStatus } from "@/constant/table";
+import { UserRoleEnum } from "@/constant/user";
+
 /**
  * Restaurant data model representing the production/live data
  */
-export type Restaurant = {
+export type ActiveRestaurantType = {
   id: string;
-  restaurantName: string;
   image: string;
+  name: string;
   address: string;
+  maplink: string;
+  reservationUrl: string;
+  menuUrl: string;
   website: string;
   totalVideos: number;
   trend: "Popular searches" | "Trending TikTok #" | "None";
   addedBy: {
+    userId: string;
     name: string;
-    avatar: string;
+    avatar?: string;
+    profileImage: string;
   };
-  dateAdded: string;
-};
-
-/**
- * Represents a single field change in a restaurant record
- */
-export type FieldChange = {
-  field: keyof Restaurant;
-  oldValue: unknown;
-  newValue: unknown;
-  changeType: "update" | "add" | "remove";
-};
-
-/**
- * Restaurant change record for pending changes awaiting approval
- */
-export type RestaurantChange = {
-  id: string;
-  restaurantId: string;
-  analystId: string;
-  managerId?: string;
-  changes: FieldChange[];
-  status: "pending" | "approved" | "rejected";
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  dateAdded: Date;
   createdAt: Date;
-  reviewedAt?: Date;
-  notes?: string;
-  restaurantName: string; // Denormalized for easier querying
-  analystName: string; // Denormalized for easier querying
+  updatedAt: Date;
 };
 
-/**
- * Change history record for audit trail
- */
-export type ChangeHistory = {
+export type VideoType = {
+  id: string;
+  videoUrl: string;
+  tags: Tag[];
+  status: TableStatus;
+};
+
+export type Tag = {
+  id: string;
+  name: string;
+};
+
+export type PendingRestaurantType = {
+  restaurantId: string;
+  name: string;
+  videos: VideoType[];
+  address: {
+    status: TableStatus;
+    name: string;
+  };
+  maplink: string;
+  website: string;
+  menuUrl: {
+    status: TableStatus;
+    url: string;
+  };
+  reservationUrl: {
+    status: TableStatus;
+    url: string;
+  };
+  addedBy: {
+    userId: string;
+    name: string;
+    profileImage: string;
+  };
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  dateAdded: Date;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PendingVideoType = {
   id: string;
   restaurantId: string;
-  changeId: string;
-  action: "created" | "approved" | "rejected";
-  oldValues?: Partial<Restaurant>;
-  newValues?: Partial<Restaurant>;
-  userId: string;
-  timestamp: Date;
+  name: string;
+  videos: VideoType[];
+  dateAdded: Date;
+  addedBy: {
+    userId: string;
+    name: string;
+    profileImage: string;
+  };
 };
-
-/**
- * User roles for authorization
- */
-export type UserRole = "analyst" | "manager" | "admin";
+export type RestaurantTypes =
+  | ActiveRestaurantType
+  | PendingRestaurantType
+  | PendingVideoType;
 
 /**
  * User model
@@ -69,7 +108,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: UserRoleEnum;
 };
 
 /**
@@ -89,4 +128,22 @@ export type PaginatedResponse<T> = {
     total: number;
     totalPages: number;
   };
+};
+
+/**
+ * Restaurant data model representing the production/live data
+ */
+export type Restaurant = {
+  id: string;
+  restaurantName: string;
+  image: string;
+  address: string;
+  website: string;
+  totalVideos: number;
+  trend: "Popular searches" | "Trending TikTok #" | "None";
+  addedBy: {
+    name: string;
+    avatar: string;
+  };
+  dateAdded: string;
 };
