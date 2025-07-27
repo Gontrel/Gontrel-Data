@@ -6,32 +6,31 @@ import logo from "../../../assets/images/logo.png";
 import Link from "next/link";
 import Button from "@/components/button/Button";
 import { useRouter } from "next/navigation";
+import { errorToast, successToast } from "@/utils/toast";
+import { trpc } from "@/lib/trpc-client";
 
 const ForgetPassword = () => {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    console.log("Request to reset password for:", email);
+  const { mutate: forgetPassword, isPending: isLoading } =
+    trpc.auth.forgetPassword.useMutation({
+      onSuccess: () => {
+        successToast("Password reset email sent successfully!");
+        router.push(`/reset-password?email=${email}`);
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Validation
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setIsLoading(false);
+      errorToast("Please enter a valid email address.");
       return;
     }
-
-    try {
-      //TODO:  API call
-      console.log("Request to reset password for:", email);
-      router.push("/reset-password");
-    } catch (error) {
-      console.error("Error resetting password:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    forgetPassword({ email });
   };
   return (
     <main className=" flex min-h-screen items-center justify-center ">
@@ -54,7 +53,7 @@ const ForgetPassword = () => {
         </div>
 
         {/* Form section */}
-        <section className="mt-[60px] min-w-[559px] md:w-1/2 ">
+        <section className="mt-[60px] min-w-[559px] md:w-1-2 ">
           <form className="" onSubmit={handleSubmit}>
             {/* Email field */}
             <div className="mb-[30px]">
@@ -74,11 +73,8 @@ const ForgetPassword = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className={`cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white ${
-                isLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              } `}
+              loading={isLoading}
+              className={`cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white`}
             >
               Continue
             </Button>

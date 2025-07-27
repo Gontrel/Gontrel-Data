@@ -7,14 +7,12 @@ import { UserRoleEnum } from "@/constant/user";
 export type ActiveRestaurantType = {
   name: string;
   address: string;
-  maplink: string;
   website: string;
-  menuUrl: string;
-  reservationUrl: string;
+  totalVideos: number;
+  trend: "Popular searches" | "Trending TikTok #" | "None";
   addedBy: {
-    userId: string;
     name: string;
-    profileImage: string;
+    avatar: string;
   };
   openingHours: {
     monday: string;
@@ -93,10 +91,6 @@ export type PendingVideoType = {
   };
 };
 export type RestaurantTypes = ActiveRestaurantType | PendingRestaurantType | PendingVideoType ;
-
-/**
- * User roles for authorization
- */
 
 /**
  * User model

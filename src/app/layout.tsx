@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { QueryProvider } from "../providers/QueryProvider";
+import ToasterProvider from "@/providers/ToasterProvider";
 
 export const metadata: Metadata = {
   title: "Gontrel Admin",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <QueryProvider>
+          <ToasterProvider />
           {children}
         </QueryProvider>
       </body>

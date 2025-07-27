@@ -59,7 +59,7 @@ export default function RestaurantsPage() {
 
 
 
-  // Stats data - this could come from an API
+  // TODO: Stats data - this could come from the API
   const statsData = [
     {
       label: 'Total restaurants',
