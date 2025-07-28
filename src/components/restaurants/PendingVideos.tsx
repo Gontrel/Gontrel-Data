@@ -1,9 +1,10 @@
-import React, { useMemo, useState, useCallback } from 'react'
+import React, { useMemo } from 'react'
 import { RestaurantTable } from './RestaurantTable'
 import { useRestaurants } from '@/hooks/useRestaurants';
 import { PendingVideoType } from '@/types/restaurant';
 import { ManagerTableTabs } from '@/constant/table';
 import { createPendingVideosColumns } from './columns/pendingVideosColumns';
+import { usePendingVideos } from '@/hooks/usePendingVideos';
 
 interface PendingVideosProps {
     searchTerm: string;
@@ -14,32 +15,19 @@ interface PendingVideosProps {
 }
 
 const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, handlePageSize }: PendingVideosProps) => {
-    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-
-    const handleRowSelect = (selectedRows: PendingVideoType[]) => {
-        console.log('Selected videos:', selectedRows);
-        // Handle bulk actions here
-    };
-
-    const handleApprove = useCallback((video: PendingVideoType) => {
-        console.log('Approving video:', video.id);
-        // Handle approve action
-    }, []);
-
-    const handleDecline = useCallback((video: PendingVideoType) => {
-        console.log('Declining video:', video.id);
-        // Handle decline action
-    }, []);
+    const {
+        expandedRows,
+        setExpandedRows,
+        handleRowSelect,
+    } = usePendingVideos();
 
     // Create columns with proper dependencies
     const columns = useMemo(
         () => createPendingVideosColumns(
             expandedRows,
             setExpandedRows,
-            handleApprove,
-            handleDecline
         ),
-        [expandedRows, setExpandedRows, handleApprove, handleDecline]
+        [expandedRows, setExpandedRows]
     );
 
     // Fetch data with pageSize

@@ -66,7 +66,7 @@ const ForgetPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px] 
+                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px]
                    placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
@@ -74,7 +74,7 @@ const ForgetPassword = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className={`cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white ${
+              className={`cursor-pointer my-[70px] w-full bg-blue-500 h-[80px] border rounded-[20px] font-semibold text-[20px] text-white ${
                 isLoading
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -85,7 +85,7 @@ const ForgetPassword = () => {
           </form>
 
           <Link href="/" passHref>
-            <p className="text-[#0070F3] font-medium leading-[100%] text-center transition-all duration-300 ease-out cursor-pointer hover:underline">
+            <p className="text-blue-500 font-medium leading-[100%] text-center transition-all duration-300 ease-out cursor-pointer hover:underline">
               Back to sign in
             </p>
           </Link>

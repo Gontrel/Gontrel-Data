@@ -47,7 +47,7 @@ export function SearchBar({
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder={placeholder}
-        className="rounded-lg pl-10 bg-white border border-[#D9D9D9] h-14 w-72 text-lg font-medium"
+        className="rounded-lg pl-10 bg-white border border-[#D9D9D9] h-14 w-92 text-lg font-medium"
       />
     </div>
   );

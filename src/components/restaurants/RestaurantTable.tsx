@@ -54,7 +54,7 @@ export function RestaurantTable<T>({
       pagination: {
         pageIndex: currentPage - 1, // Convert to 0-based index
         pageSize: pageSize,
-      },
+      }
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),

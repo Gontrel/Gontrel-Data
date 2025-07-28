@@ -64,7 +64,7 @@ export default function Home() {
                   Password
                 </label>
                 <Link href="/forget-password">
-                  <p className="text-[#0070F3] font-medium text-[20px]">
+                  <p className="text-blue-500 font-medium text-[20px]">
                     Forgot Password?
                   </p>
                 </Link>
@@ -89,7 +89,7 @@ export default function Home() {
             </div>
             <Button
               type="submit"
-              className="cursor-pointer mt-[50px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
+              className="cursor-pointer mt-[50px] w-full bg-blue-500 h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
             >
               Sign In
             </Button>

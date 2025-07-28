@@ -457,7 +457,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
     addedBy: {
       userId: 'user-101',
       name: 'Jennifer Walsh',
-      profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+      profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
     },
     openingHours: {
       monday: '8:00 AM - 11:00 PM',
@@ -871,7 +871,7 @@ export const mockPendingVideos: PendingVideoType[] = [
     addedBy: {
       userId: 'user-113',
       name: 'Emma Thompson',
-      profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+      profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
     }
   }
 ];

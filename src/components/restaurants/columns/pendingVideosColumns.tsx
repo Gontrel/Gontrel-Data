@@ -16,7 +16,7 @@ import { PillButton } from '@/components/ui/PillButton';
  */
 export const createPendingVideosColumns = (
   expandedRows: Set<string>,
-  setExpandedRows: (rows: Set<string>) => void
+  setExpandedRows: (rows: Set<string>) => void,
 ): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'id',
@@ -40,18 +40,19 @@ export const createPendingVideosColumns = (
       meta: { sticky: true }
     },
     {
-      accessorKey: 'restaurantId',
+      accessorKey: 'name',
       header: () => (
         <div className="flex items-center gap-2">
-          <span>Restaurant ID</span>
+          <span>Restaurant name</span>
         </div>
       ),
       cell: ({ row }) => (
         <div className="font-medium text-[#181D1F] max-w-60 truncate">
-          {row.getValue('restaurantId')}
+          {row.getValue('name')}
         </div>
       ),
       minSize: TABLE_COLUMN_SIZES.NAME,
+      meta: { sticky: true }
     },
     {
       accessorKey: 'video',
@@ -112,20 +113,16 @@ export const createPendingVideosColumns = (
       ),
       cell: ({ row }) => {
         const dateAdded = row.getValue('dateAdded') as Date;
-        const isExpanded = expandedRows.has(row.id);
 
         return (
           <div className="relative">
-            <button
-              onClick={() => {
-                setExpandedRows(updateSetValue(expandedRows, row.id, !isExpanded));
-              }}
-              className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
+            <div
+              className="flex items-center gap-2 px-2 py-1 w-full text-left"
             >
               <span className="text-[#181D1F] font-medium">
                 {formatDate(dateAdded)}
               </span>
-            </button>
+            </div>
           </div>
         );
       },

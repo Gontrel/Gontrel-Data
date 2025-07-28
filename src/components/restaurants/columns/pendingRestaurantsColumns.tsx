@@ -298,20 +298,16 @@ export const createPendingRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const dateAdded = row.getValue('dateAdded') as Date;
-        const isExpanded = expandedRows.has(row.id);
 
         return (
           <div className="relative">
-            <button
-              onClick={() => {
-                setExpandedRows(updateSetValue(expandedRows, row.id, !isExpanded));
-              }}
-              className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
+            <div
+              className="flex items-center gap-2 px-2 py-1 w-full text-left"
             >
               <span className="text-[#181D1F] font-medium">
                 {formatDate(dateAdded)}
               </span>
-            </button>
+            </div>
           </div>
         );
       },

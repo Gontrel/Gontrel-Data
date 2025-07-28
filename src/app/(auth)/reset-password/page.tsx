@@ -69,7 +69,7 @@ const ResetPassword = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px] 
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px]
                   placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
 
@@ -95,7 +95,7 @@ const ResetPassword = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                   placeholder-[#8A8A8A] placeholder:text-lg 
+                   placeholder-[#8A8A8A] placeholder:text-lg
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
@@ -116,7 +116,7 @@ const ResetPassword = () => {
                 </p>
                 <button
                   //   onSubmit={}
-                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline"
+                  className="text-blue-500 font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline"
                 >
                   <p> Resend code</p>
                 </button>
@@ -127,21 +127,21 @@ const ResetPassword = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your code"
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                   placeholder-[#8A8A8A] placeholder:text-lg 
+                   placeholder-[#8A8A8A] placeholder:text-lg
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
               </div>
             </div>
             <Button
               type="submit"
-              className="cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
+              className="cursor-pointer my-[70px] w-full bg-blue-500 h-[80px] border rounded-[20px] font-semibold text-[20px] text-white "
             >
               Continue
             </Button>
           </form>
 
           <Link href="/" passHref>
-            <p className="text-[#0070F3] font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
+            <p className="text-blue-500 font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
               Back to sign in
             </p>
           </Link>

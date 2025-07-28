@@ -23,11 +23,11 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
       case 'success':
         return 'text-[#009543]';
       case 'primary':
-        return 'text-[#0070F3]';
+        return 'text-blue-500';
       case 'danger':
         return 'text-[#C50000]';
       default:
-        return 'text-[#0070F3]';
+        return 'text-blue-500';
     }
   };
 
@@ -36,11 +36,11 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
       case 'success':
         return 'bg-[#009543] text-white';
       case 'primary':
-        return 'bg-[#0070F3] text-white';
+        return 'bg-blue-500 text-white';
       case 'danger':
         return 'bg-[#C50000] text-white';
       default:
-        return 'bg-[#0070F3] text-white';
+        return 'bg-blue-500 text-white';
     }
   };
 

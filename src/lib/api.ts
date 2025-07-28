@@ -20,50 +20,6 @@ export type RestaurantTable = {
 };
 
 /**
- * Table management API service
- */
-export class TableApi {
-  /**
-   * Get table (based on unique users who have added restaurants)
-   */
-  static async getTable(tableId: ManagerTableTabs | AnalystTableTabs, currentUserId?: string): Promise<RestaurantTypes[]> {
-    await delay(200);
-
-    const currentUser = currentUserId ? mockUsers.find(u => u.id === currentUserId) : getCurrentUser();
-
-    if (!currentUser) {
-      return [];
-    }
-
-    // If user is analyst, only show their own table
-    if (currentUser.role === 'analyst') {
-      if (tableId === AnalystTableTabs.ACTIVE_RESTAURANTS) {
-        return mockActiveRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
-      }
-      if (tableId === AnalystTableTabs.SUBMITTED_RESTAURANTS) {
-        return mockPendingRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
-      }
-      if (tableId === AnalystTableTabs.SUBMITTED_VIDEOS) {
-        return mockPendingVideos.filter(video => video.addedBy.userId === currentUser.id);
-      }
-      return [];
-    }
-
-    // If user is manager or admin, show all users who have added restaurants
-    if (tableId === ManagerTableTabs.ACTIVE_RESTAURANTS) {
-      return mockActiveRestaurants;
-    }
-    if (tableId === ManagerTableTabs.PENDING_RESTAURANTS) {
-      return mockPendingRestaurants;
-    }
-    if (tableId === ManagerTableTabs.PENDING_VIDEOS) {
-      return mockPendingVideos;
-    }
-    return [];
-  }
-}
-
-/**
  * Restaurant API service
  */
 export class RestaurantApi {

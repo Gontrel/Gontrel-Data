@@ -12,13 +12,22 @@ export function mergeClasses(...inputs: ClassValue[]) {
  * Format date to readable string
  */
 export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
+  const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  const formattedDate = dateFormatter.format(date);
+  const formattedTime = timeFormatter.format(date).toLowerCase();
+
+  return `${formattedDate}\n${formattedTime}`;
 }
 
 /**
@@ -72,4 +81,20 @@ export function truncateText(text: string, maxLength: number): string {
  */
 export function capitalizeWords(str: string): string {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+/**
+ * Convert number to k, m, b, t, etc.
+ */
+export function formatNumber(num: number): string {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + 'B';
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
 }
