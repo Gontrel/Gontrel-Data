@@ -6,74 +6,102 @@ import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
 import { ManagerTableTabs } from '@/components/restaurants/ManagerTableTabs';
 import { ActionPanel } from '@/components/restaurants/ActionPanel';
 import { TableContent } from '@/components/restaurants/TableContent';
-import { useTableState } from '@/hooks/useTableState';
+import { useTabState } from '@/hooks/useTabState';
 import { useTableTotals } from '@/hooks/useTableTotals';
 import { DEFAULT_RESTAURANT_STATS } from '@/constant/stats';
 
 /**
  * Restaurants Page Component
- * Main dashboard for managing restaurants, including active restaurants,
- * pending restaurants, and pending videos with search and pagination functionality
  */
 export default function RestaurantsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAnalyst, setSelectedAnalyst] = useState('all');
-  const [selectedTimePeriod, setSelectedTimePeriod] = useState('all');
-  const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum>(ManagerTableTabsEnum.ACTIVE_RESTAURANTS);
+  const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum>(
+    ManagerTableTabsEnum.ACTIVE_RESTAURANTS
+  );
 
-  // Use custom hook for table state management
+  // Use custom hook for tab-specific state management
   const {
-    tablePageNumbers,
-    tablePageSizes,
-    setTablePageNumber,
-    setTablePageSize
-  } = useTableState();
+    tabStates,
+    updateTabSearchTerm,
+    updateTabAnalyst,
+    updateTabTimePeriod,
+    updateTabPage,
+    updateTabPageSize,
+    getTabState,
+  } = useTabState();
 
-  // Use custom hook for table totals
-  const tableTotals = useTableTotals();
+  // Use custom hook for table totals with tab-specific state
+  const tableTotals = useTableTotals(tabStates);
+
+  // Current tab's state
+  const currentTabState = getTabState(activeTab);
 
   /**
-   * Handle search term changes
+   * Creates page numbers object for all tabs
+   */
+  const createPageNumbersObject = useCallback(() => ({
+    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage,
+    [ManagerTableTabsEnum.PENDING_RESTAURANTS]: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
+    [ManagerTableTabsEnum.PENDING_VIDEOS]: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+  }), [tabStates]);
+
+  /**
+   * Creates page sizes object for all tabs
+   */
+  const createPageSizesObject = useCallback(() => ({
+    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].pageSize,
+    [ManagerTableTabsEnum.PENDING_RESTAURANTS]: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
+    [ManagerTableTabsEnum.PENDING_VIDEOS]: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+  }), [tabStates]);
+
+  /**
+   * Handles search term changes for the active tab
    */
   const handleSearch = useCallback((term: string) => {
-    setSearchTerm(term);
-  }, []);
+    updateTabSearchTerm(activeTab, term);
+  }, [activeTab, updateTabSearchTerm]);
 
   /**
-   * Handle analyst filter changes
+   * Handles analyst filter changes for the active tab
    */
   const handleAnalystChange = useCallback((analyst: string) => {
-    setSelectedAnalyst(analyst);
-  }, []);
+    updateTabAnalyst(activeTab, analyst);
+  }, [activeTab, updateTabAnalyst]);
 
   /**
-   * Handle time period filter changes
+   * Handles time period filter changes for the active tab
    */
   const handleTimePeriodChange = useCallback((period: string) => {
-    setSelectedTimePeriod(period);
-  }, []);
+    updateTabTimePeriod(activeTab, period);
+  }, [activeTab, updateTabTimePeriod]);
 
   /**
-   * Handle adding a new restaurant
+   * Handles adding a new restaurant
+   * TODO: Implement modal opening when NewRestaurantModal component is ready
    */
   const handleAddRestaurant = useCallback(() => {
-    // TODO: Implement modal opening when NewRestaurantModal is ready
-    console.log('Add restaurant clicked');
+    // Implementation pending NewRestaurantModal component
   }, []);
 
   /**
-   * Handle page change for a specific tab
+   * Handles page change for any tab
    */
   const handlePageChange = useCallback((tab: ManagerTableTabsEnum, page: number) => {
-    setTablePageNumber(tab, page);
-  }, [setTablePageNumber]);
+    updateTabPage(tab, page);
+  }, [updateTabPage]);
 
   /**
-   * Handle page size change for a specific tab
+   * Handles page size change for any tab
    */
   const handlePageSizeChange = useCallback((tab: ManagerTableTabsEnum, pageSize: number) => {
-    setTablePageSize(tab, pageSize);
-  }, [setTablePageSize]);
+    updateTabPageSize(tab, pageSize);
+  }, [updateTabPageSize]);
+
+  /**
+   * Handles tab change with state preservation
+   */
+  const handleTabChange = useCallback((tab: ManagerTableTabsEnum) => {
+    setActiveTab(tab);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
@@ -85,18 +113,18 @@ export default function RestaurantsPage() {
         {/* Table Tabs */}
         <ManagerTableTabs
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           tableTotals={tableTotals}
         />
 
         {/* Search and Actions */}
         <ActionPanel
-          searchTerm={searchTerm}
+          searchTerm={currentTabState.searchTerm}
           onSearchChange={handleSearch}
           onAddRestaurant={handleAddRestaurant}
-          selectedAnalyst={selectedAnalyst}
+          selectedAnalyst={currentTabState.selectedAnalyst}
           onAnalystChange={handleAnalystChange}
-          selectedTimePeriod={selectedTimePeriod}
+          selectedTimePeriod={currentTabState.selectedTimePeriod}
           onTimePeriodChange={handleTimePeriodChange}
           showFilters={true}
         />
@@ -104,9 +132,9 @@ export default function RestaurantsPage() {
         {/* Table Content */}
         <TableContent
           activeTab={activeTab}
-          searchTerm={searchTerm}
-          tablePageNumbers={tablePageNumbers}
-          tablePageSizes={tablePageSizes}
+          searchTerm={currentTabState.searchTerm}
+          tablePageNumbers={createPageNumbersObject()}
+          tablePageSizes={createPageSizesObject()}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
         />

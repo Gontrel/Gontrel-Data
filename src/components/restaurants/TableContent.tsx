@@ -32,7 +32,6 @@ interface TableContentProps {
 
 /**
  * Table Content Component
- * Renders the appropriate table based on the active tab
  */
 export const TableContent: React.FC<TableContentProps> = ({
   activeTab,

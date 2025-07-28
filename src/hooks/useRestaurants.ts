@@ -16,7 +16,6 @@ interface RestaurantQueryParams {
 
 /**
  * Hook for fetching restaurants with role-based filtering
- * Function overloads for type safety
  */
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<PendingRestaurantType>>>;
 
@@ -48,17 +47,17 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
       }
     },
     enabled,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
     retry: (failureCount, error) => {
-      // Don't retry on 4xx errors
       if (error instanceof Error && error.message.includes('4')) {
         return false;
       }
       return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 }
 

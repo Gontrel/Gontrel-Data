@@ -1,7 +1,12 @@
 import { useState, useCallback } from 'react';
 import { PendingRestaurantType } from '@/types/restaurant';
 import { TableStatus } from '@/constant/table';
+import { useRestaurantMutations } from './useRestaurantMutations';
+import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
 
+/**
+ * Type for keys of PendingRestaurantType that have a status property
+ */
 export type PendingRestaurantStatusKey = {
   [K in keyof PendingRestaurantType]: PendingRestaurantType[K] extends { status: TableStatus } ? K : never
 }[keyof PendingRestaurantType];
@@ -68,6 +73,9 @@ export const usePendingRestaurants = () => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [restaurants, setRestaurants] = useState<PendingRestaurantType[]>([]);
 
+  // Use the new mutation hook for proper query invalidation
+  const { approveRestaurant: approveRestaurantMutation, declineRestaurant: declineRestaurantMutation } = useRestaurantMutations();
+
   const handleRowSelect = useCallback((selectedRows: PendingRestaurantType[]) => {
     console.log('Selected restaurants:', selectedRows);
     // Handle bulk actions here
@@ -96,12 +104,20 @@ export const usePendingRestaurants = () => {
   }, []);
 
   const handleApprove = useCallback((restaurant: PendingRestaurantType, type?: PendingRestaurantStatusKey) => {
+    // Update local state immediately for optimistic UI
     updateRestaurantStatus(restaurant.restaurantId, TableStatus.APPROVED, type);
-  }, [updateRestaurantStatus]);
+
+    // Trigger mutation with proper query invalidation
+    approveRestaurantMutation(restaurant, ManagerTableTabsEnum.PENDING_RESTAURANTS);
+  }, [updateRestaurantStatus, approveRestaurantMutation]);
 
   const handleDecline = useCallback((restaurant: PendingRestaurantType, type?: PendingRestaurantStatusKey) => {
+    // Update local state immediately for optimistic UI
     updateRestaurantStatus(restaurant.restaurantId, TableStatus.DECLINED, type);
-  }, [updateRestaurantStatus]);
+
+    // Trigger mutation with proper query invalidation
+    declineRestaurantMutation(restaurant, ManagerTableTabsEnum.PENDING_RESTAURANTS);
+  }, [updateRestaurantStatus, declineRestaurantMutation]);
 
   const handleSendFeedback = useCallback((restaurant: PendingRestaurantType) => {
     console.log('Sending feedback for restaurant:', restaurant.name);

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { PendingVideoType } from '@/types/restaurant';
 import { TableStatus } from '@/constant/table';
+import { useRestaurantMutations } from './useRestaurantMutations';
 
 export type PendingVideoStatusKey = {
   [K in keyof PendingVideoType]: PendingVideoType[K] extends { status: TableStatus } ? K : never
@@ -45,15 +46,16 @@ const updateAllStatuses = (restaurant: PendingVideoType, newStatus: TableStatus)
 };
 
 /**
- * Custom hook for managing pending restaurants state and actions
+ * Custom hook for managing pending videos state and actions
  */
 export const usePendingVideos = () => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [restaurants, setRestaurants] = useState<PendingVideoType[]>([]);
 
+  const { approveVideo: approveVideoMutation, declineVideo: declineVideoMutation } = useRestaurantMutations();
+
   const handleRowSelect = useCallback((selectedRows: PendingVideoType[]) => {
-    console.log('Selected restaurants:', selectedRows);
-    // Handle bulk actions here
+    console.log('Selected videos:', selectedRows);
   }, []);
 
   const updateRestaurantStatus = useCallback((
@@ -74,11 +76,14 @@ export const usePendingVideos = () => {
 
   const handleApprove = useCallback((restaurant: PendingVideoType) => {
     updateRestaurantStatus(restaurant.restaurantId, TableStatus.APPROVED);
-  }, [updateRestaurantStatus]);
+
+    approveVideoMutation(restaurant);
+  }, [updateRestaurantStatus, approveVideoMutation]);
 
   const handleDecline = useCallback((restaurant: PendingVideoType) => {
     updateRestaurantStatus(restaurant.restaurantId, TableStatus.DECLINED);
-  }, [updateRestaurantStatus]);
+    declineVideoMutation(restaurant);
+  }, [updateRestaurantStatus, declineVideoMutation]);
 
   const handleSendFeedback = useCallback((restaurant: PendingVideoType) => {
     console.log('Sending feedback for restaurant:', restaurant.name);

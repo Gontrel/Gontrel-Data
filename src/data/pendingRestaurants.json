@@ -1,0 +1,273 @@
+{
+  "pagination": {
+    "page": 1,
+    "pageSize": 5,
+    "total": 5,
+    "totalPages": 1
+  },
+  "data": [
+    {
+      "restaurantId": "pending-001",
+      "name": "The Ivy Dublin",
+      "address": {
+        "status": "PENDING",
+        "name": "13-17 Dawson Street, Dublin 2"
+      },
+      "maplink": "https://maps.google.com/?q=13-17+Dawson+Street,+Dublin+2,+Ireland",
+      "website": "https://www.theivydublin.com",
+      "menuUrl": {
+        "status": "PENDING",
+        "url": "https://www.theivydublin.com/menu"
+      },
+      "reservationUrl": {
+        "status": "PENDING",
+        "url": "https://www.theivydublin.com/reservations"
+      },
+      "addedBy": {
+        "userId": "user-101",
+        "name": "Jennifer Walsh",
+        "profileImage": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+      },
+      "openingHours": {
+        "monday": "8:00 AM - 11:00 PM",
+        "tuesday": "8:00 AM - 11:00 PM",
+        "wednesday": "8:00 AM - 11:00 PM",
+        "thursday": "8:00 AM - 11:00 PM",
+        "friday": "8:00 AM - 12:00 AM",
+        "saturday": "8:00 AM - 12:00 AM",
+        "sunday": "8:00 AM - 11:00 PM"
+      },
+      "videos": [
+        {
+          "id": "video-001",
+          "videoUrl": "https://www.youtube.com/watch?v=restaurant_tour_1",
+          "tags": [
+            { "id": "tag-001", "name": "Fine Dining" },
+            { "id": "tag-002", "name": "Irish Cuisine" },
+            { "id": "tag-003", "name": "Dublin" }
+          ],
+          "status": "APPROVED"
+        },
+        {
+          "id": "video-002",
+          "videoUrl": "https://www.youtube.com/watch?v=restaurant_interior_1",
+          "tags": [
+            { "id": "tag-004", "name": "Interior Design" },
+            { "id": "tag-005", "name": "Atmosphere" }
+          ],
+          "status": "APPROVED"
+        }
+      ],
+      "dateAdded": "2024-02-01T10:30:00.000Z",
+      "createdAt": "2024-02-01T00:00:00.000Z",
+      "updatedAt": "2024-02-01T00:00:00.000Z"
+    },
+    {
+      "restaurantId": "pending-002",
+      "name": "Forest Avenue",
+      "address": {
+        "status": "PENDING",
+        "name": "8 Sussex Terrace, Dublin 4"
+      },
+      "maplink": "https://maps.google.com/?q=8+Sussex+Terrace,+Dublin+4,+Ireland",
+      "website": "https://www.forestavenue.ie",
+      "menuUrl": {
+        "status": "PENDING",
+        "url": "https://www.forestavenue.ie/menu"
+      },
+      "reservationUrl": {
+        "status": "PENDING",
+        "url": "https://www.forestavenue.ie/book"
+      },
+      "addedBy": {
+        "userId": "user-102",
+        "name": "Michael O'Sullivan",
+        "profileImage": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+      },
+      "openingHours": {
+        "monday": "Closed",
+        "tuesday": "6:00 PM - 9:00 PM",
+        "wednesday": "6:00 PM - 9:00 PM",
+        "thursday": "6:00 PM - 9:00 PM",
+        "friday": "6:00 PM - 9:00 PM",
+        "saturday": "6:00 PM - 9:00 PM",
+        "sunday": "Closed"
+      },
+      "videos": [
+        {
+          "id": "video-003",
+          "videoUrl": "https://www.youtube.com/watch?v=forest_avenue_tour",
+          "tags": [
+            { "id": "tag-006", "name": "Tasting Menu" },
+            { "id": "tag-007", "name": "Seasonal" },
+            { "id": "tag-008", "name": "Dublin 4" }
+          ],
+          "status": "PENDING"
+        }
+      ],
+      "dateAdded": "2024-02-02T14:15:00.000Z",
+      "createdAt": "2024-02-02T00:00:00.000Z",
+      "updatedAt": "2024-02-02T00:00:00.000Z"
+    },
+    {
+      "restaurantId": "pending-003",
+      "name": "Liath",
+      "address": {
+        "status": "PENDING",
+        "name": "19A Main Street, Blackrock, Co. Dublin"
+      },
+      "maplink": "https://maps.google.com/?q=19A+Main+Street,+Blackrock,+Co.+Dublin,+Ireland",
+      "website": "https://www.liathrestaurant.com",
+      "menuUrl": {
+        "status": "PENDING",
+        "url": "https://www.liathrestaurant.com/menu"
+      },
+      "reservationUrl": {
+        "status": "PENDING",
+        "url": "https://www.liathrestaurant.com/reservations"
+      },
+      "addedBy": {
+        "userId": "user-103",
+        "name": "Aoife Murphy",
+        "profileImage": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+      },
+      "openingHours": {
+        "monday": "Closed",
+        "tuesday": "Closed",
+        "wednesday": "6:00 PM - 9:00 PM",
+        "thursday": "6:00 PM - 9:00 PM",
+        "friday": "6:00 PM - 9:00 PM",
+        "saturday": "6:00 PM - 9:00 PM",
+        "sunday": "Closed"
+      },
+      "videos": [
+        {
+          "id": "video-004",
+          "videoUrl": "https://www.youtube.com/watch?v=liath_restaurant",
+          "tags": [
+            { "id": "tag-009", "name": "Michelin Star" },
+            { "id": "tag-010", "name": "Blackrock" },
+            { "id": "tag-011", "name": "Contemporary Irish" }
+          ],
+          "status": "PENDING"
+        },
+        {
+          "id": "video-005",
+          "videoUrl": "https://www.youtube.com/watch?v=liath_chef_interview",
+          "tags": [
+            { "id": "tag-012", "name": "Chef Interview" },
+            { "id": "tag-013", "name": "Behind the Scenes" }
+          ],
+          "status": "PENDING"
+        }
+      ],
+      "dateAdded": "2024-02-03T16:45:00.000Z",
+      "createdAt": "2024-02-03T00:00:00.000Z",
+      "updatedAt": "2024-02-03T00:00:00.000Z"
+    },
+    {
+      "restaurantId": "pending-004",
+      "name": "Variety Jones",
+      "address": {
+        "status": "PENDING",
+        "name": "78 Thomas Street, Dublin 8"
+      },
+      "maplink": "https://maps.google.com/?q=78+Thomas+Street,+Dublin+8,+Ireland",
+      "website": "https://www.varietyjones.ie",
+      "menuUrl": {
+        "status": "PENDING",
+        "url": "https://www.varietyjones.ie/menu"
+      },
+      "reservationUrl": {
+        "status": "PENDING",
+        "url": "https://www.varietyjones.ie/book"
+      },
+      "addedBy": {
+        "userId": "user-104",
+        "name": "Sean Kelly",
+        "profileImage": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      },
+      "openingHours": {
+        "monday": "Closed",
+        "tuesday": "5:00 PM - 10:00 PM",
+        "wednesday": "5:00 PM - 10:00 PM",
+        "thursday": "5:00 PM - 10:00 PM",
+        "friday": "5:00 PM - 10:00 PM",
+        "saturday": "5:00 PM - 10:00 PM",
+        "sunday": "Closed"
+      },
+      "videos": [
+        {
+          "id": "video-006",
+          "videoUrl": "https://www.youtube.com/watch?v=variety_jones_tour",
+          "tags": [
+            { "id": "tag-014", "name": "Casual Dining" },
+            { "id": "tag-015", "name": "Thomas Street" },
+            { "id": "tag-016", "name": "Local Favorite" }
+          ],
+          "status": "PENDING"
+        }
+      ],
+      "dateAdded": "2024-02-04T11:20:00.000Z",
+      "createdAt": "2024-02-04T00:00:00.000Z",
+      "updatedAt": "2024-02-04T00:00:00.000Z"
+    },
+    {
+      "restaurantId": "pending-005",
+      "name": "Aimsir",
+      "address": {
+        "status": "PENDING",
+        "name": "Cliff at Lyons, Lyons Demesne, Celbridge, Co. Kildare"
+      },
+      "maplink": "https://maps.google.com/?q=Cliff+at+Lyons,+Lyons+Demesne,+Celbridge,+Co.+Kildare,+Ireland",
+      "website": "https://www.aimsir.ie",
+      "menuUrl": {
+        "status": "PENDING",
+        "url": "https://www.aimsir.ie/menu"
+      },
+      "reservationUrl": {
+        "status": "PENDING",
+        "url": "https://www.aimsir.ie/reservations"
+      },
+      "addedBy": {
+        "userId": "user-105",
+        "name": "Niamh O'Connor",
+        "profileImage": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+      },
+      "openingHours": {
+        "monday": "Closed",
+        "tuesday": "Closed",
+        "wednesday": "Closed",
+        "thursday": "6:00 PM - 9:00 PM",
+        "friday": "6:00 PM - 9:00 PM",
+        "saturday": "6:00 PM - 9:00 PM",
+        "sunday": "Closed"
+      },
+      "videos": [
+        {
+          "id": "video-007",
+          "videoUrl": "https://www.youtube.com/watch?v=aimsir_experience",
+          "tags": [
+            { "id": "tag-017", "name": "Michelin Star" },
+            { "id": "tag-018", "name": "Kildare" },
+            { "id": "tag-019", "name": "Countryside" },
+            { "id": "tag-020", "name": "Luxury Dining" }
+          ],
+          "status": "PENDING"
+        },
+        {
+          "id": "video-008",
+          "videoUrl": "https://www.youtube.com/watch?v=aimsir_garden_tour",
+          "tags": [
+            { "id": "tag-021", "name": "Garden Tour" },
+            { "id": "tag-022", "name": "Sustainability" }
+          ],
+          "status": "PENDING"
+        }
+      ],
+      "dateAdded": "2024-02-05T13:55:00.000Z",
+      "createdAt": "2024-02-05T00:00:00.000Z",
+      "updatedAt": "2024-02-05T00:00:00.000Z"
+    }
+  ]
+}
