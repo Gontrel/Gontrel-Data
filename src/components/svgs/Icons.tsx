@@ -141,7 +141,7 @@ const icons: Record<TIconNames, TRenderSvg> = {
     </svg>
   ),
 
-  websiteLinkIcon: ({ width = 18, height = 18, fill= "#BD00FF" }) => (
+  websiteLinkIcon: ({ width = 18, height = 18, fill = "#BD00FF" }) => (
     <svg
       width={width}
       height={height}
@@ -166,6 +166,26 @@ const icons: Record<TIconNames, TRenderSvg> = {
         clip-rule="evenodd"
         d="M15.78 1.5C16.1775 1.5 16.5 1.8225 16.5 2.2215V6C16.5 6.39825 16.1475 6.75 15.75 6.75C15.3525 6.75 15 6.39825 15 6V3H12C11.6025 3 11.25 2.64825 11.25 2.25C11.25 1.85175 11.5725 1.5 11.97 1.5H15.78Z"
         fill="#BD00FF"
+      />
+    </svg>
+  ),
+
+  cancelModalIcon: ({ width = 52, height = 52, stroke = "#2E3032" }) => (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 52 52"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="0.5" y="0.5" width="51" height="51" rx="25.5" fill="#F0F1F2" />
+      <rect x="0.5" y="0.5" width="51" height="51" rx="25.5" stroke="#F0F1F2" />
+      <path
+        d="M19.333 19.333L32.6663 32.6663M19.333 32.6663L32.6663 19.333"
+        stroke={stroke}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),

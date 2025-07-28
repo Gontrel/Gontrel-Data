@@ -8,4 +8,5 @@ export type TIconNames =
   | "reportIcon"
   | "settingsIcon"
   | "websiteLinkIcon"
+  | "cancelModalIcon"
   | "groupUserIcon";
