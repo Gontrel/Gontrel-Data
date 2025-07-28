@@ -1,7 +1,14 @@
 import React from "react";
 
-const UserManagement = () => {
-  return <div>UserManagement</div>;
+/**
+ * Users page
+ */
+const UsersPage = () => {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold">Users coming soon!</h1>
+    </div>
+  );
 };
 
-export default UserManagement;
+export default UsersPage;

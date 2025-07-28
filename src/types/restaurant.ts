@@ -96,10 +96,7 @@ export type PendingVideoType = {
     profileImage: string;
   };
 };
-export type RestaurantTypes =
-  | ActiveRestaurantType
-  | PendingRestaurantType
-  | PendingVideoType;
+export type RestaurantTypes = ActiveRestaurantType | PendingRestaurantType | PendingVideoType ;
 
 /**
  * User model

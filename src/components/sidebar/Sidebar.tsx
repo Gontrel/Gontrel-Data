@@ -23,21 +23,25 @@ const navSections: NavSection[] = [
   {
     title: "MAIN",
     links: [
-      { href: "/dashboard", label: "Dashboard", icon: "dashboardIcon" },
+      {
+        href: "/dashboard",
+        label: "Dashboard",
+        icon: "dashboardIcon"
+      },
       {
         href: "/restaurants",
         label: "Restaurants",
         icon: "restaurantIcon",
       },
       { href: "/users", label: "Users", icon: "userIcon" },
-      { href: "/reports", label: "Reports", icon: "reportIcon" },
+      { href: "/reports", label: "Reports", icon: "userIcon" },
     ],
   },
   {
     title: "MANAGEMENT",
     links: [
-      { href: "/staffs", label: "Staffs", icon: "groupUserIcon" },
-      { href: "/settings", label: "Settings", icon: "settingsIcon" },
+      { href: "/staffs", label: "Staffs", icon: "userIcon" },
+      { href: "/settings", label: "Settings", icon: "dashboardIcon" },
     ],
   },
 ];
@@ -46,11 +50,10 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col items-center">
-      <section className="w-[246px]">
-        <div className="mt-[60px] w-[60px] h-auto aspect-square">
-          <Image src={logo} alt="Gontrel Logo" width={60} height={60} />
-        </div>
+    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col z-50">
+      <div className="flex items-center gap-2 mb-12">
+        <Image src={logo} alt="Gontrel Logo" width={40} height={40} />
+      </div>
 
         <nav className="flex flex-col gap-8 mt-[41px]">
           {navSections.map((section) => (
@@ -90,7 +93,6 @@ const Sidebar = () => {
             </div>
           ))}
         </nav>
-      </section>
     </aside>
   );
 };

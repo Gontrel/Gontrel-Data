@@ -73,10 +73,13 @@ export default function RestaurantsPage() {
     setTablePageNumber(tab, 1);
   };
 
-  const activeTabStyles =
-    "text-[#0070F3] border-b-4 border-[#0070F3] font-semibold";
-  const inactiveTabStyles = "text-[#8A8A8A]";
 
+  const activeTabStyles = 'text-[#0070F3] border-b-4 border-[#0070F3] font-semibold';
+  const inactiveTabStyles = 'text-[#8A8A8A]';
+
+
+
+  // TODO: Stats data - this could come from the API
   const statsData = [
     {
       label: "Total restaurants",

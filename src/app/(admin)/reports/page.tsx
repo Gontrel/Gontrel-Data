@@ -1,9 +1,13 @@
-import React from 'react'
+'use client';
 
-const Reports = () => {
+/**
+ * Reports page
+ */
+export default function Reports() {
+
   return (
-    <div>Reports Screen</div>
-  )
+    <div>
+      <h1 className="text-2xl font-bold">Reports coming soon!</h1>
+    </div>
+  );
 }
-
-export default Reports

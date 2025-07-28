@@ -1,10 +1,12 @@
 "use client";
-
-import { Bell, UserCircle, ChevronDown, Plus } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Column, Pie } from "@ant-design/charts";
-import { Button } from "@/components/ui/Button";
+import { mockActiveRestaurants } from "@/data/mockRestaurants";
+import { columns } from "@/components/admin/columns";
+import { DataTable } from "@/components/ui/DataTable";
+import { StatsGrid } from "@/components/ui/StatsGrid";
 
-const Dashboard = () => {
+export default function DashboardPage() {
   const barData = [
     { day: "Mon", value: 190, type: "TikTok sourced" },
     { day: "Mon", value: 160, type: "User-generated" },
@@ -28,97 +30,85 @@ const Dashboard = () => {
     { type: "Inactive", value: 18 },
   ];
 
-  return (
-    <div className="p-8 bg-gray-50 min-h-screen">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Restaurants</h1>
-          <p className="text-gray-500">You can manage all restaurants here</p>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Bell size={24} />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full h-4 w-4 text-xs flex items-center justify-center">
-                3
-              </span>
-            </div>
-            <UserCircle size={24} />
-          </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> Add Restaurant
-          </Button>
-        </div>
-      </header>
+  // TODO: Stats data - this could come from the API
+  const statsData = [
+    {
+      label: 'Total restaurants',
+      value: '3.5k'
+    },
+    {
+      label: 'Total active restaurants',
+      value: '3.2k'
+    },
+    {
+      label: 'Pending restaurants',
+      value: '300'
+    },
+    {
+      label: 'Inactive restaurants',
+      value: '150'
+    }
+  ];
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-500">Total restaurants</h3>
-          <p className="text-3xl font-bold">3.5k</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-500">Active restaurants</h3>
-          <p className="text-3xl font-bold">3.5k</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-500">Pending restaurants</h3>
-          <p className="text-3xl font-bold">3.5k</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-500">Pending Videos</h3>
-          <p className="text-3xl font-bold">3.5k</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h3 className="text-lg font-semibold">Content type</h3>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 bg-blue-400 rounded-full"></span>
-                  User-generated
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
-                  TikTok sourced
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
+      {/* Main Content */}
+      <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
+
+        {/* Restaurant Stats */}
+        <StatsGrid stats={statsData} />
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Content type</h3>
+                <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-blue-400 rounded-full"></span>
+                    User-generated
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 bg-purple-500 rounded-full"></span>
+                    TikTok sourced
+                  </div>
                 </div>
               </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                Last 7 days
+                <ChevronDown size={16} />
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-              Last 7 days
-              <ChevronDown size={16} />
-            </div>
+            <Column
+              data={barData}
+              isStack={true}
+              xField="day"
+              yField="value"
+              seriesField="type"
+              color={["#60a5fa", "#a855f7"]}
+              height={300}
+              legend={false}
+              columnStyle={{
+                radius: [4, 4, 0, 0],
+              }}
+            />
           </div>
-          <Column
-            data={barData}
-            isStack={true}
-            xField="day"
-            yField="value"
-            seriesField="type"
-            color={["#60a5fa", "#a855f7"]}
-            height={300}
-            legend={false}
-            columnStyle={{
-              radius: [4, 4, 0, 0],
-            }}
-          />
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-lg font-semibold mb-4">Restaurant Status</h3>
+            <Pie
+              data={pieData}
+              angleField="value"
+              colorField="type"
+              radius={0.8}
+              height={300}
+            />
+          </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-4">Restaurant Status</h3>
-          <Pie
-            data={pieData}
-            angleField="value"
-            colorField="type"
-            radius={0.8}
-            height={300}
-          />
+          <DataTable columns={columns} data={mockActiveRestaurants} />
         </div>
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-md">
       </div>
     </div>
   );
 };
-
-export default Dashboard;

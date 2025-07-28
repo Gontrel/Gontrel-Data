@@ -1,10 +1,12 @@
 import React from "react";
 
+/**
+ * Settings page
+ */
 const SettingsPage = () => {
   return (
     <div>
-      <h1 className="text-2xl font-bold">Settings</h1>
-      <p>Manage your application settings here.</p>
+      <h1 className="text-2xl font-bold">Settings coming soon!</h1>
     </div>
   );
 };

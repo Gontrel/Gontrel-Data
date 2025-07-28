@@ -21,7 +21,7 @@ export default function Login() {
   const { mutate: login, isPending: isLoading } = trpc.auth.login.useMutation({
     onSuccess: () => {
       successToast("Login successful!");
-      router.push("/admin");
+      router.push("/dashboard");
     },
     onError: (error) => {
       errorToast(error.message);
