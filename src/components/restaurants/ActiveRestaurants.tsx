@@ -25,8 +25,6 @@ const ActiveRestaurants = ({
   handlePageSize,
 }: ActiveRestaurantsProps) => {
   const {
-    expandedRows,
-    setExpandedRows,
     restaurants,
     setRestaurantsData,
     handleRowSelect,
@@ -34,8 +32,8 @@ const ActiveRestaurants = ({
 
   // Create columns with proper dependencies
   const columns = useMemo(
-    () => createActiveRestaurantsColumns(expandedRows, setExpandedRows),
-    [expandedRows, setExpandedRows]
+    () => createActiveRestaurantsColumns(),
+    []
   );
 
   // Fetch data

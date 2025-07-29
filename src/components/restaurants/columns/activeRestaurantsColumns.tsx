@@ -16,10 +16,7 @@ const TrendBadge = ({ trend }: { trend: ActiveRestaurantType["trend"] }) => {
   return <span className={`${baseClasses} ${styles[trend]}`}>{trend}</span>;
 };
 
-export const createActiveRestaurantsColumns = (
-  expandedRows: Set<string>,
-  setExpandedRows: unknown
-): ColumnDef<ActiveRestaurantType>[] => [
+export const createActiveRestaurantsColumns = (): ColumnDef<ActiveRestaurantType>[] => [
   {
     accessorKey: "name",
     header: () => <TableHeader title="Restaurant name" />,
@@ -28,19 +25,9 @@ export const createActiveRestaurantsColumns = (
       return (
         <div className="flex items-center gap-3.5">
           <div className="flex flex-row items-center">
-            <Image
-              src={restaurant.image}
-              alt={restaurant.name}
-              width={50}
-              height={50}
-              className="rounded-lg object-cover"
-            />
             <div>
               <div className="font-medium flex flex-wrap text-[17px] leading-[100%] text-[#2E3032]">
                 {restaurant.name}
-              </div>
-              <div className="text-base flex flex-wrap font-medium text-[#9DA1A5]">
-                #{restaurant.id}
               </div>
             </div>
           </div>

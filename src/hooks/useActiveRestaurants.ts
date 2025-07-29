@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ActiveRestaurantType } from "@/types/restaurant";
 
 export const useActiveRestaurants = () => {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>(
     []
   );
@@ -17,8 +16,6 @@ export const useActiveRestaurants = () => {
   };
 
   return {
-    expandedRows,
-    setExpandedRows,
     restaurants,
     setRestaurantsData,
     handleRowSelect,
