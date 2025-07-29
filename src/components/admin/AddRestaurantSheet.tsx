@@ -1,6 +1,6 @@
 "use client";
 
-import { Sheet } from "@/components/ui/Sheet";
+import { Sheet } from "@/components/modals/Sheet";
 import { Input } from "@/components/ui/Input";
 import { Search } from "lucide-react";
 

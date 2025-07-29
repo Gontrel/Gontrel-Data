@@ -5,14 +5,21 @@ import { UserRoleEnum } from "@/constant/user";
  * Restaurant data model representing the production/live data
  */
 export type ActiveRestaurantType = {
+  id: string;
+  image: string;
   name: string;
   address: string;
+  maplink: string;
+  reservationUrl: string;
+  menuUrl: string;
   website: string;
   totalVideos: number;
   trend: "Popular searches" | "Trending TikTok #" | "None";
   addedBy: {
+    userId: string;
     name: string;
-    avatar: string;
+    avatar?: string;
+    profileImage: string;
   };
   openingHours: {
     monday: string;
@@ -34,7 +41,6 @@ export type VideoType = {
   tags: Tag[];
   status: TableStatus;
 };
-
 
 export type Tag = {
   id: string;
@@ -119,4 +125,22 @@ export type PaginatedResponse<T> = {
     total: number;
     totalPages: number;
   };
+};
+
+/**
+ * Restaurant data model representing the production/live data
+ */
+export type Restaurant = {
+  id: string;
+  restaurantName: string;
+  image: string;
+  address: string;
+  website: string;
+  totalVideos: number;
+  trend: "Popular searches" | "Trending TikTok #" | "None";
+  addedBy: {
+    name: string;
+    avatar: string;
+  };
+  dateAdded: string;
 };

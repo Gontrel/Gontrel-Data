@@ -1,53 +1,73 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { SearchBar } from '../../../components/admin/SearchBar';
-import { Plus } from 'lucide-react';
-// import { NewRestaurantModal } from '../../../components/restaurants/NewRestaurantModal';
-// import { WorkingHours } from '../../../components/restaurants/EditWorkingHoursModal';
-import { StatsGrid } from '../../../components/ui/StatsGrid';
-import { ManagerTableTabs } from '@/constant/table';
-import PendingRestaurants from '@/components/restaurants/PendingRestaurants';
-import PendingVideos from '@/components/restaurants/PendingVideos';
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { SearchBar } from "@/components/admin/SearchBar";
+import { StatsGrid } from "@/components/ui/StatsGrid";
+import { ManagerTableTabs } from "@/constant/table";
+import PendingRestaurants from "@/components/restaurants/PendingRestaurants";
+import PendingVideos from "@/components/restaurants/PendingVideos";
+import ActiveRestaurants from "@/components/restaurants/ActiveRestaurants";
+import { NewRestaurantSheet } from "@/components/restaurants/NewRestaurantSheet";
+import { PreviewVideoModal } from "@/components/restaurants/PreviewVideoModal";
+import { useVideoStore } from "@/stores/videoStore";
 
 /**
  * Restaurants Page
  */
 export default function RestaurantsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState<ManagerTableTabs>(ManagerTableTabs.ACTIVE_RESTAURANTS);
+  const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState<ManagerTableTabs>(
+    ManagerTableTabs.ACTIVE_RESTAURANTS
+  );
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
-  const [tablePageNumbers, setTablePageNumbers] = useState<Record<ManagerTableTabs, number>>({
+  const [tablePageNumbers, setTablePageNumbers] = useState<
+    Record<ManagerTableTabs, number>
+  >({
     [ManagerTableTabs.ACTIVE_RESTAURANTS]: 1,
     [ManagerTableTabs.PENDING_RESTAURANTS]: 1,
-    [ManagerTableTabs.PENDING_VIDEOS]: 1
+    [ManagerTableTabs.PENDING_VIDEOS]: 1,
   });
 
-  const [tablePageSizes, setTablePageSizes] = useState<Record<ManagerTableTabs, number>>({
+  const [tablePageSizes, setTablePageSizes] = useState<
+    Record<ManagerTableTabs, number>
+  >({
     [ManagerTableTabs.ACTIVE_RESTAURANTS]: 10,
     [ManagerTableTabs.PENDING_RESTAURANTS]: 10,
-    [ManagerTableTabs.PENDING_VIDEOS]: 10
+    [ManagerTableTabs.PENDING_VIDEOS]: 10,
   });
 
   const setTablePageNumber = (tab: ManagerTableTabs, page: number): void => {
-    if (typeof page !== 'number' || !Number.isInteger(page) || page < 1) {
+    if (typeof page !== "number" || !Number.isInteger(page) || page < 1) {
       console.error(`Invalid page number: ${page} for tab: ${tab}`);
       return;
     }
-    setTablePageNumbers(prev => ({
+    setTablePageNumbers((prev) => ({
       ...prev,
-      [tab]: page
+      [tab]: page,
     }));
   };
 
+  const handlePreviewModalOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setActiveVideoUrl(null);
+    }
+  };
+
   const setTablePageSize = (tab: ManagerTableTabs, pageSize: number): void => {
-    if (typeof pageSize !== 'number' || !Number.isInteger(pageSize) || pageSize < 1 || pageSize > 50) {
+    if (
+      typeof pageSize !== "number" ||
+      !Number.isInteger(pageSize) ||
+      pageSize < 1 ||
+      pageSize > 50
+    ) {
       console.error(`Invalid page size: ${pageSize} for tab: ${tab}`);
       return;
     }
-    setTablePageSizes(prev => ({
+    setTablePageSizes((prev) => ({
       ...prev,
-      [tab]: pageSize
+      [tab]: pageSize,
     }));
 
     setTablePageNumber(tab, 1);
@@ -62,57 +82,120 @@ export default function RestaurantsPage() {
   // TODO: Stats data - this could come from the API
   const statsData = [
     {
-      label: 'Total restaurants',
-      value: '3.5k'
+      label: "Total restaurants",
+      value: "3.5k",
     },
     {
-      label: 'Total active restaurants',
-      value: '3.2k'
+      label: "Total active restaurants",
+      value: "3.2k",
     },
     {
-      label: 'Pending restaurants',
-      value: '300'
+      label: "Pending restaurants",
+      value: "300",
     },
     {
-      label: 'Inactive restaurants',
-      value: '150'
-    }
+      label: "Inactive restaurants",
+      value: "150",
+    },
   ];
-
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
 
-  // const handleNewRestaurantSubmit = async (data: {
-  //   name: string;
-  //   address: string;
-  //   website?: string;
-  //   menuUrl?: string;
-  //   reservationUrl?: string;
-  //   workingHours: WorkingHours;
-  //   tiktokUrl?: string;
-  //   tags: string[];
-  //   videoFile?: File;
-  // }) => {
-  //   // TODO: Implement API call to create new restaurant
-  //   console.log('New restaurant data:', data);
-  // };
+  const renderContent = () => {
+    switch (activeTab) {
+      case ManagerTableTabs.ACTIVE_RESTAURANTS:
+        return (
+          <ActiveRestaurants
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[ManagerTableTabs.ACTIVE_RESTAURANTS]}
+            pageSize={tablePageSizes[ManagerTableTabs.ACTIVE_RESTAURANTS]}
+            handleCurrentPage={(page) =>
+              setTablePageNumber(ManagerTableTabs.ACTIVE_RESTAURANTS, page)
+            }
+            handlePageSize={(pageSize) =>
+              setTablePageSize(ManagerTableTabs.ACTIVE_RESTAURANTS, pageSize)
+            }
+          />
+        );
+      case ManagerTableTabs.PENDING_RESTAURANTS:
+        return (
+          <PendingRestaurants
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[ManagerTableTabs.PENDING_RESTAURANTS]}
+            pageSize={tablePageSizes[ManagerTableTabs.PENDING_RESTAURANTS]}
+            handleCurrentPage={(page) =>
+              setTablePageNumber(ManagerTableTabs.PENDING_RESTAURANTS, page)
+            }
+            handlePageSize={(pageSize) =>
+              setTablePageSize(ManagerTableTabs.PENDING_RESTAURANTS, pageSize)
+            }
+          />
+        );
+      case ManagerTableTabs.PENDING_VIDEOS:
+        return (
+          <PendingVideos
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[ManagerTableTabs.PENDING_VIDEOS]}
+            pageSize={tablePageSizes[ManagerTableTabs.PENDING_VIDEOS]}
+            handleCurrentPage={(page) =>
+              setTablePageNumber(ManagerTableTabs.PENDING_VIDEOS, page)
+            }
+            handlePageSize={(pageSize) =>
+              setTablePageSize(ManagerTableTabs.PENDING_VIDEOS, pageSize)
+            }
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
+    <div className="min-h-screen relative bg-[#FAFAFA]">
+      <PreviewVideoModal
+        open={!!activeVideoUrl}
+        onOpenChange={handlePreviewModalOpenChange}
+      />
       {/* Main Content */}
-      <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
-
+      <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full relative z-0">
         {/* Restaurant Stats */}
         <StatsGrid stats={statsData} />
 
         {/* Table Tabs */}
         <div className="flex items-center justify-between border-b border-[#D5D5D5] mb-2.5 overflow-x-auto">
           <div className="flex items-center gap-x-7.5 min-w-0">
-            <button className={`text-lg font-medium py-3 px-2.5 whitespace-nowrap ${activeTab === ManagerTableTabs.ACTIVE_RESTAURANTS ? activeTabStyles : inactiveTabStyles}`} onClick={() => setActiveTab(ManagerTableTabs.ACTIVE_RESTAURANTS)}>Active restaurants</button>
-            <button className={`text-lg font-medium py-3 px-2.5 whitespace-nowrap ${activeTab === ManagerTableTabs.PENDING_RESTAURANTS ? activeTabStyles : inactiveTabStyles}`} onClick={() => setActiveTab(ManagerTableTabs.PENDING_RESTAURANTS)}>Pending restaurants</button>
-            <button className={`text-lg font-medium py-3 px-2.5 whitespace-nowrap ${activeTab === ManagerTableTabs.PENDING_VIDEOS ? activeTabStyles : inactiveTabStyles}`} onClick={() => setActiveTab(ManagerTableTabs.PENDING_VIDEOS)}>Pending videos</button>
+            <button
+              className={`text-lg font-medium py-3 px-2.5 whitespace-nowrap ${
+                activeTab === ManagerTableTabs.ACTIVE_RESTAURANTS
+                  ? activeTabStyles
+                  : inactiveTabStyles
+              }`}
+              onClick={() => setActiveTab(ManagerTableTabs.ACTIVE_RESTAURANTS)}
+            >
+              Active restaurants
+            </button>
+            <button
+              className={`text-lg font-medium py-3 px-2.5 whitespace-nowrap ${
+                activeTab === ManagerTableTabs.PENDING_RESTAURANTS
+                  ? activeTabStyles
+                  : inactiveTabStyles
+              }`}
+              onClick={() => setActiveTab(ManagerTableTabs.PENDING_RESTAURANTS)}
+            >
+              Pending restaurants
+            </button>
+            <button
+              className={`text-lg font-medium py-3 px-2.5 whitespace-nowrap ${
+                activeTab === ManagerTableTabs.PENDING_VIDEOS
+                  ? activeTabStyles
+                  : inactiveTabStyles
+              }`}
+              onClick={() => setActiveTab(ManagerTableTabs.PENDING_VIDEOS)}
+            >
+              Pending videos
+            </button>
           </div>
         </div>
 
@@ -141,23 +224,34 @@ export default function RestaurantsPage() {
 
         {/* Restaurant Table */}
         <div className="w-full">
-
-          {/* {activeTab === ManagerTableTabs.ACTIVE_RESTAURANTS && (
+          {activeTab === ManagerTableTabs.ACTIVE_RESTAURANTS && (
             <ActiveRestaurants
               searchTerm={searchTerm}
-              currentPage={tablePageNumbers[ManagerTableTabs.ACTIVE_RESTAURANTS]}
+              currentPage={
+                tablePageNumbers[ManagerTableTabs.ACTIVE_RESTAURANTS]
+              }
               pageSize={tablePageSizes[ManagerTableTabs.ACTIVE_RESTAURANTS]}
-              handleCurrentPage={(page) => setTablePageNumber(ManagerTableTabs.ACTIVE_RESTAURANTS, page)}
-              handlePageSize={(pageSize) => setTablePageSize(ManagerTableTabs.ACTIVE_RESTAURANTS, pageSize)}
+              handleCurrentPage={(page) =>
+                setTablePageNumber(ManagerTableTabs.ACTIVE_RESTAURANTS, page)
+              }
+              handlePageSize={(pageSize) =>
+                setTablePageSize(ManagerTableTabs.ACTIVE_RESTAURANTS, pageSize)
+              }
             />
-          )} */}
+          )}
           {activeTab === ManagerTableTabs.PENDING_RESTAURANTS && (
             <PendingRestaurants
               searchTerm={searchTerm}
-              currentPage={tablePageNumbers[ManagerTableTabs.PENDING_RESTAURANTS]}
+              currentPage={
+                tablePageNumbers[ManagerTableTabs.PENDING_RESTAURANTS]
+              }
               pageSize={tablePageSizes[ManagerTableTabs.PENDING_RESTAURANTS]}
-              handleCurrentPage={(page) => setTablePageNumber(ManagerTableTabs.PENDING_RESTAURANTS, page)}
-              handlePageSize={(pageSize) => setTablePageSize(ManagerTableTabs.PENDING_RESTAURANTS, pageSize)}
+              handleCurrentPage={(page) =>
+                setTablePageNumber(ManagerTableTabs.PENDING_RESTAURANTS, page)
+              }
+              handlePageSize={(pageSize) =>
+                setTablePageSize(ManagerTableTabs.PENDING_RESTAURANTS, pageSize)
+              }
             />
           )}
           {activeTab === ManagerTableTabs.PENDING_VIDEOS && (
@@ -165,19 +259,23 @@ export default function RestaurantsPage() {
               searchTerm={searchTerm}
               currentPage={tablePageNumbers[ManagerTableTabs.PENDING_VIDEOS]}
               pageSize={tablePageSizes[ManagerTableTabs.PENDING_VIDEOS]}
-              handleCurrentPage={(page) => setTablePageNumber(ManagerTableTabs.PENDING_VIDEOS, page)}
-              handlePageSize={(pageSize) => setTablePageSize(ManagerTableTabs.PENDING_VIDEOS, pageSize)}
+              handleCurrentPage={(page) =>
+                setTablePageNumber(ManagerTableTabs.PENDING_VIDEOS, page)
+              }
+              handlePageSize={(pageSize) =>
+                setTablePageSize(ManagerTableTabs.PENDING_VIDEOS, pageSize)
+              }
             />
           )}
         </div>
       </div>
 
       {/* New Restaurant Modal */}
-      {/* <NewRestaurantModal
-        isOpen={showNewRestaurantModal}
-        onClose={() => setShowNewRestaurantModal(false)}
-        onSubmit={handleNewRestaurantSubmit}
-      /> */}
+      <NewRestaurantSheet
+        open={showNewRestaurantModal}
+        onOpenChange={setShowNewRestaurantModal}
+      />
+
     </div>
   );
 }

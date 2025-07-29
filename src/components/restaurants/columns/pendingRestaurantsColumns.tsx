@@ -46,6 +46,7 @@ export const createPendingRestaurantsColumns = (
       minSize: TABLE_COLUMN_SIZES.ID,
       meta: { sticky: true }
     },
+
     {
       accessorKey: 'name',
       header: () => (
@@ -61,6 +62,7 @@ export const createPendingRestaurantsColumns = (
       minSize: TABLE_COLUMN_SIZES.NAME,
       meta: { sticky: true }
     },
+    
     {
       accessorKey: 'video',
       header: () => (

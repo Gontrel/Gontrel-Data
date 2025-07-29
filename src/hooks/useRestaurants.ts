@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { RestaurantApi } from '../lib/api';
 import { AnalystTableTabs, ManagerTableTabs } from '@/constant/table';
-import { PaginatedResponse, PendingRestaurantType, PendingVideoType, ActiveRestaurantType } from '../types/restaurant';
+import { ActiveRestaurantType, PaginatedResponse, PendingRestaurantType, PendingVideoType, RestaurantTypes } from '../types/restaurant';
 
 /**
  * Query parameters for restaurant fetching
@@ -20,9 +20,17 @@ interface RestaurantQueryParams {
  */
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<PendingRestaurantType>>>;
 
+export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.ACTIVE_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
+
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_VIDEOS}): ReturnType<typeof useQuery<PaginatedResponse<PendingVideoType>>>;
 
-export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.ACTIVE_RESTAURANTS | AnalystTableTabs.ACTIVE_RESTAURANTS }): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
+export function useRestaurants(
+  params: RestaurantQueryParams & {
+    tableId:
+      | ManagerTableTabs.ACTIVE_RESTAURANTS
+      | AnalystTableTabs.ACTIVE_RESTAURANTS;
+  }
+): ReturnType<typeof useQuery<PaginatedResponse<RestaurantTypes>>>;
 
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs | AnalystTableTabs }) {
   const { tableId, search, page, limit, currentUserId, enabled = true } = params;

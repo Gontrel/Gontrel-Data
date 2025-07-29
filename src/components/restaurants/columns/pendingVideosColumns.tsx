@@ -15,9 +15,7 @@ import { PillButton } from '@/components/ui/PillButton';
  * @param onDecline - Handler for decline action
  */
 export const createPendingVideosColumns = (
-  expandedRows: Set<string>,
-  setExpandedRows: (rows: Set<string>) => void
-): ColumnDef<PendingVideoType>[] => [
+expandedRows: Set<string>, setExpandedRows: (rows: Set<string>) => void, handleApprove: (video: PendingVideoType) => void, handleDecline: (video: PendingVideoType) => void): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'id',
       header: () => (
