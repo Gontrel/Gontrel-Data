@@ -52,7 +52,6 @@ export default class APIRequest {
    * @description This class handles API requests related to authentication.
    *
    */
-
   // forget password
   forgetPassword = async (data: { email: string }) => {
     const response = await unauthenticatedClient.post(
@@ -99,10 +98,8 @@ export default class APIRequest {
     searchTerm: string | undefined;
   }) => {
     const response = await this.client.get(
-      `/admin-locations`
+      `/admin-locations/`
     );
-
-    console.log("getRestaurants response", response);
     return this.handleResponse(response);
   };
   // getARestuarant

@@ -1,7 +1,9 @@
-"use client";
+'use client';
 
+import { useState } from 'react';
 import Image from "next/image";
 import { Globe, MapPin, ExternalLink } from "lucide-react";
+import { EditWorkingHoursModal, WorkingHours } from "./EditWorkingHoursModal";
 
 export type RestaurantData = {
   name: string;
@@ -33,11 +35,59 @@ interface RestaurantConfirmationProps {
   onNext: () => void;
 }
 
+const transformToModalHours = (hours: Record<string, string[]>): WorkingHours => {
+  const days: (keyof WorkingHours)[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  const initialModalHours: any = {};
+
+  const parseTime = (time: string) => {
+    const [timePart, modifier] = time.split(/(am|pm)/i);
+    let [hours, minutes] = timePart.split(':').map(Number);
+    if (modifier && modifier.toLowerCase() === 'pm' && hours < 12) {
+      hours += 12;
+    }
+    if (modifier && modifier.toLowerCase() === 'am' && hours === 12) {
+      hours = 0;
+    }
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  };
+
+  days.forEach(day => {
+    const dayData = hours[day.charAt(0).toUpperCase() + day.slice(1)];
+    if (dayData && dayData.length > 0) {
+      initialModalHours[day] = {
+        isOpen: true,
+        isAllDay: false,
+        slots: dayData.map(range => {
+          const [start, end] = range.split(' - ');
+          return { start: parseTime(start), end: parseTime(end) };
+        }),
+      };
+    } else {
+      initialModalHours[day] = {
+        isOpen: false,
+        isAllDay: false,
+        slots: [{ start: '09:00', end: '17:00' }],
+      };
+    }
+  });
+
+  return initialModalHours as WorkingHours;
+};
+
 export const RestaurantConfirmation = ({
   restaurant,
   onGoBackToSearch,
   onNext,
 }: RestaurantConfirmationProps) => {
+  const [isEditHoursModalOpen, setIsEditHoursModalOpen] = useState(false);
+
+  const handleSaveHours = (updatedHours: WorkingHours) => {
+    // Here you would typically update the state in the parent component
+    // or make an API call to save the changes.
+    console.log("Saved working hours:", updatedHours);
+    setIsEditHoursModalOpen(false);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="space-y-6 flex-grow">
@@ -90,7 +140,7 @@ export const RestaurantConfirmation = ({
         <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold text-lg">Working hours</h3>
-            <button className="text-blue-500 font-medium text-sm">Edit</button>
+            <button onClick={() => setIsEditHoursModalOpen(true)} className="text-blue-500 font-medium text-sm">Edit</button>
           </div>
           <div className="space-y-3">
             {Object.entries(restaurant.workingHours).map(([day, hours]) => (
@@ -120,6 +170,13 @@ export const RestaurantConfirmation = ({
           Next
         </button>
       </div>
+
+      <EditWorkingHoursModal
+        isOpen={isEditHoursModalOpen}
+        onClose={() => setIsEditHoursModalOpen(false)}
+        workingHours={transformToModalHours(restaurant.workingHours)}
+        onSave={handleSaveHours}
+      />
     </div>
   );
 };

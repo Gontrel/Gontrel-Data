@@ -51,7 +51,7 @@ export const restaurantRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
 
       try {
-        // Fetch data from your API endpoint
+        // Fetch data from API endpoint
         const response = await apiRequest.getRestaurants({
           page,
           pageSize,
