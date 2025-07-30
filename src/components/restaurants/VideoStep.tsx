@@ -70,7 +70,7 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
     }
   };
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex justify-center flex-col h-full w-[518px]">
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} onEdit={handleEdit} />
@@ -86,10 +86,10 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
             type="url"
             id="tiktok-link"
             placeholder="https://tiktok.com"
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             value={currentVideo.url}
             onChange={handleUrlChange}
-            onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
           />
         </div>
 
@@ -103,7 +103,7 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
                 type="text"
                 id="tag-input"
                 placeholder="Type a tag and press enter"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
                 onKeyDown={handleTagKeyDown}
               />
             </div>
@@ -124,12 +124,14 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
               ))}
             </div>
             <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
-              <button 
+              <button
                 onClick={handleAddOrUpdateVideo}
-                className="flex items-center gap-2 text-blue-500 font-semibold"
+                className="flex items-center gap-2 text-[#0070F3] font-semibold"
               >
                 <Plus size={20} />
-                <span>{editingVideoId ? 'Update video' : 'Add another video'}</span>
+                <span className="text-[#2E3032] font-figtree font-semibold text-sm leading-[100%]">
+                  {editingVideoId ? "Update video" : "Add another video"}
+                </span>
               </button>
             </div>
           </div>

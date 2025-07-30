@@ -5,14 +5,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const sheetVariants = cva(
-  "fixed bg-white p-6 shadow-lg transition-transform duration-500 ease-in-out",
+  "fixed bg-white p-6 transition-transform duration-500 ease-in-out z-50",
   {
     variants: {
       side: {
         top: "inset-x-0 top-0 border-b rounded-b-3xl",
         bottom: "inset-x-0 bottom-0 border-t rounded-t-3xl",
         left: "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm rounded-r-3xl",
-        right: "inset-y-0 right-0 h-full border-l rounded-l-3xl z-50",
+        right: "inset-y-0 right-0 h-full rounded-l-3xl z-50",
       },
     },
     defaultVariants: {

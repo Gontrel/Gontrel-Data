@@ -1,7 +1,7 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import { Column, Pie } from "@ant-design/charts";
-import { mockActiveRestaurants } from "@/data/mockRestaurants";
+// import { mockActiveRestaurants } from "@/data/mockRestaurants";
 import { columns } from "@/components/admin/columns";
 import { DataTable } from "@/components/ui/DataTable";
 import { StatsGrid } from "@/components/ui/StatsGrid";
@@ -106,7 +106,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <DataTable columns={columns} data={mockActiveRestaurants} />
+          {/* <DataTable columns={columns} data={mockActiveRestaurants} /> */}
         </div>
       </div>
     </div>

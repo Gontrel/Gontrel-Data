@@ -1,38 +1,41 @@
 import { TableStatus } from "@/constant/table";
 import { UserRoleEnum } from "@/constant/user";
+import { Menu, OpeningHours, Reservation, Admin, Post, Videos, Pagination, Meta } from "@/interfaces/restuarants";
+import { Address } from "cluster";
 
 /**
  * Restaurant data model representing the production/live data
  */
 export type ActiveRestaurantType = {
   id: string;
-  image: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  address: Address;
+  lat: number;
+  lng: number;
+  menu: Menu;
   name: string;
-  address: string;
-  maplink: string;
-  reservationUrl: string;
-  menuUrl: string;
+  openingHours: OpeningHours[];
+  photos: string[];
+  phoneNumber: string;
+  priceLevel: number;
+  rating: number;
+  reservation: Reservation;
+  toilets: boolean;
+  type: string;
   website: string;
-  totalVideos: number;
-  trend: "Popular searches" | "Trending TikTok #" | "None";
-  addedBy: {
-    userId: string;
-    name: string;
-    avatar?: string;
-    profileImage: string;
-  };
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  dateAdded: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  status: string;
+  comment: string | null;
+  admin: Admin;
+  posts: Post[];
+  tags: string[];
+  videos: Videos;
+  pagination: Pagination;
+  meta: Meta;
 };
 
 export type VideoType = {
@@ -96,7 +99,10 @@ export type PendingVideoType = {
     profileImage: string;
   };
 };
-export type RestaurantTypes = ActiveRestaurantType | PendingRestaurantType | PendingVideoType ;
+export type RestaurantTypes =
+  | ActiveRestaurantType
+  | PendingRestaurantType
+  | PendingVideoType;
 
 /**
  * User model

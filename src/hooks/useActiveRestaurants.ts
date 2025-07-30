@@ -1,27 +1,19 @@
-import { useState } from "react";
-import { ActiveRestaurantType } from "@/types/restaurant";
+import { trpc } from "@/lib/trpc-client";
 
-export const useActiveRestaurants = () => {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>(
-    []
+interface UseRestaurantProps {
+  page: number;
+  limit: number;
+  search?: string;
+}
+
+export const useRestaurantQuery = ({ page, limit, search }: UseRestaurantProps) => {
+  const { data, isLoading, isError } = trpc.restaurants.getRestaurants.useQuery(
+    {
+      page: page,
+      pageSize: limit,
+      searchTerm: search,
+    }
   );
 
-  const handleRowSelect = (selectedRows: ActiveRestaurantType[]) => {
-    console.log("Selected rows:", selectedRows);
-  };
-
-  const handleSave = (id: string, field: string, value: unknown) => {
-    // Implement save logic here
-    console.log(`Saving restaurant ${id}: ${field} = ${value}`);
-  };
-
-  return {
-    expandedRows,
-    setExpandedRows,
-    restaurants,
-    setRestaurantsData,
-    handleRowSelect,
-    handleSave,
-  };
+  return { data, isLoading, isError };
 };

@@ -17,8 +17,6 @@ const TrendBadge = ({ trend }: { trend: ActiveRestaurantType["trend"] }) => {
 };
 
 export const createActiveRestaurantsColumns = (
-  expandedRows: Set<string>,
-  setExpandedRows: unknown
 ): ColumnDef<ActiveRestaurantType>[] => [
   {
     accessorKey: "name",

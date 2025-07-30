@@ -9,4 +9,8 @@ export type TIconNames =
   | "settingsIcon"
   | "websiteLinkIcon"
   | "cancelModalIcon"
+  | "bookIcon"
+  | "carIcon"
+  | "tiktokIcon"
+  | "calendarIcon"
   | "groupUserIcon";

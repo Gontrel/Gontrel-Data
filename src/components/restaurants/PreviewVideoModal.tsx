@@ -10,13 +10,12 @@ interface PreviewModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const PreviewVideoModal = ({
-  open,
-  onOpenChange,
-}: PreviewModalProps) => {
+const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
   const videoRef = useRef<HTMLIFrameElement>(null);
   const [isPaused, setIsPaused] = useState(true);
-  const activeVideoUrl = useVideoStore((state: VideoState) => state.activeVideoUrl);
+  const activeVideoUrl = useVideoStore(
+    (state: VideoState) => state.activeVideoUrl
+  );
 
   // Extract TikTok video ID from URL
   const getTiktokId = (url: string | null) => {
@@ -32,8 +31,8 @@ const PreviewVideoModal = ({
 
   const togglePlay = () => {
     if (videoRef.current && videoRef.current.contentWindow) {
-      const command = isPaused ? 'playVideo' : 'pauseVideo';
-      videoRef.current.contentWindow.postMessage({ type: command }, '*');
+      const command = isPaused ? "playVideo" : "pauseVideo";
+      videoRef.current.contentWindow.postMessage({ type: command }, "*");
       setIsPaused(!isPaused);
     }
   };
@@ -54,8 +53,6 @@ const PreviewVideoModal = ({
       // Reset the iframe to stop playback
       videoRef.current.src = "";
     }
-
-    console.log("activeVideoUrl", activeVideoUrl);
   }, [open]);
 
   return (
@@ -68,35 +65,40 @@ const PreviewVideoModal = ({
     >
       <div className="relative h-full flex flex-row">
         {/* Transparent Left Side (638px) - Shows content behind */}
-        <div className="w-[638px] bg-transparent">
+        <div className="w-[638px] bg-transparent flex flex-row items-center">
+          <section className="w-[539px] h-full flex flex-col items-center mt-[33px]">
+            <h2 className="text-2xl font-semibold font-figtree self-start text-[#2E3032] ml-[40px]">
+              Video Preview
+            </h2>
 
-          <div className="flex-shrink-0 ">
-              <h2 className="text-2xl font-semibold ">Video Preview</h2>
-          </div>
-          <div className="flex-grow overflow-y-auto pr-4 -mr-4">
-            {embedUrl ? (
-              <div className="relative aspect-[9/16] w-full max-w-md mx-auto">
-                <iframe
-                  ref={videoRef}
-                  src={embedUrl}
-                  className="w-full h-full rounded-lg shadow-lg"
-                  allowFullScreen
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                />
-                <VideoOverlay 
-                  isPaused={isPaused} 
-                  onTogglePlay={togglePlay}
-                  restaurantName="Burger Villa"
-                  rating={4.5}
-                  tiktokUsername="Kingvsleyyy1009"
-                />
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500">Enter a TikTok URL to see a preview.</p>
-              </div>
-            )}
-          </div>
+            <div className="mt-[40px]">
+              {embedUrl ? (
+                <div className="relative">
+                  <video
+                    // ref={videoRef}
+                    src={embedUrl}
+                    className="rounded-[15px] w-[448px] h-[564px]"
+                    // allowFullScreen
+                    // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                  <VideoOverlay
+                    isPaused={isPaused}
+                    onTogglePlay={togglePlay}
+                    restaurantName="Burger Villa"
+                    rating={4.5}
+                    tiktokUsername="Kingvsleyyy1009"
+                  />
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">
+                    Enter a TikTok URL to see a preview.
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+          <aside className="flex"></aside>
         </div>
 
         {/* Gray Right Side (Scrollable Content) */}
@@ -107,33 +109,3 @@ const PreviewVideoModal = ({
 };
 
 export { PreviewVideoModal };
-
-//   <div className="flex-shrink-0 ">
-//     <div className="flex items-center justify-between">
-//       <h2 className="text-2xl font-semibold ">Video Preview</h2>
-//       <button
-//         onClick={() => onOpenChange(false)}
-//         className="p-2 rounded-full hover:bg-gray-100"
-//       >
-//         ✕
-//       </button>
-//     </div>
-//   </div>
-
-//   <div className="flex-grow overflow-y-auto pr-4 -mr-4">
-//     {embedUrl ? (
-//       <div className="aspect-[9/16] w-full max-w-md mx-auto">
-//         <iframe
-//           ref={videoRef}
-//           src={embedUrl}
-//           className="w-full h-full rounded-lg shadow-lg"
-//           allowFullScreen
-//           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-//         />
-//       </div>
-//     ) : (
-//       <div className="text-center py-8">
-//         <p className="text-gray-500">Invalid TikTok URL</p>
-//       </div>
-//     )}
-//   </div>

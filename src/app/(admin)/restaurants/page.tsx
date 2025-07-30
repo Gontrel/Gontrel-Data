@@ -78,7 +78,6 @@ export default function RestaurantsPage() {
   const inactiveTabStyles = 'text-[#8A8A8A]';
 
 
-
   // TODO: Stats data - this could come from the API
   const statsData = [
     {

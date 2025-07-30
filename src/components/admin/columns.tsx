@@ -55,7 +55,7 @@ export const columns: ColumnDef<ActiveRestaurantType>[] = [
     accessorKey: "trend",
     header: "Trend",
     cell: ({ row }) => {
-      const trend = row.original.trend;
+      const trend = "trend" in row.original ? row.original.trend : "Popular searches";
       let trendClass = "";
       if (trend === "Popular searches") {
         trendClass = "bg-blue-100 text-blue-800";
@@ -65,7 +65,7 @@ export const columns: ColumnDef<ActiveRestaurantType>[] = [
         trendClass = "bg-gray-100 text-gray-800";
       }
       return (
-        <span className={`px-2 py-1 rounded-full ${trendClass}`}>{trend}</span>
+        <span className={`px-2 py-1 rounded-full ${trendClass}`}>{String(trend)}</span>
       );
     },
   },
@@ -75,13 +75,13 @@ export const columns: ColumnDef<ActiveRestaurantType>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Image
-          src={row.original.addedBy.avatar || placeholder}
-          alt={row.original.addedBy.name || "alt"}
+          src={row?.original?.admin?.profileImage || placeholder}
+          alt={row?.original?.admin?.name || "alt"}
           width={24}
           height={24}
           className="rounded-full"
         />
-        <span>{row.original.addedBy.name}</span>
+        <span>{row?.original?.admin?.name}</span>
       </div>
     ),
   },

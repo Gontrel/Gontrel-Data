@@ -83,81 +83,83 @@ export const NewRestaurantSheet = ({
 
   return (
     <Sheet
-        open={open}
-        onOpenChange={onOpenChange}
-        side="right"
-        width="w-[638px]"
-        className="p-8 flex flex-col"
-      >
-      <div className="flex-shrink-0">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">New restaurant</h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors hover:cursor-pointer"
-            aria-label="Close"
-          >
-            <Icon name="cancelModalIcon" />
-          </button>
-        </div>
-        <p className="text-gray-500 mt-1">Create a new restaurant profile</p>
-        <ProgressBar step={step} />
-        <p className="text-sm font-medium text-gray-600 mb-4">
-          {step === 1 && "Confirmation"}
-          {step === 2 && "Videos"}
-          {step === 3 && "Confirmation"}
-        </p>
-      </div>
-
-      <div className="flex-grow overflow-y-auto pr-4 -mr-4">
-        {step === 1 && (
-          <>
-            {isRestaurantConfirmed && selectedRestaurant ? (
-              <RestaurantConfirmation
-                restaurant={selectedRestaurant}
-                onGoBackToSearch={handleGoBackToSearch}
-                onNext={handleNextStep}
-              />
-            ) : (
-              <div>
-                <label
-                  htmlFor="restaurant-name"
-                  className="text-lg font-semibold"
-                >
-                  Restaurant name
-                </label>
-                <div className="relative mt-3">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="restaurant-name"
-                    placeholder="Search for a restaurant"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onKeyDown={handleSearchForRestaurant}
-                  />
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            {
-              <VideoStep
-                onNext={handleNextStep}
-                onPrevious={handlePreviousStep}
-              />
-            }
-          </>
-        )}
-
-        {step === 3 && (
-          <div className="flex items-center justify-center h-full">
-            <p>Final Step!</p>
+      open={open}
+      onOpenChange={onOpenChange}
+      side="right"
+      width="w-[638px]"
+      className="flex flex-col justify-center"
+    >
+      <section className="flex flex-col h-full justify-center px-[42px]">
+        <div className="flex-shrink-0">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-semibold">New restaurant</h2>
+            <button
+              onClick={() => onOpenChange(false)}
+              className="rounded-full hover:bg-gray-100 transition-colors hover:cursor-pointer"
+              aria-label="Close"
+            >
+              <Icon name="cancelModalIcon" />
+            </button>
           </div>
-        )}
-      </div>
+          <p className="text-gray-500 mt-1">Create a new restaurant profile</p>
+          <ProgressBar step={step} />
+          <p className="text-sm font-medium text-gray-600 mb-4">
+            {step === 1 && "Confirmation"}
+            {step === 2 && "Videos"}
+            {step === 3 && "Confirmation"}
+          </p>
+        </div>
+
+        <div className="flex-grow overflow-y-auto ">
+          {step === 1 && (
+            <>
+              {isRestaurantConfirmed && selectedRestaurant ? (
+                <RestaurantConfirmation
+                  restaurant={selectedRestaurant}
+                  onGoBackToSearch={handleGoBackToSearch}
+                  onNext={handleNextStep}
+                />
+              ) : (
+                <div>
+                  <label
+                    htmlFor="restaurant-name"
+                    className="text-lg font-semibold"
+                  >
+                    Restaurant name
+                  </label>
+                  <div className="relative mt-3">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      id="restaurant-name"
+                      placeholder="Search for a restaurant"
+                      className="w-full pl-12 pr-[22px] py-[24px] border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                      onKeyDown={handleSearchForRestaurant}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              {
+                <VideoStep
+                  onNext={handleNextStep}
+                  onPrevious={handlePreviousStep}
+                />
+              }
+            </>
+          )}
+
+          {step === 3 && (
+            <div className="flex items-center justify-center h-full">
+              <p>Final Step!</p>
+            </div>
+          )}
+        </div>
+      </section>
     </Sheet>
   );
 };

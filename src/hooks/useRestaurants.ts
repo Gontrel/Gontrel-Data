@@ -20,7 +20,7 @@ interface RestaurantQueryParams {
  */
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<PendingRestaurantType>>>;
 
-export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.ACTIVE_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
+// export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.ACTIVE_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
 
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_VIDEOS}): ReturnType<typeof useQuery<PaginatedResponse<PendingVideoType>>>;
 
@@ -49,7 +49,7 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
 
         case ManagerTableTabs.ACTIVE_RESTAURANTS:
         case AnalystTableTabs.ACTIVE_RESTAURANTS:
-          return await RestaurantApi.getActiveRestaurants(queryParams);
+          return await RestaurantApi.getPendingRestaurants(queryParams);
 
         default:
           throw new Error(`Unsupported table type: ${tableId}`);

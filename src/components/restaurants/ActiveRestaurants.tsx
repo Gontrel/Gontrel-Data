@@ -1,10 +1,8 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { RestaurantTable } from "./RestaurantTable";
-import { useRestaurants } from "@/hooks/useRestaurants";
-import { ManagerTableTabs } from "@/constant/table";
 import { ActiveRestaurantType } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "./columns/activeRestaurantsColumns";
-import { useActiveRestaurants } from "@/hooks/useActiveRestaurants";
+import { useRestaurantQuery } from "@/hooks/useActiveRestaurants";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -17,53 +15,49 @@ interface ActiveRestaurantsProps {
 /**
  * Component for displaying and managing pending restaurants
  */
-const ActiveRestaurants = ({
+const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   searchTerm,
   currentPage,
   handleCurrentPage,
   pageSize,
   handlePageSize,
 }: ActiveRestaurantsProps) => {
-  const {
-    expandedRows,
-    setExpandedRows,
-    restaurants,
-    setRestaurantsData,
-    handleRowSelect,
-  } = useActiveRestaurants();
-
   // Create columns with proper dependencies
-  const columns = useMemo(
-    () => createActiveRestaurantsColumns(expandedRows, setExpandedRows),
-    [expandedRows, setExpandedRows]
-  );
+  const columns = useMemo(() => createActiveRestaurantsColumns(), []);
+  const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>([]);
 
   // Fetch data
-  const { data: restaurantsData, isLoading: restaurantsLoading } =
-    useRestaurants({
-      tableId: ManagerTableTabs.ACTIVE_RESTAURANTS,
-      search: searchTerm,
-      page: currentPage,
-      limit: pageSize,
-    });
+  const {
+    data,
+    isLoading,
+    isError,
+  } = useRestaurantQuery({
+    search: searchTerm,
+    page: currentPage,
+    limit: pageSize,
+  });
+
+  const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
+    console.log("Selected rows:", selectedRows);
+  };
 
   // Update local state when data changes
   useEffect(() => {
-      if (restaurantsData?.data) {
-          setRestaurantsData(restaurantsData.data);
-      }
-  }, [restaurantsData?.data, setRestaurantsData]);
+    if (data) {
+      setRestaurantsData(data || []);
+    }
+  }, [data]);
 
   return (
     <RestaurantTable<ActiveRestaurantType>
       restaurants={restaurants}
-      loading={restaurantsLoading}
+      loading={isLoading}
       onRowSelect={handleRowSelect}
       showSelection={true}
       columns={columns}
       currentPage={currentPage}
       pageSize={pageSize}
-      totalPages={restaurantsData?.pagination?.totalPages || 1}
+      totalPages={data?.pagination?.total || 1}
       onPageSizeChange={handlePageSize}
       onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
     />

@@ -4,25 +4,10 @@ import { z } from "zod";
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
 import { serialize, parse } from "cookie";
+import { getErrorMessage } from "./auth";
 
-export const getErrorMessage = (error: unknown): string => {
-  if (error instanceof AxiosError) {
-    const data = error.response?.data;
-    if (data && typeof data === "object" && "message" in data) {
-      return (data as { message: string }).message;
-    }
-    if (typeof data === "string") {
-      return data;
-    }
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "An unexpected error occurred";
-};
-
-export const authRouter = router({
-  login: publicProcedure
+export const restaurantRouter = router({
+  createRestaurant: publicProcedure
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest();
@@ -41,7 +26,6 @@ export const authRouter = router({
               maxAge: 60 * 60 * 24, // 1 day
             })
           );
-
         }
 
         return response;
@@ -54,37 +38,41 @@ export const authRouter = router({
       }
     }),
 
-  forgetPassword: publicProcedure
-    .input(z.object({ email: z.string() }))
-    .mutation(async ({ input, ctx }) => {
+  getRestaurants: publicProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+        searchTerm: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { page, pageSize, searchTerm } = input;
+
       const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.forgetPassword(input);
-        const token = response.token;
 
-        if (token) {
-          ctx.resHeaders.append(
-            "Set-Cookie",
-            serialize("reset_token", token, {
-              path: "/",
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
-              maxAge: 60 * 15, // 15 minutes
-            })
-          );
+      try {
+        // Fetch data from your API endpoint
+
+        const response = await apiRequest.getRestaurants({
+          page,
+          pageSize,
+          searchTerm,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return response;
+        const data = await response.json();
+        return data;
       } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
+        console.error("Error fetching restaurants:", error);
+        throw error;
       }
     }),
-  resetPassword: publicProcedure
+
+  getARestaurant: publicProcedure
     .input(
       z.object({
         newPassword: z.string(),
