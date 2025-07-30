@@ -24,14 +24,12 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
 }: ActiveRestaurantsProps) => {
   // Create columns with proper dependencies
   const columns = useMemo(() => createActiveRestaurantsColumns(), []);
-  const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>([]);
+  const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>(
+    []
+  );
 
   // Fetch data
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useRestaurantQuery({
+  const { data, isLoading, isError } = useRestaurantQuery({
     search: searchTerm,
     page: currentPage,
     limit: pageSize,
@@ -46,6 +44,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     if (data) {
       setRestaurantsData(data || []);
     }
+    console.log(data)
   }, [data]);
 
   return (
@@ -55,8 +54,8 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
       onRowSelect={handleRowSelect}
       showSelection={true}
       columns={columns}
-      currentPage={currentPage}
-      pageSize={pageSize}
+      currentPage={data?.pagination?.currentPage || 1}
+      pageSize={data?.pagination?.pageSize || 1}
       totalPages={data?.pagination?.total || 1}
       onPageSizeChange={handlePageSize}
       onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}

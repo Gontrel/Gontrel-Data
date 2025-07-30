@@ -1,17 +1,50 @@
 import { axiosInstance, unauthenticatedClient } from "./axios";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
+import { parse } from "cookie";
 
 export default class APIRequest {
+  private client;
+  private unauthenticatedClient;
+
+  constructor(headers?: any) {
+
+    if (typeof window === "undefined" && headers?.get("cookie")) {
+      const cookies = parse(headers.get("cookie"));
+      const token = cookies.user_token;
+
+      this.client = axios.create({
+        ...axiosInstance.defaults,
+        headers: {
+          ...axiosInstance.defaults.headers,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      this.client = axiosInstance;
+    }
+
+    this.unauthenticatedClient = unauthenticatedClient;
+  }
+
   private handleResponse(response: AxiosResponse) {
     if (typeof response.data === "string") {
       try {
         return JSON.parse(response.data);
-      } catch {
-        // Not a valid JSON string, return as is
+      } catch (error) {
         return response.data;
       }
     }
     return response.data;
+  }
+
+  private handleError(error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.message || "An error occurred");
+    } else if (error.request) {
+      throw new Error("No response received from the server");
+    } else {
+      throw new Error(error.message || "An unexpected error occurred");
+    }
   }
 
   /**
@@ -50,13 +83,13 @@ export default class APIRequest {
 
   /**
    *
-   * @description This class handles API requests related to restuarant.
+   * @description This class handles API requests related to restaurant.
    *
    */
 
-  // createRestuarant
-  createRestuarant = async (data: { email: string; password: string }) => {
-    const response = await axiosInstance.post(`/admin-location`, data);
+  // createRestaurant
+  createRestaurant = async (data: { email: string; password: string }) => {
+    const response = await this.client.post(`/admin-location`, data);
     return this.handleResponse(response);
   };
   // getRestaurants
@@ -65,9 +98,11 @@ export default class APIRequest {
     pageSize: number;
     searchTerm: string | undefined;
   }) => {
-    const response = await axiosInstance.get(
-      `/admin-locations?pageNumber=${data.page}&pageSize=${data.pageSize}&searchTerm=${data.searchTerm}`
+    const response = await this.client.get(
+      `/admin-locations`
     );
+
+    console.log("getRestaurants response", response);
     return this.handleResponse(response);
   };
   // getARestuarant

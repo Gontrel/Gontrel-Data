@@ -10,7 +10,7 @@ export const postRouter = router({
   create: publicProcedure
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.login(input);
         const token = response.token;
@@ -42,7 +42,7 @@ export const postRouter = router({
   getAllRestuarants: publicProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.forgetPassword(input);
         const token = response.token;
@@ -77,7 +77,7 @@ export const postRouter = router({
         });
       }
 
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.resetPassword({ ...input, token });
 

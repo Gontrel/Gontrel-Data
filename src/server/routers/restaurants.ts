@@ -10,7 +10,7 @@ export const restaurantRouter = router({
   createRestaurant: publicProcedure
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.login(input);
         const token = response.token;
@@ -46,26 +46,23 @@ export const restaurantRouter = router({
         searchTerm: z.string().optional(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { page, pageSize, searchTerm } = input;
-
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
 
       try {
         // Fetch data from your API endpoint
-
         const response = await apiRequest.getRestaurants({
           page,
           pageSize,
           searchTerm,
         });
 
-        if (!response.ok) {
+        if (!response.data) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
-        return data;
+        return response.data;
       } catch (error) {
         console.error("Error fetching restaurants:", error);
         throw error;
@@ -92,7 +89,7 @@ export const restaurantRouter = router({
         });
       }
 
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.resetPassword({ ...input, token });
 

@@ -10,7 +10,6 @@ import {
   mockRestaurant,
 } from "./RestaurantConfirmation";
 import { VideoStep } from "./VideoStep";
-import { PreviewVideoModal } from "./PreviewVideoModal";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -61,8 +60,6 @@ export const NewRestaurantSheet = ({
       setIsRestaurantConfirmed(true);
     }
   };
-
-
 
   const handleGoBackToSearch = () => {
     setIsRestaurantConfirmed(false);

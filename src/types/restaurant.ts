@@ -1,6 +1,6 @@
 import { TableStatus } from "@/constant/table";
 import { UserRoleEnum } from "@/constant/user";
-import { Menu, OpeningHours, Reservation, Admin, Post, Videos, Pagination, Meta } from "@/interfaces/restuarants";
+import { Menu, OpeningHours, Reservation, Admin, Post, Videos, Pagination, Meta } from "@/interfaces/restaurants";
 import { Address } from "cluster";
 
 /**

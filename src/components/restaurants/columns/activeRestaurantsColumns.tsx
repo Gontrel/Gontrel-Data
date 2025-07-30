@@ -6,22 +6,9 @@ import Image from "next/image";
 import { format } from "date-fns";
 import Icon from "@/components/svgs/Icons";
 
-const TrendBadge = ({ trend }: { trend: ActiveRestaurantType["trend"] }) => {
-  const baseClasses = "px-3 py-1.5 rounded-full text-sm font-medium";
-  const styles = {
-    "Popular searches": "bg-[#E6F1FE] text-[#2E3032]",
-    "Trending TikTok #": "bg-[#E6F1FE] text-[#2E3032]",
-    None: "bg-[#F0F1F2] text-[#2E3032]",
-  };
-  return <span className={`${baseClasses} ${styles[trend]}`}>{trend}</span>;
-};
 
-<<<<<<< HEAD
 export const createActiveRestaurantsColumns = (
 ): ColumnDef<ActiveRestaurantType>[] => [
-=======
-export const createActiveRestaurantsColumns = (): ColumnDef<ActiveRestaurantType>[] => [
->>>>>>> 097a102cbb65b1dfca1f9a1a9b119a4ac717f5b8
   {
     accessorKey: "name",
     header: () => <TableHeader title="Restaurant name" />,
@@ -45,15 +32,9 @@ export const createActiveRestaurantsColumns = (): ColumnDef<ActiveRestaurantType
     header: () => <TableHeader icon={MapPin} title="Address" />,
     cell: ({ row }) => (
       <div className="flex flex-row gap-[14px]">
-        <p className=" text-[17px] font-medium">{row.getValue("address")}</p>
-        <a
-          href={row.original.maplink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2.5 text-black font-medium"
-        >
+        <p className=" text-[17px] font-medium">{row.original?.address?.address}</p>
           <Icon name="websiteLinkIcon" />
-        </a>
+
       </div>
     ),
   },
@@ -79,34 +60,26 @@ export const createActiveRestaurantsColumns = (): ColumnDef<ActiveRestaurantType
     header: () => <TableHeader icon={Video} title="Total videos" />,
     cell: ({ row }) => (
       <div className="text-center text-[17px] font-medium">
-        {row.getValue("totalVideos")}
+        {row.original?.posts?.length || 0}
       </div>
     ),
-  },
-  {
-    accessorKey: "trend",
-    header: () => <TableHeader icon={Flame} title="Trend" />,
-    cell: ({ row }) => <TrendBadge trend={row.getValue("trend")} />,
   },
   {
     accessorKey: "addedBy",
     header: () => <TableHeader icon={Calendar} title="Added by" />,
     cell: ({ row }) => {
-      const addedBy = row.getValue(
-        "addedBy"
-      ) as ActiveRestaurantType["addedBy"];
       return (
         <div className="flex items-center gap-2">
           <div className="flex flex-row">
             <Image
-              src={addedBy.profileImage}
-              alt={addedBy.name}
+              src={row.original?.admin?.profileImage}
+              alt={row.original?.admin?.name}
               width={40}
               height={40}
               className="rounded-full object-cover"
             />
             <span className="text-[17px] flex flex-wrap font-medium">
-              {addedBy.name}
+              {row.original.admin.name}
             </span>
           </div>
         </div>
@@ -117,7 +90,7 @@ export const createActiveRestaurantsColumns = (): ColumnDef<ActiveRestaurantType
     accessorKey: "dateAdded",
     header: () => <TableHeader icon={Calendar} title="Date added" />,
     cell: ({ row }) => {
-      const date = new Date(row.getValue("dateAdded"));
+      const date = new Date(row.original?.createdAt);
       return (
         <div className="flex flex-col items-center">
           <div className="text-[#2E3032] text-[17px] font-medium flex flex-wrap">

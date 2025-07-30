@@ -25,7 +25,7 @@ export const authRouter = router({
   login: publicProcedure
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.login(input);
         const token = response.token;
@@ -41,7 +41,6 @@ export const authRouter = router({
               maxAge: 60 * 60 * 24, // 1 day
             })
           );
-
         }
 
         return response;
@@ -57,7 +56,7 @@ export const authRouter = router({
   forgetPassword: publicProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.forgetPassword(input);
         const token = response.token;
@@ -104,7 +103,7 @@ export const authRouter = router({
         });
       }
 
-      const apiRequest = new APIRequest();
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.resetPassword({ ...input, token });
 
@@ -129,4 +128,17 @@ export const authRouter = router({
         });
       }
     }),
+
+  logout: publicProcedure.mutation(async ({ ctx }) => {
+    ctx.resHeaders.append(
+      "Set-Cookie",
+      serialize("user_token", "", {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(0),
+      })
+    );
+
+    return { success: true };
+  }),
 });

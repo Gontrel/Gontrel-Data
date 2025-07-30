@@ -1,7 +1,7 @@
 import { publicProcedure, router } from "@/lib/trpc";
 import { z } from "zod";
 import { authRouter } from "./auth";
-import { restaurantRouter } from "./restuarants";
+import { restaurantRouter } from "./restaurants";
 
 export const appRouter = router({
   auth: authRouter,
