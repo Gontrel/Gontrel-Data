@@ -13,6 +13,7 @@ export interface VideoState {
   removeVideo: (id: string) => void;
   updateVideo: (id: string, video: Partial<VideoData>) => void;
   setActiveVideoUrl: (url: string | null) => void;
+  resetVideos: () => void;
 }
 
 const videoStateCreator: StateCreator<VideoState> = (set) => ({
@@ -31,6 +32,7 @@ const videoStateCreator: StateCreator<VideoState> = (set) => ({
       ),
     })),
   setActiveVideoUrl: (url) => set({ activeVideoUrl: url }),
+  resetVideos: () => set({ videos: [] }),
 });
 
 export const useVideoStore = create(videoStateCreator);

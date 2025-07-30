@@ -1,6 +1,9 @@
 'use client';
 
+'use client';
+
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { mergeClasses } from '../../lib/utils';
 
@@ -72,13 +75,16 @@ export function CenterModal({
     xl: 'max-w-xl'
   };
 
-  if (!isOpen) return null;
+  if (typeof window === 'undefined') return null;
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 flex items-center justify-center p-4"
+        className={mergeClasses(
+          'fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 flex items-center justify-center p-4',
+          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        )}
         onClick={handleBackdropClick}
         aria-hidden="true"
       >
@@ -89,6 +95,8 @@ export function CenterModal({
             'bg-white rounded-2xl shadow-xl z-50',
             'transform transition-all duration-300 ease-out',
             'w-full',
+            'flex flex-col',
+            'overflow-y-auto',
             widthClasses[width],
             isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0',
             className
@@ -124,6 +132,7 @@ export function CenterModal({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

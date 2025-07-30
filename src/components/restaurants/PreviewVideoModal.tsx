@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { VideoModal } from "../modals/VideoModal";
 import { VideoOverlay } from "./VideoOverlay";
+import Icon from "../svgs/Icons";
 import { useVideoStore, VideoState } from "@/stores/videoStore";
 
 interface PreviewModalProps {
@@ -11,41 +12,22 @@ interface PreviewModalProps {
 }
 
 const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
-  const videoRef = useRef<HTMLIFrameElement>(null);
-  const [isPaused, setIsPaused] = useState(true);
-  const activeVideoUrl = useVideoStore(
-    (state: VideoState) => state.activeVideoUrl
-  );
-
-  // Extract TikTok video ID from URL
-  const getTiktokId = (url: string | null) => {
-    if (!url) return null;
-    const match = url.match(/(?:tiktok\.com\/)(?:@[\w.-]+\/video\/|v\/)?(\d+)/);
-    return match ? match[1] : null;
-  };
-
-  const videoId = getTiktokId(activeVideoUrl);
-  const embedUrl = videoId
-    ? `https://www.tiktok.com/embed/v2/${videoId}?lang=en-US`
-    : null;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const activeVideoUrl = useVideoStore((state) => state.activeVideoUrl);
+  const setActiveVideoUrl = useVideoStore((state) => state.setActiveVideoUrl);
 
   const togglePlay = () => {
-    if (videoRef.current && videoRef.current.contentWindow) {
-      const command = isPaused ? "playVideo" : "pauseVideo";
-      videoRef.current.contentWindow.postMessage({ type: command }, "*");
-      setIsPaused(!isPaused);
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPaused(false);
+      } else {
+        videoRef.current.pause();
+        setIsPaused(true);
+      }
     }
   };
-
-  useEffect(() => {
-    // When the embed URL changes, reload the iframe to ensure the API is ready.
-    if (embedUrl && videoRef.current) {
-      videoRef.current.src = embedUrl;
-      setIsPaused(true);
-    } else if (!embedUrl && videoRef.current) {
-      videoRef.current.src = "";
-    }
-  }, [embedUrl]);
 
   // Clean up when modal closes
   useEffect(() => {
@@ -54,6 +36,10 @@ const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
       videoRef.current.src = "";
     }
   }, [open]);
+
+  const handleClose = () => {
+    setActiveVideoUrl(null);
+  };
 
   return (
     <VideoModal
@@ -64,6 +50,12 @@ const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
       className="flex flex-row z-30"
     >
       <div className="relative h-full flex flex-row">
+        <button
+          onClick={handleClose}
+          className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 z-10"
+        >
+          <Icon name="cancelModalIcon" className="w-6 h-6" />
+        </button>
         {/* Transparent Left Side (638px) - Shows content behind */}
         <div className="w-[638px] bg-transparent flex flex-row items-center">
           <section className="w-[539px] h-full flex flex-col items-center mt-[33px]">
@@ -72,14 +64,18 @@ const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
             </h2>
 
             <div className="mt-[40px]">
-              {embedUrl ? (
+              {activeVideoUrl ? (
                 <div className="relative">
                   <video
-                    // ref={videoRef}
-                    src={embedUrl}
-                    className="rounded-[15px] w-[448px] h-[564px]"
-                    // allowFullScreen
-                    // allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    ref={videoRef}
+                    src={activeVideoUrl}
+                    className="rounded-[15px] w-[448px] h-[564px] object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    onPlay={() => setIsPaused(false)}
+                    onPause={() => setIsPaused(true)}
                   />
                   <VideoOverlay
                     isPaused={isPaused}

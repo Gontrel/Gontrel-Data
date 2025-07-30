@@ -3,6 +3,7 @@ import { RestaurantTable } from "./RestaurantTable";
 import { ActiveRestaurantType } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "./columns/activeRestaurantsColumns";
 import { useRestaurantQuery } from "@/hooks/useActiveRestaurants";
+import { useRouter } from "next/navigation";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -27,6 +28,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>(
     []
   );
+  const router = useRouter();
 
   // Fetch data
   const { data, isLoading, isError } = useRestaurantQuery({
@@ -37,6 +39,11 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
 
   const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
     console.log("Selected rows:", selectedRows);
+    if (selectedRows.length > 0) {
+      // Assuming each restaurant has a unique ID
+      const restaurantId = selectedRows[0].id;
+      router.push(`/restaurants/${restaurantId}`);
+    }
   };
 
   // Update local state when data changes
@@ -44,7 +51,6 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     if (data) {
       setRestaurantsData(data || []);
     }
-    console.log(data)
   }, [data]);
 
   return (

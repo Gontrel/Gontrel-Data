@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Link, X, Plus } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { VideoCard } from "./VideoCard";
+import { trpc } from "@/lib/trpc-client";
+import { errorToast } from "@/utils/toast";
 
 interface VideoStepProps {
   onNext: () => void;
@@ -21,12 +23,31 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
   const [currentVideo, setCurrentVideo] = useState({ url: "", tags: [] as string[] });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setActiveVideoUrl(currentVideo.url);
-  }, [currentVideo.url, setActiveVideoUrl]);
+  // We use a query, but disable it so it only runs when we call `refetch`
+  const { refetch } = trpc.tiktok.getLinkInfo.useQuery(
+    { link: currentVideo.url },
+    { enabled: false }
+  );
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentVideo({ ...currentVideo, url: e.target.value });
+  const handleUrlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setCurrentVideo({ ...currentVideo, url });
+
+    const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/;
+    if (tiktokRegex.test(url)) {
+      try {
+        const { data } = await refetch();
+        if (data && data.play) {
+          setActiveVideoUrl(data.play);
+        } else {
+          errorToast("Could not retrieve video information from this URL.");
+        }
+      } catch (error) {
+        errorToast(
+          "Failed to fetch TikTok video information. Please check the URL."
+        );
+      }
+    }
   };
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -147,8 +168,12 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
         </button>
         <button
           onClick={onNext}
-          disabled
-          className="w-full bg-gray-100 text-gray-400 py-3 rounded-lg font-semibold cursor-not-allowed"
+          disabled={videos.length === 0}
+          className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+            videos.length > 0
+              ? "bg-[#0070F3] text-white hover:bg-blue-600"
+              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
         >
           Next
         </button>

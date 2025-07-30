@@ -243,5 +243,5 @@ const Icon = (props: TIcon & { name: TIconNames }) =>
   icons[props.name]?.(props) ?? null;
 export default Icon;
 
-//Usage >>>> <Icon name="dashboard" stroke="#24B314" />
+//Usage >>>> <Icon name="websiteLinkIcon" stroke="#24B314" />
 //Usage >>>> <Icon name="check" fill="#24B314" />

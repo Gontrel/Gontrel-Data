@@ -18,7 +18,7 @@ export const createActiveRestaurantsColumns = (
         <div className="flex items-center gap-3.5">
           <div className="flex flex-row items-center">
             <div>
-              <div className="font-medium flex flex-wrap text-[17px] leading-[100%] text-[#2E3032]">
+              <div className="font-medium flex flex-wrap text-[17px] leading-[100%] text-[#2E3032] cursor-pointer">
                 {restaurant.name}
               </div>
             </div>
@@ -72,7 +72,7 @@ export const createActiveRestaurantsColumns = (
         <div className="flex items-center gap-2">
           <div className="flex flex-row">
             <Image
-              src={row.original?.admin?.profileImage}
+              src={row.original?.admin?.profileImage ?? null}
               alt={row.original?.admin?.name}
               width={40}
               height={40}

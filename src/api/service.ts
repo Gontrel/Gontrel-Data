@@ -7,7 +7,6 @@ export default class APIRequest {
   private unauthenticatedClient;
 
   constructor(headers?: any) {
-
     if (typeof window === "undefined" && headers?.get("cookie")) {
       const cookies = parse(headers.get("cookie"));
       const token = cookies.user_token;
@@ -52,6 +51,7 @@ export default class APIRequest {
    * @description This class handles API requests related to authentication.
    *
    */
+
   // forget password
   forgetPassword = async (data: { email: string }) => {
     const response = await unauthenticatedClient.post(
@@ -82,11 +82,16 @@ export default class APIRequest {
 
   /**
    *
-   * @description This class handles API requests related to restaurant.
+   * @description This class handles API requests related to restaurants.
    *
    */
 
   // createRestaurant
+  createAdminLocation = async (data: any) => {
+    const response = await this.client.post(`/admin-location`, data);
+    return this.handleResponse(response);
+  };
+
   createRestaurant = async (data: { email: string; password: string }) => {
     const response = await this.client.post(`/admin-location`, data);
     return this.handleResponse(response);
@@ -97,13 +102,13 @@ export default class APIRequest {
     pageSize: number;
     searchTerm: string | undefined;
   }) => {
-    const response = await this.client.get(
-      `/admin-locations/`
-    );
+    const response = await this.client.get(`/admin-locations`);
     return this.handleResponse(response);
   };
-  // getARestuarant
-  // getARestuarant = async (data: { email: string; password: string }) => {
+
+
+  // getARestaurant
+  // getARestaurant = async (data: { email: string; password: string }) => {
   //   const response = await axiosInstance.get(`/admin-location`, data);
   //   return this.handleResponse(response);
   // };
@@ -139,16 +144,22 @@ export default class APIRequest {
    *
    */
 
-  // placeAutocompletion
-  // placeAutocompletion = async (data: { title: string; content: string }) => {
-  //   const response = await axiosInstance.get(`/admin-login`, data);
-  //   return this.handleResponse(response);
-  // };
-  // // placeDetails
-  // placeDetails = async (data: { email: string; password: string }) => {
-  //   const response = await axiosInstance.get(`/admin-login`, data);
-  //   return this.handleResponse(response);
-  // };
+  // placeAutoComplete
+  placeAutoComplete = async (data: { query: string; sessionToken: string }) => {
+    const response = await this.client.get(
+      `/place-auto-complete?query=${data.query}&sessionToken=${data.sessionToken}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // placeDetails
+  placeDetails = async (data: { placeId: string; sessionToken: string }) => {
+    const response = await this.client.get(
+      `/place-details?placeId=${data.placeId}&sessionToken=${data.sessionToken}`
+    );
+    return this.handleResponse(response);
+  };
+
 
   /**
    *
@@ -157,8 +168,10 @@ export default class APIRequest {
    */
 
   // getTiktokDetails
-  // getTiktokDetails = async (data: { title: string; content: string }) => {
-  //   const response = await axiosInstance.get(`/admin-login`, data);
-  //   return this.handleResponse(response);
-  // };
+  getTiktokDetails = async (data: { link: string }) => {
+    const response = await this.client.get(
+      `/tiktok-link-info?link=${data.link}`
+    );
+    return this.handleResponse(response);
+  };
 }

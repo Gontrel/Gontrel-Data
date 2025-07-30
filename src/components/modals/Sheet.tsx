@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const sheetVariants = cva(
-  "fixed bg-white p-6 transition-transform duration-500 ease-in-out z-50",
+  "fixed bg-white p-[33px] transition-transform duration-500 ease-in-out z-50",
   {
     variants: {
       side: {
