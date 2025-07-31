@@ -93,7 +93,48 @@ export type PendingVideoType = {
     profileImage: string;
   };
 };
-export type RestaurantTypes = ActiveRestaurantType | PendingRestaurantType | PendingVideoType ;
+
+export type SubmittedRestaurantType = {
+  restaurantId: string;
+  name: string;
+  videos: VideoType[];
+  address: {
+    status: TableStatusEnum;
+    name: string;
+  };
+  maplink: string;
+  website: string;
+  menuUrl: {
+    status: TableStatusEnum;
+    url: string;
+  };
+  reservationUrl: {
+    status: TableStatusEnum;
+    url: string;
+  };
+  comment: string;
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  dateAdded: Date;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type SubmittedVideoType = {
+  id: string;
+  restaurantId: string;
+  name: string;
+  videos: VideoType[];
+  comment: string;
+  dateAdded: Date;
+};
 
 /**
  * User model

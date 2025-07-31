@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react'
-import { RestaurantTable } from './RestaurantTable'
+import { RestaurantTable } from '../RestaurantTable'
 import { useRestaurants } from '@/hooks/useRestaurants';
-import { PendingVideoType } from '@/types/restaurant';
-import { ManagerTableTabsEnum } from '@/types';
-import { createPendingVideosColumns } from './columns/pendingVideosColumns';
-import { usePendingVideos } from '@/hooks/usePendingVideos';
+import { SubmittedVideoType } from '@/types/restaurant';
+import { AnalystTableTabsEnum } from '@/types/enums';
+import { useSubmittedVideos } from '@/hooks/useSubmittedVideos';
+import { createSubmittedVideosColumns } from '../columns/submittedVideosColumn';
 
-interface PendingVideosProps {
+interface SubmittedVideosProps {
   searchTerm: string;
   currentPage: number;
   pageSize: number;
@@ -14,32 +14,25 @@ interface PendingVideosProps {
   handlePageSize: (pageSize: number) => void;
 }
 
-const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, handlePageSize }: PendingVideosProps) => {
-    const {
-        handleApprove,
-        handleDecline,
-        handleRowSelect,
-    } = usePendingVideos();
+const SubmittedVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, handlePageSize }: SubmittedVideosProps) => {
+    const { handleRowSelect } = useSubmittedVideos();
 
     // Create columns with proper dependencies
     const columns = useMemo(
-        () => createPendingVideosColumns(
-            handleApprove,
-            handleDecline
-        ),
-        [handleApprove, handleDecline]
+        () => createSubmittedVideosColumns(),
+        []
     );
 
     // Fetch data with pageSize
     const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: ManagerTableTabsEnum.PENDING_VIDEOS,
+        tableId: AnalystTableTabsEnum.SUBMITTED_VIDEOS,
         search: searchTerm,
         page: currentPage,
         limit: pageSize
     });
 
   return (
-    <RestaurantTable<PendingVideoType>
+    <RestaurantTable<SubmittedVideoType>
       restaurants={restaurantsData?.data || []}
       loading={restaurantsLoading}
       onRowSelect={handleRowSelect}
@@ -54,4 +47,4 @@ const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, h
   );
 };
 
-export default PendingVideos;
+export default SubmittedVideos;

@@ -1,5 +1,5 @@
 import { TableStatusEnum, TrendEnum } from '@/types/enums';
-import { ActiveRestaurantType, PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
+import { ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
 
 /**
  * Mock restaurant data matching the Gontrel Admin interface
@@ -924,5 +924,396 @@ export const mockPendingVideos: PendingVideoType[] = [
       name: 'Emma Thompson',
       profileImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
     }
+  }
+];
+
+/**
+ * Mock submitted restaurants data for admin review
+ */
+export const mockSubmittedRestaurants: SubmittedRestaurantType[] = [
+  {
+    restaurantId: 'submitted-001',
+    name: 'The Old Spot',
+    address: {
+      status: TableStatusEnum.PENDING,
+      name: '14 Bath Avenue, Dublin 4'
+    },
+    maplink: 'https://maps.google.com/?q=14+Bath+Avenue,+Dublin+4,+Ireland',
+    website: 'https://www.theoldspot.ie',
+    menuUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.theoldspot.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.theoldspot.ie/book'
+    },
+    comment: 'New gastropub submission with excellent reviews and local following.',
+    openingHours: {
+      monday: '12:00 PM - 10:00 PM',
+      tuesday: '12:00 PM - 10:00 PM',
+      wednesday: '12:00 PM - 10:00 PM',
+      thursday: '12:00 PM - 10:00 PM',
+      friday: '12:00 PM - 11:00 PM',
+      saturday: '12:00 PM - 11:00 PM',
+      sunday: '12:00 PM - 10:00 PM'
+    },
+    videos: [
+      {
+        id: 'video-017',
+        videoUrl: 'https://www.youtube.com/watch?v=old_spot_tour',
+        tags: [
+          { id: 'tag-047', name: 'Gastropub' },
+          { id: 'tag-048', name: 'Dublin 4' },
+          { id: 'tag-049', name: 'Local Favorite' }
+        ],
+        status: TableStatusEnum.PENDING
+      },
+      {
+        id: 'video-018',
+        videoUrl: 'https://www.youtube.com/watch?v=old_spot_food_review',
+        tags: [
+          { id: 'tag-050', name: 'Food Review' },
+          { id: 'tag-051', name: 'Irish Pub Food' }
+        ],
+        status: TableStatusEnum.PENDING
+      }
+    ],
+    dateAdded: new Date('2024-02-14T09:15:00'),
+    createdAt: new Date('2024-02-14'),
+    updatedAt: new Date('2024-02-14')
+  },
+  {
+    restaurantId: 'submitted-002',
+    name: 'Delahunt',
+    address: {
+      status: TableStatusEnum.PENDING,
+      name: '39 Camden Street Lower, Dublin 2'
+    },
+    maplink: 'https://maps.google.com/?q=39+Camden+Street+Lower,+Dublin+2,+Ireland',
+    website: 'https://www.delahunt.ie',
+    menuUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.delahunt.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.delahunt.ie/reservations'
+    },
+    comment: 'Contemporary Irish restaurant with innovative menu and excellent service.',
+    openingHours: {
+      monday: 'Closed',
+      tuesday: '5:30 PM - 10:00 PM',
+      wednesday: '5:30 PM - 10:00 PM',
+      thursday: '5:30 PM - 10:00 PM',
+      friday: '5:30 PM - 10:00 PM',
+      saturday: '5:30 PM - 10:00 PM',
+      sunday: 'Closed'
+    },
+    videos: [
+      {
+        id: 'video-019',
+        videoUrl: 'https://www.youtube.com/watch?v=delahunt_experience',
+        tags: [
+          { id: 'tag-052', name: 'Fine Dining' },
+          { id: 'tag-053', name: 'Camden Street' },
+          { id: 'tag-054', name: 'Contemporary Irish' }
+        ],
+        status: TableStatusEnum.PENDING
+      }
+    ],
+    dateAdded: new Date('2024-02-15T16:30:00'),
+    createdAt: new Date('2024-02-15'),
+    updatedAt: new Date('2024-02-15')
+  },
+  {
+    restaurantId: 'submitted-003',
+    name: 'The Legal Eagle',
+    address: {
+      status: TableStatusEnum.PENDING,
+      name: '1 Chancery Place, Dublin 7'
+    },
+    maplink: 'https://maps.google.com/?q=1+Chancery+Place,+Dublin+7,+Ireland',
+    website: 'https://www.thelegaleagle.ie',
+    menuUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.thelegaleagle.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.thelegaleagle.ie/book'
+    },
+    comment: 'Historic gastropub with craft beer selection and traditional Irish atmosphere.',
+    openingHours: {
+      monday: '12:00 PM - 10:00 PM',
+      tuesday: '12:00 PM - 10:00 PM',
+      wednesday: '12:00 PM - 10:00 PM',
+      thursday: '12:00 PM - 10:00 PM',
+      friday: '12:00 PM - 11:00 PM',
+      saturday: '12:00 PM - 11:00 PM',
+      sunday: '12:00 PM - 10:00 PM'
+    },
+    videos: [
+      {
+        id: 'video-020',
+        videoUrl: 'https://www.youtube.com/watch?v=legal_eagle_tour',
+        tags: [
+          { id: 'tag-055', name: 'Gastropub' },
+          { id: 'tag-056', name: 'Dublin 7' },
+          { id: 'tag-057', name: 'Historic Building' }
+        ],
+        status: TableStatusEnum.PENDING
+      },
+      {
+        id: 'video-021',
+        videoUrl: 'https://www.youtube.com/watch?v=legal_eagle_beer_selection',
+        tags: [
+          { id: 'tag-058', name: 'Craft Beer' },
+          { id: 'tag-059', name: 'Beer Selection' }
+        ],
+        status: TableStatusEnum.PENDING
+      }
+    ],
+    dateAdded: new Date('2024-02-16T13:45:00'),
+    createdAt: new Date('2024-02-16'),
+    updatedAt: new Date('2024-02-16')
+  },
+  {
+    restaurantId: 'submitted-004',
+    name: 'Etto',
+    address: {
+      status: TableStatusEnum.PENDING,
+      name: '18 Merrion Row, Dublin 2'
+    },
+    maplink: 'https://maps.google.com/?q=18+Merrion+Row,+Dublin+2,+Ireland',
+    website: 'https://www.etto.ie',
+    menuUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.etto.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.etto.ie/reservations'
+    },
+    comment: 'Italian wine bar with authentic cuisine and excellent wine selection.',
+    openingHours: {
+      monday: 'Closed',
+      tuesday: '5:00 PM - 10:00 PM',
+      wednesday: '5:00 PM - 10:00 PM',
+      thursday: '5:00 PM - 10:00 PM',
+      friday: '5:00 PM - 10:00 PM',
+      saturday: '5:00 PM - 10:00 PM',
+      sunday: 'Closed'
+    },
+    videos: [
+      {
+        id: 'video-022',
+        videoUrl: 'https://www.youtube.com/watch?v=etto_restaurant',
+        tags: [
+          { id: 'tag-060', name: 'Italian' },
+          { id: 'tag-061', name: 'Merrion Row' },
+          { id: 'tag-062', name: 'Wine Bar' }
+        ],
+        status: TableStatusEnum.PENDING
+      }
+    ],
+    dateAdded: new Date('2024-02-17T11:20:00'),
+    createdAt: new Date('2024-02-17'),
+    updatedAt: new Date('2024-02-17')
+  },
+  {
+    restaurantId: 'submitted-005',
+    name: 'The Fumbally',
+    address: {
+      status: TableStatusEnum.PENDING,
+      name: '5 Fumbally Lane, Dublin 8'
+    },
+    maplink: 'https://maps.google.com/?q=5+Fumbally+Lane,+Dublin+8,+Ireland',
+    website: 'https://www.thefumbally.ie',
+    menuUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.thefumbally.ie/menu'
+    },
+    reservationUrl: {
+      status: TableStatusEnum.PENDING,
+      url: 'https://www.thefumbally.ie/book'
+    },
+    comment: 'Organic cafe with healthy food options and sustainable practices.',
+    openingHours: {
+      monday: '8:00 AM - 5:00 PM',
+      tuesday: '8:00 AM - 5:00 PM',
+      wednesday: '8:00 AM - 5:00 PM',
+      thursday: '8:00 AM - 5:00 PM',
+      friday: '8:00 AM - 5:00 PM',
+      saturday: '9:00 AM - 5:00 PM',
+      sunday: 'Closed'
+    },
+    videos: [
+      {
+        id: 'video-023',
+        videoUrl: 'https://www.youtube.com/watch?v=fumbally_cafe',
+        tags: [
+          { id: 'tag-063', name: 'Cafe' },
+          { id: 'tag-064', name: 'Dublin 8' },
+          { id: 'tag-065', name: 'Breakfast' },
+          { id: 'tag-066', name: 'Organic' }
+        ],
+        status: TableStatusEnum.PENDING
+      },
+      {
+        id: 'video-024',
+        videoUrl: 'https://www.youtube.com/watch?v=fumbally_brunch',
+        tags: [
+          { id: 'tag-067', name: 'Brunch' },
+          { id: 'tag-068', name: 'Healthy Food' }
+        ],
+        status: TableStatusEnum.PENDING
+      }
+    ],
+    dateAdded: new Date('2024-02-18T14:55:00'),
+    createdAt: new Date('2024-02-18'),
+    updatedAt: new Date('2024-02-18')
+  }
+];
+
+/**
+ * Mock submitted videos data for admin review
+ */
+export const mockSubmittedVideos: SubmittedVideoType[] = [
+  {
+    id: 'submitted-video-001',
+    restaurantId: 'rest-009',
+    name: 'Chapter One - Chef Interview',
+    videos: [{
+      id: 'video-025',
+      videoUrl: 'https://www.youtube.com/watch?v=chapter_one_chef_interview',
+      tags: [
+        { id: 'tag-069', name: 'Chef Interview' },
+        { id: 'tag-070', name: 'Behind the Scenes' },
+        { id: 'tag-071', name: 'Fine Dining' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Exclusive interview with the head chef about their culinary philosophy and signature dishes.',
+    dateAdded: new Date('2024-02-19T10:30:00')
+  },
+  {
+    id: 'submitted-video-002',
+    restaurantId: 'rest-010',
+    name: 'The Greenhouse - Seasonal Menu Preview',
+    videos: [{
+      id: 'video-026',
+      videoUrl: 'https://www.youtube.com/watch?v=greenhouse_seasonal_menu',
+      tags: [
+        { id: 'tag-072', name: 'Seasonal Menu' },
+        { id: 'tag-073', name: 'Spring Dishes' },
+        { id: 'tag-074', name: 'Local Ingredients' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Preview of the new seasonal menu featuring spring ingredients and innovative dishes.',
+    dateAdded: new Date('2024-02-20T15:45:00')
+  },
+  {
+    id: 'submitted-video-003',
+    restaurantId: 'rest-011',
+    name: 'L\'Ecrivain - Wine Tasting Event',
+    videos: [{
+      id: 'video-027',
+      videoUrl: 'https://www.youtube.com/watch?v=lecrivain_wine_tasting',
+      tags: [
+        { id: 'tag-075', name: 'Wine Tasting' },
+        { id: 'tag-076', name: 'Sommelier' },
+        { id: 'tag-077', name: 'French Wine' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Special wine tasting event featuring rare French wines paired with signature dishes.',
+    dateAdded: new Date('2024-02-21T12:20:00')
+  },
+  {
+    id: 'submitted-video-004',
+    restaurantId: 'rest-012',
+    name: 'Patrick Guilbaud - Anniversary Celebration',
+    videos: [{
+      id: 'video-028',
+      videoUrl: 'https://www.youtube.com/watch?v=patrick_guilbaud_anniversary',
+      tags: [
+        { id: 'tag-078', name: 'Anniversary' },
+        { id: 'tag-079', name: 'Celebration' },
+        { id: 'tag-080', name: 'Fine Dining' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Celebration of the restaurant\'s anniversary with special menu and guest appearances.',
+    dateAdded: new Date('2024-02-22T17:10:00')
+  },
+  {
+    id: 'submitted-video-005',
+    restaurantId: 'rest-013',
+    name: 'The Winding Stair - Poetry Night',
+    videos: [{
+      id: 'video-029',
+      videoUrl: 'https://www.youtube.com/watch?v=winding_stair_poetry_night',
+      tags: [
+        { id: 'tag-081', name: 'Poetry Night' },
+        { id: 'tag-082', name: 'Cultural Event' },
+        { id: 'tag-083', name: 'Live Performance' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Monthly poetry night featuring local poets and literary enthusiasts.',
+    dateAdded: new Date('2024-02-23T14:35:00')
+  },
+  {
+    id: 'submitted-video-006',
+    restaurantId: 'rest-014',
+    name: 'Bunsen - Burger Masterclass',
+    videos: [{
+      id: 'video-030',
+      videoUrl: 'https://www.youtube.com/watch?v=bunsen_burger_masterclass',
+      tags: [
+        { id: 'tag-084', name: 'Burger Masterclass' },
+        { id: 'tag-085', name: 'Cooking Demo' },
+        { id: 'tag-086', name: 'Behind the Scenes' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Step-by-step guide to making the perfect burger, from meat selection to final assembly.',
+    dateAdded: new Date('2024-02-24T10:50:00')
+  },
+  {
+    id: 'submitted-video-007',
+    restaurantId: 'rest-015',
+    name: 'Uno Mas - Tapas Pairing Guide',
+    videos: [{
+      id: 'video-031',
+      videoUrl: 'https://www.youtube.com/watch?v=uno_mas_tapas_pairing',
+      tags: [
+        { id: 'tag-087', name: 'Tapas Pairing' },
+        { id: 'tag-088', name: 'Spanish Wine' },
+        { id: 'tag-089', name: 'Food Pairing' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Comprehensive guide to pairing tapas with Spanish wines and cocktails.',
+    dateAdded: new Date('2024-02-25T16:25:00')
+  },
+  {
+    id: 'submitted-video-008',
+    restaurantId: 'rest-016',
+    name: 'Pickle - Chef\'s Table Experience',
+    videos: [{
+      id: 'video-032',
+      videoUrl: 'https://www.youtube.com/watch?v=pickle_chefs_table',
+      tags: [
+        { id: 'tag-090', name: 'Chef\'s Table' },
+        { id: 'tag-091', name: 'Exclusive Experience' },
+        { id: 'tag-092', name: 'Fine Dining' }
+      ],
+      status: TableStatusEnum.PENDING
+    }],
+    comment: 'Exclusive chef\'s table experience with personalized menu and wine pairing.',
+    dateAdded: new Date('2024-02-26T11:40:00')
   }
 ];

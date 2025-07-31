@@ -2,7 +2,7 @@
 import { ChevronDown } from "lucide-react";
 import { Column, Pie } from "@ant-design/charts";
 import { StatsGrid } from "@/components/ui/StatsGrid";
-import ActiveRestaurants from "@/components/restaurants/ActiveRestaurants";
+import ActiveRestaurants from "@/components/restaurants/tables/ActiveRestaurants";
 
 export default function DashboardPage() {
   const barData = [

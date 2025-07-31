@@ -1,34 +1,21 @@
-import { ManagerTableTabsEnum } from '@/types';
-import PendingRestaurants from './PendingRestaurants';
-import PendingVideos from './PendingVideos';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types';
+import PendingRestaurants from './tables/PendingRestaurants';
+import PendingVideos from './tables/PendingVideos';
 import React from 'react'; // Added missing import for React
-import ActiveRestaurants from './ActiveRestaurants';
-
-/**
- * Placeholder component for Active Restaurants
- */
-const ActiveRestaurantsPlaceholder: React.FC<{ onTotal: (total: number) => void }> = ({ onTotal }) => {
-  React.useEffect(() => {
-    onTotal(0);
-  }, [onTotal]);
-
-  return (
-    <div className="flex items-center justify-center h-32 text-gray-500">
-      Active Restaurants table coming soon...
-    </div>
-  );
-};
+import ActiveRestaurants from './tables/ActiveRestaurants';
+import SubmittedRestaurants from './tables/SubmittedRestaurants';
+import SubmittedVideos from './tables/SubmittedVideos';
 
 /**
  * Props for TableContent component
  */
 interface TableContentProps {
-  activeTab: ManagerTableTabsEnum;
+  activeTab: ManagerTableTabsEnum | AnalystTableTabsEnum;
   searchTerm: string;
-  tablePageNumbers: Record<ManagerTableTabsEnum, number>;
-  tablePageSizes: Record<ManagerTableTabsEnum, number>;
-  onPageChange: (tab: ManagerTableTabsEnum, page: number) => void;
-  onPageSizeChange: (tab: ManagerTableTabsEnum, pageSize: number) => void;
+  tablePageNumbers: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, number>;
+  tablePageSizes: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, number>;
+  onPageChange: (tab: ManagerTableTabsEnum | AnalystTableTabsEnum, page: number) => void;
+  onPageSizeChange: (tab: ManagerTableTabsEnum | AnalystTableTabsEnum, pageSize: number) => void;
 }
 
 /**
@@ -44,7 +31,7 @@ export const TableContent: React.FC<TableContentProps> = ({
 }) => {
   const renderTableContent = (): React.ReactNode => {
     switch (activeTab) {
-      case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
+      case ManagerTableTabsEnum.ACTIVE_RESTAURANTS || AnalystTableTabsEnum.ACTIVE_RESTAURANTS:
         return (
           <ActiveRestaurants
             searchTerm={searchTerm}
@@ -83,6 +70,34 @@ export const TableContent: React.FC<TableContentProps> = ({
             }
             handlePageSize={(pageSize: number) =>
               onPageSizeChange(ManagerTableTabsEnum.PENDING_VIDEOS, pageSize)
+            }
+          />
+        );
+      case AnalystTableTabsEnum.SUBMITTED_RESTAURANTS:
+        return (
+          <SubmittedRestaurants
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, page)
+            }
+            pageSize={tablePageSizes[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]}
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, pageSize)
+            }
+          />
+        );
+      case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
+        return (
+          <SubmittedVideos
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[AnalystTableTabsEnum.SUBMITTED_VIDEOS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(AnalystTableTabsEnum.SUBMITTED_VIDEOS, page)
+            }
+            pageSize={tablePageSizes[AnalystTableTabsEnum.SUBMITTED_VIDEOS]}
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(AnalystTableTabsEnum.SUBMITTED_VIDEOS, pageSize)
             }
           />
         );

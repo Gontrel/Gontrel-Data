@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { RestaurantApi } from '@/lib/api';
 import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
-import { PaginatedResponse, PendingRestaurantType, PendingVideoType, ActiveRestaurantType } from '@/types/restaurant';
+import { PaginatedResponse, PendingRestaurantType, PendingVideoType, ActiveRestaurantType, SubmittedVideoType, SubmittedRestaurantType } from '@/types/restaurant';
 
 /**
  * Query parameters for restaurant fetching
@@ -23,6 +23,10 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
 
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS | AnalystTableTabsEnum.ACTIVE_RESTAURANTS }): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
 
+export function useRestaurants(params: RestaurantQueryParams & { tableId: AnalystTableTabsEnum.SUBMITTED_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<SubmittedRestaurantType>>>;
+
+export function useRestaurants(params: RestaurantQueryParams & { tableId: AnalystTableTabsEnum.SUBMITTED_VIDEOS}): ReturnType<typeof useQuery<PaginatedResponse<SubmittedVideoType>>>;
+
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum | AnalystTableTabsEnum }) {
   const { tableId, search, page, limit, currentUserId, enabled = true } = params;
 
@@ -37,6 +41,12 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
 
         case ManagerTableTabsEnum.PENDING_VIDEOS:
           return await RestaurantApi.getPendingVideos(queryParams);
+
+        case AnalystTableTabsEnum.SUBMITTED_RESTAURANTS:
+          return await RestaurantApi.getSubmittedRestaurants(queryParams);
+
+        case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
+          return await RestaurantApi.getSubmittedVideos(queryParams);
 
         case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
         case AnalystTableTabsEnum.ACTIVE_RESTAURANTS:

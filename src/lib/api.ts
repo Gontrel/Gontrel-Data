@@ -1,5 +1,5 @@
-import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
-import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants } from '@/data/mockRestaurants';
+import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
+import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants, mockSubmittedRestaurants, mockSubmittedVideos } from '@/data/mockRestaurants';
 import { mockUsers, getCurrentUser } from '@/data/mockUsers';
 
 /**
@@ -180,6 +180,169 @@ export class RestaurantApi {
         limit,
         total: filteredPendingVideos.length,
         totalPages: Math.ceil(filteredPendingVideos.length / limit)
+      }
+    };
+  }
+
+  /**
+   * Get submitted restaurants with optional search and pagination
+   * @template SubmittedRestaurant
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<SubmittedRestaurant>>}
+   */
+  static async getSubmittedRestaurants(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<SubmittedRestaurantType>> {
+      await delay(300); // Simulate network delay
+
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Type validation for mockSubmittedRestaurants
+    if (!Array.isArray(mockSubmittedRestaurants)) {
+      throw new Error('"mockSubmittedRestaurants" is not an array');
+    }
+
+    let filteredRestaurants = [...mockSubmittedRestaurants] as SubmittedRestaurantType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredRestaurants = filteredRestaurants.filter((restaurant: SubmittedRestaurantType) =>
+        (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.address.name === 'string' && restaurant.address.name.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedRestaurants,
+      pagination: {
+        page,
+        limit,
+        total: filteredRestaurants.length,
+        totalPages: Math.ceil(filteredRestaurants.length / limit)
+      }
+    };
+  }
+
+  /**
+   * Get submitted videos with optional search and pagination
+  /**
+   * Get submitted videos with optional search and pagination
+   * @template SubmittedVideo
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<SubmittedVideo>>}
+   */
+  static async getSubmittedVideos(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<SubmittedVideoType>> {
+    await delay(300); // Simulate network delay
+
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Type validation for mockSubmittedVideos
+    if (!Array.isArray(mockSubmittedVideos)) {
+      throw new Error('"mockSubmittedVideos" is not an array');
+    }
+
+    let filteredVideos = [...mockSubmittedVideos] as SubmittedVideoType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredVideos = filteredVideos.filter((video: SubmittedVideoType) =>
+        video.name.toLowerCase().includes(searchTerm) || video.restaurantId.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedVideos,
+      pagination: {
+        page,
+        limit,
+        total: filteredVideos.length,
+        totalPages: Math.ceil(filteredVideos.length / limit)
       }
     };
   }

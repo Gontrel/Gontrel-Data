@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ManagerTableTabsEnum } from '@/types';
-import { ManagerTableTabs } from '@/components/restaurants/ManagerTableTabs';
 import { ActionPanel } from '@/components/restaurants/ActionPanel';
 import { TableContent } from '@/components/restaurants/TableContent';
 import { useTabState } from '@/hooks/useTabState';
@@ -12,13 +11,16 @@ import { StatsGrid } from "@/components/ui/StatsGrid";
 import { NewRestaurantSheet } from "@/components/restaurants/NewRestaurantSheet";
 import { PreviewVideoModal } from "@/components/restaurants/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
+import { AdminRoleEnum, AnalystTableTabsEnum } from '@/types/enums';
+import TableTabs from '@/components/restaurants/TableTabs';
 
 /**
  * Restaurants Page Component
  */
 export default function RestaurantsPage() {
-  const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum>(
-    ManagerTableTabsEnum.ACTIVE_RESTAURANTS
+  const [view, setView] = useState<AdminRoleEnum>(AdminRoleEnum.ANALYST);
+  const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum | AnalystTableTabsEnum>(
+    view === AdminRoleEnum.ANALYST ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS : ManagerTableTabsEnum.ACTIVE_RESTAURANTS
   );
   const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
@@ -46,6 +48,10 @@ export default function RestaurantsPage() {
     }
   };
 
+  useEffect(() => {
+    setView(AdminRoleEnum.ANALYST);
+  }, []);
+
   /**
    * Creates page numbers object for all tabs
    */
@@ -53,6 +59,8 @@ export default function RestaurantsPage() {
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage,
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+    [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
+    [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage,
   }), [tabStates]);
 
   /**
@@ -62,6 +70,8 @@ export default function RestaurantsPage() {
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].pageSize,
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+    [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
+    [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].pageSize,
   }), [tabStates]);
 
   /**
@@ -96,21 +106,21 @@ export default function RestaurantsPage() {
   /**
    * Handles page change for any tab
    */
-  const handlePageChange = useCallback((tab: ManagerTableTabsEnum, page: number) => {
+  const handlePageChange = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, page: number) => {
     updateTabPage(tab, page);
   }, [updateTabPage]);
 
   /**
    * Handles page size change for any tab
    */
-  const handlePageSizeChange = useCallback((tab: ManagerTableTabsEnum, pageSize: number) => {
+  const handlePageSizeChange = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, pageSize: number) => {
     updateTabPageSize(tab, pageSize);
   }, [updateTabPageSize]);
 
   /**
    * Handles tab change with state preservation
    */
-  const handleTabChange = useCallback((tab: ManagerTableTabsEnum) => {
+  const handleTabChange = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum) => {
     setActiveTab(tab);
   }, []);
 
@@ -126,10 +136,11 @@ export default function RestaurantsPage() {
         <StatsGrid stats={DEFAULT_RESTAURANT_STATS} />
 
         {/* Table Tabs */}
-        <ManagerTableTabs
+        <TableTabs
+          view={view}
           activeTab={activeTab}
-          onTabChange={handleTabChange}
           tableTotals={tableTotals}
+          handleTabChange={handleTabChange}
         />
 
         {/* Search and Actions */}

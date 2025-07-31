@@ -1,9 +1,9 @@
 import React, { useMemo, useEffect } from "react";
-import { RestaurantTable } from "./RestaurantTable";
+import { RestaurantTable } from "../RestaurantTable";
 import { useRestaurants } from "@/hooks/useRestaurants";
 import { ManagerTableTabsEnum } from "@/types/enums";
 import { ActiveRestaurantType } from "@/types/restaurant";
-import { createActiveRestaurantsColumns } from "./columns/activeRestaurantsColumns";
+import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
 import { useActiveRestaurants } from "@/hooks/useActiveRestaurants";
 
 interface ActiveRestaurantsProps {

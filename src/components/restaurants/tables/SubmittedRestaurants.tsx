@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import { RestaurantTable } from './RestaurantTable';
+import { RestaurantTable } from '../RestaurantTable';
 import { useRestaurants } from '@/hooks/useRestaurants';
-import { ManagerTableTabsEnum } from '@/types';
-import { createPendingRestaurantsColumns } from './columns/pendingRestaurantsColumns';
-import { usePendingRestaurants } from '@/hooks/usePendingRestaurants';
-import { PendingRestaurantType } from '@/types/restaurant';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types';
+import { useSubmittedRestaurants } from '@/hooks/useSubmittedRestaurants';
+import { SubmittedRestaurantType } from '@/types/restaurant';
+import { createSubmittedRestaurantsColumns } from '../columns/submittedRestaurantsColumns';
 
-interface PendingRestaurantsProps {
+interface SubmittedRestaurantsProps {
     searchTerm: string;
     currentPage: number;
     handleCurrentPage: (page: number) => void;
@@ -17,42 +17,36 @@ interface PendingRestaurantsProps {
 /**
  * Component for displaying and managing pending restaurants
  */
-const PendingRestaurants = ({
+const SubmittedRestaurants = ({
     searchTerm,
     currentPage,
     handleCurrentPage,
     pageSize,
     handlePageSize
-}: PendingRestaurantsProps) => {
+}: SubmittedRestaurantsProps) => {
     const {
         handleRowSelect,
-        handleApprove,
-        handleDecline,
-        handleSendFeedback,
-        handleSave
-    } = usePendingRestaurants();
+        handleResubmit
+    } = useSubmittedRestaurants();
 
     // Create columns with proper dependencies
     const columns = useMemo(
-        () => createPendingRestaurantsColumns(
-            handleApprove,
-            handleDecline,
-            handleSendFeedback,
-            handleSave
+        () => createSubmittedRestaurantsColumns(
+            handleResubmit
         ),
-        [handleApprove, handleDecline, handleSendFeedback, handleSave]
+        [handleResubmit]
     );
 
     // Fetch data
     const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: ManagerTableTabsEnum.PENDING_RESTAURANTS,
+        tableId: AnalystTableTabsEnum.SUBMITTED_RESTAURANTS,
         search: searchTerm,
         page: currentPage,
         limit: pageSize
     });
 
     return (
-        <RestaurantTable<PendingRestaurantType>
+        <RestaurantTable<SubmittedRestaurantType>
             restaurants={restaurantsData?.data || []}
             loading={restaurantsLoading}
             onRowSelect={handleRowSelect}
@@ -67,4 +61,4 @@ const PendingRestaurants = ({
     );
 };
 
-export default PendingRestaurants;
+export default SubmittedRestaurants;

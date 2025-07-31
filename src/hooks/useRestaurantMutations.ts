@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ManagerTableTabsEnum, TableStatusEnum } from '@/types/enums';
-import { PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum, TableStatusEnum } from '@/types/enums';
+import { PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
 
 /**
  * Custom hook for restaurant mutations with proper query invalidation
@@ -19,7 +19,7 @@ export const useRestaurantMutations = () => {
     }: {
       restaurantId: string;
       newStatus: TableStatusEnum;
-      tableType: ManagerTableTabsEnum;
+      tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
     }) => {
       console.log(`🔄 Updating restaurant ${restaurantId} status to ${newStatus} in ${tableType}`);
 
@@ -38,18 +38,39 @@ export const useRestaurantMutations = () => {
         queryKey: ['restaurants', 'total', tableType]
       });
 
-      if (tableType === ManagerTableTabsEnum.PENDING_RESTAURANTS) {
-        console.log('🔄 Invalidating active restaurants totals due to pending restaurant change');
-        queryClient.invalidateQueries({
-          queryKey: ['restaurants', 'total', ManagerTableTabsEnum.ACTIVE_RESTAURANTS]
-        });
-      }
-
-      if (tableType === ManagerTableTabsEnum.PENDING_VIDEOS) {
-        console.log('🔄 Invalidating pending restaurants totals due to pending video change');
-        queryClient.invalidateQueries({
-          queryKey: ['restaurants', 'total', ManagerTableTabsEnum.PENDING_RESTAURANTS]
-        });
+      switch (tableType) {
+        case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
+          queryClient.invalidateQueries({
+            queryKey: ['restaurants', 'total', ManagerTableTabsEnum.ACTIVE_RESTAURANTS]
+          });
+          break;
+        case ManagerTableTabsEnum.PENDING_RESTAURANTS:
+          queryClient.invalidateQueries({
+            queryKey: ['restaurants', 'total', ManagerTableTabsEnum.ACTIVE_RESTAURANTS]
+          });
+          break;
+        case ManagerTableTabsEnum.PENDING_VIDEOS:
+          queryClient.invalidateQueries({
+            queryKey: ['restaurants', 'total', ManagerTableTabsEnum.PENDING_RESTAURANTS]
+          });
+          break;
+        case AnalystTableTabsEnum.SUBMITTED_RESTAURANTS:
+          queryClient.invalidateQueries({
+            queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]
+          });
+          break;
+        case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
+          queryClient.invalidateQueries({
+            queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_VIDEOS]
+          });
+          break;
+        case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
+          queryClient.invalidateQueries({
+            queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_VIDEOS]
+          });
+          break;
+        default:
+          break;
       }
     },
     onError: (error) => {
@@ -101,12 +122,36 @@ export const useRestaurantMutations = () => {
     });
   };
 
+  /**
+   * Resubmit a submitted restaurant
+   */
+  const resubmitRestaurant = (restaurant: SubmittedRestaurantType) => {
+    return updateRestaurantStatus.mutate({
+      restaurantId: restaurant.restaurantId,
+      newStatus: TableStatusEnum.PENDING,
+      tableType: AnalystTableTabsEnum.SUBMITTED_RESTAURANTS
+    });
+  };
+
+  /**
+   * Resubmit a submitted video
+   */
+  const resubmitVideo = (video: SubmittedVideoType) => {
+    return updateRestaurantStatus.mutate({
+      restaurantId: video.restaurantId,
+      newStatus: TableStatusEnum.PENDING,
+      tableType: AnalystTableTabsEnum.SUBMITTED_VIDEOS
+    });
+  };
+
   return {
     updateRestaurantStatus,
     approveRestaurant,
     declineRestaurant,
     approveVideo,
     declineVideo,
+    resubmitRestaurant,
+    resubmitVideo,
     isUpdating: updateRestaurantStatus.isPending
   };
 };

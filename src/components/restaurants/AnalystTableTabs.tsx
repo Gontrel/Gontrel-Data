@@ -1,34 +1,34 @@
 'use client';
 
 import React from 'react';
-import { ManagerTableTabsEnum } from '@/types';
+import { AnalystTableTabsEnum } from '@/types/enums';
 
-interface ManagerTableTabsProps {
-  activeTab: ManagerTableTabsEnum;
-  onTabChange: (tab: ManagerTableTabsEnum) => void;
-  tableTotals: Record<ManagerTableTabsEnum, number>;
+interface AnalystTableTabsProps {
+  activeTab: AnalystTableTabsEnum;
+  onTabChange: (tab: AnalystTableTabsEnum) => void;
+  tableTotals: Record<AnalystTableTabsEnum, number>;
 }
 
 /**
- * ManagerTableTabs Component
+ * AnalystTableTabs Component
  */
-export function ManagerTableTabs({
+export function AnalystTableTabs({
   activeTab,
   onTabChange,
   tableTotals
-}: ManagerTableTabsProps): React.JSX.Element {
+}: AnalystTableTabsProps): React.JSX.Element {
   const activeTabStyles = 'text-blue-500 border-b-4 border-blue-500 font-semibold';
   const inactiveTabStyles = 'text-gray-300 font-medium';
 
   return (
     <div className="flex items-center justify-between border-b border-[#D5D5D5] mb-2.5 overflow-x-auto">
       <div className="flex items-center gap-x-7.5 min-w-0">
-        {(Object.keys(ManagerTableTabsEnum) as Array<keyof typeof ManagerTableTabsEnum>).map((key) => {
-          const tabKey = ManagerTableTabsEnum[key];
+        {(Object.keys(AnalystTableTabsEnum) as Array<keyof typeof AnalystTableTabsEnum>).map((key) => {
+          const tabKey = AnalystTableTabsEnum[key];
           const tabLabels: Record<typeof tabKey, string> = {
-            [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: 'Active restaurants',
-            [ManagerTableTabsEnum.PENDING_RESTAURANTS]: 'Pending restaurants',
-            [ManagerTableTabsEnum.PENDING_VIDEOS]: 'Pending videos'
+            [AnalystTableTabsEnum.ACTIVE_RESTAURANTS]: 'Active restaurants',
+            [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: 'Submitted restaurants',
+            [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: 'Submitted videos'
           };
           const total = tableTotals[tabKey];
           const showTotal = typeof total === 'number' && total > 0;
