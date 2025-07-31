@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnalystTableTabsEnum, ManagerTableTabsEnum, TableStatusEnum } from '@/types/enums';
 import { PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
+import { RestaurantApi } from '@/lib/api';
 
 /**
  * Custom hook for restaurant mutations with proper query invalidation
@@ -15,29 +16,39 @@ export const useRestaurantMutations = () => {
     mutationFn: async ({
       restaurantId,
       newStatus,
-      tableType
+      tableType,
+      propertyKey
     }: {
       restaurantId: string;
       newStatus: TableStatusEnum;
       tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
+      propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos';
     }) => {
-      console.log(`🔄 Updating restaurant ${restaurantId} status to ${newStatus} in ${tableType}`);
+      console.log(`🔄 Updating restaurant ${restaurantId} status to ${newStatus} in ${tableType}${propertyKey ? ` for ${propertyKey}` : ''}`);
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const result = await RestaurantApi.updateRestaurantStatus({
+        restaurantId,
+        newStatus,
+        tableType,
+        propertyKey
+      });
 
-      return { restaurantId, newStatus, tableType };
+      return { restaurantId, newStatus, tableType, propertyKey, success: result.success };
     },
-    onSuccess: ({ tableType, restaurantId, newStatus }) => {
-      console.log(`✅ Restaurant ${restaurantId} status updated to ${newStatus}, invalidating queries for ${tableType}`);
+    onSuccess: ({ tableType, restaurantId, newStatus, propertyKey }) => {
+      console.log(`✅ Restaurant ${restaurantId} status updated to ${newStatus}, invalidating queries for ${tableType}${propertyKey ? ` for ${propertyKey}` : ''}`);
 
+      // Invalidate the specific table query
       queryClient.invalidateQueries({
         queryKey: ['restaurants', tableType]
       });
 
+      // Invalidate totals queries
       queryClient.invalidateQueries({
         queryKey: ['restaurants', 'total', tableType]
       });
 
+      // Invalidate related table queries based on table type
       switch (tableType) {
         case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
           queryClient.invalidateQueries({
@@ -64,11 +75,6 @@ export const useRestaurantMutations = () => {
             queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_VIDEOS]
           });
           break;
-        case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
-          queryClient.invalidateQueries({
-            queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_VIDEOS]
-          });
-          break;
         default:
           break;
       }
@@ -81,22 +87,24 @@ export const useRestaurantMutations = () => {
   /**
    * Approve a pending restaurant
    */
-  const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum) => {
+  const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos') => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.restaurantId,
       newStatus: TableStatusEnum.APPROVED,
-      tableType
+      tableType,
+      propertyKey
     });
   };
 
   /**
    * Decline a pending restaurant
    */
-  const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum) => {
+  const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos') => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.restaurantId,
       newStatus: TableStatusEnum.DECLINED,
-      tableType
+      tableType,
+      propertyKey
     });
   };
 

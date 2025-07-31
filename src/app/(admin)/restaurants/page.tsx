@@ -49,7 +49,7 @@ export default function RestaurantsPage() {
   };
 
   useEffect(() => {
-    setView(AdminRoleEnum.ANALYST);
+    setView(AdminRoleEnum.MANAGER);
   }, []);
 
   /**

@@ -1,6 +1,7 @@
 import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
 import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants, mockSubmittedRestaurants, mockSubmittedVideos } from '@/data/mockRestaurants';
 import { mockUsers, getCurrentUser } from '@/data/mockUsers';
+import { TableStatusEnum, ManagerTableTabsEnum, AnalystTableTabsEnum } from '@/types/enums';
 
 /**
  * Simulate API delay for realistic development experience
@@ -22,6 +23,112 @@ export type RestaurantTable = {
  * Restaurant API service
  */
 export class RestaurantApi {
+  /**
+   * Update restaurant status in mock data
+   * @param restaurantId - Restaurant ID to update
+   * @param propertyKey - Property to update (address, menuUrl, reservationUrl, or videos)
+   * @param newStatus - New status to set
+   * @param tableType - Table type for proper data source
+   */
+  static async updateRestaurantStatus(params: {
+    restaurantId: string;
+    propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos';
+    newStatus: TableStatusEnum;
+    tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
+  }): Promise<{ success: boolean }> {
+    await delay(300); // Simulate network delay
+
+    const { restaurantId, propertyKey, newStatus, tableType } = params;
+
+    // Helper function to toggle status
+    const toggleStatus = (currentStatus: TableStatusEnum, targetStatus: TableStatusEnum): TableStatusEnum => {
+      return currentStatus === targetStatus ? TableStatusEnum.PENDING : targetStatus;
+    };
+
+    // Update the appropriate mock data based on table type
+    switch (tableType) {
+      case ManagerTableTabsEnum.PENDING_RESTAURANTS:
+        const pendingRestaurant = mockPendingRestaurants.find(r => r.restaurantId === restaurantId);
+        if (pendingRestaurant) {
+          if (propertyKey) {
+            // Update specific property
+            if (propertyKey === 'address') {
+              pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status, newStatus);
+            } else if (propertyKey === 'menuUrl') {
+              pendingRestaurant.menuUrl.status = toggleStatus(pendingRestaurant.menuUrl.status, newStatus);
+            } else if (propertyKey === 'reservationUrl') {
+              pendingRestaurant.reservationUrl.status = toggleStatus(pendingRestaurant.reservationUrl.status, newStatus);
+            } else if (propertyKey === 'videos') {
+              pendingRestaurant.videos.forEach(video => {
+                video.status = toggleStatus(video.status, newStatus);
+              });
+            }
+          } else {
+            // Update all properties
+            pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status, newStatus);
+            pendingRestaurant.menuUrl.status = toggleStatus(pendingRestaurant.menuUrl.status, newStatus);
+            pendingRestaurant.reservationUrl.status = toggleStatus(pendingRestaurant.reservationUrl.status, newStatus);
+            pendingRestaurant.videos.forEach(video => {
+              video.status = toggleStatus(video.status, newStatus);
+            });
+          }
+        }
+        break;
+
+      case ManagerTableTabsEnum.PENDING_VIDEOS:
+        const pendingVideo = mockPendingVideos.find(v => v.id === restaurantId);
+        if (pendingVideo) {
+          pendingVideo.videos.forEach(video => {
+            video.status = toggleStatus(video.status, newStatus);
+          });
+        }
+        break;
+
+      case AnalystTableTabsEnum.SUBMITTED_RESTAURANTS:
+        const submittedRestaurant = mockSubmittedRestaurants.find(r => r.restaurantId === restaurantId);
+        if (submittedRestaurant) {
+          if (propertyKey) {
+            // Update specific property
+            if (propertyKey === 'address') {
+              submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status, newStatus);
+            } else if (propertyKey === 'menuUrl') {
+              submittedRestaurant.menuUrl.status = toggleStatus(submittedRestaurant.menuUrl.status, newStatus);
+            } else if (propertyKey === 'reservationUrl') {
+              submittedRestaurant.reservationUrl.status = toggleStatus(submittedRestaurant.reservationUrl.status, newStatus);
+            } else if (propertyKey === 'videos') {
+              submittedRestaurant.videos.forEach(video => {
+                video.status = toggleStatus(video.status, newStatus);
+              });
+            }
+          } else {
+            // Update all properties
+            submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status, newStatus);
+            submittedRestaurant.menuUrl.status = toggleStatus(submittedRestaurant.menuUrl.status, newStatus);
+            submittedRestaurant.reservationUrl.status = toggleStatus(submittedRestaurant.reservationUrl.status, newStatus);
+            submittedRestaurant.videos.forEach(video => {
+              video.status = toggleStatus(video.status, newStatus);
+            });
+          }
+        }
+        break;
+
+      case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
+        const submittedVideo = mockSubmittedVideos.find(v => v.id === restaurantId);
+        if (submittedVideo) {
+          submittedVideo.videos.forEach(video => {
+            video.status = toggleStatus(video.status, newStatus);
+          });
+        }
+        break;
+
+      default:
+        console.warn(`Unsupported table type for status update: ${tableType}`);
+        return { success: false };
+    }
+
+    return { success: true };
+  }
+
   /**
    * Get restaurants by table with optional search and pagination
    * @template PendingRestaurant
