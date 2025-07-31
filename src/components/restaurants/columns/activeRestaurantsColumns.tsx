@@ -1,128 +1,144 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ActiveRestaurantType } from "@/types/restaurant";
-import { MapPin, Link as LinkIcon, Calendar, Flame, Video } from "lucide-react";
 import { TableHeader } from "./utils";
 import Image from "next/image";
-import { format } from "date-fns";
-import Icon from "@/components/svgs/Icons";
-
-const TrendBadge = ({ trend }: { trend: ActiveRestaurantType["trend"] }) => {
-  const baseClasses = "px-3 py-1.5 rounded-full text-sm font-medium";
-  const styles = {
-    "Popular searches": "bg-[#E6F1FE] text-[#2E3032]",
-    "Trending TikTok #": "bg-[#E6F1FE] text-[#2E3032]",
-    None: "bg-[#F0F1F2] text-[#2E3032]",
-  };
-  return <span className={`${baseClasses} ${styles[trend]}`}>{trend}</span>;
-};
+import { formatDate } from "@/lib/utils";
+import { TABLE_COLUMN_SIZES } from "@/constants/table";
+import { ExternalLink } from "@/components/ui/ExternalLink";
+import { PillButton } from "@/components/ui/PillButton";
+import { TrendEnum } from "@/types";
 
 export const createActiveRestaurantsColumns = (): ColumnDef<ActiveRestaurantType>[] => [
   {
-    accessorKey: "name",
-    header: () => <TableHeader title="Restaurant name" />,
-    cell: ({ row }) => {
-      const restaurant = row.original;
+    accessorKey: 'id',
+    header: () => (
+      <TableHeader title="#" />
+    ),
+    cell: ({ row, table }) => {
+      const { pageSize, pageIndex } = table.getState().pagination;
+      const rowIndex = row.index + 1;
+      const calculatedId = (pageIndex * pageSize) + rowIndex;
+
       return (
-        <div className="flex items-center gap-3.5">
-          <div className="flex flex-row items-center">
-            <div>
-              <div className="font-medium flex flex-wrap text-[17px] leading-[100%] text-[#2E3032]">
-                {restaurant.name}
-              </div>
-            </div>
-          </div>
+        <div className="font-medium text-[#181D1F] w-fit truncate">
+          {calculatedId}
         </div>
       );
     },
+    minSize: TABLE_COLUMN_SIZES.ID,
+    meta: { sticky: true }
   },
   {
-    accessorKey: "address",
-    header: () => <TableHeader icon={MapPin} title="Address" />,
+    accessorKey: 'name',
+    header: () => (
+      <TableHeader title="Restaurant name" />
+    ),
     cell: ({ row }) => (
-      <div className="flex flex-row gap-[14px]">
-        <p className=" text-[17px] font-medium">{row.getValue("address")}</p>
-        <a
-          href={row.original.maplink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2.5 text-black font-medium"
-        >
-          <Icon name="websiteLinkIcon" />
-        </a>
+      <div className="font-medium text-[#181D1F] max-w-60 truncate">
+        {row.getValue('name')}
       </div>
     ),
+    minSize: TABLE_COLUMN_SIZES.NAME,
+    meta: { sticky: true }
   },
   {
-    accessorKey: "website",
-    header: () => <TableHeader icon={LinkIcon} title="Website" />,
-    cell: ({ row }) => (
-      <div className="flex flex-row gap-[14px]">
-        <p className=" text-[17px] font-medium"> View website </p>
-        <a
-          href={row.getValue("website")}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2.5 text-black font-medium"
-        >
-          <Icon name="websiteLinkIcon" />
-        </a>
-      </div>
+    accessorKey: 'address',
+    header: () => (
+      <TableHeader iconName="mapPinIcon" title="Address" />
     ),
+    cell: ({ row }) => {
+      const name = row.original.address;
+      const maplink = row.original.maplink;
+
+      return (
+        <div className="flex flex-col gap-y-2">
+          <ExternalLink
+            href={maplink}
+            title={`View ${name} on Google Maps`}
+          >
+            <span className="text-black truncate max-w-52">{name}</span>
+          </ExternalLink>
+        </div>
+      );
+    },
+    minSize: TABLE_COLUMN_SIZES.ADDRESS,
+  },
+  {
+    accessorKey: 'website',
+    header: () => (
+      <TableHeader iconName="linkIcon" title="Website" />
+    ),
+    cell: ({ row }) => {
+      const url = row.getValue('website') as string;
+      return (
+        <ExternalLink href={url} title={url}>
+          <span className="text-black">View website</span>
+        </ExternalLink>
+      );
+    },
+    minSize: TABLE_COLUMN_SIZES.WEBSITE,
   },
   {
     accessorKey: "totalVideos",
-    header: () => <TableHeader icon={Video} title="Total videos" />,
+    header: () => <TableHeader iconName="videoIcon" title="Total videos" />,
     cell: ({ row }) => (
       <div className="text-center text-[17px] font-medium">
         {row.getValue("totalVideos")}
       </div>
     ),
+    minSize: TABLE_COLUMN_SIZES.VIDEO,
   },
   {
     accessorKey: "trend",
-    header: () => <TableHeader icon={Flame} title="Trend" />,
-    cell: ({ row }) => <TrendBadge trend={row.getValue("trend")} />,
+    header: () => <TableHeader iconName="flameIcon" title="Trend" />,
+    cell: ({ row }) => {
+      const textColor = row.getValue("trend") as TrendEnum === TrendEnum.NONE ? "text-[#2E3032]" : "text-[#2E3032]";
+      const bgColor = row.getValue("trend") as TrendEnum === TrendEnum.NONE ? "bg-[#F0F1F2]" : "bg-[#E6F1FE]";
+      return (
+        <PillButton text={row.getValue("trend")} textColor={textColor} bgColor={bgColor} />
+      )
+    },
+    minSize: TABLE_COLUMN_SIZES.TREND,
   },
   {
     accessorKey: "addedBy",
-    header: () => <TableHeader icon={Calendar} title="Added by" />,
+    header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
       const addedBy = row.getValue(
         "addedBy"
       ) as ActiveRestaurantType["addedBy"];
       return (
-        <div className="flex items-center gap-2">
-          <div className="flex flex-row">
-            <Image
-              src={addedBy.profileImage}
-              alt={addedBy.name}
-              width={40}
-              height={40}
-              className="rounded-full object-cover"
-            />
-            <span className="text-[17px] flex flex-wrap font-medium">
-              {addedBy.name}
+        <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
+          <Image
+            src={addedBy.profileImage}
+            alt={addedBy.name}
+            width={40}
+            height={40}
+            className="rounded-full object-cover"
+          />
+          <span className="text-black font-medium">{addedBy.name}</span>
+        </div>
+      );
+    },
+    minSize: TABLE_COLUMN_SIZES.ADDED_BY,
+  },
+  {
+    accessorKey: "dateAdded",
+    header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
+    cell: ({ row }) => {
+      const dateAdded = row.getValue("dateAdded") as Date;
+      return (
+        <div className="relative">
+          <div
+            className="flex items-center gap-2 px-2 py-1 w-full text-left"
+          >
+            <span className="text-[#181D1F] font-medium">
+              {formatDate(dateAdded)}
             </span>
           </div>
         </div>
       );
     },
-  },
-  {
-    accessorKey: "dateAdded",
-    header: () => <TableHeader icon={Calendar} title="Date added" />,
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("dateAdded"));
-      return (
-        <div className="flex flex-col items-center">
-          <div className="text-[#2E3032] text-[17px] font-medium flex flex-wrap">
-            {format(date, "MMMM d")}
-          </div>
-          <div className="text-[#2E3032] text-[17px] font-medium flex flex-wrap">
-            {format(date, "h:mma")}
-          </div>
-        </div>
-      );
-    },
+    minSize: TABLE_COLUMN_SIZES.DATE_ADDED,
   },
 ];

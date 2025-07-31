@@ -16,7 +16,7 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     addedBy: {
       userId: 'user-001',
       name: 'Sarah Johnson',
-      profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+      profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face'
     },
     openingHours: {
       monday: 'Closed',
@@ -408,7 +408,7 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     addedBy: {
       userId: 'user-015',
       name: 'Fiona O\'Brien',
-      profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+      profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
     },
     openingHours: {
       monday: 'Closed',

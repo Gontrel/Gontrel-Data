@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { PendingRestaurantType } from '@/types/restaurant';
 import { PendingRestaurantStatusKey } from '@/hooks/usePendingRestaurants';
-import { MapPin, Link, Calendar, Check, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { ActionButtons } from '../../ui/ActionButtons';
 import { ExternalLink } from '../../ui/ExternalLink';
 import Image from 'next/image';
@@ -10,17 +10,16 @@ import { TABLE_COLUMN_SIZES } from "@/constants";
 import { TableStatusEnum } from "@/types/enums";
 import { getBgColor, getTextColor } from '@/lib/tableUtils';
 import { PillButton } from '@/components/ui/PillButton';
+import { TableHeader } from './utils';
 
 /**
  * Creates column definitions for pending restaurants table
- * @param expandedRows - Set of expanded row IDs
- * @param setExpandedRows - Function to update expanded rows
  * @param handleApprove - Handler for approve action
  * @param handleDecline - Handler for decline action
+ * @param handleSendFeedback - Handler for send feedback action
+ * @param handleSave - Handler for save action
  */
 export const createPendingRestaurantsColumns = (
-  expandedRows: Set<string>,
-  setExpandedRows: (rows: Set<string>) => void,
   handleApprove: (restaurant: PendingRestaurantType, statusKey?: PendingRestaurantStatusKey) => void,
   handleDecline: (restaurant: PendingRestaurantType, statusKey?: PendingRestaurantStatusKey) => void,
   handleSendFeedback: (restaurant: PendingRestaurantType) => void,
@@ -29,9 +28,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'id',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>#</span>
-        </div>
+        <TableHeader title="#" />
       ),
     cell: ({ row, table }) => {
       const { pageSize, pageIndex } = table.getState().pagination;
@@ -47,13 +44,10 @@ export const createPendingRestaurantsColumns = (
       minSize: TABLE_COLUMN_SIZES.ID,
       meta: { sticky: true }
     },
-
     {
       accessorKey: 'name',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>Restaurant name</span>
-        </div>
+        <TableHeader title="Restaurant name" />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-[#181D1F] max-w-60 truncate">
@@ -63,13 +57,10 @@ export const createPendingRestaurantsColumns = (
       minSize: TABLE_COLUMN_SIZES.NAME,
       meta: { sticky: true }
     },
-    
     {
       accessorKey: 'video',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>Video</span>
-        </div>
+        <TableHeader iconName="videoIcon" title="Video" />
       ),
       cell: ({ row }) => {
         const videos = row.original.videos;
@@ -89,10 +80,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'website',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Link className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Website</span>
-        </div>
+        <TableHeader iconName="linkIcon" title="Website" />
       ),
       cell: ({ row }) => {
         const url = row.getValue('website') as string;
@@ -107,10 +95,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'address',
       header: () => (
-        <div className="flex items-center gap-2">
-          <MapPin className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Address</span>
-        </div>
+        <TableHeader iconName="mapPinIcon" title="Address" />
       ),
       cell: ({ row }) => {
         const { name, status } = row.original.address;
@@ -151,10 +136,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'menuUrl',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Link className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Menu link</span>
-        </div>
+        <TableHeader iconName="linkIcon" title="Menu link" />
       ),
       cell: ({ row }) => {
         const { url, status } = row.original.menuUrl;
@@ -190,10 +172,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'reservationUrl',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Link className="w-5 h-5 text-[#8A8A8A]" />
-          <span>Reservation link</span>
-        </div>
+        <TableHeader iconName="linkIcon" title="Reservation link" />
       ),
       cell: ({ row }) => {
         const { url, status } = row.original.reservationUrl;
@@ -229,10 +208,7 @@ export const createPendingRestaurantsColumns = (
     // {
     //   accessorKey: 'openingHours',
     //   header: () => (
-    //     <div className="flex items-center gap-2">
-    //       <Clock className="w-4.5 h-4.5 text-[#8A8A8A]" />
-    //       <span>Opening hours</span>
-    //     </div>
+    //     <TableHeader iconName="clockIcon" title="Working hours" />
     //   ),
     //   cell: ({ row }) => {
     //     const openingHours = row.getValue('openingHours') as Record<string, string>;
@@ -268,10 +244,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'addedBy',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Added by</span>
-        </div>
+        <TableHeader iconName="calendarIcon" title="Added by" />
       ),
       cell: ({ row }) => {
         const addedBy = row.getValue('addedBy') as { name: string; profileImage: string };
@@ -294,10 +267,7 @@ export const createPendingRestaurantsColumns = (
     {
       accessorKey: 'dateAdded',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Date added</span>
-        </div>
+        <TableHeader iconName="calendarIcon" title="Date added" />
       ),
       cell: ({ row }) => {
         const dateAdded = row.getValue('dateAdded') as Date;
@@ -319,9 +289,7 @@ export const createPendingRestaurantsColumns = (
     {
       id: 'action',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span className="text-black font-medium">Actions</span>
-        </div>
+        <TableHeader title="Actions" />
       ),
       cell: ({ row }) => {
         const shouldSendFeedback = row.original.videos.some((video) => video.status === TableStatusEnum.DECLINED) || row.original.address.status === TableStatusEnum.DECLINED || row.original.menuUrl.status === TableStatusEnum.DECLINED || row.original.reservationUrl.status === TableStatusEnum.DECLINED;

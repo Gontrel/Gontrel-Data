@@ -25,8 +25,6 @@ const PendingRestaurants = ({
     handlePageSize
 }: PendingRestaurantsProps) => {
     const {
-        expandedRows,
-        setExpandedRows,
         handleRowSelect,
         handleApprove,
         handleDecline,
@@ -37,14 +35,12 @@ const PendingRestaurants = ({
     // Create columns with proper dependencies
     const columns = useMemo(
         () => createPendingRestaurantsColumns(
-            expandedRows,
-            setExpandedRows,
             handleApprove,
             handleDecline,
             handleSendFeedback,
             handleSave
         ),
-        [expandedRows, setExpandedRows, handleApprove, handleDecline, handleSendFeedback, handleSave]
+        [handleApprove, handleDecline, handleSendFeedback, handleSave]
     );
 
     // Fetch data

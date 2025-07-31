@@ -7,6 +7,11 @@ export type TIconNames =
   | "userIcon"
   | "reportIcon"
   | "settingsIcon"
-  | "websiteLinkIcon"
+  | "externalLinkIcon"
+  | "mapPinIcon"
+  | "linkIcon"
+  | "calendarIcon"
+  | "videoIcon"
+  | "flameIcon"
   | "cancelModalIcon"
   | "groupUserIcon";

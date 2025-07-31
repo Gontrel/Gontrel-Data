@@ -1,6 +1,5 @@
 'use client';
-
-import { ExternalLink as ExternalLinkIcon } from 'lucide-react';
+import Icon from '../svgs/Icons';
 
 interface ExternalLinkProps {
   href: string;
@@ -27,7 +26,7 @@ export function ExternalLink({
       title={title}
     >
       {children}
-      <ExternalLinkIcon className="w-4.5 h-4.5 text-[#AF08FD]" />
+      <Icon name="externalLinkIcon" />
     </a>
   );
 }

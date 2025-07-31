@@ -1,11 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { PendingVideoType } from '@/types/restaurant';
-import { Calendar, Video } from 'lucide-react';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { getBgColor, getTextColor } from '@/lib/tableUtils';
 import { PillButton } from '@/components/ui/PillButton';
+import { TableHeader } from './utils';
 
 /**
  * Creates column definitions for pending videos table
@@ -14,9 +14,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'id',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>#</span>
-        </div>
+        <TableHeader title="#" />
       ),
       cell: ({ row, table }) => {
         const { pageSize, pageIndex } = table.getState().pagination;
@@ -35,9 +33,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'name',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>Restaurant name</span>
-        </div>
+        <TableHeader title="Restaurant name" />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-[#181D1F] max-w-60 truncate">
@@ -50,10 +46,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'video',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Video className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Video</span>
-        </div>
+        <TableHeader iconName="videoIcon" title="Video" />
       ),
       cell: ({ row }) => {
         const videos = row.original.videos;
@@ -73,10 +66,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'addedBy',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Added by</span>
-        </div>
+        <TableHeader iconName="calendarIcon" title="Added by" />
       ),
       cell: ({ row }) => {
         const addedBy = row.getValue('addedBy') as { name: string; profileImage: string };
@@ -99,10 +89,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'dateAdded',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Date added</span>
-        </div>
+        <TableHeader iconName="calendarIcon" title="Date added" />
       ),
       cell: ({ row }) => {
         const dateAdded = row.getValue('dateAdded') as Date;

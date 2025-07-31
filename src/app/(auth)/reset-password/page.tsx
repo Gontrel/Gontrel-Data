@@ -5,7 +5,7 @@ import Image from "next/image";
 import logo from "../../../assets/images/reset-logo.png";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import Button from "@/components/button/Button";
+import Button from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { errorToast, successToast } from "@/utils/toast";
 import { useRouter, useSearchParams } from "next/navigation";

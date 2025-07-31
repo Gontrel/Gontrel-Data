@@ -21,7 +21,7 @@ export const mockUsers: User[] = [
   {
     id: 'user-001',
     username: 'sarah.analyst',
-    profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+    profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
     role: AdminRoleEnum.ANALYST,
     name: 'Sarah Johnson',
     email: 'sarah.johnson@gontrel.com'
@@ -133,7 +133,7 @@ export const mockUsers: User[] = [
   {
     id: 'user-015',
     username: 'fiona.analyst',
-    profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+    profileImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
     role: AdminRoleEnum.ANALYST,
     name: 'Fiona O\'Brien',
     email: 'fiona.obrien@gontrel.com'

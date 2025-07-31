@@ -1,10 +1,8 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import { Column, Pie } from "@ant-design/charts";
-import { mockActiveRestaurants } from "@/data/mockRestaurants";
-import { columns } from "@/components/admin/columns";
-import { DataTable } from "@/components/ui/DataTable";
 import { StatsGrid } from "@/components/ui/StatsGrid";
+import ActiveRestaurants from "@/components/restaurants/ActiveRestaurants";
 
 export default function DashboardPage() {
   const barData = [
@@ -117,11 +115,17 @@ export default function DashboardPage() {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Restaurant Status</h3>
-            <Pie {...config} />
+            {config && <Pie {...config} />}
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <DataTable columns={columns} data={mockActiveRestaurants} />
+          <ActiveRestaurants
+            searchTerm=""
+            currentPage={1}
+            handleCurrentPage={() => { }}
+            pageSize={5}
+            handlePageSize={() => { }}
+          />
         </div>
       </div>
     </div>

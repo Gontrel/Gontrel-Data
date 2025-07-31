@@ -70,7 +70,6 @@ const updatePropertyStatus =(
  * Custom hook for managing pending restaurants state and actions
  */
 export const usePendingRestaurants = () => {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [restaurants, setRestaurants] = useState<PendingRestaurantType[]>([]);
 
   // Use the new mutation hook for proper query invalidation
@@ -132,8 +131,6 @@ export const usePendingRestaurants = () => {
   }, []);
 
   return {
-    expandedRows,
-    setExpandedRows,
     restaurants,
     setRestaurantsData,
     handleRowSelect,
