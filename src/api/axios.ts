@@ -1,5 +1,6 @@
 import axios from "axios";
 
+
 const API_URL = process.env.API_BASE_URL;
 const API_KEY = process.env.API_KEY;
 
@@ -15,7 +16,10 @@ const baseConfig = {
 };
 
 // --- Authenticated Client ---
-const axiosInstance = axios.create(baseConfig);
+const axiosInstance = axios.create({
+  ...baseConfig,
+  withCredentials: true,
+});
 
 axiosInstance.interceptors.request.use(
   (config) => {

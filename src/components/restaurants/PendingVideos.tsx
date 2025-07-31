@@ -23,17 +23,14 @@ const PendingVideos = ({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const handleRowSelect = (selectedRows: PendingVideoType[]) => {
-    console.log("Selected videos:", selectedRows);
     // Handle bulk actions here
   };
 
   const handleApprove = useCallback((video: PendingVideoType) => {
-    console.log("Approving video:", video.id);
     // Handle approve action
   }, []);
 
   const handleDecline = useCallback((video: PendingVideoType) => {
-    console.log("Declining video:", video.id);
     // Handle decline action
   }, []);
 

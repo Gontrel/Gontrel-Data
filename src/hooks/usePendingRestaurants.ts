@@ -69,7 +69,6 @@ export const usePendingRestaurants = () => {
   const [restaurants, setRestaurants] = useState<PendingRestaurantType[]>([]);
 
   const handleRowSelect = useCallback((selectedRows: PendingRestaurantType[]) => {
-    console.log('Selected restaurants:', selectedRows);
     // Handle bulk actions here
   }, []);
 

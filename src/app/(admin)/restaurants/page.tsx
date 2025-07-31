@@ -78,7 +78,6 @@ export default function RestaurantsPage() {
   const inactiveTabStyles = 'text-[#8A8A8A]';
 
 
-
   // TODO: Stats data - this could come from the API
   const statsData = [
     {
@@ -155,6 +154,7 @@ export default function RestaurantsPage() {
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
       <PreviewVideoModal
+
         open={!!activeVideoUrl}
         onOpenChange={handlePreviewModalOpenChange}
       />

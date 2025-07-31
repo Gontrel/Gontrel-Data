@@ -1,162 +1,367 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sheet } from "../modals/Sheet";
 import Icon from "../svgs/Icons";
 import { Search } from "lucide-react";
 import {
   RestaurantConfirmation,
   RestaurantData,
-  mockRestaurant,
 } from "./RestaurantConfirmation";
 import { VideoStep } from "./VideoStep";
-import { PreviewVideoModal } from "./PreviewVideoModal";
+import { RestaurantMenuWidget } from "./RestaurantMenuWidget";
+import { trpc } from "@/lib/trpc-client";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useVideoStore } from "@/stores/videoStore";
+import { convertTimeTo24Hour, formatTime } from "@/lib/utils";
+import { ProgressBar } from "../progressiveLoader/ProgressiveBar";
+import { errorToast, successToast } from "@/utils/toast";
 
 interface NewRestaurantSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const ProgressBar = ({ step }: { step: number }) => (
-  <div className="flex items-center space-x-2 my-6">
-    <div
-      className={`h-1.5 flex-1 rounded-full ${
-        step >= 1
-          ? "bg-gradient-to-r from-[#AF08FD] to-[#0070F3]"
-          : "bg-gray-200"
-      }`}
-    ></div>
-    <div
-      className={`h-1.5 flex-1 rounded-full ${
-        step >= 2
-          ? "bg-gradient-to-r from-[#AF08FD] to-[#0070F3]"
-          : "bg-gray-200"
-      }`}
-    ></div>
-    <div
-      className={`h-1.5 flex-1 rounded-full ${
-        step >= 3
-          ? "bg-gradient-to-r from-[#AF08FD] to-[#0070F3]"
-          : "bg-gray-200"
-      }`}
-    ></div>
-  </div>
-);
-
 export const NewRestaurantSheet = ({
   open,
   onOpenChange,
 }: NewRestaurantSheetProps) => {
   const [step, setStep] = useState(1);
+  const [inputValue, setInputValue] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   const [isRestaurantConfirmed, setIsRestaurantConfirmed] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
+  const [sessionToken, setSessionToken] = useState("");
+  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
 
-  const handleSearchForRestaurant = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      setSelectedRestaurant(mockRestaurant);
-      setIsRestaurantConfirmed(true);
+  const debouncedQuery = useDebounce(inputValue, 500);
+
+  const { data: autoCompleteData, isFetching: isFetchingAutoComplete } =
+    trpc.restaurants.placeAutoComplete.useQuery(
+      { query: debouncedQuery, sessionToken },
+      { enabled: debouncedQuery.trim() !== "" && !!sessionToken }
+    );
+
+
+    const { mutate: createAdminLocation, isPending: isLoading } = trpc.restaurants.createAdminLocation.useMutation({
+      onSuccess: () => {
+       successToast("Restaurant created successfully!");
+      handleClose();
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
+
+  const { data: placeDetailsData } = trpc.restaurants.placeDetails.useQuery(
+    { placeId: selectedPlaceId!, sessionToken },
+    { enabled: !!selectedPlaceId && !!sessionToken }
+  );
+
+  useEffect(() => {
+    const generateSessionToken = () => {
+      return (
+        new Date().getTime().toString() +
+        Math.random().toString(36).substring(2)
+      );
+    };
+
+    setSessionToken(generateSessionToken());
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (autoCompleteData && autoCompleteData.length > 0) {
+      setSuggestions(autoCompleteData);
+    } else {
+      setSuggestions([]);
     }
+  }, [autoCompleteData]);
+
+  useEffect(() => {
+    if (placeDetailsData) {
+      const result = placeDetailsData;
+
+      const workingHours: { [key: string]: string[] } = {};
+      if (result.opening_hours?.weekday_text) {
+        result.opening_hours.weekday_text.forEach((dayString: string) => {
+          const [day, ...timeParts] = dayString.split(": ");
+          workingHours[day] = timeParts.join(": ").split(", ");
+        });
+      }
+
+      const photoReference = result?.photos?.[0]?.photo_reference;
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      const imageUrl =
+        photoReference && apiKey
+          ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
+          : "";
+
+      const restaurant: RestaurantData = {
+        placeId: result.place_id,
+        name: result.name,
+        address: result.formatted_address,
+        imageUrl: imageUrl,
+        rating: result.rating,
+        workingHours: workingHours,
+        websiteUrl: result.website ?? "",
+        addressUrl: result.url ?? "",
+      };
+
+      setIsRestaurantConfirmed(true);
+      setSelectedRestaurant(restaurant);
+      setSelectedPlaceId("");
+    }
+  }, [placeDetailsData]);
+
+  const handleClose = () => {
+    onOpenChange(false);
+    setStep(1);
+    setIsRestaurantConfirmed(false);
+    setSelectedRestaurant(null);
+    setInputValue("");
+    setActiveVideoUrl(null);
+    resetVideos();
   };
-
-
 
   const handleGoBackToSearch = () => {
     setIsRestaurantConfirmed(false);
     setSelectedRestaurant(null);
+    setInputValue("");
+    setStep(1);
   };
 
-  const handleNextStep = () => {
-    if (step < 3) {
-      setStep(step + 1);
+  const handleWorkingHoursSave = (updatedHours: any) => {
+    if (!selectedRestaurant) return;
+
+    const newWorkingHours: Record<string, string[]> = {};
+    for (const day in updatedHours) {
+      const dayData = updatedHours[day];
+      const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+
+      if (dayData.isOpen) {
+        if (dayData.isAllDay) {
+          newWorkingHours[dayName] = ["24 hours"];
+        } else {
+          newWorkingHours[dayName] = dayData.slots?.map(
+            (slot: any) =>
+              `${formatTime(slot?.start)} - ${formatTime(slot?.end)}`
+          );
+        }
+      }
     }
+
+    setSelectedRestaurant({
+      ...selectedRestaurant,
+      workingHours: newWorkingHours,
+    });
   };
 
-  const handlePreviousStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
+  const handleCreateRestaurant = (data: any) => {
+    if (isLoading) return;
+
+    if (!selectedRestaurant) return;
+
+    console.log(selectedRestaurant, "data")
+
+    const payload = {
+      sessionToken: sessionToken,
+      placeId: selectedRestaurant.placeId,
+      address: selectedRestaurant.address,
+      menu: data.menuUrl ? data.menuUrl : "",
+      name: selectedRestaurant.name,
+      photos: selectedRestaurant.imageUrl
+        ? [selectedRestaurant.imageUrl]
+        : ["https://example.com/photo1.jpg"],
+      rating: selectedRestaurant.rating ?? 0,
+      reservation: data.reservationUrl ? data.reservationUrl : "",
+      type: "RESTAURANT" as const,
+      website: selectedRestaurant.websiteUrl
+        ? selectedRestaurant.websiteUrl
+        : "https://example.com",
+      isVerified: false,
+      posts:
+        videos.map((video) => ({
+          isVerified: false,
+          tiktokLink: video.url,
+          videoUrl: video.videoUrl,
+          thumbUrl: video.thumbUrl,
+          locationName: selectedRestaurant.name,
+          rating: 0,
+          tags: video.tags ? video.tags : [],
+        })) ?? [],
+   openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
+  ([day, hours]) => {
+    // Handle "24 hours" case
+    if (hours[0].toLowerCase() === "24 hours") {
+      return {
+        dayOfTheWeek: day.toUpperCase() as any,
+        opensAt: 0,       // Represents 00:00 (midnight)
+        closesAt: 24,     // Represents 24:00 (end of day)
+      };
     }
+
+    const [startTime, endTime] = hours[0].split(" - ");
+    return {
+      dayOfTheWeek: day.toUpperCase() as any,
+      opensAt: convertTimeTo24Hour(startTime),
+      closesAt: convertTimeTo24Hour(endTime),
+    };
+  }
+),
+    };
+
+    createAdminLocation(payload as any);
+  };
+
+  const handleOnNext = () => {
+    setStep(2);
+    addRestaurantData(selectedRestaurant!);
   };
 
   return (
     <Sheet
-        open={open}
-        onOpenChange={onOpenChange}
-        side="right"
-        width="w-[638px]"
-        className="p-8 flex flex-col"
-      >
-      <div className="flex-shrink-0">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">New restaurant</h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors hover:cursor-pointer"
-            aria-label="Close"
-          >
-            <Icon name="cancelModalIcon" />
-          </button>
-        </div>
-        <p className="text-gray-500 mt-1">Create a new restaurant profile</p>
-        <ProgressBar step={step} />
-        <p className="text-sm font-medium text-gray-600 mb-4">
-          {step === 1 && "Confirmation"}
-          {step === 2 && "Videos"}
-          {step === 3 && "Confirmation"}
-        </p>
-      </div>
+      open={open}
+      onOpenChange={handleClose}
+      width="w-[638px]"
+      className="flex flex-row justify-center z-30"
+    >
+      <div className="py-6 w-[518px] flex flex-col justify-between">
+        <section className="">
+          <div className="flex flex-row justify-between mb-7">
+            <div className="text-left">
+              <h2 className="text-2xl font-bold text-[#2E3032] mb-2">
+                New Restaurant
+              </h2>
+              <p className=" text-[#2E3032] text-lg font-medium ">
+                Create a new restuarant profile
+              </p>
+            </div>
 
-      <div className="flex-grow overflow-y-auto pr-4 -mr-4">
-        {step === 1 && (
-          <>
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <Icon name="cancelModalIcon" className="w-6 h-6" />
+            </button>
+          </div>
+
+          <ProgressBar
+            step={step}
+            subTitle1={"Confirmation"}
+            subTitle2={"Video"}
+            subTitle3={"Link"}
+          />
+
+          <div className="w-full h-full mt-[30px]">
             {isRestaurantConfirmed && selectedRestaurant ? (
-              <RestaurantConfirmation
-                restaurant={selectedRestaurant}
-                onGoBackToSearch={handleGoBackToSearch}
-                onNext={handleNextStep}
-              />
-            ) : (
-              <div>
-                <label
-                  htmlFor="restaurant-name"
-                  className="text-lg font-semibold"
-                >
-                  Restaurant name
-                </label>
-                <div className="relative mt-3">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    id="restaurant-name"
-                    placeholder="Search for a restaurant"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onKeyDown={handleSearchForRestaurant}
+              <>
+                {step === 1 && (
+                  <RestaurantConfirmation
+                    restaurant={selectedRestaurant}
+                    onGoBackToSearch={handleGoBackToSearch}
+                    onNext={() => handleOnNext()}
+                    onWorkingHoursSave={handleWorkingHoursSave}
                   />
+                )}
+                {step === 2 && (
+                  <VideoStep
+                    onPrevious={() => setStep(1)}
+                    onNext={() => setStep(3)}
+                  />
+                )}
+                {step === 3 && (
+                  <RestaurantMenuWidget
+                                isLoading={isLoading}
+                    onPrevious={() => setStep(2)}
+                    onSubmit={(data) => handleCreateRestaurant(data)}
+                  />
+                )}
+              </>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="restaurant-name"
+                    className="block text-[20px] font-semibold text-[#2E3032] mt-[30px]"
+                  >
+                    Restaurant name
+                  </label>
+                  <div className="relative mt-8" ref={searchContainerRef}>
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      id="restaurant-name"
+                      placeholder="Search for a restaurant"
+                      className="w-full pl-12 pr-[22px] py-[24px] border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onFocus={() => setShowSuggestions(true)}
+                      autoComplete="off"
+                    />
+                    {isFetchingAutoComplete && (
+                      <p className="mt-2 text-sm text-gray-500">Searching...</p>
+                    )}
+                    {showSuggestions &&
+                      !isFetchingAutoComplete &&
+                      debouncedQuery.length > 0 &&
+                      suggestions.length === 0 && (
+                        <div className="absolute z-10 w-full p-4 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <p className="text-sm text-gray-500">
+                            No results found.
+                          </p>
+                        </div>
+                      )}
+                    {showSuggestions && suggestions.length > 0 && (
+                      <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <ul className="divide-y divide-gray-200">
+                          {suggestions.map((suggestion: any) => (
+                            <li
+                              key={suggestion?.placeId}
+                              className="p-4 cursor-pointer hover:bg-gray-50"
+                              onClick={() => {
+                                setInputValue(suggestion.description);
+                                setShowSuggestions(false);
+                                setSelectedPlaceId(suggestion?.placeId);
+                              }}
+                            >
+                              <p className="font-semibold text-gray-800">
+                                {suggestion?.structuredFormatting?.mainText}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {
+                                  suggestion?.structuredFormatting
+                                    ?.secondaryText
+                                }
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            {
-              <VideoStep
-                onNext={handleNextStep}
-                onPrevious={handlePreviousStep}
-              />
-            }
-          </>
-        )}
-
-        {step === 3 && (
-          <div className="flex items-center justify-center h-full">
-            <p>Final Step!</p>
           </div>
-        )}
+        </section>
       </div>
     </Sheet>
   );
