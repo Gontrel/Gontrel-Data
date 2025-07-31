@@ -39,7 +39,6 @@ export type VideoType = {
   status: TableStatusEnum;
 };
 
-
 export type Tag = {
   id: string;
   name: string;

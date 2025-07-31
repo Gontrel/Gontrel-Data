@@ -7,27 +7,27 @@ import { createPendingVideosColumns } from './columns/pendingVideosColumns';
 import { usePendingVideos } from '@/hooks/usePendingVideos';
 
 interface PendingVideosProps {
-    searchTerm: string;
-    currentPage: number;
-    pageSize: number;
-    handleCurrentPage: (page: number) => void;
-    handlePageSize: (pageSize: number) => void;
+  searchTerm: string;
+  currentPage: number;
+  pageSize: number;
+  handleCurrentPage: (page: number) => void;
+  handlePageSize: (pageSize: number) => void;
 }
 
 const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, handlePageSize }: PendingVideosProps) => {
     const {
-        expandedRows,
-        setExpandedRows,
+        handleApprove,
+        handleDecline,
         handleRowSelect,
     } = usePendingVideos();
 
     // Create columns with proper dependencies
     const columns = useMemo(
         () => createPendingVideosColumns(
-            expandedRows,
-            setExpandedRows,
+            handleApprove,
+            handleDecline
         ),
-        [expandedRows, setExpandedRows]
+        [handleApprove, handleDecline]
     );
 
     // Fetch data with pageSize
@@ -38,20 +38,20 @@ const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, h
         limit: pageSize
     });
 
-    return (
-        <RestaurantTable<PendingVideoType>
-            restaurants={restaurantsData?.data || []}
-            loading={restaurantsLoading}
-            onRowSelect={handleRowSelect}
-            showSelection={true}
-            columns={columns}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalPages={restaurantsData?.pagination?.totalPages || 1}
-            onPageSizeChange={(pageSize) => handlePageSize(pageSize)}
-            onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
-        />
-    )
-}
+  return (
+    <RestaurantTable<PendingVideoType>
+      restaurants={restaurantsData?.data || []}
+      loading={restaurantsLoading}
+      onRowSelect={handleRowSelect}
+      showSelection={true}
+      columns={columns}
+      currentPage={currentPage}
+      pageSize={pageSize}
+      totalPages={restaurantsData?.pagination?.totalPages || 1}
+      onPageSizeChange={(pageSize) => handlePageSize(pageSize)}
+      onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
+    />
+  );
+};
 
-export default PendingVideos
+export default PendingVideos;

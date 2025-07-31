@@ -9,15 +9,8 @@ import { PillButton } from '@/components/ui/PillButton';
 
 /**
  * Creates column definitions for pending videos table
- * @param expandedRows - Set of expanded row IDs
- * @param setExpandedRows - Function to update expanded rows
- * @param onApprove - Handler for approve action
- * @param onDecline - Handler for decline action
  */
-export const createPendingVideosColumns = (
-  expandedRows: Set<string>,
-  setExpandedRows: (rows: Set<string>) => void,
-): ColumnDef<PendingVideoType>[] => [
+export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'id',
       header: () => (

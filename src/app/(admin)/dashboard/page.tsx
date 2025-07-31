@@ -30,6 +30,27 @@ export default function DashboardPage() {
     { type: "Inactive", value: 18 },
   ];
 
+  const config = {
+    data: pieData,
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.8,
+    height: 300,
+    label: {
+      text: 'value',
+      style: {
+        fontWeight: 'bold',
+      },
+    },
+    legend: {
+      color: {
+        title: false,
+        position: 'right',
+        rowPadding: 5,
+      },
+    },
+  };
+
   // TODO: Stats data - this could come from the API
   const statsData = [
     {
@@ -96,13 +117,7 @@ export default function DashboardPage() {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Restaurant Status</h3>
-            <Pie
-              data={pieData}
-              angleField="value"
-              colorField="type"
-              radius={0.8}
-              height={300}
-            />
+            <Pie {...config} />
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">

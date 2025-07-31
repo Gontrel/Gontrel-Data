@@ -1,4 +1,4 @@
-import { TableStatusEnum } from '@/types/enums';
+import { TableStatusEnum, TrendEnum } from '@/types/enums';
 import { ActiveRestaurantType, PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
 
 /**
@@ -29,7 +29,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-15T16:30:00'),
     createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15')
+    updatedAt: new Date('2024-01-15'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'The Greenhouse',
@@ -54,7 +57,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-16T14:15:00'),
     createdAt: new Date('2024-01-16'),
-    updatedAt: new Date('2024-01-16')
+    updatedAt: new Date('2024-01-16'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'L\'Ecrivain',
@@ -79,7 +85,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-17T09:45:00'),
     createdAt: new Date('2024-01-17'),
-    updatedAt: new Date('2024-01-17')
+    updatedAt: new Date('2024-01-17'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Restaurant Patrick Guilbaud',
@@ -104,7 +113,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-18T11:20:00'),
     createdAt: new Date('2024-01-18'),
-    updatedAt: new Date('2024-01-18')
+    updatedAt: new Date('2024-01-18'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'The Winding Stair',
@@ -129,7 +141,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-19T13:10:00'),
     createdAt: new Date('2024-01-19'),
-    updatedAt: new Date('2024-01-19')
+    updatedAt: new Date('2024-01-19'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Bunsen',
@@ -154,7 +169,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-20T15:25:00'),
     createdAt: new Date('2024-01-20'),
-    updatedAt: new Date('2024-01-20')
+    updatedAt: new Date('2024-01-20'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Uno Mas',
@@ -179,7 +197,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-21T10:40:00'),
     createdAt: new Date('2024-01-21'),
-    updatedAt: new Date('2024-01-21')
+    updatedAt: new Date('2024-01-21'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Pickle',
@@ -204,7 +225,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-22T12:55:00'),
     createdAt: new Date('2024-01-22'),
-    updatedAt: new Date('2024-01-22')
+    updatedAt: new Date('2024-01-22'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'The Pig\'s Ear',
@@ -229,7 +253,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-23T08:30:00'),
     createdAt: new Date('2024-01-23'),
-    updatedAt: new Date('2024-01-23')
+    updatedAt: new Date('2024-01-23'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: '777',
@@ -254,7 +281,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-24T17:15:00'),
     createdAt: new Date('2024-01-24'),
-    updatedAt: new Date('2024-01-24')
+    updatedAt: new Date('2024-01-24'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Ichigo Ichie',
@@ -279,7 +309,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-25T14:20:00'),
     createdAt: new Date('2024-01-25'),
-    updatedAt: new Date('2024-01-25')
+    updatedAt: new Date('2024-01-25'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Market Lane',
@@ -304,7 +337,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-26T11:45:00'),
     createdAt: new Date('2024-01-26'),
-    updatedAt: new Date('2024-01-26')
+    updatedAt: new Date('2024-01-26'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Elbow Lane',
@@ -329,7 +365,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-27T16:30:00'),
     createdAt: new Date('2024-01-27'),
-    updatedAt: new Date('2024-01-27')
+    updatedAt: new Date('2024-01-27'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'Cask',
@@ -354,7 +393,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-28T13:50:00'),
     createdAt: new Date('2024-01-28'),
-    updatedAt: new Date('2024-01-28')
+    updatedAt: new Date('2024-01-28'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'The Glass Curtain',
@@ -379,7 +421,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-29T10:25:00'),
     createdAt: new Date('2024-01-29'),
-    updatedAt: new Date('2024-01-29')
+    updatedAt: new Date('2024-01-29'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'The French Table',
@@ -404,7 +449,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-30T15:40:00'),
     createdAt: new Date('2024-01-30'),
-    updatedAt: new Date('2024-01-30')
+    updatedAt: new Date('2024-01-30'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   },
   {
     name: 'The Curragower',
@@ -429,7 +477,10 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     },
     dateAdded: new Date('2024-01-31T12:05:00'),
     createdAt: new Date('2024-01-31'),
-    updatedAt: new Date('2024-01-31')
+    updatedAt: new Date('2024-01-31'),
+    totalVideos: 0,
+    trend: TrendEnum.POPULAR_SEARCHES,
+    id: '',
   }
 ];
 

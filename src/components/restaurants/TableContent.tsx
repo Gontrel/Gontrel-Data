@@ -2,6 +2,7 @@ import { ManagerTableTabsEnum } from '@/types';
 import PendingRestaurants from './PendingRestaurants';
 import PendingVideos from './PendingVideos';
 import React from 'react'; // Added missing import for React
+import ActiveRestaurants from './ActiveRestaurants';
 
 /**
  * Placeholder component for Active Restaurants
@@ -41,35 +42,63 @@ export const TableContent: React.FC<TableContentProps> = ({
   onPageChange,
   onPageSizeChange
 }) => {
-  const renderActiveRestaurants = () => (
-    <ActiveRestaurantsPlaceholder onTotal={() => {}} />
-  );
-
-  const renderPendingRestaurants = () => (
-    <PendingRestaurants
-      searchTerm={searchTerm}
-      currentPage={tablePageNumbers[ManagerTableTabsEnum.PENDING_RESTAURANTS]}
-      pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_RESTAURANTS]}
-      handleCurrentPage={(page) => onPageChange(ManagerTableTabsEnum.PENDING_RESTAURANTS, page)}
-      handlePageSize={(pageSize) => onPageSizeChange(ManagerTableTabsEnum.PENDING_RESTAURANTS, pageSize)}
-    />
-  );
-
-  const renderPendingVideos = () => (
-    <PendingVideos
-      searchTerm={searchTerm}
-      currentPage={tablePageNumbers[ManagerTableTabsEnum.PENDING_VIDEOS]}
-      pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_VIDEOS]}
-      handleCurrentPage={(page) => onPageChange(ManagerTableTabsEnum.PENDING_VIDEOS, page)}
-      handlePageSize={(pageSize) => onPageSizeChange(ManagerTableTabsEnum.PENDING_VIDEOS, pageSize)}
-    />
-  );
+  const renderTableContent = (): React.ReactNode => {
+    switch (activeTab) {
+      case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
+        return (
+          <ActiveRestaurants
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]}
+            pageSize={tablePageSizes[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, pageSize)
+            }
+          />
+        );
+      case ManagerTableTabsEnum.PENDING_RESTAURANTS:
+        return (
+          <PendingRestaurants
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[ManagerTableTabsEnum.PENDING_RESTAURANTS]}
+            pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_RESTAURANTS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ManagerTableTabsEnum.PENDING_RESTAURANTS, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(ManagerTableTabsEnum.PENDING_RESTAURANTS, pageSize)
+            }
+          />
+        );
+      case ManagerTableTabsEnum.PENDING_VIDEOS:
+        return (
+          <PendingVideos
+            searchTerm={searchTerm}
+            currentPage={tablePageNumbers[ManagerTableTabsEnum.PENDING_VIDEOS]}
+            pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_VIDEOS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ManagerTableTabsEnum.PENDING_VIDEOS, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(ManagerTableTabsEnum.PENDING_VIDEOS, pageSize)
+            }
+          />
+        );
+      default:
+        // Fallback for unknown tab
+        return (
+          <div className="flex items-center justify-center h-32 text-gray-500">
+            Unknown table tab selected.
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="w-full">
-      {activeTab === ManagerTableTabsEnum.ACTIVE_RESTAURANTS && renderActiveRestaurants()}
-      {activeTab === ManagerTableTabsEnum.PENDING_RESTAURANTS && renderPendingRestaurants()}
-      {activeTab === ManagerTableTabsEnum.PENDING_VIDEOS && renderPendingVideos()}
+      {renderTableContent()}
     </div>
   );
 };

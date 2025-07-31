@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
 import { useState, useCallback } from 'react';
-import { StatsGrid } from '../../../components/ui/StatsGrid';
 import { ManagerTableTabsEnum } from '@/types';
 import { ManagerTableTabs } from '@/components/restaurants/ManagerTableTabs';
 import { ActionPanel } from '@/components/restaurants/ActionPanel';
@@ -9,6 +8,10 @@ import { TableContent } from '@/components/restaurants/TableContent';
 import { useTabState } from '@/hooks/useTabState';
 import { useTableTotals } from '@/hooks/useTableTotals';
 import { DEFAULT_RESTAURANT_STATS } from '@/constants/';
+import { StatsGrid } from "@/components/ui/StatsGrid";
+import { NewRestaurantSheet } from "@/components/restaurants/NewRestaurantSheet";
+import { PreviewVideoModal } from "@/components/restaurants/PreviewVideoModal";
+import { useVideoStore } from "@/stores/videoStore";
 
 /**
  * Restaurants Page Component
@@ -17,6 +20,8 @@ export default function RestaurantsPage() {
   const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum>(
     ManagerTableTabsEnum.ACTIVE_RESTAURANTS
   );
+  const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
+  const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
 
   // Use custom hook for tab-specific state management
   const {
@@ -34,6 +39,12 @@ export default function RestaurantsPage() {
 
   // Current tab's state
   const currentTabState = getTabState(activeTab);
+
+  const handlePreviewModalOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setActiveVideoUrl(null);
+    }
+  };
 
   /**
    * Creates page numbers object for all tabs
@@ -104,7 +115,11 @@ export default function RestaurantsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
+    <div className="min-h-screen relative bg-[#FAFAFA]">
+      <PreviewVideoModal
+        open={!!activeVideoUrl}
+        onOpenChange={handlePreviewModalOpenChange}
+      />
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
         {/* Restaurant Stats */}
@@ -140,7 +155,11 @@ export default function RestaurantsPage() {
         />
       </div>
 
-      {/* TODO: Add NewRestaurantModal when component is ready */}
+      {/* New Restaurant Modal */}
+      <NewRestaurantSheet
+        open={showNewRestaurantModal}
+        onOpenChange={setShowNewRestaurantModal}
+      />
     </div>
   );
 }
