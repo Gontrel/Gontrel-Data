@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Sheet } from "../modals/Sheet";
 import Icon from "../svgs/Icons";
 import { VideoStep } from "../restaurants/VideoStep";
+import { trpc } from "@/lib/trpc-client";
+import { errorToast, successToast } from "@/utils/toast";
+import { useVideoStore } from "@/stores/videoStore";
 
 interface NewPostsSheetProps {
   open: boolean;
@@ -14,33 +17,34 @@ export const NewPostSheet = ({
   open,
   onOpenChange,
 }: NewPostsSheetProps) => {
-  const [step, setStep] = useState(1);
-  const [isRestaurantConfirmed, setIsRestaurantConfirmed] = useState(false);
 
-  const handleSearchForRestaurant = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      setIsRestaurantConfirmed(true);
-    }
+  const {videos} = useVideoStore();
+
+  const videosData = videos.map((video) => ({
+       tiktokLink: video.url,
+        videoUrl: video.videoUrl,
+        thumbUrl: video.thumbUrl,
+        locationName: video.locationName,
+        rating: video.rating,
+        tags: video.tags, 
+    }))
+
+    const { mutate: createPost, isPending: isLoading } = trpc.post.createPost.useMutation({
+        onSuccess: () => {
+         successToast("Post created successfully!");
+        },
+        onError: (error) => {
+          errorToast(error.message);
+        },
+      });
+
+
+  const onSubmit = () => {
+    createPost( videosData[0])
+     // TODO: change later after the endpoint has been changes
+    // createPost( videosData)
   };
 
-  const handleGoBackToSearch = () => {
-    setIsRestaurantConfirmed(false);
-  };
-
-  const handleNextStep = () => {
-    if (step < 3) {
-      setStep(step + 1);
-    }
-  };
-
-  const handlePreviousStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
 
   return (
     <Sheet
@@ -63,7 +67,7 @@ export const NewPostSheet = ({
         </div>
         <p className="text-gray-500 mt-1">Create a new post</p>
 
-        <VideoStep onNext={handleNextStep} onPrevious={handlePreviousStep} />
+        <VideoStep onNext={onSubmit} onPrevious={onSubmit} onSubmit={onSubmit} isLoading={isLoading} postOnly={true} />
       </div>
 
     </Sheet>

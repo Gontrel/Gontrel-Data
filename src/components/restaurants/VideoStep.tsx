@@ -10,16 +10,34 @@ import { errorToast } from "@/utils/toast";
 interface VideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
+  onSubmit?: () => void;
+  postOnly?: boolean | null;
+  isLoading?: boolean;
 }
 
-export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
-  const { videos, addVideo, removeVideo, updateVideo, setActiveVideoUrl, resetVideos, setTiktokUsername } = useVideoStore();
+export const VideoStep = ({
+  onNext,
+  onPrevious,
+  onSubmit,
+  postOnly,
+  isLoading,
+}: VideoStepProps) => {
+  const {
+    videos,
+    addVideo,
+    updateVideo,
+    setActiveVideoUrl,
+    resetVideos,
+    setTiktokUsername,
+  } = useVideoStore();
   const [currentVideo, setCurrentVideo] = useState({
     url: "",
     tags: [] as string[],
     thumbUrl: "",
     author: "",
-    videoUrl: "" ,
+    videoUrl: "",
+    locationName: "",
+    rating: 0,
   });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
 
@@ -29,10 +47,14 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
     { enabled: false }
   );
 
-  const handleUrlChange = async (e: React.ChangeEvent<HTMLInputElement> | React.ClipboardEvent<HTMLInputElement>) => {
-    let value = '';
-    if ('clipboardData' in e) {
-      value = e.clipboardData.getData('text');
+  const handleUrlChange = async (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ClipboardEvent<HTMLInputElement>
+  ) => {
+    let value = "";
+    if ("clipboardData" in e) {
+      value = e.clipboardData.getData("text");
     } else {
       value = e.target.value;
     }
@@ -52,9 +74,6 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
             videoUrl: data?.play,
             author: data.author?.nickname,
           }));
-
-            
-
         } else {
           errorToast("Could not retrieve video information from this URL.");
         }
@@ -91,26 +110,35 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
       return;
     }
 
-    if (currentVideo.tags.length < 1) {
-      errorToast("Each video must have at least two tags.");
-      return;
-    }
-
     const videoData = {
       url: currentVideo.url,
       tags: currentVideo.tags,
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
+      locationName: currentVideo.locationName,
+      rating: currentVideo.rating,
     };
 
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
       addVideo(videoData);
+      if (currentVideo.tags.length === 1) {
+        errorToast("Each video must have at least one tags.");
+        return;
+      }
     }
 
-    setCurrentVideo({ url: "", tags: [], thumbUrl: "", videoUrl: "", author: "", });
+    setCurrentVideo({
+      url: "",
+      tags: [],
+      thumbUrl: "",
+      videoUrl: "",
+      author: "",
+      locationName: "",
+      rating: 0,
+    });
     setActiveVideoUrl(null);
     setTiktokUsername(null);
   };
@@ -125,13 +153,13 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
         thumbUrl: videoToEdit.thumbUrl || "",
         videoUrl: videoToEdit.videoUrl || "",
         author: videoToEdit.author || "",
+        locationName: videoToEdit.locationName || "",
+        rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
       setTiktokUsername(videoToEdit.author || null);
-      }
+    }
   };
-
-
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -198,7 +226,7 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
                   onClick={handleAddOrUpdateVideo}
                   className="flex items-center gap-2 text-white bg-[#0070F3] font-semibold"
                 >
-                    Update video
+                  Update video
                 </button>
               </div>
             ) : null}
@@ -209,7 +237,7 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
               >
                 <Plus size={20} />
                 <span className="text-[#2E3032] font-figtree font-semibold text-sm leading-[100%]">
-                  { "Add another video"}
+                  {"Add another video"}
                 </span>
               </button>
             </div>
@@ -217,30 +245,45 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
         )}
       </div>
 
-      <div className="flex-shrink-0 pt-6 flex items-center gap-4">
+      {!postOnly ? (
+        <div className="flex-shrink-0 pt-6 flex items-center gap-4">
+          <button
+            onClick={() => {
+              resetVideos();
+              setActiveVideoUrl(null);
+              setTiktokUsername(null);
+              onPrevious();
+            }}
+            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+          >
+            Previous
+          </button>
+          <button
+            onClick={onNext}
+            disabled={videos.length === 0}
+            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+              videos.length === 0
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-[#0070F3] text-white hover:bg-blue-600"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      ) : (
         <button
-          onClick={() => {
-            resetVideos();
-            setActiveVideoUrl(null);
-            setTiktokUsername(null);
-            onPrevious();
-          }}
-          className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-        >
-          Previous
-        </button>
-        <button
-          onClick={onNext}
-          disabled={videos.length === 0}
+          onClick={onSubmit}
+          type="submit"
+          disabled={videos.length === 0 || isLoading}
           className={`w-full py-3 rounded-lg font-semibold transition-colors ${
             videos.length === 0
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
           }`}
         >
-          Next
+          Submit
         </button>
-      </div>
+      )}
     </div>
   );
 };

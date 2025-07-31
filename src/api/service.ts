@@ -36,16 +36,6 @@ export default class APIRequest {
     return response.data;
   }
 
-  private handleError(error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || "An error occurred");
-    } else if (error.request) {
-      throw new Error("No response received from the server");
-    } else {
-      throw new Error(error.message || "An unexpected error occurred");
-    }
-  }
-
   /**
    *
    * @description This class handles API requests related to authentication.
@@ -92,10 +82,6 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
-  createRestaurant = async (data: { email: string; password: string }) => {
-    const response = await this.client.post(`/admin-location`, data);
-    return this.handleResponse(response);
-  };
   // getRestaurants
   getRestaurants = async (data: {
     page: number;
@@ -119,23 +105,24 @@ export default class APIRequest {
    */
 
   // createPost
-  // createPost = async (data: { title: string; content: string }) => {
-  //   const response = await axiosInstance.post(`/admin-post`, data);
-  //   return this.handleResponse(response);
-  // };
-  // // getAllPosts
-  // getAllPosts = async (data: { email: string; password: string }) => {
-  //   const response = await axiosInstance.get(`/admin-posts`, data);
-  //   return this.handleResponse(response);
-  // };
-  // // createPost
-  // getAPost = async (data: { email: string; password: string }) => {
-  //   const response = await axiosInstance.get(
-  //     `/admin-post-by-id?postId=${data.postId}`,
-  //     data
-  //   );
-  //   return this.handleResponse(response);
-  // };
+  createPost = async (data: any) => {
+    const response = await axiosInstance.post(`/admin-post`, data);
+    return this.handleResponse(response);
+  };
+  
+  // getAllPosts
+  getAllPosts = async () => {
+    const response = await axiosInstance.get(`/admin-posts`);
+    return this.handleResponse(response);
+  };
+  
+  // getAPost
+  getAPost = async (data: { postId: string }) => {
+    const response = await axiosInstance.get(
+      `/admin-post-by-id?postId=${data.postId}`
+    );
+    return this.handleResponse(response);
+  };
 
   /**
    *
