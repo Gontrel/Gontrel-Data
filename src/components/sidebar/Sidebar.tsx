@@ -68,20 +68,19 @@ const Sidebar = () => {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4  rounded-lg transition-all duration-200 ${
-                        isActive
-                          ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
-                          : "text-[#9DA1A5]  hover:bg-gray-100 "
-                      }`}
+                      className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4 rounded-lg transition-all duration-200 ${isActive
+                        ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
+                        : "text-[#9DA1A5]  hover:bg-gray-100"
+                        }`}
                     >
                       <Icon
                         name={link.icon}
-                        stroke={`${isActive ? "#FFFFFF" : "#8A8A8A"}`}
+                        fill={`${isActive ? "#FFFFFF" : "transparent"}`}
+                        stroke={`${isActive ? "#FFFFFF" : "#9DA1A5"}`}
                       />
                       <span
-                        className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${
-                          isActive ? "text-white" : "text-[#9DA1A5]"
-                        }  `}
+                        className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${isActive ? "text-white" : "text-[#9DA1A5]"
+                          }  `}
                       >
                         {link.label}
                       </span>
