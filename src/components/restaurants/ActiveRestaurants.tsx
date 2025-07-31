@@ -38,7 +38,6 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   });
 
   const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
-    console.log("Selected rows:", selectedRows);
     if (selectedRows.length > 0) {
       // Assuming each restaurant has a unique ID
       const restaurantId = selectedRows[0].id;

@@ -1,15 +1,26 @@
+import { errorToast } from "@/utils/toast";
+import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 
 interface RestaurantMenuWidgetProps {
   onPrevious: () => void;
   onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
+  isLoading: boolean;
 }
 
-export const RestaurantMenuWidget = ({ onPrevious, onSubmit }: RestaurantMenuWidgetProps) => {
+export const RestaurantMenuWidget = ({
+  onPrevious,
+  onSubmit,
+  isLoading,
+}: RestaurantMenuWidgetProps) => {
   const [menuUrl, setMenuUrl] = useState("");
   const [reservationUrl, setReservationUrl] = useState("");
 
   const handleSubmit = () => {
+    if (!menuUrl || !reservationUrl) {
+      errorToast("Please provide a menu or reservation URL.");
+      return;
+    }
     onSubmit({ menuUrl, reservationUrl });
   };
 
@@ -59,9 +70,17 @@ export const RestaurantMenuWidget = ({ onPrevious, onSubmit }: RestaurantMenuWid
         </button>
         <button
           onClick={handleSubmit}
+          disabled={isLoading}
           className="w-full bg-[#0070F3] text-white py-3 rounded-lg font-semibold transition-colors hover:bg-blue-600"
         >
-          Submit
+          {isLoading ? (
+            <>
+              <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+              <span>Please wait...</span>
+            </>
+          ) : (
+            <p className="font-semibold text-lg font-figtree"> Submit</p>
+          )}
         </button>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { TableHeader } from "./utils";
 import Image from "next/image";
 import { format } from "date-fns";
 import Icon from "@/components/svgs/Icons";
+import logo from "@/assets/images/logo.png";
 
 
 export const createActiveRestaurantsColumns = (
@@ -72,7 +73,7 @@ export const createActiveRestaurantsColumns = (
         <div className="flex items-center gap-2">
           <div className="flex flex-row">
             <Image
-              src={row.original?.admin?.profileImage ?? null}
+              src={row.original.admin.profileImage ?? logo} // placeholder is needed.
               alt={row.original?.admin?.name}
               width={40}
               height={40}

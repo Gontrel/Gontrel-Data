@@ -106,7 +106,6 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
-
   // getARestaurant
   // getARestaurant = async (data: { email: string; password: string }) => {
   //   const response = await axiosInstance.get(`/admin-location`, data);
@@ -159,7 +158,6 @@ export default class APIRequest {
     );
     return this.handleResponse(response);
   };
-
 
   /**
    *

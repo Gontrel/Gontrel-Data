@@ -6,13 +6,18 @@ interface UseRestaurantProps {
   search?: string;
 }
 
-export const useRestaurantQuery = ({ page, limit, search }: UseRestaurantProps) => {
+export const useRestaurantQuery = ({
+  page,
+  limit,
+  search,
+}: UseRestaurantProps) => {
   const { data, isLoading, isError } = trpc.restaurants.getRestaurants.useQuery(
     {
       page: page,
       pageSize: limit,
       searchTerm: search,
-    }
+    },
+    { enabled: false }
   );
 
   return { data, isLoading, isError };

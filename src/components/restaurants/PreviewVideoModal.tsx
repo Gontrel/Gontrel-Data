@@ -4,18 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { VideoModal } from "../modals/VideoModal";
 import { VideoOverlay } from "./VideoOverlay";
 import Icon from "../svgs/Icons";
-import { useVideoStore, VideoState } from "@/stores/videoStore";
+import { useVideoStore, RestaurantData } from "@/stores/videoStore";
 
 interface PreviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+
 }
 
-const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
+const PreviewVideoModal = ({ open, onOpenChange, }: PreviewModalProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const activeVideoUrl = useVideoStore((state) => state.activeVideoUrl);
-  const setActiveVideoUrl = useVideoStore((state) => state.setActiveVideoUrl);
+  const { activeVideoUrl, restaurantData, tiktokUsername, setActiveVideoUrl } = useVideoStore();
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -80,9 +80,9 @@ const PreviewVideoModal = ({ open, onOpenChange }: PreviewModalProps) => {
                   <VideoOverlay
                     isPaused={isPaused}
                     onTogglePlay={togglePlay}
-                    restaurantName="Burger Villa"
-                    rating={4.5}
-                    tiktokUsername="Kingvsleyyy1009"
+                    restaurantName={restaurantData.name || ""}
+                    rating={restaurantData.rating || 0}
+                    tiktokUsername={tiktokUsername || ""}
                   />
                 </div>
               ) : (

@@ -37,7 +37,7 @@ export interface TimeSlot {
 /**
  * Props for EditWorkingHoursModal
  */
-interface EditWorkingHoursModalProps {
+export interface EditWorkingHoursModalProps {
   isOpen: boolean;
   onClose: () => void;
   workingHours: WorkingHours;

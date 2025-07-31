@@ -13,8 +13,9 @@ import { RestaurantMenuWidget } from "./RestaurantMenuWidget";
 import { trpc } from "@/lib/trpc-client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useVideoStore } from "@/stores/videoStore";
-import { isValidUrl } from "@/lib/utils";
+import { convertTimeTo24Hour, formatTime } from "@/lib/utils";
 import { ProgressBar } from "../progressiveLoader/ProgressiveBar";
+import { errorToast, successToast } from "@/utils/toast";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -35,7 +36,7 @@ export const NewRestaurantSheet = ({
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
   const [sessionToken, setSessionToken] = useState("");
-  const { videos, setActiveVideoUrl, resetVideos } = useVideoStore();
+  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
 
   const debouncedQuery = useDebounce(inputValue, 500);
 
@@ -45,15 +46,16 @@ export const NewRestaurantSheet = ({
       { enabled: debouncedQuery.trim() !== "" && !!sessionToken }
     );
 
-  const createAdminLocation = trpc.restaurants.createAdminLocation.useMutation({
-    onSuccess: () => {
-      console.log("Restaurant created successfully!");
+
+    const { mutate: createAdminLocation, isPending: isLoading } = trpc.restaurants.createAdminLocation.useMutation({
+      onSuccess: () => {
+       successToast("Restaurant created successfully!");
       handleClose();
-    },
-    onError: (error) => {
-      console.error("Failed to create restaurant:", error);
-    },
-  });
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
 
   const { data: placeDetailsData } = trpc.restaurants.placeDetails.useQuery(
     { placeId: selectedPlaceId!, sessionToken },
@@ -149,14 +151,6 @@ export const NewRestaurantSheet = ({
   const handleWorkingHoursSave = (updatedHours: any) => {
     if (!selectedRestaurant) return;
 
-    const formatTime = (time: string) => {
-      const [h, m] = time.split(":").map(Number);
-      const hours = h % 12 || 12;
-      const minutes = String(m).padStart(2, "0");
-      const ampm = h >= 12 ? "PM" : "AM";
-      return `${hours}:${minutes} ${ampm}`;
-    };
-
     const newWorkingHours: Record<string, string[]> = {};
     for (const day in updatedHours) {
       const dayData = updatedHours[day];
@@ -181,75 +175,54 @@ export const NewRestaurantSheet = ({
   };
 
   const handleCreateRestaurant = (data: any) => {
+    if (isLoading) return;
+
     if (!selectedRestaurant) return;
 
     const payload = {
+      sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
-      sessionToken: "20250726101750277665DDA3780367D9Aj",
-      phoneNumber: "+1234567890",
-      toilets: true,
-      priceLevel: 3,
       address: selectedRestaurant.address,
-      menu:
-        data.menuUrl && isValidUrl(data.menuUrl)
-          ? data.menuUrl
-          : "https://example.com/photo1.jpg",
+      menu: data.menuUrl ? data.menuUrl : "",
       name: selectedRestaurant.name,
       photos: selectedRestaurant.imageUrl
         ? [selectedRestaurant.imageUrl]
-        : ["https://example.com/photo1.jpg"], // to test the endpoint
+        : ["https://example.com/photo1.jpg"],
       rating: selectedRestaurant.rating ?? 0,
-      reservation:
-        data.reservationUrl && isValidUrl(data.reservationUrl)
-          ? data.reservationUrl
-          : "https://example.com/photo1.jpg",
+      reservation: data.reservationUrl ? data.reservationUrl : "",
       type: "RESTAURANT" as const,
-      website:
-        selectedRestaurant.websiteUrl &&
-        isValidUrl(selectedRestaurant.websiteUrl)
-          ? selectedRestaurant.websiteUrl
-          : "https://example.com/photo1.jpg",
+      website: selectedRestaurant.websiteUrl
+        ? selectedRestaurant.websiteUrl
+        : "https://example.com",
       isVerified: false,
-      posts: videos.map((video) => ({
-        isVerified: false,
-        tiktokLink: video.url,
-        videoUrl: video.url,
-        thumbUrl: video.url,
-        locationName: selectedRestaurant.name,
-        rating: 4, // to test the endpoint
-        tags: ["yummy"], //  video.tags test th endpoint
-      })),
-      openingHours: (() => {
-        const daysOfWeek = [
-          "MONDAY",
-          "TUESDAY",
-          "WEDNESDAY",
-          "THURSDAY",
-          "FRIDAY",
-          "SATURDAY",
-          "SUNDAY",
-        ];
-        if (Object.keys(selectedRestaurant.workingHours).length === 0) {
-          return daysOfWeek.map((day) => ({
-            dayOfTheWeek: day as any,
-            opensAt: 0,
-            closesAt: 0,
-          }));
-        }
-
-        return Object.entries(selectedRestaurant.workingHours)?.map(
-          ([day, hours]) => ({
+      posts:
+        videos.map((video) => ({
+          isVerified: false,
+          tiktokLink: video.url,
+          videoUrl: video.videoUrl,
+          thumbUrl: video.thumbUrl,
+          locationName: selectedRestaurant.name,
+          rating: 0,
+          tags: video.tags ? video.tags : [],
+        })) ?? [],
+      openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
+        ([day, hours]) => {
+          const [startTime, endTime] = hours[0].split(" - ");
+          return {
             dayOfTheWeek: day.toUpperCase() as any,
-            opensAt: hours[0],
-            closesAt: hours[1],
-          })
-        );
-      })(),
+            opensAt: convertTimeTo24Hour(startTime),
+            closesAt: convertTimeTo24Hour(endTime),
+          };
+        }
+      ),
     };
 
-    console.log("payload", payload);
+    createAdminLocation(payload as any);
+  };
 
-    createAdminLocation.mutate(payload as any);
+  const handleOnNext = () => {
+    setStep(2);
+    addRestaurantData(selectedRestaurant!);
   };
 
   return (
@@ -293,7 +266,7 @@ export const NewRestaurantSheet = ({
                   <RestaurantConfirmation
                     restaurant={selectedRestaurant}
                     onGoBackToSearch={handleGoBackToSearch}
-                    onNext={() => setStep(2)}
+                    onNext={() => handleOnNext()}
                     onWorkingHoursSave={handleWorkingHoursSave}
                   />
                 )}
@@ -305,6 +278,7 @@ export const NewRestaurantSheet = ({
                 )}
                 {step === 3 && (
                   <RestaurantMenuWidget
+                                isLoading={isLoading}
                     onPrevious={() => setStep(2)}
                     onSubmit={(data) => handleCreateRestaurant(data)}
                   />

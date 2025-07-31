@@ -6,45 +6,48 @@ import { serialize, parse } from "cookie";
 import { getErrorMessage } from "./auth";
 
 const openingHoursSchema = z.object({
-  dayOfTheWeek: z.enum([
-    "MONDAY",
-    "TUESDAY",
-    "WEDNESDAY",
-    "THURSDAY",
-    "FRIDAY",
-    "SATURDAY",
-    "SUNDAY",
-  ]),
+  dayOfTheWeek: z
+    .enum([
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY",
+    ])
+    .optional(),
   opensAt: z.number().optional(),
-  closesAt: z.number(),
+  closesAt: z.number().optional(),
 });
 
 const postSchema = z.object({
-  isVerified: z.boolean(),
-  tiktokLink: z.string().url(),
-  videoUrl: z.string().url(),
-  thumbUrl: z.string().url(),
-  locationName: z.string(),
-  rating: z.number(),
-  tags: z.array(z.string()),
+  isVerified: z.boolean().optional(),
+  tiktokLink: z.string().optional(),
+  videoUrl: z.string().optional(),
+  thumbUrl: z.string().optional(),
+  locationName: z.string().optional(),
+  rating: z.number().optional(),
+  tags: z.array(z.string().optional()).optional(),
 });
 
 const createAdminLocationSchema = z.object({
   placeId: z.string(),
+  sessionToken: z.string(),
   address: z.string(),
-  menu: z.string().url().optional(),
+  menu: z.string().optional(),
   name: z.string(),
-  photos: z.array(z.string().url()),
+  photos: z.array(z.string().optional()).optional(),
   phoneNumber: z.string().optional(),
   priceLevel: z.number().optional(),
-  rating: z.number(),
-  reservation: z.string().url().optional(),
+  rating: z.number().optional(),
+  reservation: z.string().optional(),
   toilets: z.boolean().optional(),
-  type: z.literal("RESTAURANT"),
-  website: z.string().url().optional(),
-  isVerified: z.boolean(),
-  posts: z.array(postSchema),
-  openingHours: z.array(openingHoursSchema),
+  type: z.literal("RESTAURANT").optional(),
+  website: z.string().optional(),
+  isVerified: z.boolean().optional(),
+  posts: z.array(postSchema).optional(),
+  openingHours: z.array(openingHoursSchema).optional(),
 });
 
 export const restaurantRouter = router({
@@ -54,37 +57,6 @@ export const restaurantRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.createAdminLocation(input);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  createRestaurant: publicProcedure
-    .input(z.object({ email: z.string(), password: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
-      try {
-        const response = await apiRequest.login(input);
-        const token = response.token;
-
-        if (token) {
-          ctx.resHeaders.append(
-            "Set-Cookie",
-            serialize("user_token", token, {
-              path: "/",
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
-              maxAge: 60 * 60 * 24, // 1 day
-            })
-          );
-        }
-
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

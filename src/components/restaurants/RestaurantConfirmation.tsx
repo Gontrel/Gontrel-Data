@@ -6,6 +6,8 @@ import { Globe, MapPin, ExternalLink } from "lucide-react";
 import { EditWorkingHoursModal, WorkingHours } from "./EditWorkingHoursModal";
 import Link from "next/link";
 import Icon from "../svgs/Icons";
+import logo from "@/assets/images/logo.png";
+import { transformToModalHours } from "@/lib/utils";
 
 export type RestaurantData = {
   placeId: string;
@@ -18,80 +20,12 @@ export type RestaurantData = {
   workingHours: Record<string, string[]>;
 };
 
-export const mockRestaurant: RestaurantData = {
-  placeId: "1",
-  name: "The Gilded Spatula",
-  rating: 4.5,
-  imageUrl:
-    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070&auto=format&fit=crop",
-  address: "4C, Sons & Kings Str, Dub",
-  websiteUrl: "https://example.com",
-  addressUrl: "https://maps.google.com",
-  workingHours: {
-    Monday: ["8:00am - 12:00pm", "2:00pm - 9:00pm"],
-    Tuesday: ["9:00am - 11:00pm"],
-    Wednesday: ["9:00am - 12:00am"],
-    Thursday: ["8:00am - 12:00pm", "2:00pm - 9:00pm"],
-  },
-};
 
 interface RestaurantConfirmationProps {
   restaurant: RestaurantData;
   onGoBackToSearch: () => void;
   onNext: () => void;
 }
-
-const transformToModalHours = (
-  hours: Record<string, string[]>
-): WorkingHours => {
-  const days: (keyof WorkingHours)[] = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-  ];
-  const initialModalHours: any = {};
-
-  const parseTime = (time: string) => {
-    const [timePart, modifier] = time.split(/(am|pm)/i);
-    let [hours, minutes] = timePart.split(":").map(Number);
-    if (modifier && modifier.toLowerCase() === "pm" && hours < 12) {
-      hours += 12;
-    }
-    if (modifier && modifier.toLowerCase() === "am" && hours === 12) {
-      hours = 0;
-    }
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-      2,
-      "0"
-    )}`;
-  };
-
-  days.forEach((day) => {
-    const dayData = hours[day.charAt(0).toUpperCase() + day.slice(1)];
-    if (dayData && dayData.length > 0) {
-      initialModalHours[day] = {
-        isOpen: true,
-        isAllDay: false,
-        slots: dayData.map((range) => {
-          const [start, end] = range.split(" - ");
-          return { start: parseTime(start), end: parseTime(end) };
-        }),
-      };
-    } else {
-      initialModalHours[day] = {
-        isOpen: false,
-        isAllDay: false,
-        slots: [{ start: "09:00", end: "17:00" }],
-      };
-    }
-  });
-
-  return initialModalHours as WorkingHours;
-};
 
 export const RestaurantConfirmation = ({
   restaurant,
@@ -125,7 +59,7 @@ export const RestaurantConfirmation = ({
           <div className="flex items-center flex-row justify-between">
             <div className="flex items-center gap-4">
               <Image
-                src={restaurant?.imageUrl ?? null}
+                src={logo}
                 alt={restaurant?.name}
                 width={100}
                 height={100}
@@ -211,10 +145,11 @@ export const RestaurantConfirmation = ({
 
       <div className="flex-shrink-0">
         <button
+          type="submit"
           onClick={onNext}
           className="w-full bg-[#0070F3] text-white py-[20px] px-[22px] rounded-[20px] font-semibold hover:bg-blue-600 transition-colors"
         >
-          <p className="font-semibold text-lg font-figtree"> Next</p>
+          Next
         </button>
       </div>
 
