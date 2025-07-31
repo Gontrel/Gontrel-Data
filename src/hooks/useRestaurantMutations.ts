@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
-import { TableStatus } from '@/constant/table';
+import { ManagerTableTabsEnum, TableStatusEnum } from '@/types/enums';
 import { PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
 
 /**
@@ -19,7 +18,7 @@ export const useRestaurantMutations = () => {
       tableType
     }: {
       restaurantId: string;
-      newStatus: TableStatus;
+      newStatus: TableStatusEnum;
       tableType: ManagerTableTabsEnum;
     }) => {
       console.log(`🔄 Updating restaurant ${restaurantId} status to ${newStatus} in ${tableType}`);
@@ -64,7 +63,7 @@ export const useRestaurantMutations = () => {
   const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum) => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.restaurantId,
-      newStatus: TableStatus.APPROVED,
+      newStatus: TableStatusEnum.APPROVED,
       tableType
     });
   };
@@ -75,7 +74,7 @@ export const useRestaurantMutations = () => {
   const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum) => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.restaurantId,
-      newStatus: TableStatus.DECLINED,
+      newStatus: TableStatusEnum.DECLINED,
       tableType
     });
   };
@@ -86,7 +85,7 @@ export const useRestaurantMutations = () => {
   const approveVideo = (video: PendingVideoType) => {
     return updateRestaurantStatus.mutate({
       restaurantId: video.restaurantId,
-      newStatus: TableStatus.APPROVED,
+      newStatus: TableStatusEnum.APPROVED,
       tableType: ManagerTableTabsEnum.PENDING_VIDEOS
     });
   };
@@ -97,7 +96,7 @@ export const useRestaurantMutations = () => {
   const declineVideo = (video: PendingVideoType) => {
     return updateRestaurantStatus.mutate({
       restaurantId: video.restaurantId,
-      newStatus: TableStatus.DECLINED,
+      newStatus: TableStatusEnum.DECLINED,
       tableType: ManagerTableTabsEnum.PENDING_VIDEOS
     });
   };

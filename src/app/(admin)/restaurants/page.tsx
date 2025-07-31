@@ -2,13 +2,13 @@
 
 import { useState, useCallback } from 'react';
 import { StatsGrid } from '../../../components/ui/StatsGrid';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types';
 import { ManagerTableTabs } from '@/components/restaurants/ManagerTableTabs';
 import { ActionPanel } from '@/components/restaurants/ActionPanel';
 import { TableContent } from '@/components/restaurants/TableContent';
 import { useTabState } from '@/hooks/useTabState';
 import { useTableTotals } from '@/hooks/useTableTotals';
-import { DEFAULT_RESTAURANT_STATS } from '@/constant/stats';
+import { DEFAULT_RESTAURANT_STATS } from '@/constants/';
 
 /**
  * Restaurants Page Component

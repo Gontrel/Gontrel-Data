@@ -6,8 +6,9 @@ import { ActionButtons } from '../../ui/ActionButtons';
 import { ExternalLink } from '../../ui/ExternalLink';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
-import { TABLE_COLUMN_SIZES, TableStatus } from '@/constant/table';
-import { getBgColor, getTextColor, updateSetValue } from '@/lib/tableUtils';
+import { TABLE_COLUMN_SIZES } from "@/constants";
+import { TableStatusEnum } from "@/types/enums";
+import { getBgColor, getTextColor } from '@/lib/tableUtils';
 import { PillButton } from '@/components/ui/PillButton';
 
 /**
@@ -72,7 +73,7 @@ export const createPendingRestaurantsColumns = (
         const videos = row.original.videos;
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={`${videos.filter(video => video.status !== TableStatus.PENDING).length}/${videos.length} video${videos.length > 1 ? 's' : ''}`} textColor={getTextColor(videos)} bgColor={getBgColor(videos)} />
+            <PillButton text={`${videos.filter(video => video.status !== TableStatusEnum.PENDING).length}/${videos.length} video${videos.length > 1 ? 's' : ''}`} textColor={getTextColor(videos)} bgColor={getBgColor(videos)} />
             <button onClick={() => {
               // TODO: Open video modal
             }} className="text-blue-500 text-left">
@@ -112,8 +113,8 @@ export const createPendingRestaurantsColumns = (
       cell: ({ row }) => {
         const { name, status } = row.original.address;
         const maplink = row.original.maplink;
-        const isApproved = status === TableStatus.APPROVED;
-        const isDeclined = status === TableStatus.DECLINED;
+        const isApproved = status === TableStatusEnum.APPROVED;
+        const isDeclined = status === TableStatusEnum.DECLINED;
 
         return (
           <div className="flex flex-col gap-y-2">
@@ -155,8 +156,8 @@ export const createPendingRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const { url, status } = row.original.menuUrl;
-        const isApproved = status === TableStatus.APPROVED;
-        const isDeclined = status === TableStatus.DECLINED;
+        const isApproved = status === TableStatusEnum.APPROVED;
+        const isDeclined = status === TableStatusEnum.DECLINED;
         return (
           <div className="flex flex-col gap-y-2">
             <ExternalLink href={url} title={url}>
@@ -194,8 +195,8 @@ export const createPendingRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const { url, status } = row.original.reservationUrl;
-        const isApproved = status === TableStatus.APPROVED;
-        const isDeclined = status === TableStatus.DECLINED;
+        const isApproved = status === TableStatusEnum.APPROVED;
+        const isDeclined = status === TableStatusEnum.DECLINED;
         return (
           <div className="flex flex-col gap-y-2">
             <ExternalLink href={url} title={url}>
@@ -321,7 +322,7 @@ export const createPendingRestaurantsColumns = (
         </div>
       ),
       cell: ({ row }) => {
-        const shouldSendFeedback = row.original.videos.some((video) => video.status === TableStatus.DECLINED) || row.original.address.status === TableStatus.DECLINED || row.original.menuUrl.status === TableStatus.DECLINED || row.original.reservationUrl.status === TableStatus.DECLINED;
+        const shouldSendFeedback = row.original.videos.some((video) => video.status === TableStatusEnum.DECLINED) || row.original.address.status === TableStatusEnum.DECLINED || row.original.menuUrl.status === TableStatusEnum.DECLINED || row.original.reservationUrl.status === TableStatusEnum.DECLINED;
         return (
           <ActionButtons
             actions={[
@@ -331,11 +332,11 @@ export const createPendingRestaurantsColumns = (
                 variant: shouldSendFeedback ? 'danger' : 'primary',
                 disabled: (
                   row.original.videos.some(
-                    (video: { status: TableStatus }) => video.status === TableStatus.PENDING
+                    (video: { status: TableStatusEnum }) => video.status === TableStatusEnum.PENDING
                   ) ||
-                  row.original.address.status === TableStatus.PENDING ||
-                  row.original.menuUrl.status === TableStatus.PENDING ||
-                  row.original.reservationUrl.status === TableStatus.PENDING
+                  row.original.address.status === TableStatusEnum.PENDING ||
+                  row.original.menuUrl.status === TableStatusEnum.PENDING ||
+                  row.original.reservationUrl.status === TableStatusEnum.PENDING
                 ),
               },
             ]}

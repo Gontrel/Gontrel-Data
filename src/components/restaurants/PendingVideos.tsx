@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { RestaurantTable } from './RestaurantTable'
 import { useRestaurants } from '@/hooks/useRestaurants';
 import { PendingVideoType } from '@/types/restaurant';
-import { ManagerTableTabs } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types';
 import { createPendingVideosColumns } from './columns/pendingVideosColumns';
 import { usePendingVideos } from '@/hooks/usePendingVideos';
 
@@ -32,7 +32,7 @@ const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, h
 
     // Fetch data with pageSize
     const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: ManagerTableTabs.PENDING_VIDEOS,
+        tableId: ManagerTableTabsEnum.PENDING_VIDEOS,
         search: searchTerm,
         page: currentPage,
         limit: pageSize

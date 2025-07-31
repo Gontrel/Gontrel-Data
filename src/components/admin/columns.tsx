@@ -7,6 +7,7 @@ import { ActiveRestaurantType } from "@/types/restaurant";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import placeholder from "@/assets/images/placeholder.svg";
+import { TrendEnum } from "@/types";
 
 export const columns: ColumnDef<ActiveRestaurantType>[] = [
   {
@@ -57,9 +58,9 @@ export const columns: ColumnDef<ActiveRestaurantType>[] = [
     cell: ({ row }) => {
       const trend = row.original.trend;
       let trendClass = "";
-      if (trend === "Popular searches") {
+      if (trend === TrendEnum.POPULAR_SEARCHES) {
         trendClass = "bg-blue-100 text-blue-800";
-      } else if (trend === "Trending TikTok #") {
+      } else if (trend === TrendEnum.TRENDING_TIKTOK) {
         trendClass = "bg-purple-100 text-purple-800";
       } else {
         trendClass = "bg-gray-100 text-gray-800";
@@ -75,7 +76,7 @@ export const columns: ColumnDef<ActiveRestaurantType>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Image
-          src={row.original.addedBy.avatar || placeholder}
+          src={row.original.addedBy.profileImage || placeholder}
           alt={row.original.addedBy.name}
           width={24}
           height={24}

@@ -1,4 +1,4 @@
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types';
 import PendingRestaurants from './PendingRestaurants';
 import PendingVideos from './PendingVideos';
 import React from 'react'; // Added missing import for React

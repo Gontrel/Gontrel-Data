@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types/enums';
 
 /**
  * Interface for tab-specific state

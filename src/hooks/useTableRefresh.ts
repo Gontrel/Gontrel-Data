@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types/enums';
 
 /**
  * Custom hook for manually refreshing table data and totals

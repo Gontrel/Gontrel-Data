@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { RestaurantApi } from '../lib/api';
-import { AnalystTableTabs, ManagerTableTabs } from '@/constant/table';
-import { PaginatedResponse, PendingRestaurantType, PendingVideoType, ActiveRestaurantType } from '../types/restaurant';
+import { RestaurantApi } from '@/lib/api';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { PaginatedResponse, PendingRestaurantType, PendingVideoType, ActiveRestaurantType } from '@/types/restaurant';
 
 /**
  * Query parameters for restaurant fetching
@@ -17,13 +17,13 @@ interface RestaurantQueryParams {
 /**
  * Hook for fetching restaurants with role-based filtering
  */
-export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<PendingRestaurantType>>>;
+export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum.PENDING_RESTAURANTS}): ReturnType<typeof useQuery<PaginatedResponse<PendingRestaurantType>>>;
 
-export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.PENDING_VIDEOS}): ReturnType<typeof useQuery<PaginatedResponse<PendingVideoType>>>;
+export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum.PENDING_VIDEOS}): ReturnType<typeof useQuery<PaginatedResponse<PendingVideoType>>>;
 
-export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs.ACTIVE_RESTAURANTS | AnalystTableTabs.ACTIVE_RESTAURANTS }): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
+export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS | AnalystTableTabsEnum.ACTIVE_RESTAURANTS }): ReturnType<typeof useQuery<PaginatedResponse<ActiveRestaurantType>>>;
 
-export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabs | AnalystTableTabs }) {
+export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum | AnalystTableTabsEnum }) {
   const { tableId, search, page, limit, currentUserId, enabled = true } = params;
 
   return useQuery({
@@ -32,14 +32,14 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
       const queryParams = { search, page, limit, currentUserId };
 
       switch (tableId) {
-        case ManagerTableTabs.PENDING_RESTAURANTS:
+        case ManagerTableTabsEnum.PENDING_RESTAURANTS:
           return await RestaurantApi.getPendingRestaurants(queryParams);
 
-        case ManagerTableTabs.PENDING_VIDEOS:
+        case ManagerTableTabsEnum.PENDING_VIDEOS:
           return await RestaurantApi.getPendingVideos(queryParams);
 
-        case ManagerTableTabs.ACTIVE_RESTAURANTS:
-        case AnalystTableTabs.ACTIVE_RESTAURANTS:
+        case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
+        case AnalystTableTabsEnum.ACTIVE_RESTAURANTS:
           return await RestaurantApi.getActiveRestaurants(queryParams);
 
         default:

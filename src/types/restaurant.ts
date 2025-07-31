@@ -1,18 +1,22 @@
-import { TableStatus } from "@/constant/table";
-import { UserRoleEnum } from "@/constant/user";
+import { TableStatusEnum, AdminRoleEnum, TrendEnum } from "./enums";
 
 /**
  * Restaurant data model representing the production/live data
  */
 export type ActiveRestaurantType = {
+  id?: string;
   name: string;
   address: string;
+  maplink: string;
   website: string;
-  totalVideos: number;
-  trend: "Popular searches" | "Trending TikTok #" | "None";
+  menuUrl: string;
+  reservationUrl: string;
+  totalVideos?: number;
+  trend?: TrendEnum;
   addedBy: {
+    userId: string;
     name: string;
-    avatar: string;
+    profileImage: string;
   };
   openingHours: {
     monday: string;
@@ -32,7 +36,7 @@ export type VideoType = {
   id: string;
   videoUrl: string;
   tags: Tag[];
-  status: TableStatus;
+  status: TableStatusEnum;
 };
 
 
@@ -46,17 +50,17 @@ export type PendingRestaurantType = {
   name: string;
   videos: VideoType[];
   address: {
-    status: TableStatus;
+    status: TableStatusEnum;
     name: string;
   };
   maplink: string;
   website: string;
   menuUrl: {
-    status: TableStatus;
+    status: TableStatusEnum;
     url: string;
   };
   reservationUrl: {
-    status: TableStatus;
+    status: TableStatusEnum;
     url: string;
   };
   addedBy: {
@@ -99,7 +103,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: UserRoleEnum;
+  role: AdminRoleEnum;
 };
 
 /**

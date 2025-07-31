@@ -3,8 +3,8 @@ import { PendingVideoType } from '@/types/restaurant';
 import { Calendar, Video } from 'lucide-react';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
-import { TABLE_COLUMN_SIZES } from '@/constant/table';
-import { getBgColor, getTextColor, updateSetValue } from '@/lib/tableUtils';
+import { TABLE_COLUMN_SIZES } from "@/constants";
+import { getBgColor, getTextColor } from '@/lib/tableUtils';
 import { PillButton } from '@/components/ui/PillButton';
 
 /**
@@ -69,7 +69,7 @@ export const createPendingVideosColumns = (
             <PillButton text={`${videos.length} video${videos.length > 1 ? 's' : ''}`} textColor={getTextColor(videos)} bgColor={getBgColor(videos)} />
             <button onClick={() => {
               // TODO: Open video modal
-            }} className="text-blue-500 text-left">
+            }} className="text-left text-blue-500">
               View
             </button>
           </div>
@@ -89,15 +89,15 @@ export const createPendingVideosColumns = (
         const addedBy = row.getValue('addedBy') as { name: string; profileImage: string };
 
         return (
-          <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
+          <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
             <Image
               src={addedBy.profileImage}
               alt={addedBy.name}
               width={40}
               height={40}
-              className="rounded-full object-cover"
+              className="object-cover rounded-full"
             />
-            <span className="text-black font-medium">{addedBy.name}</span>
+            <span className="font-medium text-black">{addedBy.name}</span>
           </div>
         );
       },
@@ -117,7 +117,7 @@ export const createPendingVideosColumns = (
         return (
           <div className="relative">
             <div
-              className="flex items-center gap-2 px-2 py-1 w-full text-left"
+              className="flex items-center w-full gap-2 px-2 py-1 text-left"
             >
               <span className="text-[#181D1F] font-medium">
                 {formatDate(dateAdded)}

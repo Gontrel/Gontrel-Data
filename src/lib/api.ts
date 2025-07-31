@@ -1,7 +1,6 @@
-import { PaginatedResponse, ActiveRestaurantType, RestaurantTypes, PendingRestaurantType, PendingVideoType } from '../types/restaurant';
-import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants } from '../data/mockRestaurants';
-import { mockUsers, getCurrentUser } from '../data/mockUsers';
-import { AnalystTableTabs, ManagerTableTabs } from '@/constant/table';
+import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType } from '@/types/restaurant';
+import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants } from '@/data/mockRestaurants';
+import { mockUsers, getCurrentUser } from '@/data/mockUsers';
 
 /**
  * Simulate API delay for realistic development experience

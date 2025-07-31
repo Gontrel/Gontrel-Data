@@ -1,34 +1,34 @@
 import { useState, useCallback } from 'react';
 import { PendingRestaurantType } from '@/types/restaurant';
-import { TableStatus } from '@/constant/table';
+import { TableStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
 import { useRestaurantMutations } from './useRestaurantMutations';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+
 
 /**
  * Type for keys of PendingRestaurantType that have a status property
  */
 export type PendingRestaurantStatusKey = {
-  [K in keyof PendingRestaurantType]: PendingRestaurantType[K] extends { status: TableStatus } ? K : never
+  [K in keyof PendingRestaurantType]: PendingRestaurantType[K] extends { status: TableStatusEnum } ? K : never
 }[keyof PendingRestaurantType];
 
 /**
  * Type guard to check if an object has a status property
  */
-const hasStatus = (obj: unknown): obj is { status: TableStatus } => {
+const hasStatus = (obj: unknown): obj is { status: TableStatusEnum } => {
   return typeof obj === 'object' && obj !== null && 'status' in obj;
 };
 
 /**
  * Updates the status of a single object with status property
  */
-const updateObjectStatus = (obj: { status: TableStatus }, newStatus: TableStatus): void => {
+const updateObjectStatus = (obj: { status: TableStatusEnum }, newStatus: TableStatusEnum): void => {
   obj.status = newStatus;
 };
 
 /**
  * Updates the status of an array of objects that have status properties
  */
-const updateArrayStatus = (arr: unknown[], newStatus: TableStatus): void => {
+const updateArrayStatus = (arr: unknown[], newStatus: TableStatusEnum): void => {
   arr.forEach((item) => {
     if (hasStatus(item)) {
       updateObjectStatus(item, newStatus);
@@ -39,7 +39,7 @@ const updateArrayStatus = (arr: unknown[], newStatus: TableStatus): void => {
 /**
  * Updates all status properties in a restaurant object
  */
-const updateAllStatuses = (restaurant: PendingRestaurantType, newStatus: TableStatus): void => {
+const updateAllStatuses = (restaurant: PendingRestaurantType, newStatus: TableStatusEnum): void => {
   Object.values(restaurant).forEach((value) => {
     if (hasStatus(value)) {
       updateObjectStatus(value, newStatus);
@@ -55,13 +55,13 @@ const updateAllStatuses = (restaurant: PendingRestaurantType, newStatus: TableSt
 const updatePropertyStatus =(
   restaurant: PendingRestaurantType,
   propertyKey: PendingRestaurantStatusKey,
-  newStatus: TableStatus
+  newStatus: TableStatusEnum
 ): PendingRestaurantType => {
   return {
     ...restaurant,
     [propertyKey]: {
       ...restaurant[propertyKey],
-      status: restaurant[propertyKey].status === newStatus ? TableStatus.PENDING : newStatus
+      status: restaurant[propertyKey].status === newStatus ? TableStatusEnum.PENDING : newStatus
     }
   };
 };
@@ -83,7 +83,7 @@ export const usePendingRestaurants = () => {
 
   const updateRestaurantStatus = useCallback((
     restaurantId: string,
-    newStatus: TableStatus,
+    newStatus: TableStatusEnum,
     propertyKey?: PendingRestaurantStatusKey
   ) => {
     setRestaurants(prevRestaurants =>
@@ -105,7 +105,7 @@ export const usePendingRestaurants = () => {
 
   const handleApprove = useCallback((restaurant: PendingRestaurantType, type?: PendingRestaurantStatusKey) => {
     // Update local state immediately for optimistic UI
-    updateRestaurantStatus(restaurant.restaurantId, TableStatus.APPROVED, type);
+    updateRestaurantStatus(restaurant.restaurantId, TableStatusEnum.APPROVED, type);
 
     // Trigger mutation with proper query invalidation
     approveRestaurantMutation(restaurant, ManagerTableTabsEnum.PENDING_RESTAURANTS);
@@ -113,7 +113,7 @@ export const usePendingRestaurants = () => {
 
   const handleDecline = useCallback((restaurant: PendingRestaurantType, type?: PendingRestaurantStatusKey) => {
     // Update local state immediately for optimistic UI
-    updateRestaurantStatus(restaurant.restaurantId, TableStatus.DECLINED, type);
+    updateRestaurantStatus(restaurant.restaurantId, TableStatusEnum.DECLINED, type);
 
     // Trigger mutation with proper query invalidation
     declineRestaurantMutation(restaurant, ManagerTableTabsEnum.PENDING_RESTAURANTS);

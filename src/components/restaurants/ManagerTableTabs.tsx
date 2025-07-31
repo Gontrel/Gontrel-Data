@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types';
 
 /**
  * Props for the ManagerTableTabs component

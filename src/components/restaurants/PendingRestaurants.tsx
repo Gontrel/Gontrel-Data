@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { RestaurantTable } from './RestaurantTable';
 import { useRestaurants } from '@/hooks/useRestaurants';
-import { ManagerTableTabs } from '@/constant/table';
+import { ManagerTableTabsEnum } from '@/types';
 import { createPendingRestaurantsColumns } from './columns/pendingRestaurantsColumns';
 import { usePendingRestaurants } from '@/hooks/usePendingRestaurants';
 import { PendingRestaurantType } from '@/types/restaurant';
@@ -49,7 +49,7 @@ const PendingRestaurants = ({
 
     // Fetch data
     const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: ManagerTableTabs.PENDING_RESTAURANTS,
+        tableId: ManagerTableTabsEnum.PENDING_RESTAURANTS,
         search: searchTerm,
         page: currentPage,
         limit: pageSize

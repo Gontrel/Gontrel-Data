@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { RestaurantApi } from '../lib/api';
-import { ManagerTableTabs as ManagerTableTabsEnum } from '@/constant/table';
+import { RestaurantApi } from '@/lib/api';
+import { ManagerTableTabsEnum } from '@/types/enums';
 
 /**
  * Interface for tab-specific state

@@ -1,30 +1,30 @@
 import { useState, useCallback } from 'react';
 import { PendingVideoType } from '@/types/restaurant';
-import { TableStatus } from '@/constant/table';
+import { TableStatusEnum } from '@/types/enums';
 import { useRestaurantMutations } from './useRestaurantMutations';
 
 export type PendingVideoStatusKey = {
-  [K in keyof PendingVideoType]: PendingVideoType[K] extends { status: TableStatus } ? K : never
+  [K in keyof PendingVideoType]: PendingVideoType[K] extends { status: TableStatusEnum } ? K : never
 }[keyof PendingVideoType];
 
 /**
  * Type guard to check if an object has a status property
  */
-const hasStatus = (obj: unknown): obj is { status: TableStatus } => {
+const hasStatus = (obj: unknown): obj is { status: TableStatusEnum } => {
   return typeof obj === 'object' && obj !== null && 'status' in obj;
 };
 
 /**
  * Updates the status of a single object with status property
  */
-const updateObjectStatus = (obj: { status: TableStatus }, newStatus: TableStatus): void => {
+const updateObjectStatus = (obj: { status: TableStatusEnum }, newStatus: TableStatusEnum): void => {
   obj.status = newStatus;
 };
 
 /**
  * Updates the status of an array of objects that have status properties
  */
-const updateArrayStatus = (arr: unknown[], newStatus: TableStatus): void => {
+const updateArrayStatus = (arr: unknown[], newStatus: TableStatusEnum): void => {
   arr.forEach((item) => {
     if (hasStatus(item)) {
       updateObjectStatus(item, newStatus);
@@ -35,7 +35,7 @@ const updateArrayStatus = (arr: unknown[], newStatus: TableStatus): void => {
 /**
  * Updates all status properties in a restaurant object
  */
-const updateAllStatuses = (restaurant: PendingVideoType, newStatus: TableStatus): void => {
+const updateAllStatuses = (restaurant: PendingVideoType, newStatus: TableStatusEnum): void => {
   Object.values(restaurant).forEach((value) => {
     if (hasStatus(value)) {
       updateObjectStatus(value, newStatus);
@@ -60,7 +60,7 @@ export const usePendingVideos = () => {
 
   const updateRestaurantStatus = useCallback((
     restaurantId: string,
-    newStatus: TableStatus,
+    newStatus: TableStatusEnum,
   ) => {
     setRestaurants(prevRestaurants =>
       prevRestaurants.map(restaurant => {
@@ -75,13 +75,13 @@ export const usePendingVideos = () => {
   }, []);
 
   const handleApprove = useCallback((restaurant: PendingVideoType) => {
-    updateRestaurantStatus(restaurant.restaurantId, TableStatus.APPROVED);
+    updateRestaurantStatus(restaurant.restaurantId, TableStatusEnum.APPROVED);
 
     approveVideoMutation(restaurant);
   }, [updateRestaurantStatus, approveVideoMutation]);
 
   const handleDecline = useCallback((restaurant: PendingVideoType) => {
-    updateRestaurantStatus(restaurant.restaurantId, TableStatus.DECLINED);
+    updateRestaurantStatus(restaurant.restaurantId, TableStatusEnum.DECLINED);
     declineVideoMutation(restaurant);
   }, [updateRestaurantStatus, declineVideoMutation]);
 
