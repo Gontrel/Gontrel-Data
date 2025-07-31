@@ -5,6 +5,7 @@ import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
 import { serialize, parse } from "cookie";
 
+
 export const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
     const data = error.response?.data;
@@ -26,6 +27,7 @@ export const authRouter = router({
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
+
       try {
         const response = await apiRequest.login(input);
         const token = response.token;
@@ -37,7 +39,7 @@ export const authRouter = router({
               path: "/",
               httpOnly: true,
               secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
+              sameSite: "lax",
               maxAge: 60 * 60 * 24, // 1 day
             })
           );
@@ -52,6 +54,20 @@ export const authRouter = router({
         });
       }
     }),
+
+  logout: publicProcedure.mutation(({ ctx }) => {
+    ctx.resHeaders.append(
+      "Set-Cookie",
+      serialize("user_token", "", {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: -1, // Expire the cookie immediately
+      })
+    );
+    return { success: true };
+  }),
 
   forgetPassword: publicProcedure
     .input(z.object({ email: z.string() }))
@@ -128,17 +144,4 @@ export const authRouter = router({
         });
       }
     }),
-
-  logout: publicProcedure.mutation(async ({ ctx }) => {
-    ctx.resHeaders.append(
-      "Set-Cookie",
-      serialize("user_token", "", {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(0),
-      })
-    );
-
-    return { success: true };
-  }),
 });
