@@ -179,6 +179,8 @@ export const NewRestaurantSheet = ({
 
     if (!selectedRestaurant) return;
 
+    console.log(selectedRestaurant, "data")
+
     const payload = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
@@ -205,16 +207,25 @@ export const NewRestaurantSheet = ({
           rating: 0,
           tags: video.tags ? video.tags : [],
         })) ?? [],
-      openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
-        ([day, hours]) => {
-          const [startTime, endTime] = hours[0].split(" - ");
-          return {
-            dayOfTheWeek: day.toUpperCase() as any,
-            opensAt: convertTimeTo24Hour(startTime),
-            closesAt: convertTimeTo24Hour(endTime),
-          };
-        }
-      ),
+   openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
+  ([day, hours]) => {
+    // Handle "24 hours" case
+    if (hours[0].toLowerCase() === "24 hours") {
+      return {
+        dayOfTheWeek: day.toUpperCase() as any,
+        opensAt: 0,       // Represents 00:00 (midnight)
+        closesAt: 24,     // Represents 24:00 (end of day)
+      };
+    }
+
+    const [startTime, endTime] = hours[0].split(" - ");
+    return {
+      dayOfTheWeek: day.toUpperCase() as any,
+      opensAt: convertTimeTo24Hour(startTime),
+      closesAt: convertTimeTo24Hour(endTime),
+    };
+  }
+),
     };
 
     createAdminLocation(payload as any);

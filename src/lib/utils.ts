@@ -89,18 +89,23 @@ export function capitalizeWords(str: string): string {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-// Function to convert time string (e.g., "9:00 AM") to 24-hour format (e.g., 9)
-export const convertTimeTo24Hour = (time: string) => {
+export const convertTimeTo24Hour = (time: string): number => {
+  // Handle "24 hours" case
+  if (time.toLowerCase() === "24 hours") {
+    return 24;
+  }
+
   let [hoursStr, minutesPeriod] = time.split(":");
-  let period = minutesPeriod.slice(-2);
+  let period = minutesPeriod.slice(-2).toUpperCase();
   let minutesStr = minutesPeriod.slice(0, 2);
 
   let hours = parseInt(hoursStr, 10);
-  let minutes = parseInt(minutesStr, 10);
+  const minutes = parseInt(minutesStr, 10);
 
-  if (period.toUpperCase() === "PM" && hours !== 12) {
+  // Convert to 24-hour format
+  if (period === "PM" && hours !== 12) {
     hours += 12;
-  } else if (period.toUpperCase() === "AM" && hours === 12) {
+  } else if (period === "AM" && hours === 12) {
     hours = 0;
   }
 
