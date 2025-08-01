@@ -16,6 +16,7 @@ import { useVideoStore } from "@/stores/videoStore";
 import { convertTimeTo24Hour, formatTime } from "@/lib/utils";
 import { ProgressBar } from "../progressiveLoader/ProgressiveBar";
 import { errorToast, successToast } from "@/utils/toast";
+import { TimeSlot } from "./EditWorkingHoursModal";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -36,7 +37,8 @@ export const NewRestaurantSheet = ({
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
   const [sessionToken, setSessionToken] = useState("");
-  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
+  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } =
+    useVideoStore();
 
   const debouncedQuery = useDebounce(inputValue, 500);
 
@@ -46,11 +48,11 @@ export const NewRestaurantSheet = ({
       { enabled: debouncedQuery.trim() !== "" && !!sessionToken }
     );
 
-
-    const { mutate: createAdminLocation, isPending: isLoading } = trpc.restaurants.createAdminLocation.useMutation({
+  const { mutate: createAdminLocation, isPending: isLoading } =
+    trpc.restaurants.createAdminLocation.useMutation({
       onSuccess: () => {
-       successToast("Restaurant created successfully!");
-      handleClose();
+        successToast("Restaurant created successfully!");
+        handleClose();
       },
       onError: (error) => {
         errorToast(error.message);
@@ -89,6 +91,7 @@ export const NewRestaurantSheet = ({
 
   useEffect(() => {
     if (autoCompleteData && autoCompleteData.length > 0) {
+      console.log("autocomplete", autoCompleteData);
       setSuggestions(autoCompleteData);
     } else {
       setSuggestions([]);
@@ -106,6 +109,8 @@ export const NewRestaurantSheet = ({
           workingHours[day] = timeParts.join(": ").split(", ");
         });
       }
+
+      console.log(workingHours, "placeDworkingHoursetailsData");
 
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -151,6 +156,8 @@ export const NewRestaurantSheet = ({
   const handleWorkingHoursSave = (updatedHours: any) => {
     if (!selectedRestaurant) return;
 
+    console.error(updatedHours, "updatedHours");
+
     const newWorkingHours: Record<string, string[]> = {};
     for (const day in updatedHours) {
       const dayData = updatedHours[day];
@@ -161,8 +168,8 @@ export const NewRestaurantSheet = ({
           newWorkingHours[dayName] = ["24 hours"];
         } else {
           newWorkingHours[dayName] = dayData.slots?.map(
-            (slot: any) =>
-              `${formatTime(slot?.start)} - ${formatTime(slot?.end)}`
+            (slot: TimeSlot) =>
+              `${formatTime(slot.start)} - ${formatTime(slot.end)}`
           );
         }
       }
@@ -178,8 +185,6 @@ export const NewRestaurantSheet = ({
     if (isLoading) return;
 
     if (!selectedRestaurant) return;
-
-    console.log(selectedRestaurant, "data")
 
     const payload = {
       sessionToken: sessionToken,
@@ -207,25 +212,25 @@ export const NewRestaurantSheet = ({
           rating: 0,
           tags: video.tags ? video.tags : [],
         })) ?? [],
-   openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
-  ([day, hours]) => {
-    // Handle "24 hours" case
-    if (hours[0].toLowerCase() === "24 hours") {
-      return {
-        dayOfTheWeek: day.toUpperCase() as any,
-        opensAt: 0,       // Represents 00:00 (midnight)
-        closesAt: 24,     // Represents 24:00 (end of day)
-      };
-    }
+      openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
+        ([day, hours]) => {
+          // Handle "24 hours" case
+          if (hours[0].toLowerCase() === "24 hours") {
+            return {
+              dayOfTheWeek: day.toUpperCase() as unknown,
+              opensAt: 0, // Represents 00:00 (midnight)
+              closesAt: 24, // Represents 24:00 (end of day)
+            };
+          }
 
-    const [startTime, endTime] = hours[0].split(" - ");
-    return {
-      dayOfTheWeek: day.toUpperCase() as any,
-      opensAt: convertTimeTo24Hour(startTime),
-      closesAt: convertTimeTo24Hour(endTime),
-    };
-  }
-),
+          const [startTime, endTime] = hours[0].split(" - ");
+          return {
+            dayOfTheWeek: day.toUpperCase() as unknown,
+            opensAt: convertTimeTo24Hour(startTime),
+            closesAt: convertTimeTo24Hour(endTime),
+          };
+        }
+      ),
     };
 
     createAdminLocation(payload as any);
@@ -289,7 +294,7 @@ export const NewRestaurantSheet = ({
                 )}
                 {step === 3 && (
                   <RestaurantMenuWidget
-                                isLoading={isLoading}
+                    isLoading={isLoading}
                     onPrevious={() => setStep(2)}
                     onSubmit={(data) => handleCreateRestaurant(data)}
                   />

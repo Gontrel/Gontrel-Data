@@ -37,7 +37,7 @@ export interface Admin {
 }
 
 export interface Analytics {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface Post {

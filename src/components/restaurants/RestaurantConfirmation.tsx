@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Globe, MapPin, ExternalLink } from "lucide-react";
+import { Globe, MapPin, } from "lucide-react";
 import { EditWorkingHoursModal, WorkingHours } from "./EditWorkingHoursModal";
-import Link from "next/link";
 import Icon from "../svgs/Icons";
 import logo from "@/assets/images/logo.png";
-import { transformToModalHours } from "@/lib/utils";
+import { transformToModalHours, } from "@/lib/utils";
 
 export type RestaurantData = {
   placeId: string;
@@ -20,7 +19,6 @@ export type RestaurantData = {
   workingHours: Record<string, string[]>;
 };
 
-
 interface RestaurantConfirmationProps {
   restaurant: RestaurantData;
   onGoBackToSearch: () => void;
@@ -32,11 +30,12 @@ export const RestaurantConfirmation = ({
   onGoBackToSearch,
   onNext,
   onWorkingHoursSave,
-}: RestaurantConfirmationProps & { 
+}: RestaurantConfirmationProps & {
   onWorkingHoursSave: (updatedHours: WorkingHours) => void;
 }) => {
   const [isEditHoursModalOpen, setIsEditHoursModalOpen] = useState(false);
-  const daysOfWeek = [
+
+  const daysOfWeek: (keyof WorkingHours)[] = [
     "Monday",
     "Tuesday",
     "Wednesday",
@@ -119,6 +118,7 @@ export const RestaurantConfirmation = ({
           <div className="space-y-3">
             {daysOfWeek.map((day) => {
               const hours = restaurant.workingHours[day];
+              console.log(hours, "hours");
               return (
                 <div
                   key={day}
