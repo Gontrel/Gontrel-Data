@@ -26,10 +26,10 @@ export const NewPostSheet = ({
         thumbUrl: video.thumbUrl,
         locationName: video.locationName,
         rating: video.rating,
-        tags: video.tags, 
+    tags: video.tags,
     }))
 
-    const { mutate: createPost, isPending: isLoading } = trpc.post.createPost.useMutation({
+  const { mutate: createPost, isPending: isLoading } = trpc.restaurant.createPost.useMutation({
         onSuccess: () => {
          successToast("Post created successfully!");
         },
@@ -40,9 +40,16 @@ export const NewPostSheet = ({
 
 
   const onSubmit = () => {
-    createPost( videosData[0])
-     // TODO: change later after the endpoint has been changes
-    // createPost( videosData)
+    for (const videoData of videosData) {
+      if (videoData.videoUrl !== undefined) {
+        createPost({
+          videoUrl: videoData.videoUrl,
+          locationName: videoData.locationName,
+          rating: videoData.rating,
+          tags: videoData.tags,
+        })
+      }
+    }
   };
 
 

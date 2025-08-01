@@ -19,7 +19,7 @@ export const ProgressBar = ({
         }`}
       >
         {step == 1 && (
-          <p className="text-lg font-medium text-[#2E3032] text-center font-figtree leading-[100%] mt-[10px]">
+          <p className="text-lg font-medium text-[#2E3032] text-center leading-[100%] mt-[10px]">
             {subTitle1}
           </p>
         )}
@@ -33,7 +33,7 @@ export const ProgressBar = ({
         }`}
       >
         {step == 2 && (
-          <p className="text-lg font-medium text-[#2E3032] text-center font-figtree leading-[100%] mt-[10px]">
+          <p className="text-lg font-medium text-[#2E3032] text-center  leading-[100%] mt-[10px]">
             {subTitle2}
           </p>
         )}
@@ -47,7 +47,7 @@ export const ProgressBar = ({
         }`}
       >
         {step == 3 && (
-          <p className="text-lg font-medium text-[#2E3032] text-center font-figtree leading-[100%] mt-[10px]">
+          <p className="text-lg font-medium text-[#2E3032] text-center  leading-[100%] mt-[10px]">
             {subTitle3}
           </p>
         )}

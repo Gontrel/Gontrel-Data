@@ -1,5 +1,7 @@
-import { Link, Copy } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { VideoData, useVideoStore } from '@/stores/videoStore';
+import Image from 'next/image';
+import Icon from '../svgs/Icons';
 
 interface VideoCardProps {
   video: VideoData;
@@ -10,37 +12,40 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
   const { removeVideo } = useVideoStore();
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg flex gap-4 items-start">
-      <img 
-        src="/placeholder-image.png" // Replace with actual thumbnail if available
-        alt="Video thumbnail" 
-        className="w-20 h-20 rounded-md object-cover"
+    <div className="flex flex-row bg-gray-100 p-4 pe-11 rounded-lg gap-4 items-start">
+      <Image
+        src={video.thumbUrl || "/placeholder-image.png"}
+        alt="Video thumbnail"
+        className="rounded-md object-cover"
+        width={80}
+        height={80}
       />
-      <div className="flex-1">
-        <div className="flex items-center gap-2 text-blue-500 font-semibold">
-          <Link size={16} />
-          <a href={video.url} target="_blank" rel="noopener noreferrer" className="truncate hover:underline">
+      <div className="flex flex-col gap-y-3 justify-between w-full">
+        <div className="flex flex-row gap-2 text-blue-500">
+          <Icon name="linkIcon" className="max-w-4 max-h-4" fill="#9DA1A5" />
+          <a href={video.url} target="_blank" rel="noopener noreferrer" className="truncate hover:underline max-w-3xs">
             {video.url}
           </a>
           <button onClick={() => navigator.clipboard.writeText(video.url)} className="text-gray-400 hover:text-gray-600">
             <Copy size={16} />
           </button>
         </div>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {video.tags.map(tag => (
             <span key={tag} className="bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
               {tag}
             </span>
           ))}
         </div>
+        <hr className="border-gray-200" />
         <div className="mt-4 flex gap-2">
-          <button 
+          <button
             onClick={() => onEdit(video.id)}
             className="px-4 py-1.5 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-50"
           >
             Edit
           </button>
-          <button 
+          <button
             onClick={() => removeVideo(video.id)}
             className="px-4 py-1.5 border border-red-500 text-red-500 rounded-md font-semibold hover:bg-red-50"
           >

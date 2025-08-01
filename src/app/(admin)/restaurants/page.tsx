@@ -8,11 +8,13 @@ import { useTabState } from '@/hooks/useTabState';
 import { useTableTotals } from '@/hooks/useTableTotals';
 import { DEFAULT_RESTAURANT_STATS } from '@/constants/';
 import { StatsGrid } from "@/components/ui/StatsGrid";
-import { NewRestaurantSheet } from "@/components/restaurants/NewRestaurantSheet";
-import { PreviewVideoModal } from "@/components/restaurants/PreviewVideoModal";
+import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
 import { AdminRoleEnum, AnalystTableTabsEnum } from '@/types/enums';
 import TableTabs from '@/components/restaurants/TableTabs';
+import { GontrelPostView } from '@/components/video/GontrelPostView';
+import TableVideoPreviewSheet from '@/components/modals/TableVideoPreviewSheet';
 
 /**
  * Restaurants Page Component
@@ -22,7 +24,7 @@ export default function RestaurantsPage() {
   const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum | AnalystTableTabsEnum>(
     view === AdminRoleEnum.ANALYST ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS : ManagerTableTabsEnum.ACTIVE_RESTAURANTS
   );
-  const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
+  const { activeVideoUrl, restaurantData, tiktokUsername, setActiveVideoUrl } = useVideoStore();
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
 
   // Use custom hook for tab-specific state management
@@ -126,10 +128,25 @@ export default function RestaurantsPage() {
 
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
+      {/* TODO: To be updated */}
+      <TableVideoPreviewSheet
+        open={false}
+        onOpenChange={handlePreviewModalOpenChange}
+        posts={[]}
+      />
       <PreviewVideoModal
         open={!!activeVideoUrl}
         onOpenChange={handlePreviewModalOpenChange}
-      />
+        showCloseButton={false}
+      >
+        {restaurantData && (
+          <GontrelPostView
+            videoUrl={activeVideoUrl}
+            restaurantData={restaurantData}
+            tiktokUsername={tiktokUsername || ""}
+          />
+        )}
+      </PreviewVideoModal>
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
         {/* Restaurant Stats */}

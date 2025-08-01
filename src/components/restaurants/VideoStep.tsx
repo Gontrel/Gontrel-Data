@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, X, Plus } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { VideoCard } from "./VideoCard";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast } from "@/utils/toast";
+import { useDebounce } from "@/hooks/useDebounce";
+import Icon from "../svgs/Icons";
 
 interface VideoStepProps {
   onNext: () => void;
@@ -40,14 +42,51 @@ export const VideoStep = ({
     rating: 0,
   });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+  const [urlInput, setUrlInput] = useState<string>("");
+
+  // Debounce the URL input to avoid excessive API calls
+  const debouncedUrl = useDebounce(urlInput, 500);
 
   // We use a query, but disable it so it only runs when we call `refetch`
-  const { refetch } = trpc.tiktok.getLinkInfo.useQuery(
-    { link: currentVideo.url },
+  const { refetch } = trpc.external.getTiktokLinkInfo.useQuery(
+    { link: debouncedUrl },
     { enabled: false }
   );
 
-  const handleUrlChange = async (
+  // Effect to handle debounced TikTok URL processing
+  useEffect(() => {
+    const processTiktokUrl = async () => {
+      const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/;
+
+      if (debouncedUrl && tiktokRegex.test(debouncedUrl)) {
+        try {
+          const { data } = await refetch();
+          if (data && data.play) {
+            setActiveVideoUrl(data.play);
+            setTiktokUsername(data.author?.nickname);
+            setCurrentVideo((prev) => ({
+              ...prev,
+              url: debouncedUrl,
+              thumbUrl: data?.cover,
+              videoUrl: data?.play,
+              author: data.author?.nickname,
+            }));
+          } else {
+            errorToast("Could not retrieve video information from this URL.");
+          }
+        } catch (error) {
+          console.error("TikTok URL processing error:", error);
+          errorToast(
+            "Failed to fetch TikTok video information. Please check the URL."
+          );
+        }
+      }
+    };
+
+    processTiktokUrl();
+  }, [debouncedUrl, refetch, setActiveVideoUrl, setTiktokUsername]);
+
+  const handleUrlChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
@@ -58,31 +97,10 @@ export const VideoStep = ({
     } else {
       value = e.target.value;
     }
-    setCurrentVideo({ ...currentVideo, url: value });
 
-    const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/;
-    if (tiktokRegex.test(value)) {
-      try {
-        const { data } = await refetch();
-        if (data && data.play) {
-          setActiveVideoUrl(data.play);
-          setTiktokUsername(data.author?.nickname);
-          setCurrentVideo((prev) => ({
-            ...prev,
-            url: value,
-            thumbUrl: data?.cover,
-            videoUrl: data?.play,
-            author: data.author?.nickname,
-          }));
-        } else {
-          errorToast("Could not retrieve video information from this URL.");
-        }
-      } catch (error) {
-        errorToast(
-          "Failed to fetch TikTok video information. Please check the URL."
-        );
-      }
-    }
+    // Update both the input state and current video URL immediately for UI responsiveness
+    setUrlInput(value);
+    setCurrentVideo({ ...currentVideo, url: value });
   };
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -173,7 +191,9 @@ export const VideoStep = ({
           TikTok link
         </label>
         <div className="relative mt-3">
-          <Link className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+            <Icon name="linkIcon" className="w-5 h-5 text-gray-400" />
+          </div>
           <input
             type="url"
             id="tiktok-link"
@@ -181,10 +201,15 @@ export const VideoStep = ({
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             value={currentVideo.url?.trim()}
             onChange={handleUrlChange}
-            onKeyDown={async (e) => {
+            onPaste={handleUrlChange}
+            onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                await handleUrlChange(e as any);
+                // Create a synthetic event that matches the expected input change event
+                const syntheticEvent = {
+                  target: { value: e.currentTarget.value }
+                } as React.ChangeEvent<HTMLInputElement>;
+                handleUrlChange(syntheticEvent);
               }
             }}
           />
@@ -214,6 +239,7 @@ export const VideoStep = ({
                   <button
                     onClick={() => removeTag(tag)}
                     className="ml-2 text-gray-500 hover:text-gray-700"
+                    aria-label={`Remove tag "${tag}"`}
                   >
                     <X size={16} />
                   </button>
@@ -236,7 +262,7 @@ export const VideoStep = ({
                 className="flex items-center gap-2 text-[#0070F3] font-semibold"
               >
                 <Plus size={20} />
-                <span className="text-[#2E3032] font-figtree font-semibold text-sm leading-[100%]">
+                <span className="text-[#2E3032]  font-semibold text-sm leading-[100%]">
                   {"Add another video"}
                 </span>
               </button>

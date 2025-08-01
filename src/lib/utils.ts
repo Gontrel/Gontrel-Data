@@ -1,4 +1,4 @@
-import { WorkingHours } from "@/components/restaurants/EditWorkingHoursModal";
+import { WorkingHours } from "@/components/modals/EditWorkingHoursModal";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 

@@ -34,11 +34,9 @@ Before you can run the application, you need to set up your environment variable
 2.  Add the following variables to the file, replacing the placeholder values with your actual API credentials:
 
     ```
-    NEXT_PUBLIC_API_BASE_URL=add_server_based_url
+    API_BASE_URL=add_server_based_url
     API_KEY=add_secret_key
     ```
-
-    **Important:** The `API_KEY` is a secret and should **not** be prefixed with `NEXT_PUBLIC_`. This ensures it is only available on the server and is not exposed to the browser.
 
 ### Running the Development Server
 

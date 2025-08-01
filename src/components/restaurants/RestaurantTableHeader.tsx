@@ -35,7 +35,7 @@ export function RestaurantTableHeader<T>({ table }: RestaurantTableHeaderProps<T
                 }
               }
 
-              const stickyHeaderClass = isSticky ? 'sticky z-20' : '';
+              const stickyHeaderClass = isSticky ? 'sticky z-12' : '';
               const stickyHeaderStyle = isSticky ? {
                 left: `${leftOffset}px`,
                 width: `${(header.column.columnDef.minSize || header.getSize())}px`

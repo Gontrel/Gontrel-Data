@@ -18,4 +18,6 @@ export type TIconNames =
   | "carIcon"
   | "tiktokIcon"
   | "calendarIcon"
-  | "groupUserIcon";
+  | "bookCalendarIcon"
+  | "groupUserIcon"
+  | "globeIcon";
