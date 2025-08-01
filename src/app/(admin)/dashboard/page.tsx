@@ -124,10 +124,7 @@ export default function DashboardPage() {
             currentPage={1}
             handleCurrentPage={() => { }}
             pageSize={5}
-            handlePageSize={() => { }}
           />
         </div>
       </div>
     </div>
-  );
-};

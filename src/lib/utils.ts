@@ -170,7 +170,6 @@ export const transformToModalHours = (
   days.forEach((day) => {
     const dayKey = day.charAt(0).toUpperCase() + day.slice(1);
     const dayData = hours[dayKey];
-
     if (dayData && dayData.length > 0) {
       // Check if it's "24 hours"
       if (dayData[0].toLowerCase() === "24 hours") {

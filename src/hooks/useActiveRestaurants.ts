@@ -14,9 +14,9 @@ export const useActiveRestaurantQuery = ({
 }: UseRestaurantProps) => {
   const { data, isLoading, isError } = trpc.restaurant.getRestaurants.useQuery(
     {
-      page: page,
-      limit: limit,
-      search: search,
+      pageNumber: page,
+      quantity: limit,
+      query: search,
       status: ApprovalStatusEnum.APPROVED,
     },
     { enabled: false }
