@@ -14,4 +14,8 @@ export type TIconNames =
   | "videoIcon"
   | "flameIcon"
   | "cancelModalIcon"
+  | "bookIcon"
+  | "carIcon"
+  | "tiktokIcon"
+  | "calendarIcon"
   | "groupUserIcon";

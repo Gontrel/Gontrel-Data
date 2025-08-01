@@ -18,7 +18,6 @@ export const usePendingRestaurants = () => {
   const { approveRestaurant: approveRestaurantMutation, declineRestaurant: declineRestaurantMutation } = useRestaurantMutations();
 
   const handleRowSelect = useCallback((selectedRows: PendingRestaurantType[]) => {
-    console.log('Selected restaurants:', selectedRows);
     // Handle bulk actions here
   }, []);
 

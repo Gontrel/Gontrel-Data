@@ -21,31 +21,15 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 export const externalRouter = router({
-  getTiktokLinkInfo: publicProcedure
-    .input(z.object({ url: z.string().url() }))
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getTiktokLinkInfo(input);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
   getPlaceAutocomplete: publicProcedure
     .input(z.object({
       input: z.string().min(1),
       sessionToken: z.string().optional(),
     }))
-    .query(async ({ input }) => {
+    .query(async ({ input: { input, sessionToken } }) => {
       const apiRequest = new APIRequest();
       try {
-        const response = await apiRequest.getPlaceAutocomplete(input);
+        const response = await apiRequest.placeAutoComplete({ query: input, sessionToken: sessionToken ?? "" });
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -63,14 +47,33 @@ export const externalRouter = router({
     }))
     .query(async ({ input }) => {
       const apiRequest = new APIRequest();
+      const { placeId, sessionToken } = input;
       try {
-        const response = await apiRequest.getPlaceDetails(input);
+        const response = await apiRequest.placeDetails({ placeId, sessionToken: sessionToken ?? "" });
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message,
+        });
+      }
+    }),
+    getTiktokLinkInfo: publicProcedure
+    .input(z.object({ link: z.string().url() }))
+    .query(async ({ input, ctx }) => {
+      const { link } = input;
+
+      const apiRequest = new APIRequest(ctx.req.headers);
+
+      try {
+        const response = await apiRequest.getTiktokDetails({ link });
+        return response;
+      } catch (error) {
+        console.error("Failed to fetch TikTok link info:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch TikTok link info.",
         });
       }
     }),

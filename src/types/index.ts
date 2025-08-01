@@ -1,6 +1,2 @@
-export * from './api';
-
-export * from './requests';
-export * from './responses';
-
+export * from '../interfaces/api';
 export * from './enums';

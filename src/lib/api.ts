@@ -1,12 +1,12 @@
 import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
-import { mockPendingRestaurants, mockPendingVideos, mockActiveRestaurants, mockSubmittedRestaurants, mockSubmittedVideos } from '@/data/mockRestaurants';
+import { mockPendingRestaurants, mockPendingVideos, mockSubmittedRestaurants, mockSubmittedVideos, mockActiveRestaurants } from '@/data/mockRestaurants';
 import { mockUsers, getCurrentUser } from '@/data/mockUsers';
 import { TableStatusEnum, ManagerTableTabsEnum, AnalystTableTabsEnum } from '@/types/enums';
 
 /**
  * Simulate API delay for realistic development experience
  */
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Table-like structure based on user IDs
@@ -145,10 +145,10 @@ export class RestaurantApi {
     limit?: number;
     currentUserId?: string;
   }): Promise<PaginatedResponse<PendingRestaurantType>> {
-      await delay(300); // Simulate network delay
+    await delay(300); // Simulate network delay
 
     const currentUser = params.currentUserId
-      ? mockUsers.find(u => u.id === params.currentUserId)
+      ? mockUsers.find((u) => u.id === params.currentUserId)
       : getCurrentUser();
 
     if (!currentUser) {
@@ -158,8 +158,8 @@ export class RestaurantApi {
           page: 1,
           limit: 10,
           total: 0,
-          totalPages: 0
-        }
+          totalPages: 0,
+        },
       };
     }
 
@@ -168,28 +168,34 @@ export class RestaurantApi {
       throw new Error('"mockPendingRestaurants" is not an array');
     }
 
-    let filteredRestaurants = [...mockPendingRestaurants] as PendingRestaurantType[];
+    let filteredRestaurants = [
+      ...mockPendingRestaurants,
+    ] as PendingRestaurantType[];
 
     // Role-based filtering
-    if (currentUser.role === 'analyst') {
+    if (currentUser.role === "analyst") {
       return {
         data: [],
         pagination: {
           page: 1,
           limit: 10,
           total: 0,
-          totalPages: 0
-        }
+          totalPages: 0,
+        },
       };
     }
 
     // Filter by search term
     if (params.search) {
       const searchTerm = params.search.toLowerCase();
-      filteredRestaurants = filteredRestaurants.filter((restaurant: PendingRestaurantType) =>
-        (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
-        (typeof restaurant.address.name === 'string' && restaurant.address.name.toLowerCase().includes(searchTerm)) ||
-        (typeof restaurant.website === 'string' && restaurant.website.toLowerCase().includes(searchTerm))
+      filteredRestaurants = filteredRestaurants.filter(
+        (restaurant: PendingRestaurantType) =>
+          (typeof restaurant.name === "string" &&
+            restaurant.name.toLowerCase().includes(searchTerm)) ||
+          (typeof restaurant.address.name === "string" &&
+            restaurant.address.name.toLowerCase().includes(searchTerm)) ||
+          (typeof restaurant.website === "string" &&
+            restaurant.website.toLowerCase().includes(searchTerm))
       );
     }
 
@@ -198,7 +204,10 @@ export class RestaurantApi {
     const limit = params.limit && params.limit > 0 ? params.limit : 10;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
+    const paginatedRestaurants = filteredRestaurants.slice(
+      startIndex,
+      endIndex
+    );
 
     return {
       data: paginatedRestaurants,
@@ -206,8 +215,8 @@ export class RestaurantApi {
         page,
         limit,
         total: filteredRestaurants.length,
-        totalPages: Math.ceil(filteredRestaurants.length / limit)
-      }
+        totalPages: Math.ceil(filteredRestaurants.length / limit),
+      },
     };
   }
 
@@ -230,7 +239,7 @@ export class RestaurantApi {
     await delay(300); // Simulate network delay
 
     const currentUser = params.currentUserId
-      ? mockUsers.find(u => u.id === params.currentUserId)
+      ? mockUsers.find((u) => u.id === params.currentUserId)
       : getCurrentUser();
 
     if (!currentUser) {
@@ -240,8 +249,8 @@ export class RestaurantApi {
           page: 1,
           limit: 10,
           total: 0,
-          totalPages: 0
-        }
+          totalPages: 0,
+        },
       };
     }
 
@@ -253,23 +262,25 @@ export class RestaurantApi {
     let filteredPendingVideos = [...mockPendingVideos] as PendingVideoType[];
 
     // Role-based filtering
-    if (currentUser.role === 'analyst') {
+    if (currentUser.role === "analyst") {
       return {
         data: [],
         pagination: {
           page: 1,
           limit: 10,
           total: 0,
-          totalPages: 0
-        }
+          totalPages: 0,
+        },
       };
     }
 
     // Filter by search term
     if (params.search) {
       const searchTerm = params.search.toLowerCase();
-      filteredPendingVideos = filteredPendingVideos.filter((pendingVideo: PendingVideoType) =>
-        pendingVideo.name.toLowerCase().includes(searchTerm) || pendingVideo.restaurantId.toLowerCase().includes(searchTerm)
+      filteredPendingVideos = filteredPendingVideos.filter(
+        (pendingVideo: PendingVideoType) =>
+          pendingVideo.name.toLowerCase().includes(searchTerm) ||
+          pendingVideo.restaurantId.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -513,7 +524,7 @@ export class RestaurantApi {
       const searchTerm = params.search.toLowerCase();
       filteredRestaurants = filteredRestaurants.filter((restaurant: ActiveRestaurantType) =>
         (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
-        (typeof restaurant.address === 'string' && restaurant.address.toLowerCase().includes(searchTerm))
+        (typeof restaurant.address.content === 'string' && restaurant.address.content.toLowerCase().includes(searchTerm))
       );
     }
 
@@ -535,4 +546,3 @@ export class RestaurantApi {
     };
   }
 }
-

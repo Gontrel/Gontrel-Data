@@ -11,7 +11,10 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="min-h-screen">
       <Sidebar />
-      <section className="ms-[300px] transition-all duration-300"><DynamicHeader />{children}</section>
+      <section className="ms-[300px] transition-all duration-300">
+        <DynamicHeader />
+        {children}
+      </section>
     </main>
   );
 };

@@ -1,35 +1,40 @@
-import { TableStatusEnum, AdminRoleEnum, TrendEnum } from "./enums";
+import { TableStatusEnum, AdminRoleEnum } from "./enums";
+import { Menu, OpeningHours, Reservation, Videos, Pagination, Meta, Address } from "@/interfaces/restaurants";
+import { Admin, Post } from "@/interfaces/api";
 
 /**
  * Restaurant data model representing the production/live data
  */
 export type ActiveRestaurantType = {
-  id?: string;
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  address: Address;
+  lat: number;
+  lng: number;
+  menu: Menu;
   name: string;
-  address: string;
-  maplink: string;
+  openingHours: OpeningHours[];
+  photos: string[];
+  phoneNumber: string;
+  priceLevel: number;
+  rating: number;
+  reservation: Reservation;
+  toilets: boolean;
+  type: string;
   website: string;
-  menuUrl: string;
-  reservationUrl: string;
-  totalVideos?: number;
-  trend?: TrendEnum;
-  addedBy: {
-    userId: string;
-    name: string;
-    profileImage: string;
-  };
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  dateAdded: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  status: string;
+  comment: string | null;
+  admin: Admin;
+  posts: Post[];
+  tags: string[];
+  videos: Videos;
+  pagination: Pagination;
+  meta: Meta;
 };
 
 export type VideoType = {

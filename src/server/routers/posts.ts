@@ -4,31 +4,17 @@ import { z } from "zod";
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
 import { serialize, parse } from "cookie";
+import { getErrorMessage } from "./auth";
 
-export const getErrorMessage = (error: unknown): string => {
-  if (error instanceof AxiosError) {
-    const data = error.response?.data;
-    if (data && typeof data === "object" && "message" in data) {
-      return (data as { message: string }).message;
-    }
-    if (typeof data === "string") {
-      return data;
-    }
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "An unexpected error occurred";
-};
-
-export const authRouter = router({
-  login: publicProcedure
+export const postRouter = router({
+  create: publicProcedure
     .input(z.object({ email: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.login(input);
         const token = response.token;
+
 
         if (token) {
           ctx.resHeaders.append(
@@ -53,12 +39,13 @@ export const authRouter = router({
       }
     }),
 
-  forgetPassword: publicProcedure
+  getAllRestuarants: publicProcedure
     .input(z.object({ email: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.forgetPassword(input);
+        const token = response.token;
 
         return response;
       } catch (error) {
@@ -69,7 +56,8 @@ export const authRouter = router({
         });
       }
     }),
-  resetPassword: publicProcedure
+    
+  getARestaurant: publicProcedure
     .input(
       z.object({
         newPassword: z.string(),
@@ -114,17 +102,4 @@ export const authRouter = router({
         });
       }
     }),
-
-  logout: publicProcedure.mutation(async ({ ctx }) => {
-    ctx.resHeaders.append(
-      "Set-Cookie",
-      serialize("user_token", "", {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(0),
-      })
-    );
-
-    return { success: true };
-  }),
 });

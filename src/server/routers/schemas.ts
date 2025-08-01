@@ -3,6 +3,7 @@ import { z } from "zod";
 // Shared pagination schema
 export const paginationSchema = z.object({
   page: z.number().min(1).default(1),
+  pageSize: z.number().min(1).max(100).default(10),
   limit: z.number().min(1).max(100).default(10),
 });
 

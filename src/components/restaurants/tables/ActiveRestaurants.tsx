@@ -1,10 +1,9 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { RestaurantTable } from "../RestaurantTable";
-import { useRestaurants } from "@/hooks/useRestaurants";
-import { ManagerTableTabsEnum } from "@/types/enums";
 import { ActiveRestaurantType } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
-import { useActiveRestaurants } from "@/hooks/useActiveRestaurants";
+import { useActiveRestaurantQuery } from "@/hooks/useActiveRestaurants";
+import { useRouter } from "next/navigation";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -17,51 +16,52 @@ interface ActiveRestaurantsProps {
 /**
  * Component for displaying and managing pending restaurants
  */
-const ActiveRestaurants = ({
+const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   searchTerm,
   currentPage,
   handleCurrentPage,
   pageSize,
   handlePageSize,
 }: ActiveRestaurantsProps) => {
-  const {
-    restaurants,
-    setRestaurantsData,
-    handleRowSelect,
-  } = useActiveRestaurants();
-
   // Create columns with proper dependencies
-  const columns = useMemo(
-    () => createActiveRestaurantsColumns(),
+  const columns = useMemo(() => createActiveRestaurantsColumns(), []);
+  const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>(
     []
   );
+  const router = useRouter();
 
   // Fetch data
-  const { data: restaurantsData, isLoading: restaurantsLoading } =
-    useRestaurants({
-      tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS,
-      search: searchTerm,
-      page: currentPage,
-      limit: pageSize,
-    });
+  const { data, isLoading, isError } = useActiveRestaurantQuery({
+    search: searchTerm,
+    page: currentPage,
+    limit: pageSize,
+  });
+
+  const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
+    if (selectedRows.length > 0) {
+      // Assuming each restaurant has a unique ID
+      const restaurantId = selectedRows[0].id;
+      router.push(`/restaurants/${restaurantId}`);
+    }
+  };
 
   // Update local state when data changes
   useEffect(() => {
-      if (restaurantsData?.data) {
-          setRestaurantsData(restaurantsData.data);
-      }
-  }, [restaurantsData?.data, setRestaurantsData]);
+    if (data) {
+      setRestaurantsData(data || []);
+    }
+  }, [data]);
 
   return (
     <RestaurantTable<ActiveRestaurantType>
       restaurants={restaurants}
-      loading={restaurantsLoading}
+      loading={isLoading}
       onRowSelect={handleRowSelect}
       showSelection={true}
       columns={columns}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      totalPages={restaurantsData?.pagination?.totalPages || 1}
+      currentPage={data?.pagination?.currentPage || 1}
+      pageSize={data?.pagination?.pageSize || 1}
+      totalPages={data?.pagination?.total || 1}
       onPageSizeChange={handlePageSize}
       onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
     />

@@ -1,4 +1,25 @@
-import { ApprovalStatusEnum, AdminRoleEnum } from './enums';
+import { ApprovalStatusEnum, AdminRoleEnum, SortOrder } from '@/types/enums';
+import { ILocationAvailability } from './api';
+
+// Generic Requests
+export interface IQueryDTO {
+  lastTokenId?: string;
+  pageNumber?: number;
+
+  quantity?: number;
+
+  query?: string;
+
+  sortOrder?: SortOrder;
+
+  sortBy?: string;
+
+  startDate?: string;
+
+  endDate?: string;
+
+  timeFrame?: string;
+}
 
 // Authentication requests
 export interface LoginRequest {
@@ -29,20 +50,14 @@ export interface CreateAdminRequest {
 
 // Location management requests
 export interface CreateLocationRequest {
+  placeId: string;
+  sessionToken: string;
   name: string;
   address: string;
   website?: string;
   menuUrl?: string;
   reservationUrl?: string;
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
+  openingHours?: ILocationAvailability[];
   tiktokUrl?: string;
   tags?: string[];
 }
@@ -54,15 +69,7 @@ export interface UpdateLocationRequest {
   website?: string;
   menuUrl?: string;
   reservationUrl?: string;
-  openingHours?: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
+  openingHours?: ILocationAvailability[];
   tiktokUrl?: string;
   tags?: string[];
 }
@@ -92,44 +99,53 @@ export interface UpdatePostRequest {
 }
 
 // Query parameter interfaces
-export interface GetRestaurantsParams {
+export interface GetRestaurantsRequest extends IQueryDTO {
   page?: number;
   limit?: number;
   status?: string;
   search?: string;
 }
 
-export interface GetPostsParams {
+export interface GetRestaurantByIdRequest {
+  id: string;
+}
+
+export interface GetPostsRequest extends IQueryDTO {
   page?: number;
   limit?: number;
   restaurantId?: string;
   search?: string;
 }
 
-export interface GetStaffsParams {
+export interface GetPostByIdRequest {
+  postId: string;
+  userId: string;
+}
+
+export interface GetStaffsRequest extends IQueryDTO {
   page?: number;
   limit?: number;
   search?: string;
   role?: string;
 }
 
-export interface GetAnalystLocationsParams {
+export interface GetAnalystLocationsRequest extends IQueryDTO {
   page?: number;
   limit?: number;
   search?: string;
 }
 
 // External service requests
-export interface TiktokLinkInfoParams {
+export interface TiktokLinkInfoRequest {
   url: string;
 }
 
-export interface PlaceAutocompleteParams {
+export interface PlaceAutocompleteRequest {
   input: string;
   sessionToken?: string;
 }
 
-export interface PlaceDetailsParams {
+export interface PlaceDetailsRequest {
   placeId: string;
   sessionToken?: string;
 }

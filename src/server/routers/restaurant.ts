@@ -1,75 +1,58 @@
-import { protectedProcedure, router } from "@/lib/trpc";
+import { publicProcedure, router } from "@/lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import APIRequest from "@/api/service";
-import { AxiosError } from "axios";
-import {
-  paginationSchema,
-  createLocationSchema,
-  updateLocationSchema,
-  createPostSchema,
-  updatePostSchema
-} from "./schemas";
+import { serialize, parse } from "cookie";
+import { getErrorMessage } from "./auth";
+import { ApprovalStatusEnum, DayOfTheWeek } from "@/types/enums";
 
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof AxiosError) {
-    const data = error.response?.data;
-    if (data && typeof data === "object" && "message" in data) {
-      return (data as { message: string }).message;
-    }
-    if (typeof data === "string") {
-      return data;
-    }
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return "An unexpected error occurred";
-};
+const openingHoursSchema = z.object({
+  locationId: z.string().optional(),
+  day: z.enum(DayOfTheWeek),
+  opensAt: z.string(),
+  closesAt: z.string(),
+  isOpen: z.boolean(),
+  isAllDay: z.boolean(),
+  slots: z.array(z.object({
+    start: z.string(),
+    end: z.string(),
+  })),
+});
+
+const postSchema = z.object({
+  isVerified: z.boolean().optional(),
+  tiktokLink: z.string().optional(),
+  videoUrl: z.string().optional(),
+  thumbUrl: z.string().optional(),
+  locationName: z.string().optional(),
+  rating: z.number().optional(),
+  tags: z.array(z.string().optional()).optional(),
+});
+
+const createAdminLocationSchema = z.object({
+  placeId: z.string(),
+  sessionToken: z.string(),
+  address: z.string(),
+  menu: z.string().optional(),
+  name: z.string(),
+  photos: z.array(z.string().optional()).optional(),
+  phoneNumber: z.string().optional(),
+  priceLevel: z.number().optional(),
+  rating: z.number().optional(),
+  reservation: z.string().optional(),
+  toilets: z.boolean().optional(),
+  type: z.literal("RESTAURANT").optional(),
+  website: z.string().optional(),
+  isVerified: z.boolean().optional(),
+  posts: z.array(postSchema).optional(),
+  openingHours: z.array(openingHoursSchema).optional(),
+});
 
 export const restaurantRouter = router({
-  // Get all restaurants with pagination (protected)
-  getRestaurants: protectedProcedure
-    .input(paginationSchema.extend({
-      status: z.enum(["active", "pending", "all"]).default("all"),
-      search: z.string().optional(),
-    }))
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getRestaurants(input);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  // Get restaurant by ID (protected)
-  getRestaurantById: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getRestaurantById(input.id);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  // Create new restaurant (protected)
-  createRestaurant: protectedProcedure
-    .input(createLocationSchema)
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
+  createAdminLocation: publicProcedure
+    .input(createAdminLocationSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.createRestaurant(input);
         return response;
@@ -82,13 +65,17 @@ export const restaurantRouter = router({
       }
     }),
 
-  // Update restaurant (protected)
-  updateRestaurant: protectedProcedure
-    .input(updateLocationSchema)
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
+  placeDetails: publicProcedure
+    .input(
+      z.object({
+        placeId: z.string(),
+        sessionToken: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.updateRestaurant(input);
+        const response = await apiRequest.placeDetails(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -99,13 +86,17 @@ export const restaurantRouter = router({
       }
     }),
 
-  // Delete restaurant (protected)
-  deleteRestaurant: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
+  placeAutoComplete: publicProcedure
+    .input(
+      z.object({
+        query: z.string(),
+        sessionToken: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.deleteRestaurant(input.id);
+        const response = await apiRequest.placeAutoComplete(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -116,12 +107,69 @@ export const restaurantRouter = router({
       }
     }),
 
-  // Get restaurant statistics (protected)
-  getRestaurantStats: protectedProcedure
-    .query(async () => {
-      const apiRequest = new APIRequest();
+  getRestaurants: publicProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        limit: z.number().default(10),
+        search: z.string().optional(),
+        status: z.enum(ApprovalStatusEnum).optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+
       try {
-        const response = await apiRequest.getRestaurantStats();
+        // Fetch data from API endpoint
+        const response = await apiRequest.getRestaurants(input);
+
+        if (!response.data) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+        throw error;
+      }
+    }),
+
+  getARestaurant: publicProcedure
+    .input(
+      z.object({
+        newPassword: z.string(),
+        otpCode: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const cookieHeader = ctx.req.headers.get("cookie") ?? "";
+      const cookies = parse(cookieHeader);
+      const token = cookies.reset_token;
+
+      if (!token) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "Reset token is missing or expired. Please try the 'forgot password' process again.",
+        });
+      }
+
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.resetPassword({ ...input, token });
+
+        // Clear the cookie after successful reset
+        ctx.resHeaders.append(
+          "Set-Cookie",
+          serialize("reset_token", "", {
+            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: -1, // Expire the cookie immediately
+          })
+        );
+
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -131,121 +179,4 @@ export const restaurantRouter = router({
         });
       }
     }),
-
-  // Get analyst locations (restaurants for analysts) (protected)
-  getAnalystLocations: protectedProcedure
-    .input(paginationSchema.extend({
-      search: z.string().optional(),
-    }))
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getAnalystLocations(input);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  // Posts/Content management (protected)
-  getPosts: protectedProcedure
-    .input(paginationSchema.extend({
-      restaurantId: z.string().optional(),
-      search: z.string().optional(),
-    }))
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getPosts(input);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  getPostById: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getPostById(input.id);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  createPost: protectedProcedure
-    .input(createPostSchema)
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        // Map entityId to restaurantId for API compatibility
-        const postData = {
-          ...input,
-          restaurantId: input.entityId,
-        };
-        const response = await apiRequest.createPost(postData);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  updatePost: protectedProcedure
-    .input(updatePostSchema)
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        // Map entityId to restaurantId for API compatibility
-        const postData = {
-          ...input,
-          ...(input.entityId && { restaurantId: input.entityId }),
-        };
-        const response = await apiRequest.updatePost(postData);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-  deletePost: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.deletePost(input.id);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
-
-
-
-
 });

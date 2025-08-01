@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, X, Plus } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { VideoCard } from "./VideoCard";
+import { trpc } from "@/lib/trpc-client";
+import { errorToast } from "@/utils/toast";
 
 interface VideoStepProps {
   onNext: () => void;
@@ -11,22 +13,57 @@ interface VideoStepProps {
 }
 
 export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
-  const {
-    videos,
-    addVideo,
-    removeVideo,
-    updateVideo,
-    setActiveVideoUrl,
-  } = useVideoStore();
-  const [currentVideo, setCurrentVideo] = useState({ url: "", tags: [] as string[] });
+  const { videos, addVideo, removeVideo, updateVideo, setActiveVideoUrl, resetVideos, setTiktokUsername } = useVideoStore();
+  const [currentVideo, setCurrentVideo] = useState({
+    url: "",
+    tags: [] as string[],
+    thumbUrl: "",
+    author: "",
+    videoUrl: "" ,
+  });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setActiveVideoUrl(currentVideo.url);
-  }, [currentVideo.url, setActiveVideoUrl]);
+  // We use a query, but disable it so it only runs when we call `refetch`
+  const { refetch } = trpc.tiktok.getLinkInfo.useQuery(
+    { link: currentVideo.url },
+    { enabled: false }
+  );
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentVideo({ ...currentVideo, url: e.target.value });
+  const handleUrlChange = async (e: React.ChangeEvent<HTMLInputElement> | React.ClipboardEvent<HTMLInputElement>) => {
+    let value = '';
+    if ('clipboardData' in e) {
+      value = e.clipboardData.getData('text');
+    } else {
+      value = e.target.value;
+    }
+    setCurrentVideo({ ...currentVideo, url: value });
+
+    const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/;
+    if (tiktokRegex.test(value)) {
+      try {
+        const { data } = await refetch();
+        if (data && data.play) {
+          setActiveVideoUrl(data.play);
+          setTiktokUsername(data.author?.nickname);
+          setCurrentVideo((prev) => ({
+            ...prev,
+            url: value,
+            thumbUrl: data?.cover,
+            videoUrl: data?.play,
+            author: data.author?.nickname,
+          }));
+
+            
+
+        } else {
+          errorToast("Could not retrieve video information from this URL.");
+        }
+      } catch (error) {
+        errorToast(
+          "Failed to fetch TikTok video information. Please check the URL."
+        );
+      }
+    }
   };
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -37,6 +74,7 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
         setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
         event.currentTarget.value = "";
       }
+      handleAddOrUpdateVideo();
     }
   };
 
@@ -48,29 +86,55 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
   };
 
   const handleAddOrUpdateVideo = () => {
-    if (!currentVideo.url) return;
-
-    if (editingVideoId) {
-      updateVideo(editingVideoId, currentVideo);
-      setEditingVideoId(null);
-    } else {
-      addVideo(currentVideo);
+    if (!currentVideo.url) {
+      errorToast("Please add a video URL.");
+      return;
     }
 
-    setCurrentVideo({ url: "", tags: [] });
+    if (currentVideo.tags.length < 1) {
+      errorToast("Each video must have at least two tags.");
+      return;
+    }
+
+    const videoData = {
+      url: currentVideo.url,
+      tags: currentVideo.tags,
+      thumbUrl: currentVideo.thumbUrl,
+      videoUrl: currentVideo.videoUrl,
+      author: currentVideo.author,
+    };
+
+    if (editingVideoId) {
+      updateVideo(editingVideoId, videoData);
+    } else {
+      addVideo(videoData);
+    }
+
+    setCurrentVideo({ url: "", tags: [], thumbUrl: "", videoUrl: "", author: "", });
     setActiveVideoUrl(null);
+    setTiktokUsername(null);
   };
 
   const handleEdit = (id: string) => {
     const videoToEdit = videos.find((v) => v.id === id);
     if (videoToEdit) {
       setEditingVideoId(id);
-      setCurrentVideo({ url: videoToEdit.url, tags: videoToEdit.tags });
-      setActiveVideoUrl(videoToEdit.url);
-    }
+      setCurrentVideo({
+        url: videoToEdit.url,
+        tags: videoToEdit.tags,
+        thumbUrl: videoToEdit.thumbUrl || "",
+        videoUrl: videoToEdit.videoUrl || "",
+        author: videoToEdit.author || "",
+      });
+      setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
+      setTiktokUsername(videoToEdit.author || null);
+      }
   };
+
+
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex justify-center flex-col h-full w-[518px]">
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} onEdit={handleEdit} />
@@ -86,10 +150,15 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
             type="url"
             id="tiktok-link"
             placeholder="https://tiktok.com"
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={currentVideo.url}
+            className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+            value={currentVideo.url?.trim()}
             onChange={handleUrlChange}
-            onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                await handleUrlChange(e as any);
+              }
+            }}
           />
         </div>
 
@@ -103,7 +172,7 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
                 type="text"
                 id="tag-input"
                 placeholder="Type a tag and press enter"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
                 onKeyDown={handleTagKeyDown}
               />
             </div>
@@ -123,13 +192,25 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
                 </div>
               ))}
             </div>
+            {editingVideoId ? (
+              <div className="mt-6 pt-4 flex justify-left">
+                <button
+                  onClick={handleAddOrUpdateVideo}
+                  className="flex items-center gap-2 text-white bg-[#0070F3] font-semibold"
+                >
+                    Update video
+                </button>
+              </div>
+            ) : null}
             <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
-              <button 
+              <button
                 onClick={handleAddOrUpdateVideo}
-                className="flex items-center gap-2 text-blue-500 font-semibold"
+                className="flex items-center gap-2 text-[#0070F3] font-semibold"
               >
                 <Plus size={20} />
-                <span>{editingVideoId ? 'Update video' : 'Add another video'}</span>
+                <span className="text-[#2E3032] font-figtree font-semibold text-sm leading-[100%]">
+                  { "Add another video"}
+                </span>
               </button>
             </div>
           </div>
@@ -138,15 +219,24 @@ export const VideoStep = ({ onNext, onPrevious }: VideoStepProps) => {
 
       <div className="flex-shrink-0 pt-6 flex items-center gap-4">
         <button
-          onClick={onPrevious}
+          onClick={() => {
+            resetVideos();
+            setActiveVideoUrl(null);
+            setTiktokUsername(null);
+            onPrevious();
+          }}
           className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
         >
           Previous
         </button>
         <button
           onClick={onNext}
-          disabled
-          className="w-full bg-gray-100 text-gray-400 py-3 rounded-lg font-semibold cursor-not-allowed"
+          disabled={videos.length === 0}
+          className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+            videos.length === 0
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : "bg-[#0070F3] text-white hover:bg-blue-600"
+          }`}
         >
           Next
         </button>

@@ -1,4 +1,4 @@
-import { AdminRoleEnum, ApprovalStatusEnum } from './enums';
+import { ApprovalStatusEnum } from '@/types/enums';
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
@@ -41,22 +41,40 @@ export interface LocationTag {
 
 export interface Admin {
   id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  name: string;
+  phoneNumber: string;
+  profileImage: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: AdminRoleEnum;
-  createdAt: Date;
-  updatedAt: Date;
+  password: string;
+  isVerified: boolean;
+  role: string;
 }
 
 export interface Post {
   id: string;
-  title: string;
-  content: string;
-  mediaUrls: string[];
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  analytics: Analytics;
+  tiktokLink: string;
+  videoUrl: string;
+  thumbUrl: string;
+  postedAt: string | null;
+  status: string;
+}
+
+
+export interface Analytics {
+  [key: string]: any;
 }
 
 export interface ApiLocation {
