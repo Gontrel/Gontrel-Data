@@ -11,6 +11,14 @@ export enum ApprovalStatusEnum {
   REJECTED = 'rejected'
 }
 
+export enum ApprovalType {
+  POST = 'post',
+  ADDRESS = 'address',
+  LOCATION = 'location',
+  RESERVATION = 'reservation',
+  MENU = 'menu',
+}
+
 export enum ManagerTableTabsEnum {
   ACTIVE_RESTAURANTS = 'active_restaurants',
   PENDING_RESTAURANTS = 'pending_restaurants',

@@ -41,13 +41,13 @@ export const NewRestaurantSheet = ({
   const debouncedQuery = useDebounce(inputValue, 500);
 
   const { data: autoCompleteData, isFetching: isFetchingAutoComplete } =
-    trpc.restaurants.placeAutoComplete.useQuery(
+    trpc.restaurant.placeAutoComplete.useQuery(
       { query: debouncedQuery, sessionToken },
       { enabled: debouncedQuery.trim() !== "" && !!sessionToken }
     );
 
 
-    const { mutate: createAdminLocation, isPending: isLoading } = trpc.restaurants.createAdminLocation.useMutation({
+    const { mutate: createAdminLocation, isPending: isLoading } = trpc.restaurant.createAdminLocation.useMutation({
       onSuccess: () => {
        successToast("Restaurant created successfully!");
       handleClose();
@@ -57,7 +57,7 @@ export const NewRestaurantSheet = ({
       },
     });
 
-  const { data: placeDetailsData } = trpc.restaurants.placeDetails.useQuery(
+  const { data: placeDetailsData } = trpc.restaurant.placeDetails.useQuery(
     { placeId: selectedPlaceId!, sessionToken },
     { enabled: !!selectedPlaceId && !!sessionToken }
   );

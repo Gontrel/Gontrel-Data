@@ -100,7 +100,7 @@ export default function RestaurantsPage() {
    * TODO: Implement modal opening when NewRestaurantModal component is ready
    */
   const handleAddRestaurant = useCallback(() => {
-    // Implementation pending NewRestaurantModal component
+    setShowNewRestaurantModal(true);
   }, []);
 
   /**

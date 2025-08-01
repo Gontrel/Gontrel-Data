@@ -21,10 +21,10 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
   // Use tRPC queries based on table type
   const pendingRestaurantsQuery = trpc.restaurant.getRestaurants.useQuery(
     {
-      page: page || 1,
-      limit: limit || 10,
+      pageNumber: page || 1,
+      quantity: limit || 10,
       status: ApprovalStatusEnum.PENDING,
-      search: search || undefined,
+      query: search || undefined,
     },
     {
       enabled: enabled && tableId === ManagerTableTabsEnum.PENDING_RESTAURANTS,
@@ -44,9 +44,9 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
 
   const pendingVideosQuery = trpc.restaurant.getPosts.useQuery(
     {
-      page: page || 1,
-      limit: limit || 10,
-      search: search || undefined,
+      pageNumber: page || 1,
+      quantity: limit || 10,
+      query: search || undefined,
     },
     {
       enabled: enabled && tableId === ManagerTableTabsEnum.PENDING_VIDEOS,
@@ -66,10 +66,10 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
 
   const activeRestaurantsQuery = trpc.restaurant.getRestaurants.useQuery(
     {
-      page: page || 1,
-      limit: limit || 10,
+      pageNumber: page || 1,
+      quantity: limit || 10,
       status: ApprovalStatusEnum.APPROVED,
-      search: search || undefined,
+      query: search || undefined,
     },
     {
       enabled: enabled && (tableId === ManagerTableTabsEnum.ACTIVE_RESTAURANTS || tableId === AnalystTableTabsEnum.ACTIVE_RESTAURANTS),
@@ -89,10 +89,10 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
 
   const submittedRestaurantsQuery = trpc.restaurant.getRestaurants.useQuery(
     {
-      page: page || 1,
-      limit: limit || 10,
+      pageNumber: page || 1,
+      quantity: limit || 10,
       status: ApprovalStatusEnum.PENDING,
-      search: search || undefined,
+      query: search || undefined,
     },
     {
       enabled: enabled && tableId === AnalystTableTabsEnum.SUBMITTED_RESTAURANTS,
@@ -112,9 +112,9 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
 
   const submittedVideosQuery = trpc.restaurant.getPosts.useQuery(
     {
-      page: page || 1,
-      limit: limit || 10,
-      search: search || undefined,
+      pageNumber: page || 1,
+      quantity: limit || 10,
+      query: search || undefined,
     },
     {
       enabled: enabled && tableId === AnalystTableTabsEnum.SUBMITTED_VIDEOS,

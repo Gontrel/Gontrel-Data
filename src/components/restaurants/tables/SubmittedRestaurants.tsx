@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { RestaurantTable } from '../RestaurantTable';
 import { useRestaurants } from '@/hooks/useRestaurants';
-import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types';
+import { AnalystTableTabsEnum } from '@/types';
 import { useSubmittedRestaurants } from '@/hooks/useSubmittedRestaurants';
 import { SubmittedRestaurantType } from '@/types/restaurant';
 import { createSubmittedRestaurantsColumns } from '../columns/submittedRestaurantsColumns';

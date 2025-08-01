@@ -28,25 +28,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// --- Authenticated Client with JWT ---
-const authenticatedClient = axios.create(baseConfig);
-
-authenticatedClient.interceptors.request.use(
-  (config) => {
-    if (typeof document !== 'undefined') {
-      const cookies = document.cookie.split(';');
-      const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('user_token='));
-      if (tokenCookie) {
-        const token = tokenCookie.split('=')[1];
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 // --- Unauthenticated Client ---
 const unauthenticatedClient = axios.create(baseConfig);
 
-export { axiosInstance, unauthenticatedClient, authenticatedClient };
+export { axiosInstance, unauthenticatedClient };
