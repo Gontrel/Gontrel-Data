@@ -98,18 +98,10 @@ export default class APIRequest {
    */
 
   // createRestaurant
-<<<<<<< HEAD
   createRestaurant = async (data: CreateLocationRequest) => {
     const response = await this.authenticatedClient.post(`/admin-location`, data);
     return this.handleResponse(response);
   };
-=======
-  createAdminLocation = async (data: any) => {
-    const response = await this.client.post(`/admin-location`, data);
-    return this.handleResponse(response);
-  };
-
->>>>>>> 3e1d6a2f3280ed9750c9a1965f56ff9a1efbfbaf
   // getRestaurants
   getRestaurants = async (data: FetchLocationsRequest) => {
     const params = this.buildSearchParams(data);
@@ -140,7 +132,6 @@ export default class APIRequest {
    */
 
   // createPost
-<<<<<<< HEAD
   createPost = async (data: CreatePostRequest) => {
     const response = await this.authenticatedClient.post(`/admin-post`, data);
     return this.handleResponse(response);
@@ -161,24 +152,6 @@ export default class APIRequest {
   // updatePost
   updatePost = async (data: UpdatePostRequest) => {
     const response = await this.authenticatedClient.put(`/admin-post`, data);
-=======
-  createPost = async (data: any) => {
-    const response = await axiosInstance.post(`/admin-post`, data);
-    return this.handleResponse(response);
-  };
-  
-  // getAllPosts
-  getAllPosts = async () => {
-    const response = await axiosInstance.get(`/admin-posts`);
-    return this.handleResponse(response);
-  };
-  
-  // getAPost
-  getAPost = async (data: { postId: string }) => {
-    const response = await axiosInstance.get(
-      `/admin-post-by-id?postId=${data.postId}`
-    );
->>>>>>> 3e1d6a2f3280ed9750c9a1965f56ff9a1efbfbaf
     return this.handleResponse(response);
   };
 
