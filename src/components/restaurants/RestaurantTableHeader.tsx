@@ -1,5 +1,6 @@
 'use client';
 
+import { mergeClasses } from '@/lib/utils';
 import { Table } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 
@@ -34,18 +35,20 @@ export function RestaurantTableHeader<T>({ table }: RestaurantTableHeaderProps<T
                 }
               }
 
+              const stickyHeaderClass = isSticky ? 'sticky z-20' : '';
+              const stickyHeaderStyle = isSticky ? {
+                left: `${leftOffset}px`,
+                width: `${(header.column.columnDef.minSize || header.getSize())}px`
+              } : {
+                width: `${(header.column.columnDef.minSize || header.getSize())}px`
+              };
+
               return (
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  className={`px-2.5 py-5.5 text-left text-lg text-black font-semibold ${isSticky
-                    ? `sticky z-20 bg-[#F9F9F9] border-r border-[#EBEBEB]`
-                      : ''
-                    }`}
-                  style={isSticky ? {
-                    left: `${leftOffset}px`,
-                    width: `${(header.column.columnDef.minSize || header.getSize())}px`
-                  } : undefined}
+                  className={mergeClasses('px-2.5 py-5.5 text-left text-lg text-black font-semibold bg-[#F9F9F9]', stickyHeaderClass)}
+                  style={stickyHeaderStyle}
                 >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>

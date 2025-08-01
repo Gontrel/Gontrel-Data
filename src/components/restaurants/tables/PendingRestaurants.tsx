@@ -1,8 +1,8 @@
-import React, { useMemo, useEffect } from 'react';
-import { RestaurantTable } from './RestaurantTable';
+import React, { useMemo } from 'react';
+import { RestaurantTable } from '../RestaurantTable';
 import { useRestaurants } from '@/hooks/useRestaurants';
-import { ManagerTableTabs } from '@/constant/table';
-import { createPendingRestaurantsColumns } from './columns/pendingRestaurantsColumns';
+import { ManagerTableTabsEnum } from '@/types';
+import { createPendingRestaurantsColumns } from '../columns/pendingRestaurantsColumns';
 import { usePendingRestaurants } from '@/hooks/usePendingRestaurants';
 import { PendingRestaurantType } from '@/types/restaurant';
 
@@ -25,10 +25,6 @@ const PendingRestaurants = ({
     handlePageSize
 }: PendingRestaurantsProps) => {
     const {
-        expandedRows,
-        setExpandedRows,
-        restaurants,
-        setRestaurantsData,
         handleRowSelect,
         handleApprove,
         handleDecline,
@@ -39,34 +35,25 @@ const PendingRestaurants = ({
     // Create columns with proper dependencies
     const columns = useMemo(
         () => createPendingRestaurantsColumns(
-            expandedRows,
-            setExpandedRows,
             handleApprove,
             handleDecline,
             handleSendFeedback,
             handleSave
         ),
-        [expandedRows, setExpandedRows, handleApprove, handleDecline, handleSendFeedback, handleSave]
+        [handleApprove, handleDecline, handleSendFeedback, handleSave]
     );
 
     // Fetch data
     const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: ManagerTableTabs.PENDING_RESTAURANTS,
+        tableId: ManagerTableTabsEnum.PENDING_RESTAURANTS,
         search: searchTerm,
         page: currentPage,
         limit: pageSize
     });
 
-    // Update local state when data changes
-    useEffect(() => {
-        if (restaurantsData?.data) {
-            setRestaurantsData(restaurantsData.data);
-        }
-    }, [restaurantsData?.data, setRestaurantsData]);
-
     return (
         <RestaurantTable<PendingRestaurantType>
-            restaurants={restaurants}
+            restaurants={restaurantsData?.data || []}
             loading={restaurantsLoading}
             onRowSelect={handleRowSelect}
             showSelection={true}

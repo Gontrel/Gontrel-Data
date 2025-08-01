@@ -27,13 +27,22 @@ export function mergeClasses(...inputs: ClassValue[]) {
  * Format date to readable string
  */
 export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
+  const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  const formattedDate = dateFormatter.format(date);
+  const formattedTime = timeFormatter.format(date).toLowerCase();
+
+  return `${formattedDate}\n${formattedTime}`;
 }
 
 /**
@@ -89,15 +98,30 @@ export function capitalizeWords(str: string): string {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+/**
+ * Convert number to k, m, b, t, etc.
+ */
+export function formatNumber(num: number): string {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + 'B';
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+}
 export const convertTimeTo24Hour = (time: string): number => {
   // Handle "24 hours" case
   if (time.toLowerCase() === "24 hours") {
     return 24;
   }
 
-  let [hoursStr, minutesPeriod] = time.split(":");
-  let period = minutesPeriod.slice(-2).toUpperCase();
-  let minutesStr = minutesPeriod.slice(0, 2);
+  const [hoursStr, minutesPeriod] = time.split(":");
+  const period = minutesPeriod.slice(-2).toUpperCase();
+  const minutesStr = minutesPeriod.slice(0, 2);
 
   let hours = parseInt(hoursStr, 10);
   const minutes = parseInt(minutesStr, 10);
@@ -146,7 +170,6 @@ export const transformToModalHours = (
   days.forEach((day) => {
     const dayKey = day.charAt(0).toUpperCase() + day.slice(1);
     const dayData = hours[dayKey];
-    
     if (dayData && dayData.length > 0) {
       // Check if it's "24 hours"
       if (dayData[0].toLowerCase() === "24 hours") {

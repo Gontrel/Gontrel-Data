@@ -1,5 +1,6 @@
 'use client';
 
+import { mergeClasses } from '@/lib/utils';
 import { flexRender, Row } from '@tanstack/react-table';
 
 interface RestaurantRowProps<T> {
@@ -27,17 +28,18 @@ export function RestaurantRow<T>({ row }: RestaurantRowProps<T>) {
           }
         }
 
+        const stickyCellClass = isSticky ? 'sticky z-10' : '';
+
         return (
           <td
             key={cell.id}
-            className={`py-5 px-2.5 text-left ${isSticky
-              ? `sticky z-10 bg-white border-r border-gray-200`
-                : ''
-              }`}
+            className={mergeClasses(`py-5 px-2.5 text-left bg-white`, stickyCellClass)}
             style={isSticky ? {
               left: `${leftOffset}px`,
-              width: `${(cell.column.columnDef.minSize || cell.column.getSize()) + 1}px`
-            } : undefined}
+              width: `${(cell.column.columnDef.minSize || cell.column.getSize())}px`
+            } : {
+              width: `${(cell.column.columnDef.minSize || cell.column.getSize())}px`
+            }}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>

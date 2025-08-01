@@ -19,43 +19,6 @@ export interface Reservation {
   content: string;
 }
 
-export interface Admin {
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  name: string;
-  phoneNumber: string;
-  profileImage: string;
-  email: string;
-  password: string;
-  isVerified: boolean;
-  role: string;
-}
-
-export interface Analytics {
-  [key: string]: any;
-}
-
-export interface Post {
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  analytics: Analytics;
-  tiktokLink: string;
-  videoUrl: string;
-  thumbUrl: string;
-  postedAt: string | null;
-  status: string;
-}
-
 export interface Videos {
   total: number;
   approved: number;

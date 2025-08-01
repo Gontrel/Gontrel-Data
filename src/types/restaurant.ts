@@ -1,7 +1,6 @@
-import { TableStatus } from "@/constant/table";
-import { UserRoleEnum } from "@/constant/user";
-import { Menu, OpeningHours, Reservation, Admin, Post, Videos, Pagination, Meta } from "@/interfaces/restaurants";
-import { Address } from "cluster";
+import { TableStatusEnum, AdminRoleEnum } from "./enums";
+import { Menu, OpeningHours, Reservation, Videos, Pagination, Meta, Address } from "@/interfaces/restaurants";
+import { Admin, Post } from "@/interfaces/api";
 
 /**
  * Restaurant data model representing the production/live data
@@ -42,7 +41,7 @@ export type VideoType = {
   id: string;
   videoUrl: string;
   tags: Tag[];
-  status: TableStatus;
+  status: TableStatusEnum;
 };
 
 export type Tag = {
@@ -55,17 +54,17 @@ export type PendingRestaurantType = {
   name: string;
   videos: VideoType[];
   address: {
-    status: TableStatus;
+    status: TableStatusEnum;
     name: string;
   };
   maplink: string;
   website: string;
   menuUrl: {
-    status: TableStatus;
+    status: TableStatusEnum;
     url: string;
   };
   reservationUrl: {
-    status: TableStatus;
+    status: TableStatusEnum;
     url: string;
   };
   addedBy: {
@@ -99,10 +98,48 @@ export type PendingVideoType = {
     profileImage: string;
   };
 };
-export type RestaurantTypes =
-  | ActiveRestaurantType
-  | PendingRestaurantType
-  | PendingVideoType;
+
+export type SubmittedRestaurantType = {
+  restaurantId: string;
+  name: string;
+  videos: VideoType[];
+  address: {
+    status: TableStatusEnum;
+    name: string;
+  };
+  maplink: string;
+  website: string;
+  menuUrl: {
+    status: TableStatusEnum;
+    url: string;
+  };
+  reservationUrl: {
+    status: TableStatusEnum;
+    url: string;
+  };
+  comment: string;
+  openingHours: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  dateAdded: Date;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type SubmittedVideoType = {
+  id: string;
+  restaurantId: string;
+  name: string;
+  videos: VideoType[];
+  comment: string;
+  dateAdded: Date;
+};
 
 /**
  * User model
@@ -111,7 +148,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: UserRoleEnum;
+  role: AdminRoleEnum;
 };
 
 /**
@@ -134,19 +171,63 @@ export type PaginatedResponse<T> = {
 };
 
 /**
- * Restaurant data model representing the production/live data
+ * Time slot structure for working hours
  */
-export type Restaurant = {
-  id: string;
-  restaurantName: string;
-  image: string;
+export interface TimeSlot {
+  start: string;
+  end: string;
+}
+
+/**
+ * Day hours structure
+ */
+export interface DayHours {
+  isOpen: boolean;
+  isAllDay: boolean;
+  slots: TimeSlot[];
+}
+
+/**
+ * Working hours data structure
+ */
+export interface WorkingHours {
+  monday: DayHours;
+  tuesday: DayHours;
+  wednesday: DayHours;
+  thursday: DayHours;
+  friday: DayHours;
+  saturday: DayHours;
+  sunday: DayHours;
+}
+
+/**
+ * Statistics data structure for dashboard stats
+ */
+export interface StatsData {
+  label: string;
+  value: number;
+}
+
+/**
+ * Table pagination state for each tab
+ */
+export interface TablePaginationState {
+  pageNumbers: Record<string, number>;
+  pageSizes: Record<string, number>;
+  totals: Record<string, number>;
+}
+
+/**
+ * Restaurant form data structure
+ */
+export interface RestaurantFormData {
+  name: string;
   address: string;
-  website: string;
-  totalVideos: number;
-  trend: "Popular searches" | "Trending TikTok #" | "None";
-  addedBy: {
-    name: string;
-    avatar: string;
-  };
-  dateAdded: string;
-};
+  website?: string;
+  menuUrl?: string;
+  reservationUrl?: string;
+  workingHours: WorkingHours;
+  tiktokUrl?: string;
+  tags: string[];
+  videoFile?: File;
+}

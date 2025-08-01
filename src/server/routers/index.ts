@@ -1,12 +1,14 @@
 import { router } from "@/lib/trpc";
 import { authRouter } from "./auth";
-import { restaurantRouter } from "./restaurants";
-import { tiktokRouter } from "./tiktok";
+import { restaurantRouter } from "./restaurant";
+import { adminRouter } from "./admin";
+import { externalRouter } from "./external";
 
 export const appRouter = router({
   auth: authRouter,
-  restaurants: restaurantRouter,
-  tiktok: tiktokRouter,
+  restaurant: restaurantRouter,
+  admin: adminRouter,
+  external: externalRouter,
 });
 
 export type AppRouter = typeof appRouter;

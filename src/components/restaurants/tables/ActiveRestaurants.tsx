@@ -1,8 +1,8 @@
 import React, { useMemo, useEffect, useState } from "react";
-import { RestaurantTable } from "./RestaurantTable";
+import { RestaurantTable } from "../RestaurantTable";
 import { ActiveRestaurantType } from "@/types/restaurant";
-import { createActiveRestaurantsColumns } from "./columns/activeRestaurantsColumns";
-import { useRestaurantQuery } from "@/hooks/useActiveRestaurants";
+import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
+import { useActiveRestaurantQuery } from "@/hooks/useActiveRestaurants";
 import { useRouter } from "next/navigation";
 
 interface ActiveRestaurantsProps {
@@ -31,7 +31,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   const router = useRouter();
 
   // Fetch data
-  const { data, isLoading, isError } = useRestaurantQuery({
+  const { data, isLoading, isError } = useActiveRestaurantQuery({
     search: searchTerm,
     page: currentPage,
     limit: pageSize,

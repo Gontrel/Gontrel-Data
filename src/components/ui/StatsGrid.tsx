@@ -1,5 +1,6 @@
 'use client';
 
+import { formatNumber } from '@/lib/utils';
 import { StatsCard } from './StatsCard';
 
 interface StatItem {
@@ -28,7 +29,7 @@ export function StatsGrid({
         <StatsCard
           key={index}
           label={stat.label}
-          value={stat.value}
+          value={typeof stat.value === 'number' ? formatNumber(stat.value) : stat.value}
           loading={loading || stat.loading}
         />
       ))}

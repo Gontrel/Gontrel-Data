@@ -1,27 +1,20 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { PendingVideoType } from '@/types/restaurant';
-import { Calendar, Video } from 'lucide-react';
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
-import { TABLE_COLUMN_SIZES } from '@/constant/table';
-import { getBgColor, getTextColor, updateSetValue } from '@/lib/tableUtils';
+import { TABLE_COLUMN_SIZES } from "@/constants";
+import { getBgColor, getTextColor } from '@/lib/tableUtils';
 import { PillButton } from '@/components/ui/PillButton';
+import { TableHeader } from './utils';
 
 /**
  * Creates column definitions for pending videos table
- * @param expandedRows - Set of expanded row IDs
- * @param setExpandedRows - Function to update expanded rows
- * @param onApprove - Handler for approve action
- * @param onDecline - Handler for decline action
  */
-export const createPendingVideosColumns = (
-expandedRows: Set<string>, setExpandedRows: (rows: Set<string>) => void, handleApprove: (video: PendingVideoType) => void, handleDecline: (video: PendingVideoType) => void): ColumnDef<PendingVideoType>[] => [
+export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     {
       accessorKey: 'id',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>#</span>
-        </div>
+        <TableHeader title="#" />
       ),
       cell: ({ row, table }) => {
         const { pageSize, pageIndex } = table.getState().pagination;
@@ -38,26 +31,22 @@ expandedRows: Set<string>, setExpandedRows: (rows: Set<string>) => void, handleA
       meta: { sticky: true }
     },
     {
-      accessorKey: 'restaurantId',
+      accessorKey: 'name',
       header: () => (
-        <div className="flex items-center gap-2">
-          <span>Restaurant ID</span>
-        </div>
+        <TableHeader title="Restaurant name" />
       ),
       cell: ({ row }) => (
         <div className="font-medium text-[#181D1F] max-w-60 truncate">
-          {row.getValue('restaurantId')}
+          {row.getValue('name')}
         </div>
       ),
       minSize: TABLE_COLUMN_SIZES.NAME,
+      meta: { sticky: true }
     },
     {
       accessorKey: 'video',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Video className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Video</span>
-        </div>
+        <TableHeader iconName="videoIcon" title="Video" />
       ),
       cell: ({ row }) => {
         const videos = row.original.videos;
@@ -66,7 +55,7 @@ expandedRows: Set<string>, setExpandedRows: (rows: Set<string>) => void, handleA
             <PillButton text={`${videos.length} video${videos.length > 1 ? 's' : ''}`} textColor={getTextColor(videos)} bgColor={getBgColor(videos)} />
             <button onClick={() => {
               // TODO: Open video modal
-            }} className="text-blue-500 text-left">
+            }} className="text-left text-blue-500">
               View
             </button>
           </div>
@@ -77,24 +66,21 @@ expandedRows: Set<string>, setExpandedRows: (rows: Set<string>) => void, handleA
     {
       accessorKey: 'addedBy',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Added by</span>
-        </div>
+        <TableHeader iconName="calendarIcon" title="Added by" />
       ),
       cell: ({ row }) => {
         const addedBy = row.getValue('addedBy') as { name: string; profileImage: string };
 
         return (
-          <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
+          <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
             <Image
               src={addedBy.profileImage}
               alt={addedBy.name}
               width={40}
               height={40}
-              className="rounded-full object-cover"
+              className="object-cover rounded-full"
             />
-            <span className="text-black font-medium">{addedBy.name}</span>
+            <span className="font-medium text-black">{addedBy.name}</span>
           </div>
         );
       },
@@ -103,27 +89,20 @@ expandedRows: Set<string>, setExpandedRows: (rows: Set<string>) => void, handleA
     {
       accessorKey: 'dateAdded',
       header: () => (
-        <div className="flex items-center gap-2">
-          <Calendar className="w-4.5 h-4.5 text-[#8A8A8A]" />
-          <span>Date added</span>
-        </div>
+        <TableHeader iconName="calendarIcon" title="Date added" />
       ),
       cell: ({ row }) => {
         const dateAdded = row.getValue('dateAdded') as Date;
-        const isExpanded = expandedRows.has(row.id);
 
         return (
           <div className="relative">
-            <button
-              onClick={() => {
-                setExpandedRows(updateSetValue(expandedRows, row.id, !isExpanded));
-              }}
-              className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1 rounded transition-colors w-full text-left"
+            <div
+              className="flex items-center w-full gap-2 px-2 py-1 text-left"
             >
               <span className="text-[#181D1F] font-medium">
                 {formatDate(dateAdded)}
               </span>
-            </button>
+            </div>
           </div>
         );
       },
