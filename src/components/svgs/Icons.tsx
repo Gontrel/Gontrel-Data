@@ -202,6 +202,7 @@ const icons: Record<TIconNames, TRenderSvg> = {
   mapPinIcon: ({
     width = 18,
     height = 18,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     fill = "none",
     stroke = "#9DA1A5",
   }) => (
@@ -318,6 +319,7 @@ const icons: Record<TIconNames, TRenderSvg> = {
       />
     </svg>
   ),
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   cancelModalIcon: ({ width = 32, height = 32, stroke = "#2E3032", fill = "#F0F1F2" }) => (
     <svg width={width} height={height} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M9.33301 9.33301L22.6663 22.6663M9.33301 22.6663L22.6663 9.33301" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

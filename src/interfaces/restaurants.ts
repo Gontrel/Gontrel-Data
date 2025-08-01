@@ -19,7 +19,7 @@ export interface Reservation {
   content: string;
 }
 
-export interface Admin {
+export interface RestaurantAdmin {
   id: string;
   createdAt: string;
   modifiedAt: string;
@@ -36,11 +36,11 @@ export interface Admin {
   role: string;
 }
 
-export interface Analytics {
+export interface RestaurantAnalytics {
   [key: string]: unknown;
 }
 
-export interface Post {
+export interface RestaurantPost {
   id: string;
   createdAt: string;
   modifiedAt: string;
@@ -48,7 +48,7 @@ export interface Post {
   deletedBy: string | null;
   updatedBy: string | null;
   firebaseId: string | null;
-  analytics: Analytics;
+  analytics: RestaurantAnalytics;
   tiktokLink: string;
   videoUrl: string;
   thumbUrl: string;

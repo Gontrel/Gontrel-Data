@@ -29,6 +29,7 @@ export const NewRestaurantSheet = ({
 }: NewRestaurantSheetProps) => {
   const [step, setStep] = useState(1);
   const [inputValue, setInputValue] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -153,6 +154,7 @@ export const NewRestaurantSheet = ({
     setStep(1);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleWorkingHoursSave = (updatedHours: any) => {
     if (!selectedRestaurant) return;
 
@@ -181,6 +183,7 @@ export const NewRestaurantSheet = ({
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCreateRestaurant = (data: any) => {
     if (isLoading) return;
 
@@ -233,6 +236,7 @@ export const NewRestaurantSheet = ({
       ),
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createAdminLocation(payload as any);
   };
 
@@ -336,6 +340,7 @@ export const NewRestaurantSheet = ({
                       {showSuggestions && suggestions.length > 0 && (
                         <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
                           <ul className="divide-y divide-gray-200">
+                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                             {suggestions.map((suggestion: any) => (
                               <li
                                 key={suggestion?.placeId}

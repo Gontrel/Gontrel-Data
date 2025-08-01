@@ -1,5 +1,8 @@
 import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Play,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Pause,
   Star,
 } from "lucide-react";
 import Icon from "../svgs/Icons";

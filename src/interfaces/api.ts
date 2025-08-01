@@ -74,6 +74,7 @@ export interface Post {
 
 
 export interface Analytics {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 

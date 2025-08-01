@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import logo from "../../../assets/images/reset-logo.png";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { errorToast, successToast } from "@/utils/toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 
-const ResetPassword = () => {
+const ResetPasswordContent = () => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
 
@@ -215,6 +215,24 @@ const ResetPassword = () => {
         </section>
       </section>
     </main>
+  );
+};
+
+const ResetPassword = () => {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-screen items-center justify-center">
+        <div className="flex flex-col items-center max-w-[559px] h-full">
+          <div className="flex flex-col flex-wrap items-center w-[413px] bg-white">
+            <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg animate-pulse mx-auto"></div>
+            <div className="pt-[27px] w-48 h-10 bg-gray-200 rounded animate-pulse"></div>
+            <div className="pt-[12px] w-80 h-6 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </main>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 };
 

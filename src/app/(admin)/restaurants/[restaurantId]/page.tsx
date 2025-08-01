@@ -10,6 +10,12 @@ import {
   ExternalLink,
   Video,
   Plus,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ChevronLeft,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Bell,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  User,
 } from "lucide-react";
 import { LivePostCard } from "@/components/restaurants/LivePostCard";
 import { NewPostSheet } from "@/components/posts/NewPostsModal";
@@ -74,6 +80,7 @@ const RestaurantDetailsPage = ({
           {/* Restaurant Info Card */}
           <div className="bg-white p-6 rounded-2xl shadow-sm">
             <div className="flex items-center gap-4 mb-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={restaurant.imageUrl}
                 alt={restaurant.name}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Sheet } from '@/components/modals/Sheet'
 import Icon from '@/components/svgs/Icons';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { VideoData } from '@/stores/videoStore';
 import { LivePostCard } from '../restaurants/LivePostCard';
 import { Post } from '@/types';

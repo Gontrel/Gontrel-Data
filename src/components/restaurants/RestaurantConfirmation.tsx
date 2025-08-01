@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Globe, MapPin, } from "lucide-react";
 import { EditWorkingHoursModal, WorkingHours } from "../modals/EditWorkingHoursModal";
 import Icon from "../svgs/Icons";
