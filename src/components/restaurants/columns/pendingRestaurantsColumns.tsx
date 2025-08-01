@@ -205,42 +205,6 @@ export const createPendingRestaurantsColumns = (
       },
       minSize: TABLE_COLUMN_SIZES.RESERVATION_LINK,
     },
-    // {
-    //   accessorKey: 'openingHours',
-    //   header: () => (
-    //     <TableHeader iconName="clockIcon" title="Working hours" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     const openingHours = row.getValue('openingHours') as Record<string, string>;
-    //     const isExpanded = expandedRows.has(`hours-${row.id}`);
-
-    //     return (
-    //       <ExpandableContent
-    //         trigger={<span className="text-black font-medium">View working hours</span>}
-    //         expanded={isExpanded}
-    //         onToggle={(expanded) => {
-    //           const key = `hours-${row.id}`;
-    //           setExpandedRows(updateSetValue(expandedRows, key, expanded));
-    //         }}
-    //       >
-    //         <div className="p-3">
-    //           <div className="text-xs font-medium text-gray-500 mb-2">
-    //             Working hours
-    //           </div>
-    //           <div className="space-y-1 text-sm">
-    //             {Object.entries(openingHours).map(([day, hours]) => (
-    //               <div key={day} className="flex justify-between">
-    //                 <span className="font-medium capitalize text-black">{day}</span>
-    //                 <span className="text-gray-600">{hours}</span>
-    //               </div>
-    //             ))}
-    //           </div>
-    //         </div>
-    //       </ExpandableContent>
-    //     );
-    //   },
-    //   minSize: TABLE_COLUMN_SIZES.OPENING_HOURS,
-    // },
     {
       accessorKey: 'addedBy',
       header: () => (
