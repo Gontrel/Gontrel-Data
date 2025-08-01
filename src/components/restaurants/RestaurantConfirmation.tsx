@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Globe, MapPin, ExternalLink } from "lucide-react";
+import { Globe, MapPin, } from "lucide-react";
 import { EditWorkingHoursModal, WorkingHours } from "./EditWorkingHoursModal";
-import Link from "next/link";
 import Icon from "../svgs/Icons";
 import logo from "@/assets/images/logo.png";
 import { transformToModalHours } from "@/lib/utils";

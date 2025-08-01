@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { ActiveRestaurantType } from "@/types/restaurant";
-import { MapPin, Link as LinkIcon, Calendar, Flame, Video } from "lucide-react";
+import { MapPin, Link as LinkIcon, Calendar, Video } from "lucide-react";
 import { TableHeader } from "./utils";
 import Image from "next/image";
 import { format } from "date-fns";
