@@ -1,16 +1,7 @@
-import {
-  PaginatedResponse,
-  ActiveRestaurantType,
-  RestaurantTypes,
-  PendingRestaurantType,
-  PendingVideoType,
-} from "../types/restaurant";
-import {
-  mockPendingRestaurants,
-  mockPendingVideos,
-} from "../data/mockRestaurants";
-import { mockUsers, getCurrentUser } from "../data/mockUsers";
-import { AnalystTableTabs, ManagerTableTabs } from "@/constant/table";
+import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
+import { mockPendingRestaurants, mockPendingVideos, mockSubmittedRestaurants, mockSubmittedVideos, mockActiveRestaurants } from '@/data/mockRestaurants';
+import { mockUsers, getCurrentUser } from '@/data/mockUsers';
+import { TableStatusEnum, ManagerTableTabsEnum, AnalystTableTabsEnum } from '@/types/enums';
 
 /**
  * Simulate API delay for realistic development experience
@@ -29,62 +20,115 @@ export type RestaurantTable = {
 };
 
 /**
- * Table management API service
- */
-export class TableApi {
-  /**
-   * Get table (based on unique users who have added restaurants)
-   */
-  static async getTable(
-    tableId: ManagerTableTabs | AnalystTableTabs,
-    currentUserId?: string
-  ): Promise<RestaurantTypes[]> {
-    await delay(200);
-
-    const currentUser = currentUserId
-      ? mockUsers.find((u) => u.id === currentUserId)
-      : getCurrentUser();
-
-    if (!currentUser) {
-      return [];
-    }
-
-    // If user is analyst, only show their own table
-    if (currentUser.role === "analyst") {
-      if (tableId === AnalystTableTabs.ACTIVE_RESTAURANTS) {
-        // return mockActiveRestaurants.filter(restaurant => restaurant.addedBy.userId === currentUser.id);
-      }
-      if (tableId === AnalystTableTabs.SUBMITTED_RESTAURANTS) {
-        return mockPendingRestaurants.filter(
-          (restaurant) => restaurant.addedBy.userId === currentUser.id
-        );
-      }
-      if (tableId === AnalystTableTabs.SUBMITTED_VIDEOS) {
-        return mockPendingVideos.filter(
-          (video) => video.addedBy.userId === currentUser.id
-        );
-      }
-      return [];
-    }
-
-    // If user is manager or admin, show all users who have added restaurants
-    if (tableId === ManagerTableTabs.ACTIVE_RESTAURANTS) {
-      return [];
-    }
-    if (tableId === ManagerTableTabs.PENDING_RESTAURANTS) {
-      return mockPendingRestaurants;
-    }
-    if (tableId === ManagerTableTabs.PENDING_VIDEOS) {
-      return mockPendingVideos;
-    }
-    return [];
-  }
-}
-
-/**
  * Restaurant API service
  */
 export class RestaurantApi {
+  /**
+   * Update restaurant status in mock data
+   * @param restaurantId - Restaurant ID to update
+   * @param propertyKey - Property to update (address, menuUrl, reservationUrl, or videos)
+   * @param newStatus - New status to set
+   * @param tableType - Table type for proper data source
+   */
+  static async updateRestaurantStatus(params: {
+    restaurantId: string;
+    propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos';
+    newStatus: TableStatusEnum;
+    tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
+  }): Promise<{ success: boolean }> {
+    await delay(300); // Simulate network delay
+
+    const { restaurantId, propertyKey, newStatus, tableType } = params;
+
+    // Helper function to toggle status
+    const toggleStatus = (currentStatus: TableStatusEnum, targetStatus: TableStatusEnum): TableStatusEnum => {
+      return currentStatus === targetStatus ? TableStatusEnum.PENDING : targetStatus;
+    };
+
+    // Update the appropriate mock data based on table type
+    switch (tableType) {
+      case ManagerTableTabsEnum.PENDING_RESTAURANTS:
+        const pendingRestaurant = mockPendingRestaurants.find(r => r.restaurantId === restaurantId);
+        if (pendingRestaurant) {
+          if (propertyKey) {
+            // Update specific property
+            if (propertyKey === 'address') {
+              pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status, newStatus);
+            } else if (propertyKey === 'menuUrl') {
+              pendingRestaurant.menuUrl.status = toggleStatus(pendingRestaurant.menuUrl.status, newStatus);
+            } else if (propertyKey === 'reservationUrl') {
+              pendingRestaurant.reservationUrl.status = toggleStatus(pendingRestaurant.reservationUrl.status, newStatus);
+            } else if (propertyKey === 'videos') {
+              pendingRestaurant.videos.forEach(video => {
+                video.status = toggleStatus(video.status, newStatus);
+              });
+            }
+          } else {
+            // Update all properties
+            pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status, newStatus);
+            pendingRestaurant.menuUrl.status = toggleStatus(pendingRestaurant.menuUrl.status, newStatus);
+            pendingRestaurant.reservationUrl.status = toggleStatus(pendingRestaurant.reservationUrl.status, newStatus);
+            pendingRestaurant.videos.forEach(video => {
+              video.status = toggleStatus(video.status, newStatus);
+            });
+          }
+        }
+        break;
+
+      case ManagerTableTabsEnum.PENDING_VIDEOS:
+        const pendingVideo = mockPendingVideos.find(v => v.id === restaurantId);
+        if (pendingVideo) {
+          pendingVideo.videos.forEach(video => {
+            video.status = toggleStatus(video.status, newStatus);
+          });
+        }
+        break;
+
+      case AnalystTableTabsEnum.SUBMITTED_RESTAURANTS:
+        const submittedRestaurant = mockSubmittedRestaurants.find(r => r.restaurantId === restaurantId);
+        if (submittedRestaurant) {
+          if (propertyKey) {
+            // Update specific property
+            if (propertyKey === 'address') {
+              submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status, newStatus);
+            } else if (propertyKey === 'menuUrl') {
+              submittedRestaurant.menuUrl.status = toggleStatus(submittedRestaurant.menuUrl.status, newStatus);
+            } else if (propertyKey === 'reservationUrl') {
+              submittedRestaurant.reservationUrl.status = toggleStatus(submittedRestaurant.reservationUrl.status, newStatus);
+            } else if (propertyKey === 'videos') {
+              submittedRestaurant.videos.forEach(video => {
+                video.status = toggleStatus(video.status, newStatus);
+              });
+            }
+          } else {
+            // Update all properties
+            submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status, newStatus);
+            submittedRestaurant.menuUrl.status = toggleStatus(submittedRestaurant.menuUrl.status, newStatus);
+            submittedRestaurant.reservationUrl.status = toggleStatus(submittedRestaurant.reservationUrl.status, newStatus);
+            submittedRestaurant.videos.forEach(video => {
+              video.status = toggleStatus(video.status, newStatus);
+            });
+          }
+        }
+        break;
+
+      case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
+        const submittedVideo = mockSubmittedVideos.find(v => v.id === restaurantId);
+        if (submittedVideo) {
+          submittedVideo.videos.forEach(video => {
+            video.status = toggleStatus(video.status, newStatus);
+          });
+        }
+        break;
+
+      default:
+        console.warn(`Unsupported table type for status update: ${tableType}`);
+        return { success: false };
+    }
+
+    return { success: true };
+  }
+
   /**
    * Get restaurants by table with optional search and pagination
    * @template PendingRestaurant
@@ -253,8 +297,252 @@ export class RestaurantApi {
         page,
         limit,
         total: filteredPendingVideos.length,
-        totalPages: Math.ceil(filteredPendingVideos.length / limit),
-      },
+        totalPages: Math.ceil(filteredPendingVideos.length / limit)
+      }
+    };
+  }
+
+  /**
+   * Get submitted restaurants with optional search and pagination
+   * @template SubmittedRestaurant
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<SubmittedRestaurant>>}
+   */
+  static async getSubmittedRestaurants(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<SubmittedRestaurantType>> {
+      await delay(300); // Simulate network delay
+
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Type validation for mockSubmittedRestaurants
+    if (!Array.isArray(mockSubmittedRestaurants)) {
+      throw new Error('"mockSubmittedRestaurants" is not an array');
+    }
+
+    let filteredRestaurants = [...mockSubmittedRestaurants] as SubmittedRestaurantType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredRestaurants = filteredRestaurants.filter((restaurant: SubmittedRestaurantType) =>
+        (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.address.name === 'string' && restaurant.address.name.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedRestaurants,
+      pagination: {
+        page,
+        limit,
+        total: filteredRestaurants.length,
+        totalPages: Math.ceil(filteredRestaurants.length / limit)
+      }
+    };
+  }
+
+  /**
+   * Get submitted videos with optional search and pagination
+  /**
+   * Get submitted videos with optional search and pagination
+   * @template SubmittedVideo
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<SubmittedVideo>>}
+   */
+  static async getSubmittedVideos(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<SubmittedVideoType>> {
+    await delay(300); // Simulate network delay
+
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Type validation for mockSubmittedVideos
+    if (!Array.isArray(mockSubmittedVideos)) {
+      throw new Error('"mockSubmittedVideos" is not an array');
+    }
+
+    let filteredVideos = [...mockSubmittedVideos] as SubmittedVideoType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0
+        }
+      };
+    }
+
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredVideos = filteredVideos.filter((video: SubmittedVideoType) =>
+        video.name.toLowerCase().includes(searchTerm) || video.restaurantId.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedVideos,
+      pagination: {
+        page,
+        limit,
+        total: filteredVideos.length,
+        totalPages: Math.ceil(filteredVideos.length / limit)
+      }
+    };
+  }
+
+  /**
+   * Get active restaurants with optional search and pagination
+   * @template ActiveRestaurant
+   * @param {object} params - Query parameters
+   * @param {string} [params.search] - Search term
+   * @param {number} [params.page] - Page number
+   * @param {number} [params.limit] - Items per page
+   * @param {string} [params.currentUserId] - Current user ID
+   * @returns {Promise<PaginatedResponse<ActiveRestaurant>>}
+   */
+  static async getActiveRestaurants(params: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    currentUserId?: string;
+  }): Promise<PaginatedResponse<ActiveRestaurantType>> {
+    await delay(300); // Simulate network delay
+
+    const currentUser = params.currentUserId
+      ? mockUsers.find(u => u.id === params.currentUserId)
+      : getCurrentUser();
+
+    if (!currentUser) {
+      return {
+        data: mockActiveRestaurants,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: mockActiveRestaurants.length,
+          totalPages: Math.ceil(mockActiveRestaurants.length / 10)
+        }
+      };
+    }
+
+    // Type validation for mockActiveRestaurants
+    if (!Array.isArray(mockActiveRestaurants)) {
+      throw new Error('"mockActiveRestaurants" is not an array');
+    }
+
+    let filteredRestaurants = [...mockActiveRestaurants] as ActiveRestaurantType[];
+
+    // Role-based filtering
+    if (currentUser.role === 'analyst') {
+      return {
+        data: filteredRestaurants,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: filteredRestaurants.length,
+          totalPages: Math.ceil(filteredRestaurants.length / 10)
+        }
+      };
+    }
+
+    // Filter by search term
+    if (params.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredRestaurants = filteredRestaurants.filter((restaurant: ActiveRestaurantType) =>
+        (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
+        (typeof restaurant.address.content === 'string' && restaurant.address.content.toLowerCase().includes(searchTerm))
+      );
+    }
+
+    // Pagination
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRestaurants = filteredRestaurants.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedRestaurants,
+      pagination: {
+        page,
+        limit,
+        total: filteredRestaurants.length,
+        totalPages: Math.ceil(filteredRestaurants.length / limit)
+      }
     };
   }
 }

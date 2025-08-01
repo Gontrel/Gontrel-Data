@@ -5,7 +5,7 @@ import Image from "next/image";
 import logo from "../../../assets/images/reset-logo.png";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import Button from "@/components/button/Button";
+import Button from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { errorToast, successToast } from "@/utils/toast";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -100,12 +100,12 @@ const ResetPassword = () => {
             alt="Reset Logo"
             className="mx-auto"
           />
-          <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold font-figtree">
+          <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold ">
             Email Sent
           </h1>
-          <p className="pt-[12px] text-center text-[22px] font-medium font-figtree">
+          <p className="pt-[12px] text-center text-[22px] font-medium ">
             We have sent a 4-digit code to your email{" "}
-            <span className="font-semibold text-[22px] font-figtree">
+            <span className="font-semibold text-[22px] ">
               {maskEmail(userEmail)}
             </span>
             . Use it to confirm password change
@@ -117,7 +117,7 @@ const ResetPassword = () => {
           <form className="" onSubmit={handleSubmit}>
             {/*  New Password field */}
             <div className="mb-[30px]">
-              <label className="text-xl font-medium text-[#444] font-figtree">
+              <label className="text-xl font-medium text-[#444] ">
                 New Password
               </label>
 
@@ -127,8 +127,8 @@ const ResetPassword = () => {
                   placeholder="Your password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px] 
-                  placeholder-[#8A8A8A] placeholder:font-figtree placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px]
+                  placeholder-[#8A8A8A] placeholder:font-placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
 
                 <button
@@ -144,7 +144,7 @@ const ResetPassword = () => {
 
             {/* Confirm new Password field */}
             <div>
-              <label className="text-xl font-medium text-[#444] font-figtree">
+              <label className="text-xl font-medium text-[#444] ">
                 Confirm new Password
               </label>
 
@@ -155,7 +155,7 @@ const ResetPassword = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                   placeholder-[#8A8A8A] placeholder:text-lg placeholder:font-figtree
+                   placeholder-[#8A8A8A] placeholder:text-lg
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
@@ -171,7 +171,7 @@ const ResetPassword = () => {
 
             <div className="w-full mt-[30px]">
               <div className="flex flex-row items-center justify-between ">
-                <p className="text-[#444] font-medium text-[20px] font-figtree">
+                <p className="text-[#444] font-medium text-[20px] ">
                   Enter code
                 </p>
                 <Button
@@ -179,7 +179,7 @@ const ResetPassword = () => {
                   disabled={isResending}
                   loading={isResending}
                   loadingText="Resending..."
-                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline font-figtree disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline  disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   Resend code
                 </Button>
@@ -193,8 +193,7 @@ const ResetPassword = () => {
                   placeholder="Enter your code"
                   value={otpCode}
                   onChange={handleOtpChange}
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                   placeholder-[#8A8A8A] placeholder:text-lg 
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px] placeholder-[#8A8A8A] placeholder:text-lg
                   placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
               </div>
@@ -202,14 +201,14 @@ const ResetPassword = () => {
             <Button
               type="submit"
               loading={isLoading}
-              className="cursor-pointer my-[70px] w-full bg-[#0070F3] h-[80px] border rounded-[20px] font-semibold text-[20px] text-white font-figtree"
+              className="cursor-pointer my-[70px] w-full bg-blue-500 h-[80px] border rounded-[20px] font-semibold text-[20px] text-white"
             >
               Continue
             </Button>
           </form>
 
           <Link href="/" passHref>
-            <p className="text-[#0070F3] font-figtree font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
+            <p className="text-blue-500 font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
               Back to sign in
             </p>
           </Link>

@@ -1,10 +1,8 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import { Column, Pie } from "@ant-design/charts";
-// import { mockActiveRestaurants } from "@/data/mockRestaurants";
-import { columns } from "@/components/admin/columns";
-import { DataTable } from "@/components/ui/DataTable";
 import { StatsGrid } from "@/components/ui/StatsGrid";
+import ActiveRestaurants from "@/components/restaurants/tables/ActiveRestaurants";
 
 export default function DashboardPage() {
   const barData = [
@@ -32,20 +30,20 @@ export default function DashboardPage() {
 
   const config = {
     data: pieData,
-    angleField: 'value',
-    colorField: 'type',
+    angleField: "value",
+    colorField: "type",
     radius: 0.8,
     height: 300,
     label: {
-      text: 'value',
+      text: "value",
       style: {
-        fontWeight: 'bold',
+        fontWeight: "bold",
       },
     },
     legend: {
       color: {
         title: false,
-        position: 'right',
+        position: "right",
         rowPadding: 5,
       },
     },
@@ -54,28 +52,27 @@ export default function DashboardPage() {
   // TODO: Stats data - this could come from the API
   const statsData = [
     {
-      label: 'Total restaurants',
-      value: '3.5k'
+      label: "Total restaurants",
+      value: "3.5k",
     },
     {
-      label: 'Total active restaurants',
-      value: '3.2k'
+      label: "Total active restaurants",
+      value: "3.2k",
     },
     {
-      label: 'Pending restaurants',
-      value: '300'
+      label: "Pending restaurants",
+      value: "300",
     },
     {
-      label: 'Inactive restaurants',
-      value: '150'
-    }
+      label: "Inactive restaurants",
+      value: "150",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
-
         {/* Restaurant Stats */}
         <StatsGrid stats={statsData} />
 
@@ -117,13 +114,21 @@ export default function DashboardPage() {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Restaurant Status</h3>
-            <Pie {...config} />
+            {config && <Pie {...config} />}
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          {/* <DataTable columns={columns} data={mockActiveRestaurants} /> */}
+          <ActiveRestaurants
+            searchTerm=""
+            currentPage={1}
+            handleCurrentPage={() => {}}
+            pageSize={5}
+            handlePageSize={function (pageSize: number): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
         </div>
       </div>
     </div>
   );
-};
+}

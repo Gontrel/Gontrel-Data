@@ -59,20 +59,6 @@ export const authRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.forgetPassword(input);
-        const token = response.token;
-
-        if (token) {
-          ctx.resHeaders.append(
-            "Set-Cookie",
-            serialize("reset_token", token, {
-              path: "/",
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
-              maxAge: 60 * 15, // 15 minutes
-            })
-          );
-        }
 
         return response;
       } catch (error) {

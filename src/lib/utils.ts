@@ -89,6 +89,21 @@ export function capitalizeWords(str: string): string {
   return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+/**
+ * Convert number to k, m, b, t, etc.
+ */
+export function formatNumber(num: number): string {
+  if (num >= 1000000000) {
+    return (num / 1000000000).toFixed(1) + "B";
+  }
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
+  }
+  return num.toString();
+}
 export const convertTimeTo24Hour = (time: string): number => {
   // Handle "24 hours" case
   if (time.toLowerCase() === "24 hours") {
@@ -197,7 +212,7 @@ const parseTimeRange = (range: string): TimeSlot => {
     const match = trimmedTime.match(/(\d{1,2}):(\d{2})\s*([AP]M)/i);
     if (!match) return "";
 
-    let [, hours, minutes, period] = match;
+    const [, hours, minutes, period] = match;
     let h = parseInt(hours, 10);
 
     if (period.toUpperCase() === "PM" && h < 12) {
