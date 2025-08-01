@@ -2,33 +2,29 @@ import { publicProcedure, router } from "@/lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import APIRequest from "@/api/service";
-import { AxiosError } from "axios";
-import { serialize, parse } from "cookie";
 import { getErrorMessage } from "./auth";
 
+
+const postSchema = z.object({
+  isVerified: z.boolean().optional(),
+  tiktokLink: z.string().optional(),
+  videoUrl: z.string().optional(),
+  thumbUrl: z.string().optional(),
+  locationName: z.string().optional(),
+  rating: z.number().optional(),
+  tags: z.array(z.string().optional()).optional(),
+});
+// .array();// TODO: change to array after the endpoint is changes
+
+
 export const postRouter = router({
-  create: publicProcedure
-    .input(z.object({ email: z.string(), password: z.string() }))
+  createPost: publicProcedure
+    .input(postSchema)
     .mutation(async ({ input, ctx }) => {
+      
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.login(input);
-        const token = response.token;
-
-
-        if (token) {
-          ctx.resHeaders.append(
-            "Set-Cookie",
-            serialize("user_token", token, {
-              path: "/",
-              httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
-              maxAge: 60 * 60 * 24, // 1 day
-            })
-          );
-        }
-
+        const response = await apiRequest.createPost(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -39,14 +35,11 @@ export const postRouter = router({
       }
     }),
 
-  getAllRestuarants: publicProcedure
-    .input(z.object({ email: z.string() }))
-    .mutation(async ({ input, ctx }) => {
+  getAllPosts: publicProcedure
+    .query(async ({ ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.forgetPassword(input);
-        const token = response.token;
-
+        const response = await apiRequest.getAllPosts();
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -56,43 +49,17 @@ export const postRouter = router({
         });
       }
     }),
-    
-  getARestaurant: publicProcedure
+
+    getAPost: publicProcedure
     .input(
       z.object({
-        newPassword: z.string(),
-        otpCode: z.string(),
+        postId: z.string(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
-      const cookieHeader = ctx.req.headers.get("cookie") ?? "";
-      const cookies = parse(cookieHeader);
-      const token = cookies.reset_token;
-
-      if (!token) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message:
-            "Reset token is missing or expired. Please try the 'forgot password' process again.",
-        });
-      }
-
+    .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.resetPassword({ ...input, token });
-
-        // Clear the cookie after successful reset
-        ctx.resHeaders.append(
-          "Set-Cookie",
-          serialize("reset_token", "", {
-            path: "/",
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: -1, // Expire the cookie immediately
-          })
-        );
-
+        const response = await apiRequest.getAPost(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -100,6 +67,33 @@ export const postRouter = router({
           code: "INTERNAL_SERVER_ERROR",
           message,
         });
+      }
+    }),
+
+  getPosts: publicProcedure
+    .input(
+      z.object({
+        page: z.number().default(1),
+        pageSize: z.number().default(10),
+        searchTerm: z.string().optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { page, pageSize, searchTerm } = input;
+      const apiRequest = new APIRequest(ctx.req.headers);
+
+      try {
+        // Fetch data from API endpoint
+        const response = await apiRequest.getAllPosts();
+
+        if (!response.data) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+        throw error;
       }
     }),
 });
