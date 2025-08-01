@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { CenterModal } from '../ui/CenterModal';
-import { Plus, Trash2 } from 'lucide-react';
+import React, { useState } from "react";
+import { CenterModal } from "../ui/CenterModal";
+import { Plus, Trash2 } from "lucide-react";
 
 /**
  * Working hours data structure
  */
 export interface WorkingHours {
-  monday: DayHours;
-  tuesday: DayHours;
-  wednesday: DayHours;
-  thursday: DayHours;
-  friday: DayHours;
-  saturday: DayHours;
-  sunday: DayHours;
+  Monday: DayHours;
+  Tuesday: DayHours;
+  Wednesday: DayHours;
+  Thursday: DayHours;
+  Friday: DayHours;
+  Saturday: DayHours;
+  Sunday: DayHours;
 }
 
 /**
@@ -51,40 +51,40 @@ export const EditWorkingHoursModal = ({
   isOpen,
   onClose,
   workingHours,
-  onSave
+  onSave,
 }: EditWorkingHoursModalProps) => {
   const [hours, setHours] = useState<WorkingHours>(workingHours);
 
   const days: (keyof WorkingHours)[] = [
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-    'sunday'
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   const dayLabels = {
-    monday: 'Monday',
-    tuesday: 'Tuesday',
-    wednesday: 'Wednesday',
-    thursday: 'Thursday',
-    friday: 'Friday',
-    saturday: 'Saturday',
-    sunday: 'Sunday'
+    Monday: "Monday",
+    Tuesday: "Tuesday",
+    Wednesday: "Wednesday",
+    Thursday: "Thursday",
+    Friday: "Friday",
+    Saturday: "Saturday",
+    Sunday: "Sunday",
   };
 
   /**
    * Toggle day open/closed
    */
   const toggleDayOpen = (day: keyof WorkingHours) => {
-    setHours(prev => ({
+    setHours((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
-        isOpen: !prev[day].isOpen
-      }
+        isOpen: !prev[day].isOpen,
+      },
     }));
   };
 
@@ -92,12 +92,12 @@ export const EditWorkingHoursModal = ({
    * Toggle all day (24hrs)
    */
   const toggleAllDay = (day: keyof WorkingHours) => {
-    setHours(prev => ({
+    setHours((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
-        isAllDay: !prev[day].isAllDay
-      }
+        isAllDay: !prev[day].isAllDay,
+      },
     }));
   };
 
@@ -107,21 +107,21 @@ export const EditWorkingHoursModal = ({
   const updateTimeSlot = (
     day: keyof WorkingHours,
     slotIndex: number,
-    field: 'start' | 'end',
+    field: "start" | "end",
     value: string
   ) => {
-    setHours(prev => {
+    setHours((prev) => {
       const newSlots = [...prev[day].slots];
       newSlots[slotIndex] = {
         ...newSlots[slotIndex],
-        [field]: value
+        [field]: value,
       };
       return {
         ...prev,
         [day]: {
           ...prev[day],
-          slots: newSlots
-        }
+          slots: newSlots,
+        },
       };
     });
   };
@@ -130,12 +130,12 @@ export const EditWorkingHoursModal = ({
    * Add time slot
    */
   const addTimeSlot = (day: keyof WorkingHours) => {
-    setHours(prev => ({
+    setHours((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
-        slots: [...prev[day].slots, { start: '09:00', end: '17:00' }]
-      }
+        slots: [...prev[day].slots, { start: "09:00", end: "17:00" }],
+      },
     }));
   };
 
@@ -143,12 +143,12 @@ export const EditWorkingHoursModal = ({
    * Remove time slot
    */
   const removeTimeSlot = (day: keyof WorkingHours, slotIndex: number) => {
-    setHours(prev => ({
+    setHours((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
-        slots: prev[day].slots.filter((_, index) => index !== slotIndex)
-      }
+        slots: prev[day].slots.filter((_, index) => index !== slotIndex),
+      },
     }));
   };
 
@@ -170,7 +170,10 @@ export const EditWorkingHoursModal = ({
       <div className="p-6">
         <div className="space-y-4">
           {days.map((day) => (
-            <div key={day} className="border-b border-gray-200 pb-4 last:border-0">
+            <div
+              key={day}
+              className="border-b border-gray-200 pb-4 last:border-0"
+            >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <span className="text-base font-medium text-gray-900 w-24">
@@ -178,10 +181,10 @@ export const EditWorkingHoursModal = ({
                   </span>
                   <span
                     className={`text-sm font-medium ${
-                      hours[day].isOpen ? 'text-green-600' : 'text-red-600'
+                      hours[day].isOpen ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    {hours[day].isOpen ? 'Open' : 'Closed'}
+                    {hours[day].isOpen ? "Open" : "Closed"}
                   </span>
                 </div>
 
@@ -215,14 +218,23 @@ export const EditWorkingHoursModal = ({
                           <input
                             type="time"
                             value={slot.start}
-                            onChange={(e) => updateTimeSlot(day, index, 'start', e.target.value)}
+                            onChange={(e) =>
+                              updateTimeSlot(
+                                day,
+                                index,
+                                "start",
+                                e.target.value
+                              )
+                            }
                             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                           <span className="text-gray-500">To</span>
                           <input
                             type="time"
                             value={slot.end}
-                            onChange={(e) => updateTimeSlot(day, index, 'end', e.target.value)}
+                            onChange={(e) =>
+                              updateTimeSlot(day, index, "end", e.target.value)
+                            }
                             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                           {hours[day].slots.length > 1 && (
@@ -269,4 +281,4 @@ export const EditWorkingHoursModal = ({
       </div>
     </CenterModal>
   );
-}
+};

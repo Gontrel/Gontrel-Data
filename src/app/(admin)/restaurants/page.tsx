@@ -127,7 +127,6 @@ export default function RestaurantsPage() {
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
       <PreviewVideoModal
-
         open={!!activeVideoUrl}
         onOpenChange={handlePreviewModalOpenChange}
       />

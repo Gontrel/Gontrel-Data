@@ -30,20 +30,20 @@ export default function DashboardPage() {
 
   const config = {
     data: pieData,
-    angleField: 'value',
-    colorField: 'type',
+    angleField: "value",
+    colorField: "type",
     radius: 0.8,
     height: 300,
     label: {
-      text: 'value',
+      text: "value",
       style: {
-        fontWeight: 'bold',
+        fontWeight: "bold",
       },
     },
     legend: {
       color: {
         title: false,
-        position: 'right',
+        position: "right",
         rowPadding: 5,
       },
     },
@@ -52,28 +52,27 @@ export default function DashboardPage() {
   // TODO: Stats data - this could come from the API
   const statsData = [
     {
-      label: 'Total restaurants',
-      value: '3.5k'
+      label: "Total restaurants",
+      value: "3.5k",
     },
     {
-      label: 'Total active restaurants',
-      value: '3.2k'
+      label: "Total active restaurants",
+      value: "3.2k",
     },
     {
-      label: 'Pending restaurants',
-      value: '300'
+      label: "Pending restaurants",
+      value: "300",
     },
     {
-      label: 'Inactive restaurants',
-      value: '150'
-    }
+      label: "Inactive restaurants",
+      value: "150",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] overflow-x-hidden">
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
-
         {/* Restaurant Stats */}
         <StatsGrid stats={statsData} />
 
@@ -122,9 +121,14 @@ export default function DashboardPage() {
           <ActiveRestaurants
             searchTerm=""
             currentPage={1}
-            handleCurrentPage={() => { }}
+            handleCurrentPage={() => {}}
             pageSize={5}
+            handlePageSize={function (pageSize: number): void {
+              throw new Error("Function not implemented.");
+            }}
           />
         </div>
       </div>
     </div>
+  );
+}

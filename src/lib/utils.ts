@@ -27,22 +27,13 @@ export function mergeClasses(...inputs: ClassValue[]) {
  * Format date to readable string
  */
 export function formatDate(date: Date): string {
-  const dateFormatter = new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
-
-  const timeFormatter = new Intl.DateTimeFormat('en-GB', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
-
-  const formattedDate = dateFormatter.format(date);
-  const formattedTime = timeFormatter.format(date).toLowerCase();
-
-  return `${formattedDate}\n${formattedTime}`;
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 /**
@@ -103,13 +94,13 @@ export function capitalizeWords(str: string): string {
  */
 export function formatNumber(num: number): string {
   if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + 'B';
+    return (num / 1000000000).toFixed(1) + "B";
   }
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
+    return (num / 1000000).toFixed(1) + "M";
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+    return (num / 1000).toFixed(1) + "K";
   }
   return num.toString();
 }
@@ -119,91 +110,124 @@ export const convertTimeTo24Hour = (time: string): number => {
     return 24;
   }
 
-  const [hoursStr, minutesPeriod] = time.split(":");
-  const period = minutesPeriod.slice(-2).toUpperCase();
-  const minutesStr = minutesPeriod.slice(0, 2);
+  const timeParts = time.match(/(\d{1,2}):(\d{2})\s*([AP]M)/i);
 
-  let hours = parseInt(hoursStr, 10);
-  const minutes = parseInt(minutesStr, 10);
+  if (!timeParts) {
+    // Return a default/error value or throw an error if the format is unexpected
+    // and not '24 hours'. This handles cases where the time format is invalid.
+    console.error(`Invalid time format: ${time}`);
+    return 0;
+  }
 
-  // Convert to 24-hour format
+  let hours = parseInt(timeParts[1], 10);
+  const minutes = parseInt(timeParts[2], 10);
+  const period = timeParts[3].toUpperCase();
+
   if (period === "PM" && hours !== 12) {
     hours += 12;
   } else if (period === "AM" && hours === 12) {
-    hours = 0;
+    hours = 0; // Midnight case
   }
 
-  return hours;
+  return hours + minutes / 60;
+};
+
+export const formatTime = (time: string): string => {
+  // If the time string already contains AM or PM, assume it's correctly formatted and return it.
+  if (time.toUpperCase().includes("AM") || time.toUpperCase().includes("PM")) {
+    return time;
+  }
+
+  // Otherwise, assume it's an "HH:mm" string and convert it.
+  const parts = time.split(":");
+  if (parts.length !== 2) {
+    return time; // Return original string if format is unexpected
+  }
+
+  let hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+
+  if (isNaN(hours) || isNaN(minutes)) {
+    return time; // Return original string if parsing fails
+  }
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  const minutesStr = minutes < 10 ? "0" + minutes : minutes.toString();
+
+  return `${hours}:${minutesStr} ${ampm}`;
 };
 
 export const transformToModalHours = (
   hours: Record<string, string[]>
 ): WorkingHours => {
-  const days: (keyof WorkingHours)[] = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-  ];
-  const initialModalHours: any = {};
+  const result: Partial<WorkingHours> = {};
 
-  const parseTime = (time: string) => {
-    // Handle "24 hours" case
-    if (time.toLowerCase() === "24 hours") {
-      return "00:00"; // or "24:00" if you prefer
-    }
-
-    const [timePart, modifier] = time.split(/(am|pm)/i);
-    let [hours, minutes] = timePart.split(":").map(Number);
-    if (modifier && modifier.toLowerCase() === "pm" && hours < 12) {
-      hours += 12;
-    }
-    if (modifier && modifier.toLowerCase() === "am" && hours === 12) {
-      hours = 0;
-    }
-    return `${String(hours).padStart(2, "0")}:${String(minutes || 0).padStart(2, "0")}`;
-  };
-
-  days.forEach((day) => {
-    const dayKey = day.charAt(0).toUpperCase() + day.slice(1);
-    const dayData = hours[dayKey];
-    if (dayData && dayData.length > 0) {
-      // Check if it's "24 hours"
-      if (dayData[0].toLowerCase() === "24 hours") {
-        initialModalHours[day] = {
-          isOpen: true,
-          isAllDay: true,
-          slots: [{ start: "00:00", end: "23:59" }], // or "24:00" if your system supports it
-        };
-      } else {
-        initialModalHours[day] = {
-          isOpen: true,
-          isAllDay: false,
-          slots: dayData.map((range) => {
-            const [start, end] = range.split(" - ");
-            return { start: parseTime(start), end: parseTime(end) };
-          }),
-        };
-      }
-    } else {
-      initialModalHours[day] = {
+  Object.entries(hours).forEach(([day, ranges]) => {
+    if (!ranges?.length) {
+      result[day] = {
         isOpen: false,
         isAllDay: false,
-        slots: [{ start: "09:00", end: "17:00" }],
+        slots: [{ start: "09:00 AM", end: "05:00 PM" }],
       };
+      return;
     }
+
+    result[day] = {
+      isOpen: true,
+      isAllDay: ranges.some((r) => r.toLowerCase().includes("24 hours")),
+      slots: ranges.map((range) => {
+        if (range.toLowerCase().includes("24 hours")) {
+          return { start: "12:00 AM", end: "11:59 PM" };
+        }
+        return parseTimeRange(range);
+      }),
+    };
   });
 
-  return initialModalHours as WorkingHours;
+  return result as WorkingHours;
 };
 
-export  const formatTime = (time: string) => {
-      const [h, m] = time.split(":").map(Number);
-      const hours = h % 12 || 12;
-      const minutes = String(m).padStart(2, "0");
-      const ampm = h >= 12 ? "PM" : "AM";
-      return `${hours}:${minutes} ${ampm}`;
-    };
+interface TimeSlot {
+  start: string;
+  end: string;
+}
+
+const parseTimeRange = (range: string): TimeSlot => {
+  const convertTo24HourFormat = (timeStr: string | undefined): string => {
+    if (!timeStr || timeStr.trim() === "") return "";
+
+    const trimmedTime = timeStr.trim();
+
+    // Check if it's already in HH:mm format
+    const hhmmMatch = trimmedTime.match(/^(\d{1,2}):(\d{2})$/);
+    if (hhmmMatch) {
+      const h = hhmmMatch[1].padStart(2, "0");
+      const m = hhmmMatch[2];
+      return `${h}:${m}`;
+    }
+
+    const match = trimmedTime.match(/(\d{1,2}):(\d{2})\s*([AP]M)/i);
+    if (!match) return "";
+
+    const [, hours, minutes, period] = match;
+    let h = parseInt(hours, 10);
+
+    if (period.toUpperCase() === "PM" && h < 12) {
+      h += 12;
+    } else if (period.toUpperCase() === "AM" && h === 12) {
+      h = 0; // Midnight case
+    }
+
+    return `${h.toString().padStart(2, "0")}:${minutes}`;
+  };
+
+  const parts = range.split(" - ");
+  const start = convertTo24HourFormat(parts[0]);
+  const end = convertTo24HourFormat(parts[1]);
+
+  // If end is empty but start is not, default end to start.
+  return { start, end: start && !end ? start : end };
+};

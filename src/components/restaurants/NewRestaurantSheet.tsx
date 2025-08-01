@@ -16,6 +16,7 @@ import { useVideoStore } from "@/stores/videoStore";
 import { convertTimeTo24Hour, formatTime } from "@/lib/utils";
 import { ProgressBar } from "../progressiveLoader/ProgressiveBar";
 import { errorToast, successToast } from "@/utils/toast";
+import { TimeSlot } from "./EditWorkingHoursModal";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -36,7 +37,8 @@ export const NewRestaurantSheet = ({
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
   const [sessionToken, setSessionToken] = useState("");
-  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
+  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } =
+    useVideoStore();
 
   const debouncedQuery = useDebounce(inputValue, 500);
 
@@ -46,16 +48,16 @@ export const NewRestaurantSheet = ({
       { enabled: debouncedQuery.trim() !== "" && !!sessionToken }
     );
 
-
-  const { mutate: createAdminLocation, isPending: isLoading } = trpc.restaurant.createRestaurant.useMutation({
-    onSuccess: () => {
-      successToast("Restaurant created successfully!");
-      handleClose();
-    },
-    onError: (error) => {
-      errorToast(error.message);
-    },
-  });
+  const { mutate: createAdminLocation, isPending: isLoading } =
+    trpc.restaurant.createRestaurant.useMutation({
+      onSuccess: () => {
+        successToast("Restaurant created successfully!");
+        handleClose();
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
 
   const { data: placeDetailsData } = trpc.external.getPlaceDetails.useQuery(
     { placeId: selectedPlaceId!, sessionToken },
@@ -89,6 +91,7 @@ export const NewRestaurantSheet = ({
 
   useEffect(() => {
     if (autoCompleteData && autoCompleteData.length > 0) {
+      console.log("autocomplete", autoCompleteData);
       setSuggestions(autoCompleteData);
     } else {
       setSuggestions([]);
@@ -106,6 +109,8 @@ export const NewRestaurantSheet = ({
           workingHours[day] = timeParts.join(": ").split(", ");
         });
       }
+
+      console.log(workingHours, "placeDworkingHoursetailsData");
 
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -151,6 +156,8 @@ export const NewRestaurantSheet = ({
   const handleWorkingHoursSave = (updatedHours: any) => {
     if (!selectedRestaurant) return;
 
+    console.error(updatedHours, "updatedHours");
+
     const newWorkingHours: Record<string, string[]> = {};
     for (const day in updatedHours) {
       const dayData = updatedHours[day];
@@ -161,8 +168,8 @@ export const NewRestaurantSheet = ({
           newWorkingHours[dayName] = ["24 hours"];
         } else {
           newWorkingHours[dayName] = dayData.slots?.map(
-            (slot: any) =>
-              `${formatTime(slot?.start)} - ${formatTime(slot?.end)}`
+            (slot: TimeSlot) =>
+              `${formatTime(slot.start)} - ${formatTime(slot.end)}`
           );
         }
       }
@@ -178,8 +185,6 @@ export const NewRestaurantSheet = ({
     if (isLoading) return;
 
     if (!selectedRestaurant) return;
-
-    console.log(selectedRestaurant, "data")
 
     const payload = {
       sessionToken: sessionToken,
@@ -212,15 +217,15 @@ export const NewRestaurantSheet = ({
           // Handle "24 hours" case
           if (hours[0].toLowerCase() === "24 hours") {
             return {
-              dayOfTheWeek: day.toUpperCase() as any,
-              opensAt: 0,       // Represents 00:00 (midnight)
-              closesAt: 24,     // Represents 24:00 (end of day)
+              dayOfTheWeek: day.toUpperCase() as unknown,
+              opensAt: 0, // Represents 00:00 (midnight)
+              closesAt: 24, // Represents 24:00 (end of day)
             };
-    }
+          }
 
           const [startTime, endTime] = hours[0].split(" - ");
           return {
-            dayOfTheWeek: day.toUpperCase() as any,
+            dayOfTheWeek: day.toUpperCase() as unknown,
             opensAt: convertTimeTo24Hour(startTime),
             closesAt: convertTimeTo24Hour(endTime),
           };
@@ -296,66 +301,66 @@ export const NewRestaurantSheet = ({
                 )}
               </>
             ) : (
-                <div className="space-y-6">
-                  <div>
-                    <label
-                      htmlFor="restaurant-name"
-                      className="block text-[20px] font-semibold text-[#2E3032] mt-[30px]"
-                    >
-                      Restaurant name
-                    </label>
-                    <div className="relative mt-8" ref={searchContainerRef}>
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        id="restaurant-name"
-                        placeholder="Search for a restaurant"
-                        className="w-full pl-12 pr-[22px] py-[24px] border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onFocus={() => setShowSuggestions(true)}
-                        autoComplete="off"
-                      />
-                      {isFetchingAutoComplete && (
-                        <p className="mt-2 text-sm text-gray-500">Searching...</p>
-                      )}
-                      {showSuggestions &&
-                        !isFetchingAutoComplete &&
-                        debouncedQuery.length > 0 &&
-                        suggestions.length === 0 && (
-                          <div className="absolute z-10 w-full p-4 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-                            <p className="text-sm text-gray-500">
-                              No results found.
-                            </p>
-                          </div>
-                        )}
-                      {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-                          <ul className="divide-y divide-gray-200">
-                            {suggestions.map((suggestion: any) => (
-                              <li
-                                key={suggestion?.placeId}
-                                className="p-4 cursor-pointer hover:bg-gray-50"
-                                onClick={() => {
-                                  setInputValue(suggestion.description);
-                                  setShowSuggestions(false);
-                                  setSelectedPlaceId(suggestion?.placeId);
-                                }}
-                              >
-                                <p className="font-semibold text-gray-800">
-                                  {suggestion?.structuredFormatting?.mainText}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {
-                                    suggestion?.structuredFormatting
-                                      ?.secondaryText
-                                  }
-                                </p>
-                              </li>
-                            ))}
-                          </ul>
+              <div className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="restaurant-name"
+                    className="block text-[20px] font-semibold text-[#2E3032] mt-[30px]"
+                  >
+                    Restaurant name
+                  </label>
+                  <div className="relative mt-8" ref={searchContainerRef}>
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      id="restaurant-name"
+                      placeholder="Search for a restaurant"
+                      className="w-full pl-12 pr-[22px] py-[24px] border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onFocus={() => setShowSuggestions(true)}
+                      autoComplete="off"
+                    />
+                    {isFetchingAutoComplete && (
+                      <p className="mt-2 text-sm text-gray-500">Searching...</p>
+                    )}
+                    {showSuggestions &&
+                      !isFetchingAutoComplete &&
+                      debouncedQuery.length > 0 &&
+                      suggestions.length === 0 && (
+                        <div className="absolute z-10 w-full p-4 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <p className="text-sm text-gray-500">
+                            No results found.
+                          </p>
                         </div>
                       )}
+                    {showSuggestions && suggestions.length > 0 && (
+                      <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <ul className="divide-y divide-gray-200">
+                          {suggestions.map((suggestion: any) => (
+                            <li
+                              key={suggestion?.placeId}
+                              className="p-4 cursor-pointer hover:bg-gray-50"
+                              onClick={() => {
+                                setInputValue(suggestion.description);
+                                setShowSuggestions(false);
+                                setSelectedPlaceId(suggestion?.placeId);
+                              }}
+                            >
+                              <p className="font-semibold text-gray-800">
+                                {suggestion?.structuredFormatting?.mainText}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {
+                                  suggestion?.structuredFormatting
+                                    ?.secondaryText
+                                }
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
