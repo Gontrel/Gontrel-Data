@@ -7,6 +7,8 @@ export interface VideoData {
   thumbUrl?: string;
   videoUrl?: string;
   author?: string;
+  locationName?: string;
+  rating?: number;
 }
 
 export interface RestaurantData {
@@ -28,7 +30,6 @@ export interface openingHours {
   opensAt: number;
   closesAt: number;
 }
-
 
 export interface VideoState {
   videos: VideoData[];
