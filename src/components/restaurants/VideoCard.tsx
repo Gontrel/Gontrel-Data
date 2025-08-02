@@ -1,7 +1,7 @@
-import { Copy } from 'lucide-react';
-import { VideoData, useVideoStore } from '@/stores/videoStore';
-import Image from 'next/image';
-import Icon from '../svgs/Icons';
+import { Copy } from "lucide-react";
+import { VideoData, useVideoStore } from "@/stores/videoStore";
+import Image from "next/image";
+import Icon from "../svgs/Icons";
 
 interface VideoCardProps {
   video: VideoData;
@@ -23,16 +23,27 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
       <div className="flex flex-col gap-y-3 justify-between w-full">
         <div className="flex flex-row gap-2 text-blue-500">
           <Icon name="linkIcon" className="max-w-4 max-h-4" fill="#9DA1A5" />
-          <a href={video.url} target="_blank" rel="noopener noreferrer" className="truncate hover:underline max-w-3xs">
+          <a
+            href={video.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="truncate hover:underline max-w-3xs"
+          >
             {video.url}
           </a>
-          <button onClick={() => navigator.clipboard.writeText(video.url)} className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={() => navigator.clipboard.writeText(video.url)}
+            className="text-gray-400 hover:text-gray-600"
+          >
             <Copy size={16} />
           </button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {video.tags.map(tag => (
-            <span key={tag} className="bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
+          {video.tags.map((tag) => (
+            <span
+              key={tag}
+              className="bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700"
+            >
               {tag}
             </span>
           ))}

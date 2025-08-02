@@ -29,6 +29,7 @@ export const authRouter = router({
       try {
         const response = await apiRequest.login(input);
         const token = response.token;
+        console.log(token, "tokentokentokentokentoken");
 
         if (token) {
           ctx.resHeaders.append(

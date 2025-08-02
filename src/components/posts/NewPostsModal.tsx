@@ -1,7 +1,6 @@
 "use client";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useState } from "react";
 import { Sheet } from "../modals/Sheet";
 import Icon from "../svgs/Icons";
 import { VideoStep } from "../restaurants/VideoStep";
@@ -16,7 +15,7 @@ interface NewPostsSheetProps {
 }
 
 export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
-  const { videos } = useVideoStore();
+  const { videos, resetVideos, setActiveVideoUrl } = useVideoStore();
   const locationId = "6b117b6d-810f-4967-84de-a530a2d87dc1";
 
   const videosData = videos.map((video) => ({
@@ -39,6 +38,7 @@ export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
     trpc.post.createBulkPost.useMutation({
       onSuccess: () => {
         successToast("Post created successfully!");
+        handleClose();
       },
       onError: (error) => {
         errorToast(error.message);
@@ -47,6 +47,12 @@ export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
 
   const onSubmit = () => {
     createBulkPost(createBulkPostData);
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
+    setActiveVideoUrl(null);
+    resetVideos();
   };
 
   return (
@@ -61,7 +67,7 @@ export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">New Post</h2>
           <button
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors hover:cursor-pointer"
             aria-label="Close"
           >

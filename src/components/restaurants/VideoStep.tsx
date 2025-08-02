@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Link, X, Plus } from "lucide-react";
+import { Link, X, Plus, Loader } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { VideoCard } from "./VideoCard";
 import { trpc } from "@/lib/trpc-client";
@@ -112,7 +112,6 @@ export const VideoStep = ({
         setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
         event.currentTarget.value = "";
       }
-      handleAddOrUpdateVideo();
     }
   };
 
@@ -123,30 +122,34 @@ export const VideoStep = ({
     });
   };
 
-  const handleAddOrUpdateVideo = () => {
+  const handleInputError = () => {
     if (!currentVideo.url) {
       errorToast("Please add a video URL.");
       return;
     }
 
+    if (currentVideo.tags.length === 0) {
+      errorToast("Each video must have at least one tags.");
+      return;
+    }
+  };
+
+  const handleAddOrUpdateVideo = async () => {
+    await handleInputError();
     const videoData = {
       url: currentVideo.url,
-      tags: currentVideo.tags,
+      tags: currentVideo.tags || [],
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
       locationName: currentVideo.locationName,
-      rating: currentVideo.rating,
+      rating: currentVideo.rating || 0,
     };
 
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
       addVideo(videoData);
-      if (currentVideo.tags.length === 1) {
-        errorToast("Each video must have at least one tags.");
-        return;
-      }
     }
 
     setCurrentVideo({
@@ -208,7 +211,7 @@ export const VideoStep = ({
                 e.preventDefault();
                 // Create a synthetic event that matches the expected input change event
                 const syntheticEvent = {
-                  target: { value: e.currentTarget.value }
+                  target: { value: e.currentTarget.value },
                 } as React.ChangeEvent<HTMLInputElement>;
                 handleUrlChange(syntheticEvent);
               }
@@ -247,11 +250,11 @@ export const VideoStep = ({
                 </div>
               ))}
             </div>
-            {editingVideoId ? (
+            {editingVideoId && videos?.length >= 0 ? (
               <div className="mt-6 pt-4 flex justify-left">
                 <button
                   onClick={handleAddOrUpdateVideo}
-                  className="flex items-center gap-2 text-white bg-[#0070F3] font-semibold"
+                  className="flex items-center gap-2 text-white bg-[#0070F3] rounded-lg p-4 font-semibold"
                 >
                   Update video
                 </button>
@@ -302,13 +305,20 @@ export const VideoStep = ({
           onClick={onSubmit}
           type="submit"
           disabled={videos.length === 0 || isLoading}
-          className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-            videos.length === 0
+          className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
+            videos.length === 0 || isLoading
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
           }`}
         >
-          Submit
+          {isLoading ? (
+            <>
+              <Loader className="animate-spin mr-2" />
+              <p>Submit</p>
+            </>
+          ) : (
+            "Submit"
+          )}
         </button>
       )}
     </div>

@@ -83,7 +83,7 @@ export const EditWorkingHoursModal = ({
       ...prev,
       [day]: {
         ...prev[day],
-        isOpen: !prev[day].isOpen,
+        isOpen: !prev[day]?.isOpen,
       },
     }));
   };
@@ -96,7 +96,7 @@ export const EditWorkingHoursModal = ({
       ...prev,
       [day]: {
         ...prev[day],
-        isAllDay: !prev[day].isAllDay,
+        isAllDay: !prev[day]?.isAllDay,
       },
     }));
   };
@@ -181,10 +181,10 @@ export const EditWorkingHoursModal = ({
                   </span>
                   <span
                     className={`text-sm font-medium ${
-                      hours[day].isOpen ? "text-green-600" : "text-red-600"
+                      hours[day]?.isOpen ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    {hours[day].isOpen ? "Open" : "Closed"}
+                    {hours[day]?.isOpen ? "Open" : "Closed"}
                   </span>
                 </div>
 
@@ -192,19 +192,19 @@ export const EditWorkingHoursModal = ({
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    checked={hours[day].isOpen}
+                    checked={hours[day]?.isOpen}
                     onChange={() => toggleDayOpen(day)}
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
 
-              {hours[day].isOpen && (
+              {hours[day]?.isOpen && (
                 <div className="ml-28 space-y-2">
                   <label className="flex items-center gap-2 text-sm text-gray-600">
                     <input
                       type="checkbox"
-                      checked={hours[day].isAllDay}
+                      checked={hours[day]?.isAllDay}
                       onChange={() => toggleAllDay(day)}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
@@ -213,7 +213,7 @@ export const EditWorkingHoursModal = ({
 
                   {!hours[day].isAllDay && (
                     <div className="space-y-2">
-                      {hours[day].slots.map((slot, index) => (
+                      {hours[day]?.slots.map((slot, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <input
                             type="time"
