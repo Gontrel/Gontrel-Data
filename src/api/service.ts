@@ -16,6 +16,7 @@ import {
   FetchAnalystLocationsRequest,
   UpdatePostRequest,
   CreateBulkPostRequest,
+  GetPostsResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -172,7 +173,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
   // getPosts
-  getPosts = async (data: FetchAdminPostsRequest) => {
+  getPosts = async (data: FetchAdminPostsRequest): Promise<GetPostsResponse> => {
     const params = this.buildSearchParams(data);
     try {
       const response = await this.authenticatedClient.get(

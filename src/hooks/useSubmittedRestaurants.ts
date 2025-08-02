@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { SubmittedRestaurantType } from '@/types/restaurant';
-import { TableStatusEnum } from '@/types/enums';
+import { ApprovalStatusEnum } from '@/types/enums';
 import { useRestaurantMutations } from './useRestaurantMutations';
 
 
@@ -8,27 +8,27 @@ import { useRestaurantMutations } from './useRestaurantMutations';
  * Type for keys of SubmittedRestaurantType that have a status property
  */
 export type SubmittedRestaurantStatusKey = {
-  [K in keyof SubmittedRestaurantType]: SubmittedRestaurantType[K] extends { status: TableStatusEnum } ? K : never
+  [K in keyof SubmittedRestaurantType]: SubmittedRestaurantType[K] extends { status: ApprovalStatusEnum } ? K : never
 }[keyof SubmittedRestaurantType];
 
 /**
  * Type guard to check if an object has a status property
  */
-const hasStatus = (obj: unknown): obj is { status: TableStatusEnum } => {
+const hasStatus = (obj: unknown): obj is { status: ApprovalStatusEnum } => {
   return typeof obj === 'object' && obj !== null && 'status' in obj;
 };
 
 /**
  * Updates the status of a single object with status property
  */
-const updateObjectStatus = (obj: { status: TableStatusEnum }, newStatus: TableStatusEnum): void => {
+const updateObjectStatus = (obj: { status: ApprovalStatusEnum }, newStatus: ApprovalStatusEnum): void => {
   obj.status = newStatus;
 };
 
 /**
  * Updates the status of an array of objects that have status properties
  */
-const updateArrayStatus = (arr: unknown[], newStatus: TableStatusEnum): void => {
+const updateArrayStatus = (arr: unknown[], newStatus: ApprovalStatusEnum): void => {
   arr.forEach((item) => {
     if (hasStatus(item)) {
       updateObjectStatus(item, newStatus);
@@ -39,7 +39,7 @@ const updateArrayStatus = (arr: unknown[], newStatus: TableStatusEnum): void => 
 /**
  * Updates all status properties in a restaurant object
  */
-const updateAllStatuses = (restaurant: SubmittedRestaurantType, newStatus: TableStatusEnum): void => {
+const updateAllStatuses = (restaurant: SubmittedRestaurantType, newStatus: ApprovalStatusEnum): void => {
   Object.values(restaurant).forEach((value) => {
     if (hasStatus(value)) {
       updateObjectStatus(value, newStatus);
@@ -55,15 +55,15 @@ const updateAllStatuses = (restaurant: SubmittedRestaurantType, newStatus: Table
 const updatePropertyStatus =(
   restaurant: SubmittedRestaurantType,
   propertyKey: SubmittedRestaurantStatusKey,
-  newStatus: TableStatusEnum
+  newStatus: ApprovalStatusEnum
 ): SubmittedRestaurantType => {
-  const propertyValue = restaurant[propertyKey] as { status: TableStatusEnum };
+  const propertyValue = restaurant[propertyKey] as { status: ApprovalStatusEnum };
 
   return {
     ...restaurant,
     [propertyKey]: {
       ...propertyValue,
-      status: propertyValue.status === newStatus ? TableStatusEnum.PENDING : newStatus
+      status: propertyValue.status === newStatus ? ApprovalStatusEnum.PENDING : newStatus
     }
   };
 };
@@ -84,7 +84,7 @@ export const useSubmittedRestaurants = () => {
 
   const updateRestaurantStatus = useCallback((
     restaurantId: string,
-    newStatus: TableStatusEnum,
+    newStatus: ApprovalStatusEnum,
     propertyKey?: SubmittedRestaurantStatusKey
   ) => {
     setRestaurants(prevRestaurants =>
@@ -106,7 +106,7 @@ export const useSubmittedRestaurants = () => {
 
   const handleResubmit = useCallback((restaurant: SubmittedRestaurantType) => {
     // Update local state immediately for optimistic UI
-    updateRestaurantStatus(restaurant.id, TableStatusEnum.PENDING);
+    updateRestaurantStatus(restaurant.id, ApprovalStatusEnum.PENDING);
 
     // Trigger mutation with proper query invalidation
     resubmitRestaurantMutation(restaurant);

@@ -1,14 +1,12 @@
 import { useCallback } from 'react';
 import { PendingRestaurantType } from '@/types/restaurant';
-import { TableStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { ManagerTableTabsEnum } from '@/types/enums';
 import { useRestaurantMutations } from './useRestaurantMutations';
 
 /**
  * Type for keys of PendingRestaurantType that have a status property
  */
-export type PendingRestaurantStatusKey = {
-  [K in keyof PendingRestaurantType]: PendingRestaurantType[K] extends { status: TableStatusEnum } ? K : never
-}[keyof PendingRestaurantType];
+export type PendingRestaurantStatusKey = "address" | "menu" | "reservation" | "posts";
 
 /**
  * Custom hook for managing pending restaurants state and actions

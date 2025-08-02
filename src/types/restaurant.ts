@@ -1,4 +1,4 @@
-import { TableStatusEnum, AdminRoleEnum } from "./enums";
+import { ApprovalStatusEnum, AdminRoleEnum } from "./enums";
 import {
   Menu,
   OpeningHours,
@@ -7,7 +7,7 @@ import {
   Pagination,
   Meta,
   Address,
-} from "@/interfaces/restaurants";
+} from "@/interfaces";
 import { Post } from "@/interfaces/api";
 
 /**
@@ -35,7 +35,7 @@ export type ActiveRestaurantType = {
   toilets: boolean;
   type: string;
   website: string;
-  status: string;
+  status: ApprovalStatusEnum;
   comment: string | null;
   admin: Admin;
   posts: Post[];
@@ -58,7 +58,7 @@ export type VideoType = {
   videoUrl: string;
   thumbUrl: string;
   postedAt: string | null;
-  status: TableStatusEnum;
+  status: ApprovalStatusEnum;
   source: string;
   tags: Array<{
     id: string;

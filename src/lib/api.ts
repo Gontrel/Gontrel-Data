@@ -1,7 +1,7 @@
 import { PaginatedResponse, ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
 import { mockPendingRestaurants, mockPendingVideos, mockSubmittedRestaurants, mockSubmittedVideos, mockActiveRestaurants } from '@/data/mockRestaurants';
 import { mockUsers, getCurrentUser } from '@/data/mockUsers';
-import { TableStatusEnum, ManagerTableTabsEnum, AnalystTableTabsEnum } from '@/types/enums';
+import { ApprovalStatusEnum, ManagerTableTabsEnum, AnalystTableTabsEnum } from '@/types/enums';
 
 /**
  * Simulate API delay for realistic development experience
@@ -33,7 +33,7 @@ export class RestaurantApi {
   static async updateRestaurantStatus(params: {
     id: string;
     propertyKey?: 'address' | 'menu' | 'reservation' | 'posts';
-    newStatus: TableStatusEnum;
+    newStatus: ApprovalStatusEnum;
     tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
   }): Promise<{ success: boolean }> {
     await delay(300); // Simulate network delay
@@ -41,8 +41,8 @@ export class RestaurantApi {
     const { id, propertyKey, newStatus, tableType } = params;
 
     // Helper function to toggle status
-    const toggleStatus = (currentStatus: TableStatusEnum, targetStatus: TableStatusEnum): TableStatusEnum => {
-      return currentStatus === targetStatus ? TableStatusEnum.PENDING : targetStatus;
+    const toggleStatus = (currentStatus: ApprovalStatusEnum, targetStatus: ApprovalStatusEnum): ApprovalStatusEnum => {
+      return currentStatus === targetStatus ? ApprovalStatusEnum.PENDING : targetStatus;
     };
 
     // Update the appropriate mock data based on table type
@@ -53,23 +53,23 @@ export class RestaurantApi {
           if (propertyKey) {
             // Update specific property
             if (propertyKey === 'address') {
-              pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status as TableStatusEnum, newStatus);
+              pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status as ApprovalStatusEnum, newStatus);
             } else if (propertyKey === 'menu') {
-              pendingRestaurant.menu.status = toggleStatus(pendingRestaurant.menu.status as TableStatusEnum, newStatus);
+              pendingRestaurant.menu.status = toggleStatus(pendingRestaurant.menu.status as ApprovalStatusEnum, newStatus);
             } else if (propertyKey === 'reservation') {
-              pendingRestaurant.reservation.status = toggleStatus(pendingRestaurant.reservation.status as TableStatusEnum, newStatus);
+              pendingRestaurant.reservation.status = toggleStatus(pendingRestaurant.reservation.status as ApprovalStatusEnum, newStatus);
             } else if (propertyKey === 'posts') {
               pendingRestaurant.posts.forEach(post => {
-                post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
+                post.status = toggleStatus(post.status as ApprovalStatusEnum, newStatus);
               });
             }
           } else {
             // Update all properties
-            pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status as TableStatusEnum, newStatus);
-            pendingRestaurant.menu.status = toggleStatus(pendingRestaurant.menu.status as TableStatusEnum, newStatus);
-            pendingRestaurant.reservation.status = toggleStatus(pendingRestaurant.reservation.status as TableStatusEnum, newStatus);
+            pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status as ApprovalStatusEnum, newStatus);
+            pendingRestaurant.menu.status = toggleStatus(pendingRestaurant.menu.status as ApprovalStatusEnum, newStatus);
+            pendingRestaurant.reservation.status = toggleStatus(pendingRestaurant.reservation.status as ApprovalStatusEnum, newStatus);
             pendingRestaurant.posts.forEach(post => {
-              post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
+              post.status = toggleStatus(post.status as ApprovalStatusEnum, newStatus);
             });
           }
         }
@@ -79,7 +79,7 @@ export class RestaurantApi {
         const pendingVideo = mockPendingVideos.find(v => v.id === id);
         if (pendingVideo) {
           pendingVideo.posts.forEach(video => {
-            video.status = toggleStatus(video.status as TableStatusEnum, newStatus);
+            video.status = toggleStatus(video.status as ApprovalStatusEnum, newStatus);
           });
         }
         break;
@@ -90,23 +90,23 @@ export class RestaurantApi {
           if (propertyKey) {
             // Update specific property
             if (propertyKey === 'address') {
-              submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status as TableStatusEnum, newStatus);
+              submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status as ApprovalStatusEnum, newStatus);
             } else if (propertyKey === 'menu') {
-              submittedRestaurant.menu.status = toggleStatus(submittedRestaurant.menu.status as TableStatusEnum, newStatus);
+              submittedRestaurant.menu.status = toggleStatus(submittedRestaurant.menu.status as ApprovalStatusEnum, newStatus);
             } else if (propertyKey === 'reservation') {
-              submittedRestaurant.reservation.status = toggleStatus(submittedRestaurant.reservation.status as TableStatusEnum, newStatus);
+              submittedRestaurant.reservation.status = toggleStatus(submittedRestaurant.reservation.status as ApprovalStatusEnum, newStatus);
             } else if (propertyKey === 'posts') {
               submittedRestaurant.posts.forEach(post => {
-                post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
+                post.status = toggleStatus(post.status as ApprovalStatusEnum, newStatus);
               });
             }
           } else {
             // Update all properties
-            submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status as TableStatusEnum, newStatus);
-            submittedRestaurant.menu.status = toggleStatus(submittedRestaurant.menu.status as TableStatusEnum, newStatus);
-            submittedRestaurant.reservation.status = toggleStatus(submittedRestaurant.reservation.status as TableStatusEnum, newStatus);
+            submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status as ApprovalStatusEnum, newStatus);
+            submittedRestaurant.menu.status = toggleStatus(submittedRestaurant.menu.status as ApprovalStatusEnum, newStatus);
+            submittedRestaurant.reservation.status = toggleStatus(submittedRestaurant.reservation.status as ApprovalStatusEnum, newStatus);
             submittedRestaurant.posts.forEach(post => {
-              post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
+              post.status = toggleStatus(post.status as ApprovalStatusEnum, newStatus);
             });
           }
         }
@@ -116,7 +116,7 @@ export class RestaurantApi {
         const submittedVideo = mockSubmittedVideos.find(v => v.id === id);
         if (submittedVideo) {
           submittedVideo.posts.forEach(post => {
-            post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
+            post.status = toggleStatus(post.status as ApprovalStatusEnum, newStatus);
           });
         }
         break;

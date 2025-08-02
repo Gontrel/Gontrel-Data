@@ -1,4 +1,4 @@
-import { IPaginatedRes, ApiLocation, Post, Admin, DashboardStats, StaffStats, LocationStats } from './api';
+import { IPaginatedRes, ApiLocation, Post, Admin, DashboardStats, StaffStats, LocationStats, Tag, Videos, OpeningHours, Reservation, Menu, Address } from './api';
 
 // Authentication responses
 export interface LoginResponse {
@@ -53,7 +53,37 @@ export interface ApproveLocationResponse {
 }
 
 // Post management responses
-export type GetPostsResponse = IPaginatedRes<Post>;
+export type GetPostsResponse = IPaginatedRes<{
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  address: Address;
+  lat: number;
+  lng: number;
+  menu: Menu;
+  name: string;
+  openingHours: OpeningHours[];
+  photos: string[];
+  phoneNumber: string;
+  priceLevel: number;
+  rating: number;
+  reservation: Reservation;
+  toilets: boolean;
+  type: string;
+  website: string;
+  status: string;
+  comment: string | null;
+  mapLink: string | null;
+  country: string;
+  admin: Admin;
+  posts: Post[];
+  tags: Tag[];
+  videos: Videos;
+}>;
 
 export interface GetPostByIdResponse {
   post: Post;

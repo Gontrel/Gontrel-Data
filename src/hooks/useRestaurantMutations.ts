@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AnalystTableTabsEnum, ManagerTableTabsEnum, TableStatusEnum } from '@/types/enums';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum, ApprovalStatusEnum } from '@/types/enums';
 import { PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
 import { RestaurantApi } from '@/lib/api';
 
@@ -20,7 +20,7 @@ export const useRestaurantMutations = () => {
       propertyKey
     }: {
       restaurantId: string;
-      newStatus: TableStatusEnum;
+      newStatus: ApprovalStatusEnum;
       tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
       propertyKey?: 'address' | 'menu' | 'reservation' | 'posts';
     }) => {
@@ -90,7 +90,7 @@ export const useRestaurantMutations = () => {
   const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts') => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.id,
-      newStatus: TableStatusEnum.APPROVED,
+      newStatus: ApprovalStatusEnum.APPROVED,
       tableType,
       propertyKey
     });
@@ -102,7 +102,7 @@ export const useRestaurantMutations = () => {
   const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts') => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.id,
-      newStatus: TableStatusEnum.DECLINED,
+      newStatus: ApprovalStatusEnum.REJECTED,
       tableType,
       propertyKey
     });
@@ -114,7 +114,7 @@ export const useRestaurantMutations = () => {
   const approveVideo = (video: PendingVideoType) => {
     return updateRestaurantStatus.mutate({
       restaurantId: video.restaurantId,
-      newStatus: TableStatusEnum.APPROVED,
+      newStatus: ApprovalStatusEnum.APPROVED,
       tableType: ManagerTableTabsEnum.PENDING_VIDEOS
     });
   };
@@ -125,7 +125,7 @@ export const useRestaurantMutations = () => {
   const declineVideo = (video: PendingVideoType) => {
     return updateRestaurantStatus.mutate({
       restaurantId: video.restaurantId,
-      newStatus: TableStatusEnum.DECLINED,
+      newStatus: ApprovalStatusEnum.REJECTED,
       tableType: ManagerTableTabsEnum.PENDING_VIDEOS
     });
   };
@@ -136,7 +136,7 @@ export const useRestaurantMutations = () => {
   const resubmitRestaurant = (restaurant: SubmittedRestaurantType) => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.id,
-      newStatus: TableStatusEnum.PENDING,
+      newStatus: ApprovalStatusEnum.PENDING,
       tableType: AnalystTableTabsEnum.SUBMITTED_RESTAURANTS
     });
   };
@@ -147,7 +147,7 @@ export const useRestaurantMutations = () => {
   const resubmitVideo = (video: SubmittedVideoType) => {
     return updateRestaurantStatus.mutate({
       restaurantId: video.id,
-      newStatus: TableStatusEnum.PENDING,
+      newStatus: ApprovalStatusEnum.PENDING,
       tableType: AnalystTableTabsEnum.SUBMITTED_VIDEOS
     });
   };

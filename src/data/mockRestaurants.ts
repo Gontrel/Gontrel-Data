@@ -1,4 +1,4 @@
-import { TableStatusEnum } from '@/types/enums';
+import { ApprovalStatusEnum } from '@/types/enums';
 import { ActiveRestaurantType, PendingRestaurantType, PendingVideoType, SubmittedRestaurantType, SubmittedVideoType } from '@/types/restaurant';
 
 /**
@@ -53,7 +53,7 @@ export const mockActiveRestaurants: ActiveRestaurantType[] = [
     toilets: true,
     type: 'Fine Dining',
     website: 'https://www.chapteronerestaurant.com',
-    status: 'ACTIVE',
+    status: ApprovalStatusEnum.APPROVED,
     comment: null,
     admin: {
       id: 'admin-001',
@@ -113,13 +113,13 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
     firebaseId: null,
     name: 'The Ivy Dublin',
     address: {
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       content: '13-17 Dawson Street, Dublin 2'
     },
     lat: 53.3407,
     lng: -6.2574,
     menu: {
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       content: 'https://www.theivydublin.com/menu'
     },
     openingHours: [
@@ -138,7 +138,7 @@ export const mockPendingRestaurants: PendingRestaurantType[] = [
     priceLevel: 3,
     rating: 4.5,
     reservation: {
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       content: 'https://www.theivydublin.com/reservations'
     },
     toilets: true,
@@ -197,7 +197,7 @@ export const mockPendingVideos: PendingVideoType[] = [
       thumbUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
       postedAt: null,
       source: 'youtube',
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       tags: [
         {
           id: 'tag-023',
@@ -266,13 +266,13 @@ export const mockSubmittedRestaurants: SubmittedRestaurantType[] = [
     firebaseId: null,
     name: 'The Old Spot',
     address: {
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       content: '14 Bath Avenue, Dublin 4'
     },
     lat: 53.3271,
     lng: -6.2442,
     menu: {
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       content: 'https://www.theoldspot.ie/menu'
     },
     openingHours: [
@@ -291,7 +291,7 @@ export const mockSubmittedRestaurants: SubmittedRestaurantType[] = [
     priceLevel: 2,
     rating: 4.3,
     reservation: {
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       content: 'https://www.theoldspot.ie/book'
     },
     toilets: true,
@@ -332,7 +332,7 @@ export const mockSubmittedRestaurants: SubmittedRestaurantType[] = [
         thumbUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
         postedAt: null,
         source: 'youtube',
-        status: TableStatusEnum.PENDING,
+        status: ApprovalStatusEnum.PENDING,
         tags: [
           {
             id: 'tag-047',
@@ -414,7 +414,7 @@ export const mockSubmittedVideos: SubmittedVideoType[] = [
       thumbUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',
       postedAt: null,
       source: 'youtube',
-      status: TableStatusEnum.PENDING,
+      status: ApprovalStatusEnum.PENDING,
       tags: [
         {
           id: 'tag-069',

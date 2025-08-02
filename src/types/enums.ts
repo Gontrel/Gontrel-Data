@@ -31,12 +31,6 @@ export enum AnalystTableTabsEnum {
   SUBMITTED_VIDEOS = 'submitted_videos'
 }
 
-export enum TableStatusEnum {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  DECLINED = 'declined'
-}
-
 export enum TrendEnum {
   POPULAR_SEARCHES = 'Popular searches',
   TRENDING_TIKTOK = 'Trending TikTok #',

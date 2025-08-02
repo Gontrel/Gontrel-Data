@@ -43,6 +43,7 @@ const PendingVideos = ({
     return Math.ceil(restaurantsData.pagination.total / pageSize);
   }, [restaurantsData?.pagination?.total, pageSize]);
 
+  console.log(restaurantsData);
   //TODO: wait till the backend change the format
   const modifiedData: PendingVideoType[] = restaurantsData
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

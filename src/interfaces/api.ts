@@ -2,14 +2,16 @@ import { ApprovalStatusEnum } from '@/types/enums';
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
-  pagination: {
-    lastTokenId?: string | null;
-    total?: number;
-    perPage?: number;
-    pageSize: number;
-    pageNumber?: number;
-  };
+  pagination: Pagination
   meta: Record<string, unknown> | undefined;
+}
+
+export interface Pagination {
+  total: number;
+  perPage: number;
+  pageNumber: number;
+  pageSize: number;
+  lastTokenId: string;
 }
 
 export interface IAdminApproval {
@@ -40,7 +42,7 @@ export interface LocationTag {
 }
 
 export interface Admin {
-  id: string;
+   id: string;
   createdAt: string;
   modifiedAt: string;
   deletedAt: string | null;
@@ -56,8 +58,24 @@ export interface Admin {
   role: string;
 }
 
+export interface Tag {
+ id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string;
+  count: number;
+  name: string;
+  imageUrl: string;
+  resource: string;
+  type: string;
+  isTaste: boolean;
+}
+
 export interface Post {
-  id: string;
+   id: string;
   createdAt: string;
   modifiedAt: string;
   deletedAt: string | null;
@@ -70,12 +88,40 @@ export interface Post {
   thumbUrl: string;
   postedAt: string | null;
   status: string;
+  source: string;
+  tags: Tag[];
 }
 
+export interface OpeningHours {
+  dayOfTheWeek: string;
+  opensAt: number;
+  closesAt: number;
+}
+
+export interface Videos {
+  total: number;
+  approved: number;
+  pending: number;
+  declined: number;
+}
 
 export interface Analytics {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+  [key: string]: unknown;
+}
+
+export interface Menu {
+  status: string;
+  content: string;
+}
+
+export interface Reservation {
+  status: string;
+  content: string;
+}
+
+export interface Address {
+  status: string;
+  content: string;
 }
 
 export interface ApiLocation {

@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { useRestaurants } from "@/hooks/useRestaurants";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ManagerTableTabsEnum, TableStatusEnum } from "@/types";
+import { ManagerTableTabsEnum, ApprovalStatusEnum } from "@/types";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
 import { PendingRestaurantType } from "@/types/restaurant";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,6 +65,7 @@ const PendingRestaurants = ({
     return Math.ceil(restaurantsData.pagination.total / pageSize);
   }, [restaurantsData?.pagination?.total, pageSize]);
 
+  console.log(restaurantsData);
   return (
     <RestaurantTable<PendingRestaurantType>
       restaurants={restaurantsData?.data || []}

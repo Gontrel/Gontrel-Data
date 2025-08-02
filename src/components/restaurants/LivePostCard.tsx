@@ -32,7 +32,9 @@ export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCar
       videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       thumbUrl: "https://example.com/thumbnail.jpg",
       postedAt: "2024-01-15T14:30:00Z",
-      status: "pending"
+      status: "pending",
+      source: "tiktok",
+      tags: []
     };
   }
 

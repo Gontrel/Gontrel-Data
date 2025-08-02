@@ -20,7 +20,7 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
   // Configuration to switch between mock and TRPC implementations
   const mode = "trpc" as "mock" | "trpc";
 
-  const mockResult = useRestaurantsMock(params as Parameters<typeof useRestaurantsMock>[0]);
+  const mockResult = useRestaurantsMock(params);
 
   const trpcResult = useRestaurantsTRPC(params);
 
@@ -28,5 +28,6 @@ export function useRestaurants(params: RestaurantQueryParams & { tableId: Manage
     return mockResult;
   }
 
+  console.log(trpcResult.data);
   return trpcResult;
 }

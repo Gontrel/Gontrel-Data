@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 import { PendingVideoType } from '@/types/restaurant';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { TableStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { ApprovalStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
 import { useRestaurantMutations } from './useRestaurantMutations';
 
 export type PendingVideoStatusKey = {
-  [K in keyof PendingVideoType]: PendingVideoType[K] extends { status: TableStatusEnum } ? K : never
+  [K in keyof PendingVideoType]: PendingVideoType[K] extends { status: ApprovalStatusEnum } ? K : never
 }[keyof PendingVideoType];
 
 /**
