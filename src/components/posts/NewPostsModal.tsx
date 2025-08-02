@@ -77,7 +77,7 @@ export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
         <p className="text-gray-500 mt-1">Create a new post</p>
 
         <VideoStep
-          onNext={onSubmit}
+          onNext={onSubmit} 
           onPrevious={onSubmit}
           onSubmit={onSubmit}
           isLoading={isLoading}
