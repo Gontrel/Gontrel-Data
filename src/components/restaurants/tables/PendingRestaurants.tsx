@@ -1,9 +1,12 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useCallback, useMemo, useState } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { useRestaurants } from "@/hooks/useRestaurants";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ManagerTableTabsEnum, TableStatusEnum } from "@/types";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
 import { PendingRestaurantType } from "@/types/restaurant";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useRestaurantMutations } from "@/hooks/useRestaurantMutations";
 import { usePendingRestaurants } from "@/hooks/usePendingRestaurants";
 

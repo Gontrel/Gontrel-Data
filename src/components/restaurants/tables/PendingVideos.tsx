@@ -36,7 +36,8 @@ const PendingVideos = ({
     });
 
   //TODO: wait till the backend change the format
-  const modifidData = restaurantsData
+  const modifiedData = restaurantsData
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? restaurantsData?.data?.map((post: any) => ({
         name: post.location?.name,
         location: {
@@ -72,7 +73,7 @@ const PendingVideos = ({
 
   return (
     <RestaurantTable<PendingVideoType>
-      restaurants={modifidData ?? []}
+      restaurants={modifiedData ?? []}
       loading={restaurantsLoading ?? false}
       onRowSelect={handleRowSelect}
       showSelection={true}

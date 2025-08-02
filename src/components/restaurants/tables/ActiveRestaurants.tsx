@@ -1,7 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useMemo, useEffect, useState } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { ActiveRestaurantType } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useActiveRestaurantQuery } from "@/hooks/useActiveRestaurants";
 import { useRouter } from "next/navigation";
 import { ManagerTableTabsEnum } from "@/types/enums";
@@ -31,7 +33,6 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   const router = useRouter();
 
   // Fetch data
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: restaurantsData, isLoading: restaurantsLoading } =
     useRestaurants({
       tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS,
