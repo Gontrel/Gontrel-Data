@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Globe, MapPin, } from "lucide-react";
+import { Globe, MapPin } from "lucide-react";
 import { EditWorkingHoursModal, WorkingHours } from "./EditWorkingHoursModal";
 import Icon from "../svgs/Icons";
 import logo from "@/assets/images/logo.png";
-import { transformToModalHours, } from "@/lib/utils";
+import { transformToModalHours } from "@/lib/utils";
 
 export type RestaurantData = {
   placeId: string;
@@ -118,7 +118,6 @@ export const RestaurantConfirmation = ({
           <div className="space-y-3">
             {daysOfWeek.map((day) => {
               const hours = restaurant.workingHours[day];
-              console.log(hours, "hours");
               return (
                 <div
                   key={day}

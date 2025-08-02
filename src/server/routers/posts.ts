@@ -1,30 +1,23 @@
-import { publicProcedure, router } from "@/lib/trpc";
+import { protectedProcedure, publicProcedure, router } from "@/lib/trpc";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import APIRequest from "@/api/service";
 import { getErrorMessage } from "./auth";
-
-
-const postSchema = z.object({
-  isVerified: z.boolean().optional(),
-  tiktokLink: z.string().optional(),
-  videoUrl: z.string().optional(),
-  thumbUrl: z.string().optional(),
-  locationName: z.string().optional(),
-  rating: z.number().optional(),
-  tags: z.array(z.string().optional()).optional(),
-});
-// .array();// TODO: change to array after the endpoint is changes
-
+import {
+  fetchAdminPostsSchema,
+  fetchPostByIdSchema,
+  updatePostSchema,
+  createPostSchema,
+  createBulkPostSchema,
+} from "./schemas";
 
 export const postRouter = router({
   createPost: publicProcedure
-    .input(postSchema)
+    .input(createPostSchema)
     .mutation(async ({ input, ctx }) => {
-      
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.createPost(input);
+        console.log("responseresponseCreatePost", response);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -35,11 +28,13 @@ export const postRouter = router({
       }
     }),
 
-  getAllPosts: publicProcedure
-    .query(async ({ ctx }) => {
+  createBulkPost: publicProcedure
+    .input(createBulkPostSchema)
+    .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.getAllPosts();
+        const response = await apiRequest.createBulkPost(input);
+        console.log("responseresponseCreatePost", response);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -50,16 +45,15 @@ export const postRouter = router({
       }
     }),
 
-    getAPost: publicProcedure
-    .input(
-      z.object({
-        postId: z.string(),
-      })
-    )
+  // Posts/Content management (protected)
+  getPosts: protectedProcedure
+    .input(fetchAdminPostsSchema)
     .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.getAPost(input);
+        console.log("inputinputinputinputinputinput", input);
+        const response = await apiRequest.getPosts(input);
+        console.log("responseresponsegetPostsgetPostsPost", response);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -70,30 +64,51 @@ export const postRouter = router({
       }
     }),
 
-  getPosts: publicProcedure
-    .input(
-      z.object({
-        page: z.number().default(1),
-        pageSize: z.number().default(10),
-        searchTerm: z.string().optional(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const { page, pageSize, searchTerm } = input;
-      const apiRequest = new APIRequest(ctx.req.headers);
-
+  getPostById: protectedProcedure
+    .input(fetchPostByIdSchema)
+    .query(async ({ input }) => {
+      const apiRequest = new APIRequest();
       try {
-        // Fetch data from API endpoint
-        const response = await apiRequest.getAllPosts();
-
-        if (!response.data) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return response.data;
+        const response = await apiRequest.getPostById(input);
+        return response;
       } catch (error) {
-        console.error("Error fetching restaurants:", error);
-        throw error;
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
       }
     }),
+
+  updatePost: protectedProcedure
+    .input(updatePostSchema)
+    .mutation(async ({ input }) => {
+      const apiRequest = new APIRequest();
+      try {
+        const response = await apiRequest.updatePost(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  // deletePost: protectedProcedure
+  //   .input(z.object({ id: z.string() }))
+  //   .mutation(async ({ input }) => {
+  //     const apiRequest = new APIRequest();
+  //     try {
+  //       const response = await apiRequest.deletePost(input.id);
+  //       return response;
+  //     } catch (error) {
+  //       const message = getErrorMessage(error);
+  //       throw new TRPCError({
+  //         code: "INTERNAL_SERVER_ERROR",
+  //         message,
+  //       });
+  //     }
+  //   }),
 });

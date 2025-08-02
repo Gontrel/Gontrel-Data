@@ -89,7 +89,7 @@ export const useRestaurantMutations = () => {
    */
   const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos') => {
     return updateRestaurantStatus.mutate({
-      restaurantId: restaurant.restaurantId,
+      restaurantId: restaurant.id,
       newStatus: TableStatusEnum.APPROVED,
       tableType,
       propertyKey
@@ -101,7 +101,7 @@ export const useRestaurantMutations = () => {
    */
   const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos') => {
     return updateRestaurantStatus.mutate({
-      restaurantId: restaurant.restaurantId,
+      restaurantId: restaurant.id,
       newStatus: TableStatusEnum.DECLINED,
       tableType,
       propertyKey

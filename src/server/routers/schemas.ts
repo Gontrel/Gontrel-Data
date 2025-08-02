@@ -1,4 +1,9 @@
-import { AdminRoleEnum, ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types/enums";
+import {
+  AdminRoleEnum,
+  ApprovalStatusEnum,
+  ApprovalType,
+  DayOfTheWeek,
+} from "@/types/enums";
 import { z } from "zod";
 
 // ============================================================================
@@ -89,8 +94,8 @@ export const fetchAdminPostsSchema = baseQuerySchema.extend({
  * GET /admin-post-by-id - FetchPostByIdRequest
  */
 export const fetchPostByIdSchema = z.object({
-  userId: z.string().uuid().optional(),
-  postId: z.string().uuid(),
+  userId: z.string().optional(),
+  postId: z.string(),
 });
 
 /**
@@ -116,16 +121,21 @@ export const createPostSchema = z.object({
  */
 export const createBulkPostSchema = z.object({
   locationId: z.string().optional(),
-  posts: z.array(z.object({
-    tiktokLink: z.string().optional(),
-    firstFrameUrl: z.string().optional(),
-    hlsUrl: z.string().optional(),
-    videoUrl: z.string().min(1),
-    thumbUrl: z.string().optional(),
-    postedAt: z.string().optional(),
-    rating: z.number().optional(),
-    tags: z.array(z.string()).min(1).optional(),
-  })).min(1).optional(),
+  posts: z
+    .array(
+      z.object({
+        tiktokLink: z.string().optional(),
+        firstFrameUrl: z.string().optional(),
+        hlsUrl: z.string().optional(),
+        videoUrl: z.string().min(1),
+        thumbUrl: z.string().optional(),
+        postedAt: z.string().optional(),
+        rating: z.number().optional(),
+        tags: z.array(z.string()).min(1).optional(),
+      })
+    )
+    .min(1)
+    .optional(),
 });
 
 /**
@@ -191,8 +201,9 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   lat: z.number().optional(),
   lng: z.number().optional(),
   radius: z.number().optional(),
-  userId: z.string().uuid().optional(),
-  adminId: z.string().uuid().optional(),
+  userId: z.string().optional(),
+  searchQuery: z.string().optional(),
+  adminId: z.string().optional(),
   tagId: z.string().optional(),
   status: z.nativeEnum(ApprovalStatusEnum).optional(),
   isVerified: z.boolean().optional(),

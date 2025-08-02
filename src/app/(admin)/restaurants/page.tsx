@@ -1,26 +1,30 @@
 "use client";
 
-import { useState, useCallback, useEffect } from 'react';
-import { ManagerTableTabsEnum } from '@/types';
-import { ActionPanel } from '@/components/restaurants/ActionPanel';
-import { TableContent } from '@/components/restaurants/TableContent';
-import { useTabState } from '@/hooks/useTabState';
-import { useTableTotals } from '@/hooks/useTableTotals';
-import { DEFAULT_RESTAURANT_STATS } from '@/constants/';
+import { useState, useCallback, useEffect } from "react";
+import { ManagerTableTabsEnum } from "@/types";
+import { ActionPanel } from "@/components/restaurants/ActionPanel";
+import { TableContent } from "@/components/restaurants/TableContent";
+import { useTabState } from "@/hooks/useTabState";
+import { useTableTotals } from "@/hooks/useTableTotals";
+import { DEFAULT_RESTAURANT_STATS } from "@/constants/";
 import { StatsGrid } from "@/components/ui/StatsGrid";
 import { NewRestaurantSheet } from "@/components/restaurants/NewRestaurantSheet";
 import { PreviewVideoModal } from "@/components/restaurants/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
-import { AdminRoleEnum, AnalystTableTabsEnum } from '@/types/enums';
-import TableTabs from '@/components/restaurants/TableTabs';
+import { AdminRoleEnum, AnalystTableTabsEnum } from "@/types/enums";
+import TableTabs from "@/components/restaurants/TableTabs";
 
 /**
  * Restaurants Page Component
  */
 export default function RestaurantsPage() {
   const [view, setView] = useState<AdminRoleEnum>(AdminRoleEnum.ANALYST);
-  const [activeTab, setActiveTab] = useState<ManagerTableTabsEnum | AnalystTableTabsEnum>(
-    view === AdminRoleEnum.ANALYST ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS : ManagerTableTabsEnum.ACTIVE_RESTAURANTS
+  const [activeTab, setActiveTab] = useState<
+    ManagerTableTabsEnum | AnalystTableTabsEnum
+  >(
+    view === AdminRoleEnum.ANALYST
+      ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS
+      : ManagerTableTabsEnum.ACTIVE_RESTAURANTS
   );
   const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
@@ -55,45 +59,70 @@ export default function RestaurantsPage() {
   /**
    * Creates page numbers object for all tabs
    */
-  const createPageNumbersObject = useCallback(() => ({
-    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage,
-    [ManagerTableTabsEnum.PENDING_RESTAURANTS]: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
-    [ManagerTableTabsEnum.PENDING_VIDEOS]: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
-    [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
-    [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage,
-  }), [tabStates]);
+  const createPageNumbersObject = useCallback(
+    () => ({
+      [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]:
+        tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage,
+      [ManagerTableTabsEnum.PENDING_RESTAURANTS]:
+        tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
+      [ManagerTableTabsEnum.PENDING_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+      [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
+        tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
+      [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
+        tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage,
+    }),
+    [tabStates]
+  );
 
   /**
    * Creates page sizes object for all tabs
    */
-  const createPageSizesObject = useCallback(() => ({
-    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].pageSize,
-    [ManagerTableTabsEnum.PENDING_RESTAURANTS]: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
-    [ManagerTableTabsEnum.PENDING_VIDEOS]: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
-    [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
-    [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].pageSize,
-  }), [tabStates]);
+  const createPageSizesObject = useCallback(
+    () => ({
+      [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]:
+        tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].pageSize,
+      [ManagerTableTabsEnum.PENDING_RESTAURANTS]:
+        tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
+      [ManagerTableTabsEnum.PENDING_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+      [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
+        tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
+      [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
+        tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].pageSize,
+    }),
+    [tabStates]
+  );
 
   /**
    * Handles search term changes for the active tab
    */
-  const handleSearch = useCallback((term: string) => {
-    updateTabSearchTerm(activeTab, term);
-  }, [activeTab, updateTabSearchTerm]);
+  const handleSearch = useCallback(
+    (term: string) => {
+      updateTabSearchTerm(activeTab, term);
+    },
+    [activeTab, updateTabSearchTerm]
+  );
 
   /**
    * Handles analyst filter changes for the active tab
    */
-  const handleAnalystChange = useCallback((analyst: string) => {
-    updateTabAnalyst(activeTab, analyst);
-  }, [activeTab, updateTabAnalyst]);
+  const handleAnalystChange = useCallback(
+    (analyst: string) => {
+      updateTabAnalyst(activeTab, analyst);
+    },
+    [activeTab, updateTabAnalyst]
+  );
 
   /**
    * Handles time period filter changes for the active tab
    */
-  const handleTimePeriodChange = useCallback((period: string) => {
-    updateTabTimePeriod(activeTab, period);
-  }, [activeTab, updateTabTimePeriod]);
+  const handleTimePeriodChange = useCallback(
+    (period: string) => {
+      updateTabTimePeriod(activeTab, period);
+    },
+    [activeTab, updateTabTimePeriod]
+  );
 
   /**
    * Handles adding a new restaurant
@@ -106,23 +135,32 @@ export default function RestaurantsPage() {
   /**
    * Handles page change for any tab
    */
-  const handlePageChange = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, page: number) => {
-    updateTabPage(tab, page);
-  }, [updateTabPage]);
+  const handlePageChange = useCallback(
+    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum, page: number) => {
+      updateTabPage(tab, page);
+    },
+    [updateTabPage]
+  );
 
   /**
    * Handles page size change for any tab
    */
-  const handlePageSizeChange = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, pageSize: number) => {
-    updateTabPageSize(tab, pageSize);
-  }, [updateTabPageSize]);
+  const handlePageSizeChange = useCallback(
+    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum, pageSize: number) => {
+      updateTabPageSize(tab, pageSize);
+    },
+    [updateTabPageSize]
+  );
 
   /**
    * Handles tab change with state preservation
    */
-  const handleTabChange = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum) => {
-    setActiveTab(tab);
-  }, []);
+  const handleTabChange = useCallback(
+    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum) => {
+      setActiveTab(tab);
+    },
+    []
+  );
 
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">

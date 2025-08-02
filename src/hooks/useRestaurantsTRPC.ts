@@ -1,5 +1,11 @@
-import { trpc } from '@/lib/trpc-client';
-import { AnalystTableTabsEnum, ApprovalStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { trpc } from "@/lib/trpc-client";
+import {
+  AnalystTableTabsEnum,
+  ApprovalStatusEnum,
+  ManagerTableTabsEnum,
+} from "@/types/enums";
+import { errorToast } from "@/utils/toast";
+import { useEffect } from "react";
 
 /**
  * Query parameters for restaurant fetching
@@ -15,7 +21,11 @@ interface RestaurantQueryParams {
 /**
  * Hook for fetching restaurants with role-based filtering using tRPC
  */
-export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum | AnalystTableTabsEnum }) {
+export function useRestaurantsTRPC(
+  params: RestaurantQueryParams & {
+    tableId: ManagerTableTabsEnum | AnalystTableTabsEnum;
+  }
+) {
   const { tableId, search, page, limit, enabled = true } = params;
 
   // Use tRPC queries based on table type
@@ -31,7 +41,7 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
       staleTime: 30 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
-        if (error instanceof Error && error.message.includes('4')) {
+        if (error instanceof Error && error.message.includes("4")) {
           return false;
         }
         return failureCount < 2;
@@ -42,7 +52,7 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
     }
   );
 
-  const pendingVideosQuery = trpc.restaurant.getPosts.useQuery(
+  const pendingVideosQuery = trpc.post.getPosts.useQuery(
     {
       pageNumber: page || 1,
       quantity: limit || 10,
@@ -53,7 +63,7 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
       staleTime: 30 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
-        if (error instanceof Error && error.message.includes('4')) {
+        if (error instanceof Error && error.message.includes("4")) {
           return false;
         }
         return failureCount < 2;
@@ -72,11 +82,14 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
       query: search || undefined,
     },
     {
-      enabled: enabled && (tableId === ManagerTableTabsEnum.ACTIVE_RESTAURANTS || tableId === AnalystTableTabsEnum.ACTIVE_RESTAURANTS),
+      enabled:
+        enabled &&
+        (tableId === ManagerTableTabsEnum.ACTIVE_RESTAURANTS ||
+          tableId === AnalystTableTabsEnum.ACTIVE_RESTAURANTS),
       staleTime: 30 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
-        if (error instanceof Error && error.message.includes('4')) {
+        if (error instanceof Error && error.message.includes("4")) {
           return false;
         }
         return failureCount < 2;
@@ -86,6 +99,23 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
       refetchOnMount: true,
     }
   );
+
+  // Handle errors in your component
+  useEffect(() => {
+    if (pendingVideosQuery.error) {
+      console.log(pendingVideosQuery.error.message);
+      errorToast(
+        pendingVideosQuery.error.message || "Failed to fetch pending videos"
+      );
+    }
+  }, [pendingVideosQuery.error]);
+
+  // Handle empty results
+  useEffect(() => {
+    if (activeRestaurantsQuery.data?.restaurants?.length === 0) {
+      errorToast("No active restaurants found");
+    }
+  }, [activeRestaurantsQuery.data]);
 
   const submittedRestaurantsQuery = trpc.restaurant.getRestaurants.useQuery(
     {
@@ -95,11 +125,12 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
       query: search || undefined,
     },
     {
-      enabled: enabled && tableId === AnalystTableTabsEnum.SUBMITTED_RESTAURANTS,
+      enabled:
+        enabled && tableId === AnalystTableTabsEnum.SUBMITTED_RESTAURANTS,
       staleTime: 30 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
-        if (error instanceof Error && error.message.includes('4')) {
+        if (error instanceof Error && error.message.includes("4")) {
           return false;
         }
         return failureCount < 2;
@@ -110,7 +141,7 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
     }
   );
 
-  const submittedVideosQuery = trpc.restaurant.getPosts.useQuery(
+  const submittedVideosQuery = trpc.post.getPosts.useQuery(
     {
       pageNumber: page || 1,
       quantity: limit || 10,
@@ -121,7 +152,7 @@ export function useRestaurantsTRPC(params: RestaurantQueryParams & { tableId: Ma
       staleTime: 30 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
-        if (error instanceof Error && error.message.includes('4')) {
+        if (error instanceof Error && error.message.includes("4")) {
           return false;
         }
         return failureCount < 2;
