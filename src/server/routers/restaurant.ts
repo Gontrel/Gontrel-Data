@@ -32,9 +32,7 @@ export const restaurantRouter = router({
     .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        console.log(input, "inputinputinputinputinput");
         const response = await apiRequest.getRestaurants(input);
-        console.log(response, "response------------------");
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

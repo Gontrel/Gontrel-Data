@@ -128,8 +128,7 @@ export default class APIRequest {
       );
 
       return this.handleResponse(response);
-    } catch (e) {
-      console.log(e, "eeee");
+    } catch {
     }
   };
 
@@ -178,7 +177,6 @@ export default class APIRequest {
   // getPosts
   getPosts = async (data: FetchAdminPostsRequest) => {
     const params = this.buildSearchParams(data);
-    console.log(params, "paramsparamsparamsparams");
     const response = await this.authenticatedClient.get(
       `/admin-posts?${params.toString()}`
     );

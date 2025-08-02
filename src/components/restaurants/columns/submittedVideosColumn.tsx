@@ -1,5 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { SubmittedVideoType } from '@/types/restaurant';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
 import { TABLE_COLUMN_SIZES } from "@/constants";

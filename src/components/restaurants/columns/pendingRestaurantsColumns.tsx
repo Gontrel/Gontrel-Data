@@ -121,13 +121,13 @@ export const createPendingRestaurantsColumns = (
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original),
+                onClick: () => handleApprove(row.original, "address"),
                 variant: "success",
                 active: isApproved,
               },
               {
                 icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original),
+                onClick: () => handleDecline(row.original, "address"),
                 variant: "danger",
                 active: isDeclined,
               },
@@ -155,13 +155,13 @@ export const createPendingRestaurantsColumns = (
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original),
+                onClick: () => handleApprove(row.original, "menuUrl"),
                 variant: "success",
                 active: isApproved,
               },
               {
                 icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original),
+                onClick: () => handleDecline(row.original, "menuUrl"),
                 variant: "danger",
                 active: isDeclined,
               },
@@ -189,13 +189,13 @@ export const createPendingRestaurantsColumns = (
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original),
+                onClick: () => handleApprove(row.original, "reservationUrl"),
                 variant: "success",
                 active: isApproved,
               },
               {
                 icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original),
+                onClick: () => handleDecline(row.original, "reservationUrl"),
                 variant: "danger",
                 active: isDeclined,
               },
@@ -216,8 +216,8 @@ export const createPendingRestaurantsColumns = (
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={addedBy.profileImage ?? null}
-            alt={addedBy.name}
+            src={addedBy?.profileImage ?? null}
+            alt={addedBy?.name}
             width={40}
             height={40}
             className="rounded-full object-cover"

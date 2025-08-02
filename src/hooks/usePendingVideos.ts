@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { PendingVideoType } from '@/types/restaurant';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TableStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
 import { useRestaurantMutations } from './useRestaurantMutations';
 

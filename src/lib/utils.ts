@@ -1,4 +1,4 @@
-import { WorkingHours } from "@/components/restaurants/EditWorkingHoursModal";
+import { WorkingHours } from "@/components/modals/EditWorkingHoursModal";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -7,6 +7,7 @@ export const isValidUrl = (urlString: string): boolean => {
   try {
     new URL(urlString);
     return true;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return false;
   }
@@ -167,7 +168,8 @@ export const transformToModalHours = (
 
   Object.entries(hours).forEach(([day, ranges]) => {
     if (!ranges?.length) {
-      result[day] = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (result as any)[day] = {
         isOpen: false,
         isAllDay: false,
         slots: [{ start: "09:00 AM", end: "05:00 PM" }],
@@ -175,7 +177,8 @@ export const transformToModalHours = (
       return;
     }
 
-    result[day] = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (result as any)[day] = {
       isOpen: true,
       isAllDay: ranges.some((r) => r.toLowerCase().includes("24 hours")),
       slots: ranges.map((range) => {

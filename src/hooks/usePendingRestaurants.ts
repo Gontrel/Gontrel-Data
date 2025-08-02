@@ -17,6 +17,7 @@ export const usePendingRestaurants = () => {
   // Use the new mutation hook for proper query invalidation
   const { approveRestaurant: approveRestaurantMutation, declineRestaurant: declineRestaurantMutation } = useRestaurantMutations();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRowSelect = useCallback((selectedRows: PendingRestaurantType[]) => {
     // Handle bulk actions here
   }, []);

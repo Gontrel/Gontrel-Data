@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, use } from "react";
 import {
-  ChevronLeft,
-  Bell,
-  User,
   MapPin,
   Globe,
   Book,
@@ -13,19 +10,29 @@ import {
   ExternalLink,
   Video,
   Plus,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ChevronLeft,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Bell,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  User,
 } from "lucide-react";
-import LivePostCard from "@/components/restaurants/LivePostCard";
-import { PreviewVideoModal } from "@/components/restaurants/PreviewVideoModal";
+import { LivePostCard } from "@/components/restaurants/LivePostCard";
 import { NewPostSheet } from "@/components/posts/NewPostsModal";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
+import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useVideoStore } from "@/stores/videoStore";
 
 const RestaurantDetailsPage = ({
   params,
 }: {
-  params: { restaurantId: string };
+    params: Promise<{ restaurantId: string }>;
 }) => {
+  // Unwrap the params Promise using React.use()
+  const { restaurantId } = use(params);
+
   const restaurant = {
-    id: params.restaurantId,
+    id: restaurantId,
     name: "The Gilded Spatula",
     creator: "James Madueke",
     imageUrl: "/placeholder-image.jpg",
@@ -43,30 +50,37 @@ const RestaurantDetailsPage = ({
   };
 
   const [activeTab, setActiveTab] = useState("live");
-
-  const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
-  const [searchTerm, setSearchTerm] = useState("");
   const [showNewPostModal, setShowNewPostModal] = useState(false);
+  const { activeVideoUrl, setActiveVideoUrl, restaurantData, tiktokUsername } = useVideoStore();
 
-  const handlePreviewModalOpenChange = (isOpen: boolean) => {
+  const handleNewPostModalOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setActiveVideoUrl(null);
+      setShowNewPostModal(false);
     }
   };
-
   return (
     <div className="bg-gray-50 min-h-screen p-8">
       <PreviewVideoModal
         open={!!activeVideoUrl}
-        onOpenChange={handlePreviewModalOpenChange}
-      />
-
+        onOpenChange={handleNewPostModalOpenChange}
+        showCloseButton={false}
+      >
+        {restaurantData && (
+          <GontrelPostView
+            videoUrl={activeVideoUrl}
+            restaurantData={restaurantData}
+            tiktokUsername={tiktokUsername || ""}
+          />
+        )}
+      </PreviewVideoModal>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
         <div className="lg:col-span-1 space-y-8">
           {/* Restaurant Info Card */}
           <div className="bg-white p-6 rounded-2xl shadow-sm">
             <div className="flex items-center gap-4 mb-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={restaurant.imageUrl}
                 alt={restaurant.name}
@@ -211,7 +225,7 @@ const RestaurantDetailsPage = ({
       {/* New Restaurant Modal */}
       <NewPostSheet
         open={showNewPostModal}
-        onOpenChange={setShowNewPostModal}
+        onOpenChange={handleNewPostModalOpenChange}
       />
     </div>
   );

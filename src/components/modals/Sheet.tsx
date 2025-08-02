@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const sheetVariants = cva(
-  "fixed bg-white p-[33px] transition-transform duration-500 ease-in-out z-50",
+  "fixed bg-white p-[33px] transition-transform duration-500 ease-in-out z-50 overflow-y-auto",
   {
     variants: {
       side: {
@@ -80,7 +80,7 @@ const Sheet = ({
       {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black/50 transition-opacity duration-500 ${
-          open ? "opacity-100" : "opacity-0 pointer-events-none"
+          open ? "opacity-100 z-20" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => onOpenChange(false)}
       />

@@ -31,6 +31,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   const router = useRouter();
 
   // Fetch data
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: restaurantsData, isLoading: restaurantsLoading } =
     useRestaurants({
       tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS,

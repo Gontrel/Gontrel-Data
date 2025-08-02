@@ -1,40 +1,80 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import { Play } from 'lucide-react';
+import React, { useRef, useEffect, useState, useId } from 'react';
+import { useVideoStore } from '@/stores/videoStore';
 
 interface VideoProps {
+  videoRef?: React.RefObject<HTMLVideoElement>;
+  onPlay?: () => void;
+  onPause?: () => void;
   src: string;
   poster?: string;
   autoPlay?: boolean;
   className?: string;
+  muted?: boolean;
+  loop?: boolean;
 }
 
 export const VideoPlayer = ({
+  videoRef: externalRef,
+  onPlay,
+  onPause,
   src,
   poster,
   autoPlay = false,
-  className = ""
+  className = "",
+  muted = true,
+  loop = true,
 }: VideoProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoPlayerId = useId();
+  const internalRef = useRef<HTMLVideoElement>(null);
+  const videoRef = externalRef || internalRef;
   const [isLoading, setIsLoading] = useState(true);
-  const [isMuted, setIsMuted] = useState(autoPlay);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(muted || autoPlay);
+  const [isPlaying, setIsPlaying] = useState(autoPlay);
+
+  const { registerVideoPlayer, unregisterVideoPlayer, playVideo } = useVideoStore();
+
+  // Register/unregister video player with store
+  useEffect(() => {
+    const pauseVideo = () => {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    };
+
+    const videoPlayerInstance = {
+      id: videoPlayerId,
+      ref: videoRef,
+      pause: pauseVideo,
+    };
+
+    registerVideoPlayer(videoPlayerInstance);
+
+    return () => {
+      unregisterVideoPlayer(videoPlayerId);
+    };
+  }, [videoPlayerId, videoRef, registerVideoPlayer, unregisterVideoPlayer]);
 
   // Hardware-accelerated playback
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.setAttribute('playsinline', '');
-      videoRef.current.setAttribute('preload', 'metadata');
+    const video = videoRef.current;
+    if (video) {
+      video.setAttribute('playsinline', '');
+      video.setAttribute('preload', 'metadata');
     }
-  }, []);
+  }, [videoRef]);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
+    const video = videoRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting && videoRef.current) {
-            videoRef.current.load();
+          if (entry.isIntersecting && video) {
+            video.load();
             observer.disconnect();
           }
         });
@@ -42,36 +82,53 @@ export const VideoPlayer = ({
       { threshold: 0.1 }
     );
 
-    if (videoRef.current) observer.observe(videoRef.current);
+    if (video) observer.observe(video);
 
     return () => observer.disconnect();
-  }, []);
+  }, [videoRef]);
 
   // Memory management
   useEffect(() => {
+    const video = videoRef.current;
     return () => {
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.removeAttribute('src');
-        videoRef.current.load();
+      if (video) {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
       }
     };
-  }, []);
+  }, [videoRef]);
 
   return (
-    <div className={`relative aspect-video bg-black ${className}`}>
+    <div className={`relative aspect-video bg-transparent $`}>
       {/* Video Element */}
       <video
         ref={videoRef}
-        className="w-full h-full object-contain"
+        className={className}
         poster={poster}
+        autoPlay={autoPlay}
         playsInline
         muted={isMuted}
-        onCanPlay={() => setIsLoading(false)}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        onCanPlay={() => {
+          setIsLoading(false);
+          if (autoPlay && videoRef.current) {
+            videoRef.current.play().catch(error => {
+              console.warn('Autoplay failed:', error);
+            });
+          }
+        }}
+        onPlay={() => {
+          setIsPlaying(true);
+          playVideo(videoPlayerId);
+          onPlay?.();
+        }}
+        onPause={() => {
+          setIsPlaying(false);
+          onPause?.();
+        }}
         onEnded={() => setIsPlaying(false)}
         preload="metadata"
+        loop={loop}
       >
         <source src={src} type="video/mp4" />
         <track kind="captions" srcLang="en" label="English" />
@@ -82,19 +139,21 @@ export const VideoPlayer = ({
         {isLoading && (
           <div className="animate-pulse text-white">Loading video...</div>
         )}
-        
+
         {!isPlaying && !isLoading && (
           <button
             onClick={() => {
               videoRef.current?.play();
               setIsMuted(false);
             }}
-            className="p-4 bg-black/50 rounded-full hover:bg-black/70 transition"
+            title="Play video"
+            className="bg-black/30 hover:bg-black/50 transition rounded-full p-4"
           >
-            ▶️
+            <Play className="text-white w-12 h-12" fill="currentColor" />
           </button>
         )}
       </div>
+
     </div>
   );
 };

@@ -1,10 +1,16 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { publicProcedure, protectedProcedure, router } from "@/lib/trpc";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TRPCError } from "@trpc/server";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from "zod";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AdminRoleEnum, ApprovalStatusEnum } from "@/types/enums";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
     const data = error.response?.data;

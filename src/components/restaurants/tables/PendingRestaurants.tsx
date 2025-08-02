@@ -4,6 +4,8 @@ import { useRestaurants } from "@/hooks/useRestaurants";
 import { ManagerTableTabsEnum, TableStatusEnum } from "@/types";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
 import { PendingRestaurantType } from "@/types/restaurant";
+import { useRestaurantMutations } from "@/hooks/useRestaurantMutations";
+import { usePendingRestaurants } from "@/hooks/usePendingRestaurants";
 
 interface PendingRestaurantsProps {
   searchTerm: string;
@@ -23,87 +25,13 @@ const PendingRestaurants = ({
   pageSize,
   handlePageSize,
 }: PendingRestaurantsProps) => {
-  const [pendingRestaurants, setPendingRestaurants] = useState<
-    PendingRestaurantType[]
-  >([]);
-
-  const handleApprove = useCallback(
-    async (
-      rowData: PendingRestaurantType,
-      statusKey: keyof PendingRestaurantType
-    ) => {
-      try {
-        setPendingRestaurants((prev) =>
-          prev.map((restaurant) => {
-            if (restaurant.id === rowData.id) {
-              const updatedPart = restaurant[statusKey];
-              if (
-                typeof updatedPart === "object" &&
-                updatedPart !== null &&
-                "status" in updatedPart
-              ) {
-                (updatedPart as any).status = TableStatusEnum.APPROVED;
-              }
-            }
-            return { ...restaurant }; // Return a new object to ensure re-render
-          })
-        );
-      } catch (error) {
-        console.error("Failed to approve:", error);
-        // Optionally, show an error message to the user
-      }
-    },
-    []
-  );
-
-  const handleDecline = useCallback(
-    async (
-      rowData: PendingRestaurantType,
-      statusKey: keyof PendingRestaurantType
-    ) => {
-      try {
-        setPendingRestaurants((prev) =>
-          prev.map((restaurant) => {
-            if (restaurant.id === rowData.id) {
-              const updatedPart = restaurant[statusKey];
-              if (
-                typeof updatedPart === "object" &&
-                updatedPart !== null &&
-                "status" in updatedPart
-              ) {
-                (updatedPart as any).status = TableStatusEnum.DECLINED;
-              }
-            }
-            return { ...restaurant }; // Return a new object to ensure re-render
-          })
-        );
-      } catch (error) {
-        console.error("Failed to decline:", error);
-        // Optionally, show an error message to the user
-      }
-    },
-    []
-  );
-
-  const handleRowSelect = useCallback((rowData: PendingRestaurantType[]) => {
-    console.log("handleRowSelect:", rowData);
-    // Your decline logic here
-  }, []);
-
-  const handleOnRowClick = useCallback((rowData: any) => {
-    console.log("handleRowSelect:", rowData);
-    // Your decline logic here
-  }, []);
-
-  const handleSendFeedback = useCallback((rowData: PendingRestaurantType) => {
-    console.log("Sending feedback for:", rowData);
-    // Your feedback logic here
-  }, []);
-
-  const handleSave = useCallback((rowData: PendingRestaurantType) => {
-    console.log("Saving:", rowData);
-    // Your save logic here
-  }, []);
+  const {
+    handleRowSelect,
+    handleApprove,
+    handleDecline,
+    handleSendFeedback,
+    handleSave,
+  } = usePendingRestaurants();
 
   // Create columns with proper dependencies
   const columns = useMemo(
@@ -126,14 +54,11 @@ const PendingRestaurants = ({
       limit: pageSize,
     });
 
-  setPendingRestaurants(restaurantsData?.data);
-
   return (
     <RestaurantTable<PendingRestaurantType>
-      restaurants={pendingRestaurants || []}
+      restaurants={restaurantsData?.data || []}
       loading={restaurantsLoading}
       onRowSelect={handleRowSelect}
-      onRowClick={handleOnRowClick}
       showSelection={true}
       columns={columns}
       currentPage={currentPage}

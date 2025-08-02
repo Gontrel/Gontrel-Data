@@ -35,8 +35,6 @@ const PendingVideos = ({
       limit: pageSize,
     });
 
-  console.log(restaurantsData, "restaurantsDatarestaurantsDatarestaurantsData");
-
   //TODO: wait till the backend change the format
   const modifidData = restaurantsData
     ? restaurantsData?.data?.map((post: any) => ({

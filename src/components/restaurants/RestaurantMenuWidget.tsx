@@ -79,7 +79,7 @@ export const RestaurantMenuWidget = ({
               <span>Please wait...</span>
             </>
           ) : (
-            <p className="font-semibold text-lg font-figtree"> Submit</p>
+              <p className="font-semibold text-lg"> Submit</p>
           )}
         </button>
       </div>

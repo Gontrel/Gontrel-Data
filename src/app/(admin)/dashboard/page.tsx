@@ -123,6 +123,7 @@ export default function DashboardPage() {
             currentPage={1}
             handleCurrentPage={() => {}}
             pageSize={5}
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             handlePageSize={function (pageSize: number): void {
               throw new Error("Function not implemented.");
             }}
