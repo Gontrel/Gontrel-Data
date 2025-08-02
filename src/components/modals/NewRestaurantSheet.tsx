@@ -240,133 +240,132 @@ export const NewRestaurantSheet = ({
     addRestaurantData(selectedRestaurant!);
   };
 
-
   return (
-      <Sheet
-        open={open}
-        onOpenChange={handleClose}
-        width="w-[638px]"
-        className="flex flex-row justify-center z-30"
-      >
-        <div className="py-6 w-[518px] flex flex-col justify-between">
-          <section className="">
-            <div className="flex flex-row justify-between mb-7">
-              <div className="text-left">
-                <h2 className="text-2xl font-bold text-[#2E3032] mb-2">
-                  New Restaurant
-                </h2>
-                <p className=" text-[#2E3032] text-lg font-medium ">
-                  Create a new restuarant profile
-                </p>
-              </div>
-              <button
-                onClick={handleClose}
-              title="Close"
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-              >
-                <Icon name="cancelModalIcon" className="w-6 h-6" />
-              </button>
+    <Sheet
+      open={open}
+      onOpenChange={handleClose}
+      width="w-[638px]"
+      className="flex flex-row justify-center z-30"
+    >
+      <div className="py-6 w-[518px] flex flex-col justify-between">
+        <section className="">
+          <div className="flex flex-row justify-between mb-7">
+            <div className="text-left">
+              <h2 className="text-2xl font-bold text-[#2E3032] mb-2">
+                New Restaurant
+              </h2>
+              <p className=" text-[#2E3032] text-lg font-medium ">
+                Create a new restuarant profile
+              </p>
             </div>
-            <ProgressBar
-              step={step}
-              subTitle1={"Confirmation"}
-              subTitle2={"Video"}
-              subTitle3={"Link"}
-            />
-            <div className="w-full mt-[30px]">
-              {isRestaurantConfirmed && selectedRestaurant ? (
-                <>
-                  {step === 1 && (
-                    <RestaurantConfirmation
-                      restaurant={selectedRestaurant}
-                      onGoBackToSearch={handleGoBackToSearch}
-                      onNext={() => handleOnNext()}
-                      onWorkingHoursSave={handleWorkingHoursSave}
+            <button
+              onClick={handleClose}
+              title="Close"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <Icon name="cancelModalIcon" className="w-6 h-6" />
+            </button>
+          </div>
+          <ProgressBar
+            step={step}
+            subTitle1={"Confirmation"}
+            subTitle2={"Video"}
+            subTitle3={"Link"}
+          />
+          <div className="w-full mt-[30px]">
+            {isRestaurantConfirmed && selectedRestaurant ? (
+              <>
+                {step === 1 && (
+                  <RestaurantConfirmation
+                    restaurant={selectedRestaurant}
+                    onGoBackToSearch={handleGoBackToSearch}
+                    onNext={() => handleOnNext()}
+                    onWorkingHoursSave={handleWorkingHoursSave}
+                  />
+                )}
+                {step === 2 && (
+                  <VideoStep
+                    onPrevious={() => setStep(1)}
+                    onNext={() => setStep(3)}
+                  />
+                )}
+                {step === 3 && (
+                  <RestaurantMenuWidget
+                    isLoading={isLoading}
+                    onPrevious={() => setStep(2)}
+                    onSubmit={(data) => handleCreateRestaurant(data)}
+                  />
+                )}
+              </>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="restaurant-name"
+                    className="block text-[20px] font-semibold text-[#2E3032] mt-[30px]"
+                  >
+                    Restaurant name
+                  </label>
+                  <div className="relative mt-8" ref={searchContainerRef}>
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      id="restaurant-name"
+                      placeholder="Search for a restaurant"
+                      className="w-full pl-12 pr-[22px] py-[24px] border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onFocus={() => setShowSuggestions(true)}
+                      autoComplete="off"
                     />
-                  )}
-                  {step === 2 && (
-                    <VideoStep
-                      onPrevious={() => setStep(1)}
-                      onNext={() => setStep(3)}
-                    />
-                  )}
-                  {step === 3 && (
-                    <RestaurantMenuWidget
-                      isLoading={isLoading}
-                      onPrevious={() => setStep(2)}
-                      onSubmit={(data) => handleCreateRestaurant(data)}
-                    />
-                  )}
-                </>
-              ) : (
-                <div className="space-y-6">
-                  <div>
-                    <label
-                      htmlFor="restaurant-name"
-                      className="block text-[20px] font-semibold text-[#2E3032] mt-[30px]"
-                    >
-                      Restaurant name
-                    </label>
-                    <div className="relative mt-8" ref={searchContainerRef}>
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        id="restaurant-name"
-                        placeholder="Search for a restaurant"
-                        className="w-full pl-12 pr-[22px] py-[24px] border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onFocus={() => setShowSuggestions(true)}
-                        autoComplete="off"
-                      />
-                      {isFetchingAutoComplete && (
-                        <p className="mt-2 text-sm text-gray-500">Searching...</p>
-                      )}
-                      {showSuggestions &&
-                        !isFetchingAutoComplete &&
-                        debouncedQuery.length > 0 &&
-                        suggestions.length === 0 && (
-                          <div className="absolute z-10 w-full p-4 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-                            <p className="text-sm text-gray-500">
-                              No results found.
-                            </p>
-                          </div>
-                        )}
-                      {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-                          <ul className="divide-y divide-gray-200">
-                            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                            {suggestions.map((suggestion: any) => (
-                              <li
-                                key={suggestion?.placeId}
-                                className="p-4 cursor-pointer hover:bg-gray-50"
-                                onClick={() => {
-                                  setInputValue(suggestion.description);
-                                  setShowSuggestions(false);
-                                  setSelectedPlaceId(suggestion?.placeId);
-                                }}
-                              >
-                                <p className="font-semibold text-gray-800">
-                                  {suggestion?.structuredFormatting?.mainText}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  {
-                                    suggestion?.structuredFormatting
-                                      ?.secondaryText
-                                  }
-                                </p>
-                              </li>
-                            ))}
-                          </ul>
+                    {isFetchingAutoComplete && (
+                      <p className="mt-2 text-sm text-gray-500">Searching...</p>
+                    )}
+                    {showSuggestions &&
+                      !isFetchingAutoComplete &&
+                      debouncedQuery.length > 0 &&
+                      suggestions.length === 0 && (
+                        <div className="absolute z-10 w-full p-4 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                          <p className="text-sm text-gray-500">
+                            No results found.
+                          </p>
                         </div>
                       )}
-                    </div>
+                    {showSuggestions && suggestions.length > 0 && (
+                      <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <ul className="divide-y divide-gray-200">
+                          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                          {suggestions.map((suggestion: any) => (
+                            <li
+                              key={suggestion?.placeId}
+                              className="p-4 cursor-pointer hover:bg-gray-50"
+                              onClick={() => {
+                                setInputValue(suggestion.description);
+                                setShowSuggestions(false);
+                                setSelectedPlaceId(suggestion?.placeId);
+                              }}
+                            >
+                              <p className="font-semibold text-gray-800">
+                                {suggestion?.structuredFormatting?.mainText}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {
+                                  suggestion?.structuredFormatting
+                                    ?.secondaryText
+                                }
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-            </div>
-          </section>
-        </div>
-      </Sheet>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </Sheet>
   );
 };

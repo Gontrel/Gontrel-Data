@@ -50,6 +50,7 @@ export const externalRouter = router({
       const { placeId, sessionToken } = input;
       try {
         const response = await apiRequest.placeDetails({ placeId, sessionToken: sessionToken ?? "" });
+        console.log(response, "getPlaceDetailsgetPlaceDetails");
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

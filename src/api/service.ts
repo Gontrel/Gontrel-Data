@@ -125,7 +125,6 @@ export default class APIRequest {
 
       return this.handleResponse(response);
     } catch (error) {
-      console.error('Error fetching restaurants:', error);
       throw error;
     }
   };
@@ -166,11 +165,15 @@ export default class APIRequest {
   };
 
   createBulkPost = async (data: CreateBulkPostRequest) => {
-    const response = await this.authenticatedClient.post(
-      `/admin-bulk-posts`,
-      data
-    );
-    return this.handleResponse(response);
+    try {
+      const response = await this.authenticatedClient.post(
+        `/admin-bulk-posts`,
+        data
+      );
+      return this.handleResponse(response);
+    } catch (error) {
+      throw error;
+    }
   };
   // getPosts
   getPosts = async (data: FetchAdminPostsRequest): Promise<GetPostsResponse> => {
@@ -181,7 +184,6 @@ export default class APIRequest {
       );
       return this.handleResponse(response);
     } catch (error) {
-      console.error('Error fetching posts:', error);
       throw error;
     }
   };

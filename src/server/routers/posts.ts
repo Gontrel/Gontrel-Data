@@ -32,9 +32,12 @@ export const postRouter = router({
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
+        console.log(input, "inputinputinputinput");
         const response = await apiRequest.createBulkPost(input);
+        console.log(response, "responseresponseresponse");
         return response;
       } catch (error) {
+        console.error(error);
         const message = getErrorMessage(error);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
