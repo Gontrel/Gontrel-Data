@@ -41,7 +41,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     meta: { sticky: true },
   },
   {
-    accessorKey: "video",
+    accessorKey: "posts",
     header: () => <TableHeader iconName="videoIcon" title="Video" />,
     cell: ({ row }) => {
       const posts = row.original.posts;
@@ -70,7 +70,6 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
       const addedBy = row.original.addedBy;
-      console.log(row.original);
       return (
         <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
           <Image
@@ -79,6 +78,9 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
             width={40}
             height={40}
             className="object-cover rounded-full"
+            onError={(e) => {
+              e.currentTarget.src = Logo.src;
+            }}
           />
           <span className="font-medium text-black">{addedBy ?? "James"}</span>
         </div>

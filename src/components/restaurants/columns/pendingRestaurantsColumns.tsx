@@ -221,6 +221,9 @@ export const createPendingRestaurantsColumns = (
             alt={addedBy?.name}
             width={40}
             height={40}
+            onError={(e) => {
+              e.currentTarget.src = Logo.src;
+            }}
             className="rounded-full object-cover"
           />
           <span className="text-black font-medium">{addedBy.name}</span>

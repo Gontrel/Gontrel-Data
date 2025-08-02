@@ -45,7 +45,7 @@ export const createSubmittedVideosColumns = (): ColumnDef<SubmittedVideoType>[] 
       meta: { sticky: true }
     },
     {
-      accessorKey: 'video',
+      accessorKey: 'posts',
       header: () => (
         <TableHeader iconName="videoIcon" title="Video" />
       ),

@@ -101,6 +101,9 @@ export const createActiveRestaurantsColumns = (
             width={40}
             height={40}
             className="rounded-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = Logo.src;
+            }}
           />
           <span className="text-black font-medium">{admin.name}</span>
         </div>

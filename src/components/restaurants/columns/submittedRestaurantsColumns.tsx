@@ -132,7 +132,7 @@ export const createSubmittedRestaurantsColumns = (
       minSize: TABLE_COLUMN_SIZES.ADDRESS,
     },
     {
-      accessorKey: 'menuUrl',
+      accessorKey: 'menu',
       header: () => (
         <TableHeader iconName="linkIcon" title="Menu link" />
       ),
@@ -166,7 +166,7 @@ export const createSubmittedRestaurantsColumns = (
       minSize: TABLE_COLUMN_SIZES.MENU_LINK,
     },
     {
-      accessorKey: 'reservationUrl',
+      accessorKey: 'reservation',
       header: () => (
         <TableHeader iconName="linkIcon" title="Reservation link" />
       ),
