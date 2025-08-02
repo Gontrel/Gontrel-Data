@@ -2,7 +2,12 @@
 // ADMIN MANAGEMENT ENDPOINTS
 // ============================================================================
 
-import { AdminRoleEnum, ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types";
+import {
+  AdminRoleEnum,
+  ApprovalStatusEnum,
+  ApprovalType,
+  DayOfTheWeek,
+} from "@/types";
 
 /**
  * POST /create-admin
@@ -161,6 +166,7 @@ export interface FetchLocationsRequest extends BaseQueryRequest {
   userId?: string; // UUID
   adminId?: string; // UUID
   tagId?: string;
+  searchQuery?: string;
   status?: ApprovalStatusEnum; // enum values from ApprovalStatus
   isVerified?: boolean;
 }
@@ -281,8 +287,6 @@ export interface DeleteLocationRequest {
   userId: string; // UUID, required
   locationId: string; // UUID, required
 }
-
-
 
 // ============================================================================
 // DASHBOARD AND UTILITY ENDPOINTS

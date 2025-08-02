@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react'
-import { RestaurantTable } from '../RestaurantTable'
-import { useRestaurants } from '@/hooks/useRestaurants';
-import { PendingVideoType } from '@/types/restaurant';
-import { ManagerTableTabsEnum } from '@/types';
-import { createPendingVideosColumns } from '../columns/pendingVideosColumns';
-import { usePendingVideos } from '@/hooks/usePendingVideos';
+import React, { useMemo } from "react";
+import { RestaurantTable } from "../RestaurantTable";
+import { useRestaurants } from "@/hooks/useRestaurants";
+import { PendingVideoType } from "@/types/restaurant";
+import { ManagerTableTabsEnum } from "@/types";
+import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
+import { usePendingVideos } from "@/hooks/usePendingVideos";
 
 interface PendingVideosProps {
   searchTerm: string;
@@ -14,27 +14,66 @@ interface PendingVideosProps {
   handlePageSize: (pageSize: number) => void;
 }
 
-const PendingVideos = ({ searchTerm, currentPage, pageSize, handleCurrentPage, handlePageSize }: PendingVideosProps) => {
-    const { handleRowSelect } = usePendingVideos();
+const PendingVideos = ({
+  searchTerm,
+  currentPage,
+  pageSize,
+  handleCurrentPage,
+  handlePageSize,
+}: PendingVideosProps) => {
+  const { handleRowSelect } = usePendingVideos();
 
-    // Create columns with proper dependencies
-    const columns = useMemo(
-        () => createPendingVideosColumns(),
-        []
-    );
+  // Create columns with proper dependencies
+  const columns = useMemo(() => createPendingVideosColumns(), []);
 
-    // Fetch data with pageSize
-    const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: ManagerTableTabsEnum.PENDING_VIDEOS,
-        search: searchTerm,
-        page: currentPage,
-        limit: pageSize
+  // Fetch data with pageSize
+  const { data: restaurantsData, isLoading: restaurantsLoading } =
+    useRestaurants({
+      tableId: ManagerTableTabsEnum.PENDING_VIDEOS,
+      search: searchTerm,
+      page: currentPage,
+      limit: pageSize,
     });
+
+  //TODO: wait till the backend change the format
+  const modifidData = restaurantsData
+    ? restaurantsData?.data?.map((post: any) => ({
+        name: post.location?.name,
+        location: {
+          address: post.location.address.content,
+          lat: post.location.lat,
+          lng: post.location.lng,
+          openingHours: post.location.openingHours,
+          photos: post.location.photos,
+          rating: post.location.rating,
+          type: post.location.type,
+          website: post.location.website,
+          mapLink: post.location.mapLink,
+          country: post.location.country,
+        },
+        posts: [
+          {
+            id: post.id,
+            createdAt: post.createdAt,
+            videoUrl: post.videoUrl,
+            thumbUrl: post.thumbUrl,
+            tiktokLink: post.tiktokLink,
+            postedAt: post.postedAt,
+            status: post.status,
+            source: post.source,
+            analytics: post.analytics || {},
+            tags: post.tags || [],
+          },
+        ],
+        addedBy: post.updatedBy || post.deletedBy || post.firebaseId || null,
+        createdAt: post.createdAt,
+      }))
+    : [];
 
   return (
     <RestaurantTable<PendingVideoType>
-      restaurants={restaurantsData?.data || []}
-      loading={restaurantsLoading}
+      restaurants={modifidData ?? []}
+      loading={restaurantsLoading ?? false}
       onRowSelect={handleRowSelect}
       showSelection={true}
       columns={columns}

@@ -24,6 +24,7 @@ interface RestaurantTableProps<T> {
   currentPage?: number;
   pageSize?: number;
   totalPages?: number;
+  onRowClick?: (row: T) => void;
   onPageSizeChange?: (pageSize: number) => void;
   onPageChange?: (pageIndex: number) => void;
 }
@@ -35,6 +36,7 @@ export function RestaurantTable<T>({
   restaurants,
   loading = false,
   onRowSelect,
+  onRowClick,
   showSelection = false,
   columns,
   currentPage = 1,
@@ -56,7 +58,7 @@ export function RestaurantTable<T>({
       pagination: {
         pageIndex: currentPage - 1, // Convert to 0-based index
         pageSize: pageSize,
-      }
+      },
     },
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -82,6 +84,7 @@ export function RestaurantTable<T>({
   const selectedRows = table
     .getSelectedRowModel()
     .rows.map((row) => row.original);
+
   if (onRowSelect && selectedRows.length > 0) {
     onRowSelect(selectedRows);
   }
@@ -99,7 +102,11 @@ export function RestaurantTable<T>({
             <RestaurantTableHeader<T> table={table} />
             <tbody className="divide-y divide-[#EBEBEB]">
               {table.getRowModel().rows.map((row) => (
-                <RestaurantRow<T> key={row.id} row={row} />
+                <RestaurantRow<T>
+                  key={row.id}
+                  row={row}
+                  onRowClick={onRowClick}
+                />
               ))}
             </tbody>
           </table>

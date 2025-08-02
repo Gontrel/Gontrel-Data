@@ -14,7 +14,8 @@ import {
   FetchAdminPostsRequest,
   FetchPostByIdRequest,
   FetchAnalystLocationsRequest,
-  UpdatePostRequest
+  UpdatePostRequest,
+  CreateBulkPostRequest,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -28,13 +29,13 @@ export default class APIRequest {
         const cookies = parse(cookieHeader);
         const token = cookies.user_token;
 
-      this.authenticatedClient = axios.create({
-        ...axiosInstance.defaults,
-        headers: {
-          ...axiosInstance.defaults.headers,
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        this.authenticatedClient = axios.create({
+          ...axiosInstance.defaults,
+          headers: {
+            ...axiosInstance.defaults.headers,
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
         this.authenticatedClient = axiosInstance;
       }
@@ -60,7 +61,9 @@ export default class APIRequest {
    * Utility method to build URL search parameters from an object
    * Automatically handles undefined values, type conversion, and empty filtering
    */
-  private buildSearchParams(params: Record<string, unknown> | object): URLSearchParams {
+  private buildSearchParams(
+    params: Record<string, unknown> | object
+  ): URLSearchParams {
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
@@ -81,8 +84,13 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
-  resetPassword = async (data: AdminResetPasswordRequest): Promise<ResetPasswordResponse> => {
-    const response = await unauthenticatedClient.post(`/admin-reset-password`, data);
+  resetPassword = async (
+    data: AdminResetPasswordRequest
+  ): Promise<ResetPasswordResponse> => {
+    const response = await unauthenticatedClient.post(
+      `/admin-reset-password`,
+      data
+    );
     return this.handleResponse(response);
   };
 
@@ -99,29 +107,51 @@ export default class APIRequest {
 
   // createRestaurant
   createRestaurant = async (data: CreateLocationRequest) => {
-    const response = await this.authenticatedClient.post(`/admin-location`, data);
+    const response = await this.authenticatedClient.post(
+      `/admin-location`,
+      data
+    );
     return this.handleResponse(response);
   };
   // getRestaurants
   getRestaurants = async (data: FetchLocationsRequest) => {
-    const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(`/admin-locations?${params.toString()}`);
-    return this.handleResponse(response);
+    const params = new URLSearchParams({
+      status: data.status || "",
+      pageNumber: (data.pageNumber || 1).toString(),
+      quantity: (data.quantity || 10).toString(),
+      ...(data.searchQuery && { search: data.searchQuery }),
+    });
+
+    try {
+      const response = await this.authenticatedClient.get(
+        `/admin-locations?${params.toString()}`
+      );
+
+      return this.handleResponse(response);
+    } catch {
+    }
   };
 
   getRestaurantById = async (data: FetchLocationByIdRequest) => {
-    const response = await this.authenticatedClient.get(`/admin-location/${data.locationId}`);
+    const response = await this.authenticatedClient.get(
+      `/admin-location/${data.locationId}`
+    );
     return this.handleResponse(response);
   };
 
   updateRestaurant = async (data: UpdateLocationRequest) => {
-    const response = await this.authenticatedClient.put(`/admin-location/${data.locationId}`, data);
+    const response = await this.authenticatedClient.put(
+      `/admin-location/${data.locationId}`,
+      data
+    );
     return this.handleResponse(response);
   };
 
   getAnalystLocations = async (data: FetchAnalystLocationsRequest) => {
     const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(`/admin-analyst-locations?${params.toString()}`);
+    const response = await this.authenticatedClient.get(
+      `/admin-analyst-locations?${params.toString()}`
+    );
     return this.handleResponse(response);
   };
 
@@ -136,16 +166,28 @@ export default class APIRequest {
     const response = await this.authenticatedClient.post(`/admin-post`, data);
     return this.handleResponse(response);
   };
+
+  createBulkPost = async (data: CreateBulkPostRequest) => {
+    const response = await this.authenticatedClient.post(
+      `/admin-bulk-posts`,
+      data
+    );
+    return this.handleResponse(response);
+  };
   // getPosts
   getPosts = async (data: FetchAdminPostsRequest) => {
     const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(`/admin-posts?${params.toString()}`);
+    const response = await this.authenticatedClient.get(
+      `/admin-posts?${params.toString()}`
+    );
     return this.handleResponse(response);
   };
   // getPostById
   getPostById = async (data: FetchPostByIdRequest) => {
     const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(`/admin-post-by-id?${params.toString()}`);
+    const response = await this.authenticatedClient.get(
+      `/admin-post-by-id?${params.toString()}`
+    );
     return this.handleResponse(response);
   };
 

@@ -4,6 +4,8 @@ import { ActiveRestaurantType } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
 import { useActiveRestaurantQuery } from "@/hooks/useActiveRestaurants";
 import { useRouter } from "next/navigation";
+import { ManagerTableTabsEnum } from "@/types/enums";
+import { useRestaurants } from "@/hooks/useRestaurants";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -25,18 +27,18 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
 }: ActiveRestaurantsProps) => {
   // Create columns with proper dependencies
   const columns = useMemo(() => createActiveRestaurantsColumns(), []);
-  const [restaurants, setRestaurantsData] = useState<ActiveRestaurantType[]>(
-    []
-  );
+
   const router = useRouter();
 
   // Fetch data
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, isLoading, isError } = useActiveRestaurantQuery({
-    search: searchTerm,
-    page: currentPage,
-    limit: pageSize,
-  });
+  const { data: restaurantsData, isLoading: restaurantsLoading } =
+    useRestaurants({
+      tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS,
+      search: searchTerm,
+      page: currentPage,
+      limit: pageSize,
+    });
 
   const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
     if (selectedRows.length > 0) {
@@ -46,23 +48,16 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     }
   };
 
-  // Update local state when data changes
-  useEffect(() => {
-    if (data) {
-      setRestaurantsData(data || []);
-    }
-  }, [data]);
-
   return (
     <RestaurantTable<ActiveRestaurantType>
-      restaurants={restaurants}
-      loading={isLoading}
+      restaurants={restaurantsData?.data || []}
+      loading={restaurantsLoading}
       onRowSelect={handleRowSelect}
       showSelection={true}
       columns={columns}
-      currentPage={data?.pagination?.currentPage || 1}
-      pageSize={data?.pagination?.pageSize || 1}
-      totalPages={data?.pagination?.total || 1}
+      currentPage={currentPage}
+      pageSize={pageSize}
+      totalPages={restaurantsData?.pagination?.total || 1}
       onPageSizeChange={handlePageSize}
       onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
     />

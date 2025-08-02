@@ -1,6 +1,14 @@
 import { TableStatusEnum, AdminRoleEnum } from "./enums";
-import { Menu, OpeningHours, Reservation, Videos, Pagination, Meta, Address } from "@/interfaces/restaurants";
-import { Admin, Post } from "@/interfaces/api";
+import {
+  Menu,
+  OpeningHours,
+  Reservation,
+  Videos,
+  Pagination,
+  Meta,
+  Address,
+} from "@/interfaces/restaurants";
+import { Post } from "@/interfaces/api";
 
 /**
  * Restaurant data model representing the production/live data
@@ -39,9 +47,51 @@ export type ActiveRestaurantType = {
 
 export type VideoType = {
   id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  analytics: Record<string, unknown>;
+  tiktokLink: string;
   videoUrl: string;
-  tags: Tag[];
+  thumbUrl: string;
+  postedAt: string | null;
   status: TableStatusEnum;
+  source: string;
+  tags: Array<{
+    id: string;
+    createdAt: string;
+    modifiedAt: string;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    updatedBy: string | null;
+    firebaseId: string;
+    count: number;
+    name: string;
+    imageUrl: string;
+    resource: string;
+    type: string;
+    isTaste: boolean;
+  }>;
+};
+
+export type Admin = {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  name: string;
+  phoneNumber: string;
+  profileImage: string;
+  email: string;
+  password: string;
+  isVerified: boolean;
+  role: string;
 };
 
 export type Tag = {
@@ -50,53 +100,63 @@ export type Tag = {
 };
 
 export type PendingRestaurantType = {
-  restaurantId: string;
-  name: string;
-  videos: VideoType[];
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
   address: {
-    status: TableStatusEnum;
-    name: string;
+    status: string;
+    content: string;
   };
-  maplink: string;
+  lat: number;
+  lng: number;
+  menu: {
+    status: string;
+    content: string;
+  };
+  name: string;
+  openingHours: Array<{
+    dayOfTheWeek: string;
+    opensAt?: number;
+    closesAt?: number;
+  }>;
+  photos: string[];
+  phoneNumber: string;
+  priceLevel: number;
+  rating: number;
+  reservation: {
+    status: string;
+    content: string;
+  };
+  toilets: boolean;
+  type: string;
   website: string;
-  menuUrl: {
-    status: TableStatusEnum;
-    url: string;
+  status: string;
+  comment: string | null;
+  mapLink: string | null;
+  country: string;
+  admin: Admin;
+  posts: VideoType[];
+  tags: string[];
+  videos: {
+    total: number;
+    approved: number;
+    pending: number;
+    declined: number;
   };
-  reservationUrl: {
-    status: TableStatusEnum;
-    url: string;
-  };
-  addedBy: {
-    userId: string;
-    name: string;
-    profileImage: string;
-  };
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  dateAdded: Date;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export type PendingVideoType = {
   id: string;
   restaurantId: string;
   name: string;
-  videos: VideoType[];
+  posts: VideoType[];
   dateAdded: Date;
-  addedBy: {
-    userId: string;
-    name: string;
-    profileImage: string;
-  };
+  addedBy: string;
+  createdAt: string;
 };
 
 export type SubmittedRestaurantType = {

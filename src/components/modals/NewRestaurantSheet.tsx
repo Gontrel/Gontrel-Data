@@ -92,7 +92,6 @@ export const NewRestaurantSheet = ({
 
   useEffect(() => {
     if (autoCompleteData && autoCompleteData.length > 0) {
-      console.log("autocomplete", autoCompleteData);
       setSuggestions(autoCompleteData);
     } else {
       setSuggestions([]);
@@ -110,8 +109,6 @@ export const NewRestaurantSheet = ({
           workingHours[day] = timeParts.join(": ").split(", ");
         });
       }
-
-      console.log(workingHours, "workingHours");
 
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -157,8 +154,6 @@ export const NewRestaurantSheet = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleWorkingHoursSave = (updatedHours: any) => {
     if (!selectedRestaurant) return;
-
-    console.error(updatedHours, "updatedHours");
 
     const newWorkingHours: Record<string, string[]> = {};
     for (const day in updatedHours) {
