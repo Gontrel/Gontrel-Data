@@ -115,12 +115,7 @@ export default class APIRequest {
   };
   // getRestaurants
   getRestaurants = async (data: FetchLocationsRequest) => {
-    const params = new URLSearchParams({
-      status: data.status || "",
-      pageNumber: (data.pageNumber || 1).toString(),
-      quantity: (data.quantity || 10).toString(),
-      ...(data.searchQuery && { search: data.searchQuery }),
-    });
+    const params = this.buildSearchParams(data);
 
     try {
       const response = await this.authenticatedClient.get(
@@ -128,7 +123,9 @@ export default class APIRequest {
       );
 
       return this.handleResponse(response);
-    } catch {
+    } catch (error) {
+      console.error('Error fetching restaurants:', error);
+      throw error;
     }
   };
 
@@ -177,10 +174,15 @@ export default class APIRequest {
   // getPosts
   getPosts = async (data: FetchAdminPostsRequest) => {
     const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(
-      `/admin-posts?${params.toString()}`
-    );
-    return this.handleResponse(response);
+    try {
+      const response = await this.authenticatedClient.get(
+        `/admin-posts?${params.toString()}`
+      );
+      return this.handleResponse(response);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      throw error;
+    }
   };
   // getPostById
   getPostById = async (data: FetchPostByIdRequest) => {

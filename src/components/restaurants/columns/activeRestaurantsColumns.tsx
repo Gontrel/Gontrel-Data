@@ -92,12 +92,12 @@ export const createActiveRestaurantsColumns = (
     accessorKey: "admin",
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
-      const admin = row.original.admin;
+      const { name, profileImage } = row.original.admin;
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={admin.profileImage ?? Logo}
-            alt={admin.name}
+            src={profileImage?.length > 0 ? profileImage : Logo.src}
+            alt={name}
             width={40}
             height={40}
             className="rounded-full object-cover"
@@ -105,7 +105,7 @@ export const createActiveRestaurantsColumns = (
               e.currentTarget.src = Logo.src;
             }}
           />
-          <span className="text-black font-medium">{admin.name}</span>
+          <span className="text-black font-medium">{name}</span>
         </div>
       );
     },

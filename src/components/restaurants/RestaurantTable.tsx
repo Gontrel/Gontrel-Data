@@ -6,7 +6,6 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   ColumnDef,
   RowSelectionState,
 } from "@tanstack/react-table";
@@ -64,7 +63,6 @@ export function RestaurantTable<T>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     enableRowSelection: showSelection,
     manualPagination: true, // Tell React Table we're handling pagination externally
     pageCount: totalPages, // Set the total number of pages

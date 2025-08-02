@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { RestaurantApi } from '@/lib/api';
-import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { trpc } from '@/lib/trpc-client';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum, ApprovalStatusEnum } from '@/types/enums';
 
 /**
  * Interface for tab-specific state
@@ -14,114 +13,123 @@ interface TabState {
 }
 
 /**
- * Custom hook to fetch table totals for each tab independently
+ * Custom hook to fetch table totals for each tab independently using tRPC
  */
 export const useTableTotals = (tabStates: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, TabState>) => {
   // Fetch pending restaurants total with tab-specific search
-  const { data: pendingRestaurantsTotal } = useQuery({
-    queryKey: ['restaurants', 'total', ManagerTableTabsEnum.PENDING_RESTAURANTS, { search: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm }],
-    queryFn: async () => {
-      const response = await RestaurantApi.getPendingRestaurants({
-        page: 1,
-        limit: 1,
-        search: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm
-      });
-      const total = response.pagination?.total || 0;
-      const searchTerm = tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm;
-      console.log('📊 Pending Restaurants Total Updated:', total, searchTerm ? `(filtered by: "${searchTerm}")` : '');
-      return total;
+  const { data: pendingRestaurantsTotal } = trpc.restaurant.getRestaurants.useQuery(
+    {
+      pageNumber: 1,
+      quantity: 1,
+      status: ApprovalStatusEnum.PENDING,
+      query: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm || undefined,
     },
-    staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true, // Enable refetch on window focus
-    refetchOnMount: true, // Always refetch on mount
-  });
+    {
+      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
+      gcTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true, // Enable refetch on window focus
+      refetchOnMount: true, // Always refetch on mount
+    }
+  );
 
   // Fetch pending videos total with tab-specific search
-  const { data: pendingVideosTotal } = useQuery({
-    queryKey: ['restaurants', 'total', ManagerTableTabsEnum.PENDING_VIDEOS, { search: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm }],
-    queryFn: async () => {
-      const response = await RestaurantApi.getPendingVideos({
-        page: 1,
-        limit: 1,
-        search: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm
-      });
-      const total = response.pagination?.total || 0;
-      const searchTerm = tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm;
-      console.log('📊 Pending Videos Total Updated:', total, searchTerm ? `(filtered by: "${searchTerm}")` : '');
-      return total;
+  const { data: pendingVideosTotal } = trpc.post.getPosts.useQuery(
+    {
+      pageNumber: 1,
+      quantity: 1,
+      query: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm || undefined,
     },
-    staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true, // Enable refetch on window focus
-    refetchOnMount: true, // Always refetch on mount
-  });
+    {
+      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
+      gcTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true, // Enable refetch on window focus
+      refetchOnMount: true, // Always refetch on mount
+    }
+  );
 
   // Fetch active restaurants total with tab-specific search
-  const { data: activeRestaurantsTotal } = useQuery({
-    queryKey: ['restaurants', 'total', ManagerTableTabsEnum.ACTIVE_RESTAURANTS, { search: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm }],
-    queryFn: async () => {
-      const response = await RestaurantApi.getActiveRestaurants({
-        page: 1,
-        limit: 1,
-        search: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm
-      });
-      const total = response.pagination?.total || 0;
-      const searchTerm = tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm;
-      console.log('📊 Active Restaurants Total Updated:', total, searchTerm ? `(filtered by: "${searchTerm}")` : '');
-      return total;
+  const { data: activeRestaurantsTotal } = trpc.restaurant.getRestaurants.useQuery(
+    {
+      pageNumber: 1,
+      quantity: 1,
+      status: ApprovalStatusEnum.APPROVED,
+      query: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm || undefined,
     },
-    staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true, // Enable refetch on window focus
-    refetchOnMount: true, // Always refetch on mount
-  });
+    {
+      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
+      gcTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true, // Enable refetch on window focus
+      refetchOnMount: true, // Always refetch on mount
+    }
+  );
 
-  // Fetch submitted restaurants total with tab-specific search
-  const { data: submittedRestaurantsTotal } = useQuery({
-    queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, { search: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm }],
-    queryFn: async () => {
-      const response = await RestaurantApi.getPendingRestaurants({
-        page: 1,
-        limit: 1,
-        search: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm
-      });
-      const total = response.pagination?.total || 0;
-      const searchTerm = tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm;
-      console.log('📊 Submitted Restaurants Total Updated:', total, searchTerm ? `(filtered by: "${searchTerm}")` : '');
-      return total;
+  // Fetch submitted restaurants total with tab-specific search (for analysts)
+  const { data: submittedRestaurantsTotal } = trpc.restaurant.getRestaurants.useQuery(
+    {
+      pageNumber: 1,
+      quantity: 1,
+      status: ApprovalStatusEnum.PENDING,
+      query: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm || undefined,
     },
-    staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true, // Enable refetch on window focus
-    refetchOnMount: true, // Always refetch on mount
-  });
+    {
+      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
+      gcTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true, // Enable refetch on window focus
+      refetchOnMount: true, // Always refetch on mount
+    }
+  );
 
-  // Fetch submitted videos total with tab-specific search
-  const { data: submittedVideosTotal } = useQuery({
-    queryKey: ['restaurants', 'total', AnalystTableTabsEnum.SUBMITTED_VIDEOS, { search: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm }],
-    queryFn: async () => {
-      const response = await RestaurantApi.getPendingVideos({
-        page: 1,
-        limit: 1,
-        search: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm
-      });
-      const total = response.pagination?.total || 0;
-      const searchTerm = tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm;
-      console.log('📊 Submitted Videos Total Updated:', total, searchTerm ? `(filtered by: "${searchTerm}")` : '');
-      return total;
+  // Fetch submitted videos total with tab-specific search (for analysts)
+  const { data: submittedVideosTotal } = trpc.post.getPosts.useQuery(
+    {
+      pageNumber: 1,
+      quantity: 1,
+      query: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm || undefined,
     },
-    staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-    gcTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true, // Enable refetch on window focus
-    refetchOnMount: true, // Always refetch on mount
-  });
+    {
+      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
+      gcTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: true, // Enable refetch on window focus
+      refetchOnMount: true, // Always refetch on mount
+    }
+  );
+
+  // Extract totals from tRPC responses
+  const getTotalFromResponse = (response: unknown): number => {
+    if (!response || typeof response !== 'object') return 0;
+
+    const responseObj = response as Record<string, unknown>;
+
+    // Handle different response structures
+    if (responseObj.pagination && typeof responseObj.pagination === 'object') {
+      const pagination = responseObj.pagination as Record<string, unknown>;
+      if (typeof pagination.total === 'number') {
+        return pagination.total;
+      }
+    }
+
+    if (typeof responseObj.total === 'number') {
+      return responseObj.total;
+    }
+
+    if (responseObj.data && Array.isArray(responseObj.data)) {
+      return responseObj.data.length;
+    }
+
+    return 0;
+  };
+
+  const pendingRestaurantsCount = getTotalFromResponse(pendingRestaurantsTotal);
+  const pendingVideosCount = getTotalFromResponse(pendingVideosTotal);
+  const activeRestaurantsCount = getTotalFromResponse(activeRestaurantsTotal);
+  const submittedRestaurantsCount = getTotalFromResponse(submittedRestaurantsTotal);
+  const submittedVideosCount = getTotalFromResponse(submittedVideosTotal);
 
   return {
-    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsTotal || 0,
-    [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsTotal || 0,
-    [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosTotal || 0,
-    [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsTotal || 0,
-    [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosTotal || 0,
+    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
+    [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsCount,
+    [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
+    [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsCount,
+    [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
   };
 };

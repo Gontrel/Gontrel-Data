@@ -41,6 +41,14 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
       limit: pageSize,
     });
 
+  // Calculate total pages from API response
+  const totalPages = useMemo(() => {
+    if (!restaurantsData?.pagination?.total || !pageSize) {
+      return 1;
+    }
+    return Math.ceil(restaurantsData.pagination.total / pageSize);
+  }, [restaurantsData?.pagination?.total, pageSize]);
+
   const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
     if (selectedRows.length > 0) {
       // Assuming each restaurant has a unique ID
@@ -58,7 +66,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
       columns={columns}
       currentPage={currentPage}
       pageSize={pageSize}
-      totalPages={restaurantsData?.pagination?.total || 1}
+      totalPages={totalPages}
       onPageSizeChange={handlePageSize}
       onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
     />

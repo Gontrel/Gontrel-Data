@@ -73,7 +73,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
       return (
         <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
           <Image
-            src={Logo}
+            src={Logo.src}
             alt={addedBy ?? "Gontrel"}
             width={40}
             height={40}

@@ -56,6 +56,7 @@ export function useRestaurantsTRPC(
     {
       pageNumber: page || 1,
       quantity: limit || 10,
+      status: ApprovalStatusEnum.PENDING,
       query: search || undefined,
     },
     {
@@ -100,15 +101,25 @@ export function useRestaurantsTRPC(
     }
   );
 
-  // Handle errors in your component
   useEffect(() => {
     if (pendingVideosQuery.error) {
-      console.log(pendingVideosQuery.error.message);
+      console.log('Error:', pendingVideosQuery.error.message);
       errorToast(
-        pendingVideosQuery.error.message || "Failed to fetch pending videos"
+        pendingVideosQuery.error.message ||
+          "Failed to fetch pending videos"
       );
     }
   }, [pendingVideosQuery.error]);
+
+  useEffect(() => {
+    if (pendingRestaurantsQuery.error) {
+      console.log('Pending restaurants error:', pendingRestaurantsQuery.error.message);
+      errorToast(
+        pendingRestaurantsQuery.error.message ||
+          "Failed to fetch pending restaurants"
+      );
+    }
+  }, [pendingRestaurantsQuery.error]);
 
   // Handle empty results
   useEffect(() => {
@@ -145,6 +156,7 @@ export function useRestaurantsTRPC(
     {
       pageNumber: page || 1,
       quantity: limit || 10,
+      status: ApprovalStatusEnum.PENDING,
       query: search || undefined,
     },
     {
@@ -162,6 +174,37 @@ export function useRestaurantsTRPC(
       refetchOnMount: true,
     }
   );
+
+  // Handle errors for remaining queries
+  useEffect(() => {
+    if (activeRestaurantsQuery.error) {
+      console.log('Active restaurants error:', activeRestaurantsQuery.error.message);
+      errorToast(
+        activeRestaurantsQuery.error.message ||
+          "Failed to fetch active restaurants"
+      );
+    }
+  }, [activeRestaurantsQuery.error]);
+
+  useEffect(() => {
+    if (submittedRestaurantsQuery.error) {
+      console.log('Submitted restaurants error:', submittedRestaurantsQuery.error.message);
+      errorToast(
+        submittedRestaurantsQuery.error.message ||
+          "Failed to fetch submitted restaurants"
+      );
+    }
+  }, [submittedRestaurantsQuery.error]);
+
+  useEffect(() => {
+    if (submittedVideosQuery.error) {
+      console.log('Submitted videos error:', submittedVideosQuery.error.message);
+      errorToast(
+        submittedVideosQuery.error.message ||
+          "Failed to fetch submitted videos"
+      );
+    }
+  }, [submittedVideosQuery.error]);
 
   // Return the appropriate query based on table type
   switch (tableId) {

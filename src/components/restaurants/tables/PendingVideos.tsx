@@ -35,8 +35,16 @@ const PendingVideos = ({
       limit: pageSize,
     });
 
+  // Calculate total pages from API response
+  const totalPages = useMemo(() => {
+    if (!restaurantsData?.pagination?.total || !pageSize) {
+      return 1;
+    }
+    return Math.ceil(restaurantsData.pagination.total / pageSize);
+  }, [restaurantsData?.pagination?.total, pageSize]);
+
   //TODO: wait till the backend change the format
-  const modifiedData = restaurantsData
+  const modifiedData: PendingVideoType[] = restaurantsData
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? restaurantsData?.data?.map((post: any) => ({
         name: post.location?.name,
@@ -80,7 +88,7 @@ const PendingVideos = ({
       columns={columns}
       currentPage={currentPage}
       pageSize={pageSize}
-      totalPages={restaurantsData?.pagination?.totalPages || 1}
+      totalPages={totalPages}
       onPageSizeChange={(pageSize) => handlePageSize(pageSize)}
       onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
     />

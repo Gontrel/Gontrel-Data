@@ -19,9 +19,9 @@ export function RestaurantRow<T>({ row, onRowClick }: RestaurantRowProps<T>) {
     ) {
       return;
     }
-    console.error(
-      "Ignore clicks on interactive elements like buttons or links"
-    );
+    // console.error(
+    //   "Ignore clicks on interactive elements like buttons or links"
+    // );
     onRowClick?.(row.original);
   };
 

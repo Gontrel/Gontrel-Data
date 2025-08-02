@@ -166,7 +166,7 @@ export interface FetchLocationsRequest extends BaseQueryRequest {
   userId?: string; // UUID
   adminId?: string; // UUID
   tagId?: string;
-  searchQuery?: string;
+  query?: string;
   status?: ApprovalStatusEnum; // enum values from ApprovalStatus
   isVerified?: boolean;
 }

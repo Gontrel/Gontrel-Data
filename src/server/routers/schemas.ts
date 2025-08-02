@@ -202,7 +202,6 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   lng: z.number().optional(),
   radius: z.number().optional(),
   userId: z.string().optional(),
-  searchQuery: z.string().optional(),
   adminId: z.string().optional(),
   tagId: z.string().optional(),
   status: z.nativeEnum(ApprovalStatusEnum).optional(),

@@ -45,6 +45,14 @@ const SubmittedRestaurants = ({
         limit: pageSize
     });
 
+    // Calculate total pages from API response
+    const totalPages = useMemo(() => {
+        if (!restaurantsData?.pagination?.total || !pageSize) {
+            return 1;
+        }
+        return Math.ceil(restaurantsData.pagination.total / pageSize);
+    }, [restaurantsData?.pagination?.total, pageSize]);
+
     return (
         <RestaurantTable<SubmittedRestaurantType>
             restaurants={restaurantsData?.data || []}
@@ -54,7 +62,7 @@ const SubmittedRestaurants = ({
             columns={columns}
             currentPage={currentPage}
             pageSize={pageSize}
-            totalPages={restaurantsData?.pagination?.totalPages || 1}
+            totalPages={totalPages}
             onPageSizeChange={handlePageSize}
             onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
         />

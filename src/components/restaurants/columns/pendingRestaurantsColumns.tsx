@@ -92,9 +92,9 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "website",
     header: () => <TableHeader iconName="linkIcon" title="Website" />,
     cell: ({ row }) => {
-      const url = row.getValue("website") as string;
+      const website = row.original.website;
       return (
-        <ExternalLink href={url} title={url}>
+        <ExternalLink href={website} title={website}>
           <span className="text-black">View website</span>
         </ExternalLink>
       );
@@ -212,13 +212,13 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "addedBy",
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
-      const addedBy = row.original.admin;
+      const { name, profileImage } = row.original.admin;
 
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={addedBy?.profileImage ?? Logo}
-            alt={addedBy?.name}
+            src={profileImage?.length > 0 ? profileImage : Logo.src}
+            alt={name}
             width={40}
             height={40}
             onError={(e) => {
@@ -226,7 +226,7 @@ export const createPendingRestaurantsColumns = (
             }}
             className="rounded-full object-cover"
           />
-          <span className="text-black font-medium">{addedBy.name}</span>
+          <span className="text-black font-medium">{name}</span>
         </div>
       );
     },
