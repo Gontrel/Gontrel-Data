@@ -3,8 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Globe, MapPin, } from "lucide-react";
-import { EditWorkingHoursModal, WorkingHours } from "../modals/EditWorkingHoursModal";
+import { Globe, MapPin } from "lucide-react";
+import {
+  EditWorkingHoursModal,
+  WorkingHours,
+} from "../modals/EditWorkingHoursModal";
 import Icon from "../svgs/Icons";
 import logo from "@/assets/images/logo.png";
 import { transformToModalHours } from "@/lib/utils";
@@ -51,6 +54,8 @@ export const RestaurantConfirmation = ({
     setIsEditHoursModalOpen(false);
   };
 
+  // const workingHour = restaurant.workingHours ? restaurant.workingHours  :
+
   return (
     <div className="flex flex-col gap-y-5 max-h-full mt-[62px] justify-between">
       <div className="flex flex-col gap-y-5">
@@ -86,8 +91,8 @@ export const RestaurantConfirmation = ({
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-medium text-sm p-2 rounded-lg bg-[#FFFFFF] hover:bg-gray-100"
             >
-              <Icon name="globeIcon" className="w-5 h-5" fill="#2E3032" />{" "}
-              View website <Icon name="externalLinkIcon" className="w-5 h-5" />
+              <Icon name="globeIcon" className="w-5 h-5" fill="#2E3032" /> View
+              website <Icon name="externalLinkIcon" className="w-5 h-5" />
             </a>
             <a
               href={restaurant.addressUrl}
@@ -95,8 +100,8 @@ export const RestaurantConfirmation = ({
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-medium text-sm p-2 rounded-lg bg-[#FFFFFF] hover:bg-gray-100"
             >
-              <MapPin className="w-6 h-6" fill="#2E3032" stroke="#FFFFFF" /> View address{" "}
-              <Icon name="externalLinkIcon" className="w-5 h-5" />
+              <MapPin className="w-6 h-6" fill="#2E3032" stroke="#FFFFFF" />{" "}
+              View address <Icon name="externalLinkIcon" className="w-5 h-5" />
             </a>
           </div>
         </div>
@@ -127,7 +132,10 @@ export const RestaurantConfirmation = ({
                   <div className="text-right font-medium text-gray-800">
                     {hours && hours.length > 0 ? (
                       hours.map((range, index) => (
-                        <div key={index}>{range}<br /></div>
+                        <div key={index}>
+                          {range}
+                          <br />
+                        </div>
                       ))
                     ) : (
                       <div>00:00 - 00:00</div>

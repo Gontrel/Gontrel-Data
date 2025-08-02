@@ -7,7 +7,7 @@ export const isValidUrl = (urlString: string): boolean => {
   try {
     new URL(urlString);
     return true;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return false;
   }
@@ -227,10 +227,9 @@ const parseTimeRange = (range: string): TimeSlot => {
     return `${h.toString().padStart(2, "0")}:${minutes}`;
   };
 
-  const parts = range.split(" - ");
+  const parts = range.split(" – ");
   const start = convertTo24HourFormat(parts[0]);
   const end = convertTo24HourFormat(parts[1]);
-
   // If end is empty but start is not, default end to start.
   return { start, end: start && !end ? start : end };
 };
