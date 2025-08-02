@@ -6,7 +6,7 @@ import { TABLE_COLUMN_SIZES } from "@/constants";
 import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
-import logo from "../../../assets/images/logo.png";
+import Logo from "@/assets/images/logo.png";
 
 /**
  * Creates column definitions for pending videos table
@@ -70,11 +70,11 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
       const addedBy = row.original.addedBy;
-
+      console.log(row.original);
       return (
         <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
           <Image
-            src={logo}
+            src={Logo}
             alt={addedBy ?? "Gontrel"}
             width={40}
             height={40}

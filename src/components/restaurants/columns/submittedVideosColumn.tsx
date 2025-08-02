@@ -50,10 +50,10 @@ export const createSubmittedVideosColumns = (): ColumnDef<SubmittedVideoType>[] 
         <TableHeader iconName="videoIcon" title="Video" />
       ),
       cell: ({ row }) => {
-        const videos = row.original.videos;
+        const posts = row.original.posts;
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={`${videos.length} video${videos.length > 1 ? 's' : ''}`} textColor={getTextColor(videos)} bgColor={getBgColor(videos)} />
+            <PillButton text={`${posts.length} video${posts.length > 1 ? 's' : ''}`} textColor={getTextColor(posts)} bgColor={getBgColor(posts)} />
             <button onClick={() => {
               // TODO: Open video modal
             }} className="text-left text-blue-500">

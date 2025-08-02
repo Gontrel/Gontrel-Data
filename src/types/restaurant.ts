@@ -160,45 +160,63 @@ export type PendingVideoType = {
 };
 
 export type SubmittedRestaurantType = {
-  restaurantId: string;
-  name: string;
-  videos: VideoType[];
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
   address: {
-    status: TableStatusEnum;
-    name: string;
+    status: string;
+    content: string;
   };
-  maplink: string;
+  lat: number;
+  lng: number;
+  menu: {
+    status: string;
+    content: string;
+  };
+  name: string;
+  openingHours: Array<{
+    dayOfTheWeek: string;
+    opensAt?: number;
+    closesAt?: number;
+  }>;
+  photos: string[];
+  phoneNumber: string;
+  priceLevel: number;
+  rating: number;
+  reservation: {
+    status: string;
+    content: string;
+  };
+  toilets: boolean;
+  type: string;
   website: string;
-  menuUrl: {
-    status: TableStatusEnum;
-    url: string;
+  status: string;
+  comment: string | null;
+  mapLink: string | null;
+  country: string;
+  admin: Admin;
+  posts: VideoType[];
+  tags: string[];
+  videos: {
+    total: number;
+    approved: number;
+    pending: number;
+    declined: number;
   };
-  reservationUrl: {
-    status: TableStatusEnum;
-    url: string;
-  };
-  comment: string;
-  openingHours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  dateAdded: Date;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export type SubmittedVideoType = {
   id: string;
   restaurantId: string;
   name: string;
-  videos: VideoType[];
-  comment: string;
+  posts: VideoType[];
   dateAdded: Date;
+  addedBy: string;
+  createdAt: string;
 };
 
 /**

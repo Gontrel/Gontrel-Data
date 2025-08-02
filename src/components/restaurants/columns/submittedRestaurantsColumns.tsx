@@ -56,16 +56,17 @@ export const createSubmittedRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const videos = row.original.videos;
-        const isPending = videos.every(video => video.status === TableStatusEnum.PENDING);
-        let text = `${videos.filter(video => video.status !== TableStatusEnum.PENDING).length}/${videos.length} video${videos.length > 1 ? 's' : ''}`;
+        const posts = row.original.posts;
+        const isPending = videos.pending > 0;
+        let text = `${videos.pending}/${videos.total} video${videos.total > 1 ? 's' : ''}`;
 
         if (isPending) {
-          text = videos.length > 1 ? `${videos.length} videos` : `${videos.length} video`;
+          text = videos.pending > 1 ? `${videos.pending} videos` : `${videos.pending} video`;
         }
 
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={text} textColor={getTextColor(videos)} bgColor={getBgColor(videos)} />
+            <PillButton text={text} textColor={getTextColor(posts)} bgColor={getBgColor(posts)} />
             <button onClick={() => {
               // TODO: Open video modal
             }} className="text-blue-500 text-left">
@@ -97,8 +98,8 @@ export const createSubmittedRestaurantsColumns = (
         <TableHeader iconName="mapPinIcon" title="Address" />
       ),
       cell: ({ row }) => {
-        const { name, status } = row.original.address;
-        const maplink = row.original.maplink;
+        const { content, status } = row.original.address;
+        const maplink = row.original.mapLink ?? '';
         const isApproved = status === TableStatusEnum.APPROVED;
         const isPending = status === TableStatusEnum.PENDING;
 
@@ -106,9 +107,9 @@ export const createSubmittedRestaurantsColumns = (
           <div className={`flex flex-col gap-y-2 ${!isPending && 'items-center'}`}>
             <ExternalLink
               href={maplink}
-              title={`View ${name} on Google Maps`}
+              title={`View ${content} on Google Maps`}
             >
-              <span className="text-black truncate max-w-52">{name}</span>
+              <span className="text-black truncate max-w-52">{content}</span>
             </ExternalLink>
             {!isPending && (
               <ActionButtons
@@ -136,12 +137,12 @@ export const createSubmittedRestaurantsColumns = (
         <TableHeader iconName="linkIcon" title="Menu link" />
       ),
       cell: ({ row }) => {
-        const { url, status } = row.original.menuUrl;
+        const { content, status } = row.original.menu;
         const isApproved = status === TableStatusEnum.APPROVED;
         const isPending = status === TableStatusEnum.PENDING;
         return (
           <div className={`flex flex-col gap-y-2 ${!isPending && 'items-center'}`}>
-            <ExternalLink href={url} title={url}>
+            <ExternalLink href={content} title={content}>
               <span className="text-black">View link</span>
             </ExternalLink>
             {!isPending && (
@@ -170,12 +171,12 @@ export const createSubmittedRestaurantsColumns = (
         <TableHeader iconName="linkIcon" title="Reservation link" />
       ),
       cell: ({ row }) => {
-        const { url, status } = row.original.reservationUrl;
+        const { content, status } = row.original.reservation;
         const isApproved = status === TableStatusEnum.APPROVED;
         const isPending = status === TableStatusEnum.PENDING;
         return (
           <div className={`flex flex-col gap-y-2 ${!isPending && 'items-center'}`}>
-            <ExternalLink href={url} title={url}>
+            <ExternalLink href={content} title={content}>
               <span className="text-black">View link</span>
             </ExternalLink>
             {!isPending && (
@@ -242,7 +243,7 @@ export const createSubmittedRestaurantsColumns = (
         <TableHeader title="Actions" />
       ),
       cell: ({ row }) => {
-        const isPending = row.original.videos.some((video) => video.status === TableStatusEnum.PENDING) || row.original.address.status === TableStatusEnum.PENDING || row.original.menuUrl.status === TableStatusEnum.PENDING || row.original.reservationUrl.status === TableStatusEnum.PENDING;
+        const isPending = row.original.videos.pending > 0 || row.original.address.status === TableStatusEnum.PENDING || row.original.menu.status === TableStatusEnum.PENDING || row.original.reservation.status === TableStatusEnum.PENDING;
         return (
           !isPending && <ActionButtons
             actions={[

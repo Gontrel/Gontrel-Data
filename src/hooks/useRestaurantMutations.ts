@@ -22,12 +22,12 @@ export const useRestaurantMutations = () => {
       restaurantId: string;
       newStatus: TableStatusEnum;
       tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
-      propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos';
+      propertyKey?: 'address' | 'menu' | 'reservation' | 'posts';
     }) => {
       console.log(`🔄 Updating restaurant ${restaurantId} status to ${newStatus} in ${tableType}${propertyKey ? ` for ${propertyKey}` : ''}`);
 
       const result = await RestaurantApi.updateRestaurantStatus({
-        restaurantId,
+        id: restaurantId,
         newStatus,
         tableType,
         propertyKey
@@ -87,7 +87,7 @@ export const useRestaurantMutations = () => {
   /**
    * Approve a pending restaurant
    */
-  const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos') => {
+  const approveRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts') => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.id,
       newStatus: TableStatusEnum.APPROVED,
@@ -99,7 +99,7 @@ export const useRestaurantMutations = () => {
   /**
    * Decline a pending restaurant
    */
-  const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos') => {
+  const declineRestaurant = (restaurant: PendingRestaurantType, tableType: ManagerTableTabsEnum, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts') => {
     return updateRestaurantStatus.mutate({
       restaurantId: restaurant.id,
       newStatus: TableStatusEnum.DECLINED,
@@ -135,7 +135,7 @@ export const useRestaurantMutations = () => {
    */
   const resubmitRestaurant = (restaurant: SubmittedRestaurantType) => {
     return updateRestaurantStatus.mutate({
-      restaurantId: restaurant.restaurantId,
+      restaurantId: restaurant.id,
       newStatus: TableStatusEnum.PENDING,
       tableType: AnalystTableTabsEnum.SUBMITTED_RESTAURANTS
     });
@@ -146,7 +146,7 @@ export const useRestaurantMutations = () => {
    */
   const resubmitVideo = (video: SubmittedVideoType) => {
     return updateRestaurantStatus.mutate({
-      restaurantId: video.restaurantId,
+      restaurantId: video.id,
       newStatus: TableStatusEnum.PENDING,
       tableType: AnalystTableTabsEnum.SUBMITTED_VIDEOS
     });

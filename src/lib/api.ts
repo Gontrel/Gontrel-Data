@@ -26,19 +26,19 @@ export class RestaurantApi {
   /**
    * Update restaurant status in mock data
    * @param restaurantId - Restaurant ID to update
-   * @param propertyKey - Property to update (address, menuUrl, reservationUrl, or videos)
+   * @param propertyKey - Property to update (address, menu, reservation, or posts)
    * @param newStatus - New status to set
    * @param tableType - Table type for proper data source
    */
   static async updateRestaurantStatus(params: {
-    restaurantId: string;
-    propertyKey?: 'address' | 'menuUrl' | 'reservationUrl' | 'videos';
+    id: string;
+    propertyKey?: 'address' | 'menu' | 'reservation' | 'posts';
     newStatus: TableStatusEnum;
     tableType: ManagerTableTabsEnum | AnalystTableTabsEnum;
   }): Promise<{ success: boolean }> {
     await delay(300); // Simulate network delay
 
-    const { restaurantId, propertyKey, newStatus, tableType } = params;
+    const { id, propertyKey, newStatus, tableType } = params;
 
     // Helper function to toggle status
     const toggleStatus = (currentStatus: TableStatusEnum, targetStatus: TableStatusEnum): TableStatusEnum => {
@@ -48,75 +48,75 @@ export class RestaurantApi {
     // Update the appropriate mock data based on table type
     switch (tableType) {
       case ManagerTableTabsEnum.PENDING_RESTAURANTS:
-        const pendingRestaurant = mockPendingRestaurants.find(r => r.restaurantId === restaurantId);
+        const pendingRestaurant = mockPendingRestaurants.find(r => r.id === id);
         if (pendingRestaurant) {
           if (propertyKey) {
             // Update specific property
             if (propertyKey === 'address') {
-              pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status, newStatus);
-            } else if (propertyKey === 'menuUrl') {
-              pendingRestaurant.menuUrl.status = toggleStatus(pendingRestaurant.menuUrl.status, newStatus);
-            } else if (propertyKey === 'reservationUrl') {
-              pendingRestaurant.reservationUrl.status = toggleStatus(pendingRestaurant.reservationUrl.status, newStatus);
-            } else if (propertyKey === 'videos') {
-              pendingRestaurant.videos.forEach(video => {
-                video.status = toggleStatus(video.status, newStatus);
+              pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status as TableStatusEnum, newStatus);
+            } else if (propertyKey === 'menu') {
+              pendingRestaurant.menu.status = toggleStatus(pendingRestaurant.menu.status as TableStatusEnum, newStatus);
+            } else if (propertyKey === 'reservation') {
+              pendingRestaurant.reservation.status = toggleStatus(pendingRestaurant.reservation.status as TableStatusEnum, newStatus);
+            } else if (propertyKey === 'posts') {
+              pendingRestaurant.posts.forEach(post => {
+                post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
               });
             }
           } else {
             // Update all properties
-            pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status, newStatus);
-            pendingRestaurant.menuUrl.status = toggleStatus(pendingRestaurant.menuUrl.status, newStatus);
-            pendingRestaurant.reservationUrl.status = toggleStatus(pendingRestaurant.reservationUrl.status, newStatus);
-            pendingRestaurant.videos.forEach(video => {
-              video.status = toggleStatus(video.status, newStatus);
+            pendingRestaurant.address.status = toggleStatus(pendingRestaurant.address.status as TableStatusEnum, newStatus);
+            pendingRestaurant.menu.status = toggleStatus(pendingRestaurant.menu.status as TableStatusEnum, newStatus);
+            pendingRestaurant.reservation.status = toggleStatus(pendingRestaurant.reservation.status as TableStatusEnum, newStatus);
+            pendingRestaurant.posts.forEach(post => {
+              post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
             });
           }
         }
         break;
 
       case ManagerTableTabsEnum.PENDING_VIDEOS:
-        const pendingVideo = mockPendingVideos.find(v => v.id === restaurantId);
+        const pendingVideo = mockPendingVideos.find(v => v.id === id);
         if (pendingVideo) {
-          pendingVideo.videos.forEach(video => {
-            video.status = toggleStatus(video.status, newStatus);
+          pendingVideo.posts.forEach(video => {
+            video.status = toggleStatus(video.status as TableStatusEnum, newStatus);
           });
         }
         break;
 
       case AnalystTableTabsEnum.SUBMITTED_RESTAURANTS:
-        const submittedRestaurant = mockSubmittedRestaurants.find(r => r.restaurantId === restaurantId);
+        const submittedRestaurant = mockSubmittedRestaurants.find(r => r.id === id);
         if (submittedRestaurant) {
           if (propertyKey) {
             // Update specific property
             if (propertyKey === 'address') {
-              submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status, newStatus);
-            } else if (propertyKey === 'menuUrl') {
-              submittedRestaurant.menuUrl.status = toggleStatus(submittedRestaurant.menuUrl.status, newStatus);
-            } else if (propertyKey === 'reservationUrl') {
-              submittedRestaurant.reservationUrl.status = toggleStatus(submittedRestaurant.reservationUrl.status, newStatus);
-            } else if (propertyKey === 'videos') {
-              submittedRestaurant.videos.forEach(video => {
-                video.status = toggleStatus(video.status, newStatus);
+              submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status as TableStatusEnum, newStatus);
+            } else if (propertyKey === 'menu') {
+              submittedRestaurant.menu.status = toggleStatus(submittedRestaurant.menu.status as TableStatusEnum, newStatus);
+            } else if (propertyKey === 'reservation') {
+              submittedRestaurant.reservation.status = toggleStatus(submittedRestaurant.reservation.status as TableStatusEnum, newStatus);
+            } else if (propertyKey === 'posts') {
+              submittedRestaurant.posts.forEach(post => {
+                post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
               });
             }
           } else {
             // Update all properties
-            submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status, newStatus);
-            submittedRestaurant.menuUrl.status = toggleStatus(submittedRestaurant.menuUrl.status, newStatus);
-            submittedRestaurant.reservationUrl.status = toggleStatus(submittedRestaurant.reservationUrl.status, newStatus);
-            submittedRestaurant.videos.forEach(video => {
-              video.status = toggleStatus(video.status, newStatus);
+            submittedRestaurant.address.status = toggleStatus(submittedRestaurant.address.status as TableStatusEnum, newStatus);
+            submittedRestaurant.menu.status = toggleStatus(submittedRestaurant.menu.status as TableStatusEnum, newStatus);
+            submittedRestaurant.reservation.status = toggleStatus(submittedRestaurant.reservation.status as TableStatusEnum, newStatus);
+            submittedRestaurant.posts.forEach(post => {
+              post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
             });
           }
         }
         break;
 
       case AnalystTableTabsEnum.SUBMITTED_VIDEOS:
-        const submittedVideo = mockSubmittedVideos.find(v => v.id === restaurantId);
+        const submittedVideo = mockSubmittedVideos.find(v => v.id === id);
         if (submittedVideo) {
-          submittedVideo.videos.forEach(video => {
-            video.status = toggleStatus(video.status, newStatus);
+          submittedVideo.posts.forEach(post => {
+            post.status = toggleStatus(post.status as TableStatusEnum, newStatus);
           });
         }
         break;
@@ -192,8 +192,8 @@ export class RestaurantApi {
         (restaurant: PendingRestaurantType) =>
           (typeof restaurant.name === "string" &&
             restaurant.name.toLowerCase().includes(searchTerm)) ||
-          (typeof restaurant.address.name === "string" &&
-            restaurant.address.name.toLowerCase().includes(searchTerm)) ||
+          (typeof restaurant.address.content === "string" &&
+            restaurant.address.content.toLowerCase().includes(searchTerm)) ||
           (typeof restaurant.website === "string" &&
             restaurant.website.toLowerCase().includes(searchTerm))
       );
@@ -361,7 +361,7 @@ export class RestaurantApi {
       const searchTerm = params.search.toLowerCase();
       filteredRestaurants = filteredRestaurants.filter((restaurant: SubmittedRestaurantType) =>
         (typeof restaurant.name === 'string' && restaurant.name.toLowerCase().includes(searchTerm)) ||
-        (typeof restaurant.address.name === 'string' && restaurant.address.name.toLowerCase().includes(searchTerm))
+        (typeof restaurant.address.content === 'string' && restaurant.address.content.toLowerCase().includes(searchTerm))
       );
     }
 

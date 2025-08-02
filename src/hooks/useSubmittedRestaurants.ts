@@ -57,11 +57,13 @@ const updatePropertyStatus =(
   propertyKey: SubmittedRestaurantStatusKey,
   newStatus: TableStatusEnum
 ): SubmittedRestaurantType => {
+  const propertyValue = restaurant[propertyKey] as { status: TableStatusEnum };
+
   return {
     ...restaurant,
     [propertyKey]: {
-      ...restaurant[propertyKey],
-      status: restaurant[propertyKey].status === newStatus ? TableStatusEnum.PENDING : newStatus
+      ...propertyValue,
+      status: propertyValue.status === newStatus ? TableStatusEnum.PENDING : newStatus
     }
   };
 };
@@ -87,7 +89,7 @@ export const useSubmittedRestaurants = () => {
   ) => {
     setRestaurants(prevRestaurants =>
       prevRestaurants.map(restaurant => {
-        if (restaurant.restaurantId !== restaurantId) {
+        if (restaurant.id !== restaurantId) {
           return restaurant;
         }
 
@@ -104,7 +106,7 @@ export const useSubmittedRestaurants = () => {
 
   const handleResubmit = useCallback((restaurant: SubmittedRestaurantType) => {
     // Update local state immediately for optimistic UI
-    updateRestaurantStatus(restaurant.restaurantId, TableStatusEnum.PENDING);
+    updateRestaurantStatus(restaurant.id, TableStatusEnum.PENDING);
 
     // Trigger mutation with proper query invalidation
     resubmitRestaurantMutation(restaurant);

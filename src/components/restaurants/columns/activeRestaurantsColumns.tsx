@@ -5,6 +5,7 @@ import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants/table";
 import { ExternalLink } from "@/components/ui/ExternalLink";
+import Logo from "@/assets/images/logo.png";
 
 export const createActiveRestaurantsColumns = (
 ): ColumnDef<ActiveRestaurantType>[] => [
@@ -95,7 +96,7 @@ export const createActiveRestaurantsColumns = (
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={admin.profileImage}
+            src={admin.profileImage ?? Logo}
             alt={admin.name}
             width={40}
             height={40}

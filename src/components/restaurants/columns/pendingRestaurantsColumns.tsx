@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { PendingRestaurantType } from "@/types/restaurant";
 import { PendingRestaurantStatusKey } from "@/hooks/usePendingRestaurants";
-import { Check, X } from "lucide-react";
+// import { Check, X } from "lucide-react";
 import { ActionButtons } from "../../ui/ActionButtons";
 import { ExternalLink } from "../../ui/ExternalLink";
 import Image from "next/image";
@@ -11,6 +11,7 @@ import { TableStatusEnum } from "@/types/enums";
 import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
+import Logo from "@/assets/images/logo.png";
 
 /**
  * Creates column definitions for pending restaurants table
@@ -104,10 +105,10 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "address",
     header: () => <TableHeader iconName="mapPinIcon" title="Address" />,
     cell: ({ row }) => {
-      const { content, status } = row.original.address;
+      const { content } = row.original.address;
       const maplink = row.original.mapLink;
-      const isApproved = status === TableStatusEnum.APPROVED;
-      const isDeclined = status === TableStatusEnum.DECLINED;
+      // const isApproved = status === TableStatusEnum.APPROVED;
+      // const isDeclined = status === TableStatusEnum.DECLINED;
 
       return (
         <div className="flex flex-col gap-y-2">
@@ -117,7 +118,7 @@ export const createPendingRestaurantsColumns = (
           >
             <span className="text-black truncate max-w-52">{content}</span>
           </ExternalLink>
-          <ActionButtons
+          {/* <ActionButtons
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
@@ -133,7 +134,7 @@ export const createPendingRestaurantsColumns = (
               },
             ]}
             className="w-64 h-9"
-          />
+          /> */}
         </div>
       );
     },
@@ -143,15 +144,15 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "menuUrl",
     header: () => <TableHeader iconName="linkIcon" title="Menu link" />,
     cell: ({ row }) => {
-      const { content, status } = row.original.menu;
-      const isApproved = status === TableStatusEnum.APPROVED;
-      const isDeclined = status === TableStatusEnum.DECLINED;
+      const { content } = row.original.menu;
+      // const isApproved = status === TableStatusEnum.APPROVED;
+      // const isDeclined = status === TableStatusEnum.DECLINED;
       return (
         <div className="flex flex-col gap-y-2">
           <ExternalLink href={content} title={content}>
             <span className="text-black">View link</span>
           </ExternalLink>
-          <ActionButtons
+          {/* <ActionButtons
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
@@ -167,7 +168,7 @@ export const createPendingRestaurantsColumns = (
               },
             ]}
             className="w-64 h-9"
-          />
+          /> */}
         </div>
       );
     },
@@ -177,15 +178,15 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "reservationUrl",
     header: () => <TableHeader iconName="linkIcon" title="Reservation link" />,
     cell: ({ row }) => {
-      const { content, status } = row.original.reservation;
-      const isApproved = status === TableStatusEnum.APPROVED;
-      const isDeclined = status === TableStatusEnum.DECLINED;
+      const { content } = row.original.reservation;
+      // const isApproved = status === TableStatusEnum.APPROVED;
+      // const isDeclined = status === TableStatusEnum.DECLINED;
       return (
         <div className="flex flex-col gap-y-2">
           <ExternalLink href={content} title={content}>
             <span className="text-black">View link</span>
           </ExternalLink>
-          <ActionButtons
+          {/* <ActionButtons
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
@@ -201,7 +202,7 @@ export const createPendingRestaurantsColumns = (
               },
             ]}
             className="w-64 h-9"
-          />
+          /> */}
         </div>
       );
     },
@@ -216,7 +217,7 @@ export const createPendingRestaurantsColumns = (
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={addedBy?.profileImage ?? null}
+            src={addedBy?.profileImage ?? Logo}
             alt={addedBy?.name}
             width={40}
             height={40}
