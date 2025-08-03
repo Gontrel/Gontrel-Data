@@ -1,4 +1,12 @@
-import { IPaginatedRes, ApiLocation, Post, Admin, DashboardStats, StaffStats, LocationStats } from './api';
+import {
+  IPaginatedRes,
+  ApiLocation,
+  Post,
+  Admin,
+  DashboardStats,
+  StaffStats,
+  LocationStats,
+} from "./api";
 
 // Authentication responses
 export interface LoginResponse {
@@ -121,4 +129,55 @@ export interface PlaceDetailsResponse {
       width: number;
     }>;
   };
+}
+
+export interface Address {
+  status: "pending" | "approved" | "rejected";
+  content: string;
+}
+
+export interface Menu {
+  status: "pending" | "approved" | "rejected";
+  content: string; // URL
+}
+
+export interface Reservation {
+  status: "pending" | "approved" | "rejected";
+  content: string; // URL
+}
+
+export interface OpeningHours {
+  dayOfTheWeek:
+    | "MONDAY"
+    | "TUESDAY"
+    | "WEDNESDAY"
+    | "THURSDAY"
+    | "FRIDAY"
+    | "SATURDAY"
+    | "SUNDAY";
+  opensAt?: number;
+  closesAt?: number;
+}
+
+export interface GetRestaurantByIdResponse {
+  id: string;
+  address: Address;
+  lat: number;
+  lng: number;
+  menu: Menu;
+  name: string;
+  openingHours: OpeningHours[];
+  photos: string[];
+  phoneNumber: string;
+  priceLevel: number;
+  rating: number;
+  reservation: Reservation;
+  toilets: boolean;
+  type: string;
+  website: string;
+  createdAt: string;
+  modifiedAt: string;
+  status: "pending" | "approved" | "rejected" | "draft";
+  posts: Post[];
+  admin: Admin;
 }

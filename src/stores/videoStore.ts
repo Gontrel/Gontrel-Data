@@ -1,5 +1,5 @@
-import { create, StateCreator } from 'zustand';
-import React from 'react';
+import { create, StateCreator } from "zustand";
+import React from "react";
 
 export interface VideoData {
   id: string;
@@ -13,17 +13,17 @@ export interface VideoData {
 }
 
 export interface RestaurantData {
-      sessionToken?: string;
-      placeId: string;
-      address: string;
-      menu?: string;
-      name?: string;
-      photos?: string[];
-      rating?: number;
-      reservation?: string;
-      website?: string;
-      posts?: VideoData[];
-      openingHours?: openingHours[];
+  sessionToken?: string;
+  placeId: string;
+  address: string;
+  menu?: string;
+  name?: string;
+  photos?: string[];
+  rating?: number;
+  reservation?: string;
+  website?: string;
+  posts?: VideoData[];
+  openingHours?: openingHours[];
 }
 
 export interface openingHours {
@@ -45,7 +45,7 @@ export interface VideoState {
   tiktokUsername: string | null;
   currentlyPlayingVideoId: string | null;
   videoPlayerInstances: Map<string, VideoPlayerInstance>;
-  addVideo: (video: Omit<VideoData, 'id'>) => void;
+  addVideo: (video: Omit<VideoData, "id">) => void;
   removeVideo: (id: string) => void;
   updateVideo: (id: string, video: Partial<VideoData>) => void;
   setActiveVideoUrl: (url: string | null) => void;
@@ -65,12 +65,23 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
   tiktokUsername: null,
   currentlyPlayingVideoId: null,
   videoPlayerInstances: new Map<string, VideoPlayerInstance>(),
-  addVideo: (video: Omit<VideoData, 'id'>) =>
-    set((state: VideoState) => ({
-      videos: [...state.videos, { ...video, id: Date.now().toString() }],
-    })),
+  // addVideo: (video: Omit<VideoData, "id">) =>
+  //   set((state: VideoState) => ({
+  //     videos: [...state.videos, { ...video, id: Date.now().toString() }],
+  //   })),
+
+  addVideo: (video: Omit<VideoData, "id">) => {
+    const newVideo = {
+      ...video,
+      id: Date.now().toString(),
+    };
+    set({ videos: [...get().videos, newVideo] });
+    return newVideo;
+  },
   removeVideo: (id: string) =>
-    set((state: VideoState) => ({ videos: state.videos.filter((v) => v.id !== id) })),
+    set((state: VideoState) => ({
+      videos: state.videos.filter((v) => v.id !== id),
+    })),
   updateVideo: (id: string, updatedVideo: Partial<VideoData>) =>
     set((state: VideoState) => ({
       videos: state.videos.map((v) =>
@@ -94,7 +105,10 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
       newInstances.delete(id);
       return {
         videoPlayerInstances: newInstances,
-        currentlyPlayingVideoId: state.currentlyPlayingVideoId === id ? null : state.currentlyPlayingVideoId
+        currentlyPlayingVideoId:
+          state.currentlyPlayingVideoId === id
+            ? null
+            : state.currentlyPlayingVideoId,
       };
     }),
   playVideo: (id: string) => {

@@ -39,7 +39,9 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
       search: searchTerm,
       page: currentPage,
       limit: pageSize,
-    });
+    },
+    
+  );
 
   // Calculate total pages from API response
   const totalPages = useMemo(() => {
