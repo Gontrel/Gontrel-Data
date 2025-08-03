@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const API_URL = process.env.API_BASE_URL;
 const API_KEY = process.env.API_KEY;
 
@@ -26,6 +25,27 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    // Handle network errors and API errors
+    if (error.response) {
+      // Handle 401 Unauthorized
+      if (error.response.status === 200) {
+        if (typeof window !== "undefined") {
+          // Redirect to login
+          window.location.href = "/";
+        }
+      }
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 // --- Unauthenticated Client ---

@@ -192,15 +192,10 @@ export const NewRestaurantSheet = ({
       address: selectedRestaurant.address,
       menu: data.menuUrl ? data.menuUrl : "",
       name: selectedRestaurant.name,
-      photos: selectedRestaurant.imageUrl
-        ? [selectedRestaurant.imageUrl]
-        : [],
+      photos: selectedRestaurant.imageUrl ? [selectedRestaurant.imageUrl] : [],
       rating: selectedRestaurant.rating ?? 0,
       reservation: data.reservationUrl ? data.reservationUrl : "",
       type: "RESTAURANT" as const,
-      website: selectedRestaurant.websiteUrl
-        ? selectedRestaurant.websiteUrl
-        : "",
       isVerified: false,
       posts:
         videos.map((video) => ({
