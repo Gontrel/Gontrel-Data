@@ -1,18 +1,21 @@
 "use client";
 
-import {
-  User
-} from "lucide-react";
+import { User } from "lucide-react";
 import { GontrelPostView } from "../video/GontrelPostView";
 import { Post } from "@/interfaces";
 
 interface LivePostCardProps {
   handleApprove?: () => void;
   handleDecline?: () => void;
-  post?: Post;
+  post: Post;
+  // restaurant: RestaurantAdmin;
 }
 
-export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCardProps) => {
+export const LivePostCard = ({
+  handleApprove,
+  handleDecline,
+  post,
+}: LivePostCardProps) => {
   if (!post) {
     post = {
       id: "post_123456789",
@@ -26,13 +29,14 @@ export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCar
         views: 1250,
         likes: 89,
         shares: 12,
-        comments: 23
+        comments: 23,
       },
       tiktokLink: "https://www.tiktok.com/@kingsyleyyj1009/video/7123456789",
-      videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      videoUrl:
+        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       thumbUrl: "https://example.com/thumbnail.jpg",
       postedAt: "2024-01-15T14:30:00Z",
-      status: "pending"
+      status: "pending",
     };
   }
 
@@ -52,7 +56,6 @@ export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCar
 
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden border border-[#D2D4D5] bg-white max-w-[556px] mx-auto py-6 px-8 gap-y-4.5">
-
       <GontrelPostView
         videoUrl={post.videoUrl}
         restaurantData={mockDisplayData.restaurantData}
@@ -73,7 +76,11 @@ export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCar
         ))}
       </div>
       <div className="flex items-center text-sm text-gray-500">
-        <User size={20} fill="white" className="mr-2 bg-black p-3 text-white rounded-full" />
+        <User
+          size={20}
+          fill="white"
+          className="mr-2 bg-black p-3 text-white rounded-full"
+        />
         <span>Uploaded by: {mockDisplayData.uploadedBy}</span>
         <span className="ml-auto">{mockDisplayData.uploadTime}</span>
       </div>
@@ -94,6 +101,6 @@ export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCar
           <span>Decline</span>
         </button>
       </div>
-    </div >
+    </div>
   );
 };

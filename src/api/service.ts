@@ -129,8 +129,9 @@ export default class APIRequest {
   };
 
   getRestaurantById = async (data: FetchLocationByIdRequest) => {
+    const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
-      `/admin-location/${data.locationId}`
+      `/admin-location-by-id?${params.toString()}`
     );
     return this.handleResponse(response);
   };
