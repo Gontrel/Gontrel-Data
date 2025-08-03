@@ -60,6 +60,7 @@ export const externalRouter = router({
           placeId,
           sessionToken: sessionToken ?? "",
         });
+        
 
         return response;
       } catch (error) {

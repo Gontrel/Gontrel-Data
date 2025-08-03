@@ -106,10 +106,14 @@ export function formatNumber(num: number): string {
   return num.toString();
 }
 export const convertTimeTo24Hour = (time: string): number => {
-
   // Handle "24 hours" case
   if (time.toLowerCase() === "24 hours") {
     return 24;
+  }
+
+  // Handle "Closed" case
+  if (time.toLowerCase() === "Closed") {
+    return 0;
   }
 
   const timeParts = time.match(/(\d{1,2}):(\d{2})\s*([AP]M)/i);
