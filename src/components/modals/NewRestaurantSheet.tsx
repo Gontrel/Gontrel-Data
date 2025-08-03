@@ -194,13 +194,13 @@ export const NewRestaurantSheet = ({
       name: selectedRestaurant.name,
       photos: selectedRestaurant.imageUrl
         ? [selectedRestaurant.imageUrl]
-        : ["https://example.com/photo1.jpg"],
+        : [],
       rating: selectedRestaurant.rating ?? 0,
       reservation: data.reservationUrl ? data.reservationUrl : "",
       type: "RESTAURANT" as const,
       website: selectedRestaurant.websiteUrl
         ? selectedRestaurant.websiteUrl
-        : "https://example.com",
+        : "",
       isVerified: false,
       posts:
         videos.map((video) => ({
@@ -214,7 +214,6 @@ export const NewRestaurantSheet = ({
         })) ?? [],
       openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
         ([day, hours]) => {
-          // Handle "24 hours" case
           if (hours[0].toLowerCase() === "24 hours") {
             return {
               dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
@@ -223,7 +222,15 @@ export const NewRestaurantSheet = ({
             };
           }
 
-          const [startTime, endTime] = hours[0].split(" - ");
+          if (hours[0].toLowerCase().trim() === "closed") {
+            return {
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+              opensAt: 0, // Represents 00:00 (midnight)
+              closesAt: 0, // Represents 00:00 (end of day)
+            };
+          }
+
+          const [startTime, endTime] = hours[0].split(" – ");
 
           return {
             dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,

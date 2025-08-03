@@ -39,9 +39,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
       search: searchTerm,
       page: currentPage,
       limit: pageSize,
-    },
-    
-  );
+    });
 
   // Calculate total pages from API response
   const totalPages = useMemo(() => {
@@ -53,10 +51,12 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
 
   const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
     if (selectedRows.length > 0) {
-      // Assuming each restaurant has a unique ID
-      const restaurantId = selectedRows[0].id;
-      router.push(`/restaurants/${restaurantId}`);
     }
+  };
+
+  const handleOnRowClick = (selectedRows: ActiveRestaurantType): void => {
+    const restaurantId = selectedRows.id;
+    router.push(`/restaurants/${restaurantId}`);
   };
 
   return (
@@ -64,6 +64,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
       restaurants={restaurantsData?.data || []}
       loading={restaurantsLoading}
       onRowSelect={handleRowSelect}
+      onRowClick={handleOnRowClick}
       showSelection={true}
       columns={columns}
       currentPage={currentPage}
