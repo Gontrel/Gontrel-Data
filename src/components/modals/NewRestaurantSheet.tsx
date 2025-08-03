@@ -223,7 +223,8 @@ export const NewRestaurantSheet = ({
             };
           }
 
-          const [startTime, endTime] = hours[0].split(" – ");
+          const [startTime, endTime] = hours[0].split(" - ");
+
           return {
             dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
             opensAt: convertTimeTo24Hour(startTime),

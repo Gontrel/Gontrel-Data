@@ -2,7 +2,6 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { WorkingHours } from "@/components/modals/EditWorkingHoursModal";
 
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -107,6 +106,7 @@ export function formatNumber(num: number): string {
   return num.toString();
 }
 export const convertTimeTo24Hour = (time: string): number => {
+
   // Handle "24 hours" case
   if (time.toLowerCase() === "24 hours") {
     return 24;
@@ -115,8 +115,6 @@ export const convertTimeTo24Hour = (time: string): number => {
   const timeParts = time.match(/(\d{1,2}):(\d{2})\s*([AP]M)/i);
 
   if (!timeParts) {
-    // Return a default/error value or throw an error if the format is unexpected
-    // and not '24 hours'. This handles cases where the time format is invalid.
     return 0;
   }
 
@@ -127,7 +125,7 @@ export const convertTimeTo24Hour = (time: string): number => {
   if (period === "PM" && hours !== 12) {
     hours += 12;
   } else if (period === "AM" && hours === 12) {
-    hours = 0; // Midnight case
+    hours = 0;
   }
 
   return hours + minutes / 60;
