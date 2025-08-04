@@ -1,12 +1,12 @@
+import { Admin } from "@/types/restaurant";
 import {
   IPaginatedRes,
   ApiLocation,
-  Post,
-  Admin,
   DashboardStats,
   StaffStats,
   LocationStats,
 } from "./api";
+import { Post } from "./posts";
 
 // Authentication responses
 export interface LoginResponse {

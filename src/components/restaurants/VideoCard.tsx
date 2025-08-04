@@ -1,7 +1,8 @@
 import { Copy } from "lucide-react";
-import { VideoData, useVideoStore } from "@/stores/videoStore";
+import { useVideoStore } from "@/stores/videoStore";
 import Image from "next/image";
 import Icon from "../svgs/Icons";
+import { VideoData } from "@/interfaces/restaurants";
 
 interface VideoCardProps {
   video: VideoData;

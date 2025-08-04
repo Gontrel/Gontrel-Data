@@ -1,36 +1,6 @@
 import { create, StateCreator } from "zustand";
 import React from "react";
-
-export interface VideoData {
-  id: string;
-  url: string;
-  tags: string[];
-  thumbUrl?: string;
-  videoUrl?: string;
-  author?: string;
-  locationName?: string;
-  rating?: number;
-}
-
-export interface RestaurantData {
-  sessionToken?: string;
-  placeId: string;
-  address: string;
-  menu?: string;
-  name?: string;
-  photos?: string[];
-  rating?: number;
-  reservation?: string;
-  website?: string;
-  posts?: VideoData[];
-  openingHours?: openingHours[];
-}
-
-export interface openingHours {
-  dayOfTheWeek: string;
-  opensAt: number;
-  closesAt: number;
-}
+import { RestaurantData, VideoData } from "@/interfaces/restaurants";
 
 export interface VideoPlayerInstance {
   id: string;

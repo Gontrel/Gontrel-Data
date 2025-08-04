@@ -36,6 +36,7 @@ Before you can run the application, you need to set up your environment variable
     ```
     API_BASE_URL=add_server_based_url
     API_KEY=add_secret_key
+    GOOGLE_MAPS_API_KEY=add_google_map_api_key
     ```
 
 ### Running the Development Server

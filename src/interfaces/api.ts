@@ -1,4 +1,6 @@
-import { ApprovalStatusEnum } from '@/types/enums';
+import { ApprovalStatusEnum } from "@/types/enums";
+import { Admin } from "@/types/restaurant";
+import { Post } from "./posts";
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
@@ -38,40 +40,6 @@ export interface LocationTag {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface Admin {
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  name: string;
-  phoneNumber: string;
-  profileImage: string;
-  email: string;
-  password: string;
-  isVerified: boolean;
-  role: string;
-}
-
-export interface Post {
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  analytics: Analytics;
-  tiktokLink: string;
-  videoUrl: string;
-  thumbUrl: string;
-  postedAt: string | null;
-  status: string;
-}
-
 
 export interface Analytics {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,7 +107,7 @@ export interface QueryParams {
   pageNumber?: number;
   quantity?: number;
   query?: string;
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
   sortBy?: string;
   startDate?: string;
   endDate?: string;
@@ -178,9 +146,9 @@ export const DEFAULT_API_RESPONSES = {
       pageSize: 10,
       pageNumber: 1,
       total: 0,
-      lastTokenId: null
+      lastTokenId: null,
     },
-    meta: undefined
+    meta: undefined,
   },
   dashboardStats: {
     totalLocations: 0,
@@ -188,12 +156,12 @@ export const DEFAULT_API_RESPONSES = {
     pendingLocations: 0,
     inactiveLocations: 0,
     totalPosts: 0,
-    totalStaff: 0
+    totalStaff: 0,
   },
   staffStats: {
     totalAdmins: 0,
     totalManagers: 0,
-    totalAnalysts: 0
+    totalAnalysts: 0,
   },
   locationStats: {
     total: 0,
@@ -201,6 +169,6 @@ export const DEFAULT_API_RESPONSES = {
     pending: 0,
     inactive: 0,
     approved: 0,
-    rejected: 0
-  }
+    rejected: 0,
+  },
 };
