@@ -1,6 +1,5 @@
 "use client";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Sheet } from "../modals/Sheet";
 import Icon from "../svgs/Icons";
 import { VideoStep } from "../restaurants/VideoStep";
@@ -8,15 +7,21 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
 import { useVideoStore } from "@/stores/videoStore";
 import { CreateBulkPostRequest } from "@/interfaces/requests";
+import { Restaurant } from "@/interfaces/restaurants";
 
 interface NewPostsSheetProps {
   open: boolean;
+  restaurant: Restaurant;
   onOpenChange: (open: boolean) => void;
 }
 
-export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
+export const NewPostSheet = ({
+  open,
+  restaurant,
+  onOpenChange,
+}: NewPostsSheetProps) => {
   const { videos, resetVideos, setActiveVideoUrl } = useVideoStore();
-  const locationId = "6b117b6d-810f-4967-84de-a530a2d87dc1";
+  const locationId = restaurant?.id;
 
   const videosData = videos.map((video) => ({
     tiktokLink: video.url ?? "",
@@ -77,7 +82,7 @@ export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
         <p className="text-gray-500 mt-1">Create a new post</p>
 
         <VideoStep
-          onNext={onSubmit} 
+          onNext={onSubmit}
           onPrevious={onSubmit}
           onSubmit={onSubmit}
           isLoading={isLoading}

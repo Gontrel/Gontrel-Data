@@ -113,7 +113,7 @@ export const NewRestaurantSheet = ({
       }
 
       const photoReference = result?.photos?.[0]?.photo_reference;
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
       const imageUrl =
         photoReference && apiKey
           ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`

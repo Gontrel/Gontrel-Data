@@ -331,9 +331,9 @@ export const VideoStep = ({
         <button
           onClick={onSubmit}
           type="submit"
-          disabled={videos.length === 0 || isLoading}
+          disabled={shouldDisable}
           className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
-            videos.length === 0 || isLoading
+            shouldDisable
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
           }`}

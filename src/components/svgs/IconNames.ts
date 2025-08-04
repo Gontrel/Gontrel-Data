@@ -20,4 +20,13 @@ export type TIconNames =
   | "calendarIcon"
   | "bookCalendarIcon"
   | "groupUserIcon"
+  | "arrowdownIcon"
+  | "worldIcon"
+  | "menuIcon"
+  | "arrowBackIcon"
+  | "restaurantLocationIcon"
+  | "restaurantTimeIcon"
+  | "restaurantReversationIcon"
+  | "restaurantTiktokIcon"
+  | "postCalendarIcon"
   | "globeIcon";

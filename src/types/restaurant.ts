@@ -1,3 +1,4 @@
+import { Post } from "@/interfaces/posts";
 import { TableStatusEnum, AdminRoleEnum } from "./enums";
 import {
   Menu,
@@ -8,7 +9,6 @@ import {
   Meta,
   Address,
 } from "@/interfaces/restaurants";
-import { Post } from "@/interfaces/api";
 
 /**
  * Restaurant data model representing the production/live data
