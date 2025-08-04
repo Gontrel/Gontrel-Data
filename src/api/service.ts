@@ -17,6 +17,9 @@ import {
   UpdatePostRequest,
   CreateBulkPostRequest,
   GetPostsResponse,
+  GetRestaurantsResponse,
+  UpdateRestaurantStatusRequest,
+  UpdateRestaurantStatusResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -115,7 +118,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
   // getRestaurants
-  getRestaurants = async (data: FetchLocationsRequest) => {
+  getRestaurants = async (data: FetchLocationsRequest): Promise<GetRestaurantsResponse> => {
     const params = this.buildSearchParams(data);
 
     try {
@@ -139,6 +142,14 @@ export default class APIRequest {
   updateRestaurant = async (data: UpdateLocationRequest) => {
     const response = await this.authenticatedClient.put(
       `/admin-location/${data.locationId}`,
+      data
+    );
+    return this.handleResponse(response);
+  };
+
+  updateRestaurantStatus = async (data: UpdateRestaurantStatusRequest): Promise<UpdateRestaurantStatusResponse> => {
+    const response = await this.authenticatedClient.put(
+      `/admin-bulk-approve-location`,
       data
     );
     return this.handleResponse(response);

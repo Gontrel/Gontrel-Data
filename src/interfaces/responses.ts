@@ -1,4 +1,5 @@
-import { IPaginatedRes, ApiLocation, Post, Admin, DashboardStats, StaffStats, LocationStats, Tag, Videos, OpeningHours, Reservation, Menu, Address } from './api';
+import { ApprovalStatusEnum, ApprovalType } from '@/types';
+import { IPaginatedRes, ApiLocation, Post, Admin, DashboardStats, StaffStats, LocationStats, Tag, Videos, Location } from './api';
 
 // Authentication responses
 export interface LoginResponse {
@@ -23,8 +24,21 @@ export interface GetAdminProfileResponse {
   admin: Admin;
 }
 
+export interface UpdateRestaurantStatusResponse {
+  locationId: string; // UUID, required
+  comment?: string;
+  data: Array<{
+    type: ApprovalType; // ApprovalType enum values
+    status: ApprovalStatusEnum; // enum values from ApprovalStatus, required
+  }>;
+}
+
 // Location management responses
-export type GetRestaurantsResponse = IPaginatedRes<ApiLocation>;
+export type GetRestaurantsResponse = IPaginatedRes<{
+  admin: Admin;
+  posts: Post[];
+  videos: Videos;
+} & Location>;
 
 export interface GetRestaurantByIdResponse {
   location: ApiLocation;
@@ -54,36 +68,10 @@ export interface ApproveLocationResponse {
 
 // Post management responses
 export type GetPostsResponse = IPaginatedRes<{
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  address: Address;
-  lat: number;
-  lng: number;
-  menu: Menu;
-  name: string;
-  openingHours: OpeningHours[];
-  photos: string[];
-  phoneNumber: string;
-  priceLevel: number;
-  rating: number;
-  reservation: Reservation;
-  toilets: boolean;
-  type: string;
-  website: string;
-  status: string;
-  comment: string | null;
-  mapLink: string | null;
-  country: string;
+  location: Location;
   admin: Admin;
-  posts: Post[];
   tags: Tag[];
-  videos: Videos;
-}>;
+} & Post>;
 
 export interface GetPostByIdResponse {
   post: Post;

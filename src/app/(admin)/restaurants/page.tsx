@@ -14,7 +14,6 @@ import { useVideoStore } from "@/stores/videoStore";
 import { AdminRoleEnum, AnalystTableTabsEnum } from '@/types/enums';
 import TableTabs from '@/components/restaurants/TableTabs';
 import { GontrelPostView } from "@/components/video/GontrelPostView";
-import TableVideoPreviewSheet from '@/components/modals/TableVideoPreviewSheet';
 
 /**
  * Restaurants Page Component
@@ -166,12 +165,6 @@ export default function RestaurantsPage() {
 
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
-      {/* TODO: To be updated */}
-      <TableVideoPreviewSheet
-        open={false}
-        onOpenChange={handlePreviewModalOpenChange}
-        posts={[]}
-      />
       <PreviewVideoModal
         open={!!activeVideoUrl}
         onOpenChange={handlePreviewModalOpenChange}
@@ -185,6 +178,7 @@ export default function RestaurantsPage() {
           />
         )}
       </PreviewVideoModal>
+
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
         {/* Restaurant Stats */}

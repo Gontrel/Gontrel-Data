@@ -92,6 +92,35 @@ export interface Post {
   tags: Tag[];
 }
 
+export interface Location {
+    id: string;
+    createdAt: string;
+    modifiedAt: string;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    updatedBy: string | null;
+    firebaseId: string | null;
+    address: Address;
+    lat: number;
+    lng: number;
+    menu: Menu;
+    name: string;
+    openingHours: OpeningHours[];
+    photos: string[];
+    phoneNumber: string | null;
+    priceLevel: number;
+    rating: number;
+    reservation: Reservation;
+    toilets: boolean;
+    type: string;
+    website: string;
+    status: string;
+    comment: string | null;
+    mapLink: string;
+    country: string;
+    tags: Tag[];
+  }
+
 export interface OpeningHours {
   dayOfTheWeek: string;
   opensAt: number;

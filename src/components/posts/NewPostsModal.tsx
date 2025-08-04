@@ -1,6 +1,5 @@
 "use client";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Sheet } from "../modals/Sheet";
 import Icon from "../svgs/Icons";
 import { VideoStep } from "../restaurants/VideoStep";
@@ -77,7 +76,7 @@ export const NewPostSheet = ({ open, onOpenChange }: NewPostsSheetProps) => {
         <p className="text-gray-500 mt-1">Create a new post</p>
 
         <VideoStep
-          onNext={onSubmit} 
+          onNext={onSubmit}
           onPrevious={onSubmit}
           onSubmit={onSubmit}
           isLoading={isLoading}

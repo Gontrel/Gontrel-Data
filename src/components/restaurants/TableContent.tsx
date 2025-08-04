@@ -37,8 +37,8 @@ export const TableContent: React.FC<TableContentProps> = ({
 }) => {
   const renderTableContent = (): React.ReactNode => {
     switch (activeTab) {
-      case ManagerTableTabsEnum.ACTIVE_RESTAURANTS ||
-        AnalystTableTabsEnum.ACTIVE_RESTAURANTS:
+      case ManagerTableTabsEnum.ACTIVE_RESTAURANTS:
+      case AnalystTableTabsEnum.ACTIVE_RESTAURANTS:
         return (
           <ActiveRestaurants
             searchTerm={searchTerm}

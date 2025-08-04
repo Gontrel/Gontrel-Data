@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
-import { useRestaurants } from "@/hooks/useRestaurants";
-import { PendingVideoType } from "@/types/restaurant";
-import { ManagerTableTabsEnum } from "@/types";
+import { PendingVideoTableTypes } from "@/types/restaurant";
+import { ApprovalStatusEnum } from "@/types";
 import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
-import { usePendingVideos } from "@/hooks/usePendingVideos";
+
+import { usePendingVideosStore } from "@/stores/tableStore";
+import { trpc } from "@/lib/trpc-client";
 
 interface PendingVideosProps {
   searchTerm: string;
@@ -21,78 +22,88 @@ const PendingVideos = ({
   handleCurrentPage,
   handlePageSize,
 }: PendingVideosProps) => {
-  const { handleRowSelect } = usePendingVideos();
+  const {
+    hasUnsavedChanges,
+    saveLoading,
+    saveChanges,
+    discardChanges,
+    setSelectedRows,
+  } = usePendingVideosStore();
+
+  // Use tRPC to fetch data directly
+  const {
+    data: queryData,
+    isLoading,
+    error,
+  } = trpc.post.getPosts.useQuery({
+    pageNumber: currentPage,
+    quantity: pageSize,
+    status: ApprovalStatusEnum.PENDING,
+    query: searchTerm,
+  });
+
+  // Extract data from tRPC response
+  const videos = queryData?.data || [];
+  const paginationData = queryData?.pagination;
+  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+
+  // Handle errors (removed from useEffect to prevent loops)
+  if (error) {
+    console.error('Pending videos error:', error.message);
+  }
 
   // Create columns with proper dependencies
   const columns = useMemo(() => createPendingVideosColumns(), []);
 
-  // Fetch data with pageSize
-  const { data: restaurantsData, isLoading: restaurantsLoading } =
-    useRestaurants({
-      tableId: ManagerTableTabsEnum.PENDING_VIDEOS,
-      search: searchTerm,
-      page: currentPage,
-      limit: pageSize,
-    });
+  // Handle save/discard actions
+  const handleSave = async () => {
+    await saveChanges();
+  };
 
-  // Calculate total pages from API response
-  const totalPages = useMemo(() => {
-    if (!restaurantsData?.pagination?.total || !pageSize) {
-      return 1;
-    }
-    return Math.ceil(restaurantsData.pagination.total / pageSize);
-  }, [restaurantsData?.pagination?.total, pageSize]);
+  const handleDiscard = () => {
+    discardChanges();
+  };
 
-  console.log(restaurantsData);
-  //TODO: wait till the backend change the format
-  const modifiedData: PendingVideoType[] = restaurantsData
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ? restaurantsData?.data?.map((post: any) => ({
-        name: post.location?.name,
-        location: {
-          address: post.location.address.content,
-          lat: post.location.lat,
-          lng: post.location.lng,
-          openingHours: post.location.openingHours,
-          photos: post.location.photos,
-          rating: post.location.rating,
-          type: post.location.type,
-          website: post.location.website,
-          mapLink: post.location.mapLink,
-          country: post.location.country,
-        },
-        posts: [
-          {
-            id: post.id,
-            createdAt: post.createdAt,
-            videoUrl: post.videoUrl,
-            thumbUrl: post.thumbUrl,
-            tiktokLink: post.tiktokLink,
-            postedAt: post.postedAt,
-            status: post.status,
-            source: post.source,
-            analytics: post.analytics || {},
-            tags: post.tags || [],
-          },
-        ],
-        addedBy: post.updatedBy || post.deletedBy || post.firebaseId || null,
-        createdAt: post.createdAt,
-      }))
-    : [];
+  // Handle row selection - extract IDs from selected rows
+  const handleRowSelection = (selectedRows: PendingVideoTableTypes[]) => {
+    const selectedIds = selectedRows.map(row => row.id);
+    setSelectedRows(selectedIds);
+  };
 
   return (
-    <RestaurantTable<PendingVideoType>
-      restaurants={modifiedData ?? []}
-      loading={restaurantsLoading ?? false}
-      onRowSelect={handleRowSelect}
-      showSelection={true}
-      columns={columns}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      totalPages={totalPages}
-      onPageSizeChange={(pageSize) => handlePageSize(pageSize)}
-      onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
-    />
+    <div>
+      {/* Save/Discard buttons */}
+      {hasUnsavedChanges && (
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={handleSave}
+            disabled={saveLoading}
+            className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+          >
+            {saveLoading ? 'Saving...' : 'Save Changes'}
+          </button>
+          <button
+            onClick={handleDiscard}
+            className="px-4 py-2 bg-gray-600 text-white rounded"
+          >
+            Discard Changes
+          </button>
+        </div>
+      )}
+
+      <RestaurantTable<PendingVideoTableTypes>
+        restaurants={videos}
+        loading={isLoading}
+        onRowSelect={handleRowSelection}
+        showSelection={true}
+        columns={columns}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalPages={totalPages}
+        onPageSizeChange={handlePageSize}
+        onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
+      />
+    </div>
   );
 };
 

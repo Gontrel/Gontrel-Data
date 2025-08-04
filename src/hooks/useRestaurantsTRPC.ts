@@ -101,34 +101,7 @@ export function useRestaurantsTRPC(
     }
   );
 
-  useEffect(() => {
-    if (pendingVideosQuery.error) {
-      console.log('Error:', pendingVideosQuery.error.message);
-      errorToast(
-        pendingVideosQuery.error.message ||
-          "Failed to fetch pending videos"
-      );
-    }
-  }, [pendingVideosQuery.error]);
-
-  useEffect(() => {
-    if (pendingRestaurantsQuery.error) {
-      console.log('Pending restaurants error:', pendingRestaurantsQuery.error.message);
-      errorToast(
-        pendingRestaurantsQuery.error.message ||
-          "Failed to fetch pending restaurants"
-      );
-    }
-  }, [pendingRestaurantsQuery.error]);
-
-  // Handle empty results
-  useEffect(() => {
-    if (activeRestaurantsQuery.data?.restaurants?.length === 0) {
-      errorToast("No active restaurants found");
-    }
-  }, [activeRestaurantsQuery.data]);
-
-  const submittedRestaurantsQuery = trpc.restaurant.getRestaurants.useQuery(
+ const submittedRestaurantsQuery = trpc.restaurant.getRestaurants.useQuery(
     {
       pageNumber: page || 1,
       quantity: limit || 10,
@@ -175,7 +148,6 @@ export function useRestaurantsTRPC(
     }
   );
 
-  // Handle errors for remaining queries
   useEffect(() => {
     if (activeRestaurantsQuery.error) {
       console.log('Active restaurants error:', activeRestaurantsQuery.error.message);
@@ -185,6 +157,26 @@ export function useRestaurantsTRPC(
       );
     }
   }, [activeRestaurantsQuery.error]);
+
+  useEffect(() => {
+    if (pendingVideosQuery.error) {
+      console.log('Error:', pendingVideosQuery.error.message);
+      errorToast(
+        pendingVideosQuery.error.message ||
+          "Failed to fetch pending videos"
+      );
+    }
+  }, [pendingVideosQuery.error]);
+
+  useEffect(() => {
+    if (pendingRestaurantsQuery.error) {
+      console.log('Pending restaurants error:', pendingRestaurantsQuery.error.message);
+      errorToast(
+        pendingRestaurantsQuery.error.message ||
+          "Failed to fetch pending restaurants"
+      );
+    }
+  }, [pendingRestaurantsQuery.error]);
 
   useEffect(() => {
     if (submittedRestaurantsQuery.error) {

@@ -1,5 +1,4 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { PendingVideoType } from "@/types/restaurant";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
@@ -7,11 +6,12 @@ import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
 import Logo from "@/assets/images/logo.png";
+import { PendingVideoTableTypes } from "@/types/restaurant";
 
 /**
  * Creates column definitions for pending videos table
  */
-export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
+export const createPendingVideosColumns = (): ColumnDef<PendingVideoTableTypes>[] => [
   {
     accessorKey: "id",
     header: () => <TableHeader title="#" />,
@@ -34,7 +34,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     header: () => <TableHeader title="Restaurant name" />,
     cell: ({ row }) => (
       <div className="font-medium text-[#181D1F] max-w-60 truncate">
-        {row.getValue("name")}
+        {row.original.location.name}
       </div>
     ),
     minSize: TABLE_COLUMN_SIZES.NAME,
@@ -44,13 +44,14 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     accessorKey: "posts",
     header: () => <TableHeader iconName="videoIcon" title="Video" />,
     cell: ({ row }) => {
-      const posts = row.original.posts;
+      const { status } = row.original;
+      const postsLength = 1
       return (
         <div className="flex flex-col gap-y-2 w-fit">
           <PillButton
-            text={`${posts.length} video${posts.length > 1 ? "s" : ""}`}
-            textColor={getTextColor(posts)}
-            bgColor={getBgColor(posts)}
+            text={`${postsLength} video${postsLength > 1 ? "s" : ""}`}
+            textColor={getTextColor([{ status }])}
+            bgColor={getBgColor([{ status }])}
           />
           <button
             onClick={() => {
@@ -69,7 +70,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     accessorKey: "addedBy",
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
-      const addedBy = row.original.addedBy;
+      const addedBy = row.original.admin.name;
       return (
         <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
           <Image
@@ -92,7 +93,7 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoType>[] => [
     accessorKey: "dateAdded",
     header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
     cell: ({ row }) => {
-      const dateAdded = new Date(row.original.createdAt);
+      const dateAdded = new Date(row.original.postedAt ?? row.original.modifiedAt);
 
       return (
         <div className="relative">

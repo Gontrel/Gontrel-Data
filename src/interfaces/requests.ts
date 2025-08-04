@@ -279,6 +279,15 @@ export interface LocationApprovalRequest {
   status: ApprovalStatusEnum; // enum values from ApprovalStatus, required
 }
 
+export interface UpdateRestaurantStatusRequest {
+  locationId: string; // UUID, required
+  comment?: string;
+  data: Array<{
+    type: ApprovalType; // ApprovalType enum values
+    status: ApprovalStatusEnum; // enum values from ApprovalStatus, required
+  }>;
+}
+
 /**
  * DELETE /admin-delete-location
  * Deletes a location

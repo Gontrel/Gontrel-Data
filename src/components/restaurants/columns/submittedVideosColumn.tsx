@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { SubmittedVideoType } from '@/types/restaurant';
+import { SubmittedVideoTableTypes } from '@/types/restaurant';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from 'next/image';
 import { formatDate } from '@/lib/utils';
@@ -11,7 +11,7 @@ import { TableHeader } from './utils';
 /**
  * Creates column definitions for submitted videos table
  */
-export const createSubmittedVideosColumns = (): ColumnDef<SubmittedVideoType>[] => [
+export const createSubmittedVideosColumns = (): ColumnDef<SubmittedVideoTableTypes>[] => [
     {
       accessorKey: 'id',
       header: () => (
@@ -50,10 +50,11 @@ export const createSubmittedVideosColumns = (): ColumnDef<SubmittedVideoType>[] 
         <TableHeader iconName="videoIcon" title="Video" />
       ),
       cell: ({ row }) => {
-        const posts = row.original.posts;
+        const { status } = row.original;
+        const postsLength = 1;
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={`${posts.length} video${posts.length > 1 ? 's' : ''}`} textColor={getTextColor(posts)} bgColor={getBgColor(posts)} />
+            <PillButton text={`${postsLength} video${postsLength > 1 ? 's' : ''}`} textColor={getTextColor([{ status }])} bgColor={getBgColor([{ status }])} />
             <button onClick={() => {
               // TODO: Open video modal
             }} className="text-left text-blue-500">

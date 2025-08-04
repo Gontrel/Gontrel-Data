@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { SubmittedRestaurantType } from '@/types/restaurant';
+import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
 import { Check, X } from 'lucide-react';
 import { ActionButtons } from '../../ui/ActionButtons';
 import { ExternalLink } from '../../ui/ExternalLink';
@@ -15,8 +15,8 @@ import { TableHeader } from './utils';
  * @param handleResubmit - Handler for resubmit action
  */
 export const createSubmittedRestaurantsColumns = (
-  handleResubmit: (restaurant: SubmittedRestaurantType) => void
-): ColumnDef<SubmittedRestaurantType>[] => [
+  handleResubmit: (restaurant: SubmittedRestaurantTableTypes) => void
+): ColumnDef<SubmittedRestaurantTableTypes>[] => [
     {
       accessorKey: 'id',
       header: () => (
@@ -66,7 +66,7 @@ export const createSubmittedRestaurantsColumns = (
 
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={text} textColor={getTextColor(posts)} bgColor={getBgColor(posts)} />
+            <PillButton text={text} textColor={getTextColor(posts.map((post) => ({ status: post.status })))} bgColor={getBgColor(posts.map((post) => ({ status: post.status })))} />
             <button onClick={() => {
               // TODO: Open video modal
             }} className="text-blue-500 text-left">

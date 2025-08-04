@@ -2,8 +2,7 @@
  * Utility functions for table operations
  */
 
-import { ApprovalStatusEnum } from "@/types/enums";
-import { VideoType } from "@/types/restaurant";
+  import { ApprovalStatusEnum } from "@/types/enums";
 
 /**
  * Toggles a value in a Set and returns a new Set
@@ -62,7 +61,7 @@ export const removeFromSet = <T>(set: Set<T>, value: T): Set<T> => {
   return newSet;
 };
 
-export const getBgColor = (videos: VideoType[]) => {
+export const getBgColor = (videos: {status: string}[]) => {
   if(videos.some(video => video.status === ApprovalStatusEnum.PENDING)) {
     return 'bg-gray-50';
   } else if (videos.some(video => video.status === ApprovalStatusEnum.APPROVED)) {
@@ -73,7 +72,7 @@ export const getBgColor = (videos: VideoType[]) => {
   return 'bg-gray-100';
 };
 
-export const getTextColor = (videos: VideoType[]) => {
+export const getTextColor = (videos: {status: string}[]) => {
   if(videos.some(video => video.status === ApprovalStatusEnum.PENDING)) {
     return 'text-gray-900';
   } else if (videos.some(video => video.status === ApprovalStatusEnum.APPROVED)) {

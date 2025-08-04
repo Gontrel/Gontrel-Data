@@ -6,10 +6,23 @@ import { VideoData } from '@/stores/videoStore';
 import { LivePostCard } from '../restaurants/LivePostCard';
 import { Post } from '@/types';
 
+type TableVideoPreviewSheetOnApprove = (restaurantId: string, postId: string) => void;
+type TableVideoPreviewSheetOnDecline = (restaurantId: string, postId: string) => void;
+
 interface TableVideoPreviewSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   posts: Post[];
+  onApprove: TableVideoPreviewSheetOnApprove;
+  onDecline: TableVideoPreviewSheetOnDecline;
+  restaurantId: string;
+}
+
+interface TableVideoPreviewSheetContentProps {
+  posts: Post[];
+  onApprove: TableVideoPreviewSheetOnApprove;
+  onDecline: TableVideoPreviewSheetOnDecline;
+  restaurantId: string;
 }
 
 interface TableVideoPreviewSheetHeaderProps {
@@ -30,20 +43,21 @@ const TableVideoPreviewSheetHeader = ({ onOpenChange, posts }: TableVideoPreview
   )
 }
 
-const TableVideoPreviewSheetContent = ({ posts }: Pick<TableVideoPreviewSheetProps, "posts">) => (
+const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurantId }: TableVideoPreviewSheetContentProps) => (
   <section className="flex flex-col gap-y-4.5 py-5 px-6">
     {posts!.map((post, index) => (
       <LivePostCard
         key={index}
-        handleApprove={() => { }}
-        handleDecline={() => { }}
+        handleApprove={onApprove}
+        handleDecline={onDecline}
         post={post}
+        restaurantId={restaurantId}
       />
     ))}
   </section>
 )
 
-const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [] }: TableVideoPreviewSheetProps) => {
+const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onDecline, restaurantId }: TableVideoPreviewSheetProps) => {
   if (posts.length === 0) {
     const post: Post = {
       id: "post_123456789",
@@ -78,7 +92,7 @@ const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [] }: TableVideoPr
       className="bg-white p-0 overflow-y-auto"
     >
       <TableVideoPreviewSheetHeader onOpenChange={onOpenChange} posts={posts} />
-      <TableVideoPreviewSheetContent posts={posts} />
+      <TableVideoPreviewSheetContent posts={posts} onApprove={onApprove} onDecline={onDecline} restaurantId={restaurantId} />
     </Sheet>
   )
 }

@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
-import { PendingRestaurantType } from '@/types/restaurant';
 import { ManagerTableTabsEnum } from '@/types/enums';
-import { useRestaurantMutations } from './useRestaurantMutations';
+import { usePendingRestaurantsStore } from '@/stores/tableStore';
 
 /**
  * Type for keys of PendingRestaurantType that have a status property
@@ -12,37 +11,29 @@ export type PendingRestaurantStatusKey = "address" | "menu" | "reservation" | "p
  * Custom hook for managing pending restaurants state and actions
  */
 export const usePendingRestaurants = () => {
-  // Use the new mutation hook for proper query invalidation
-  const { approveRestaurant: approveRestaurantMutation, declineRestaurant: declineRestaurantMutation } = useRestaurantMutations();
+  const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleRowSelect = useCallback((selectedRows: PendingRestaurantType[]) => {
-    // Handle bulk actions here
-  }, []);
+  const handleApprove = useCallback((restaurantId: string, type?: PendingRestaurantStatusKey) => {
+    approveRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId, type);
+  }, [approveRestaurant]);
 
-  const handleApprove = useCallback((restaurant: PendingRestaurantType, type?: PendingRestaurantStatusKey) => {
-    // Trigger mutation with proper query invalidation
-    approveRestaurantMutation(restaurant, ManagerTableTabsEnum.PENDING_RESTAURANTS, type);
-  }, [approveRestaurantMutation]);
+  const handleDecline = useCallback((restaurantId: string, type?: PendingRestaurantStatusKey) => {
+    declineRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId,  type);
+  }, [declineRestaurant]);
 
-  const handleDecline = useCallback((restaurant: PendingRestaurantType, type?: PendingRestaurantStatusKey) => {
-    // Trigger mutation with proper query invalidation
-    declineRestaurantMutation(restaurant, ManagerTableTabsEnum.PENDING_RESTAURANTS, type);
-  }, [declineRestaurantMutation]);
+  const handleApprovePost = useCallback((restaurantId: string, postId: string) => {
+    approveRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId, "posts", postId);
+  }, [approveRestaurant]);
 
-  const handleSendFeedback = useCallback((restaurant: PendingRestaurantType) => {
-    console.log('Sending feedback for restaurant:', restaurant.name);
-  }, []);
+  const handleDeclinePost = useCallback((restaurantId: string, postId: string) => {
+    declineRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId, "posts", postId);
+  }, [declineRestaurant]);
 
-  const handleSave = useCallback((restaurant: PendingRestaurantType) => {
-    console.log('Saving restaurant:', restaurant.name);
-  }, []);
 
   return {
-    handleRowSelect,
     handleApprove,
     handleDecline,
-    handleSendFeedback,
-    handleSave
+    handleApprovePost,
+    handleDeclinePost
   };
 };

@@ -1,18 +1,22 @@
 "use client";
 
 import {
-  User
+  User,
+  Check,
+  X
 } from "lucide-react";
 import { GontrelPostView } from "../video/GontrelPostView";
-import { Post } from "@/interfaces";
+import { ActionButtons } from "../ui/ActionButtons";
+import { ApprovalStatusEnum, Post } from "@/types";
 
 interface LivePostCardProps {
-  handleApprove?: () => void;
-  handleDecline?: () => void;
+  handleApprove?: (restaurantId: string, postId: string) => void;
+  handleDecline?: (restaurantId: string, postId: string) => void;
   post?: Post;
+  restaurantId?: string;
 }
 
-export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCardProps) => {
+export const LivePostCard = ({ handleApprove, handleDecline, post, restaurantId }: LivePostCardProps) => {
   if (!post) {
     post = {
       id: "post_123456789",
@@ -79,23 +83,47 @@ export const LivePostCard = ({ handleApprove, handleDecline, post }: LivePostCar
         <span>Uploaded by: {mockDisplayData.uploadedBy}</span>
         <span className="ml-auto">{mockDisplayData.uploadTime}</span>
       </div>
+      {post.status === ApprovalStatusEnum.PENDING ? (
       <div className="flex items-center border-t border-[#D2D4D5] pt-4 gap-[18px] px-7.5">
         {/* Action Buttons */}
-        <button
-          onClick={handleApprove}
-          disabled={!handleApprove}
-          className="flex items-center gap-2 font-medium bg-[#009543] text-white rounded-[10px] px-4 py-2.5 transition-colors justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 flex-1"
-        >
-          <span>Approve</span>
-        </button>
-        <button
-          onClick={handleDecline}
-          disabled={!handleDecline}
-          className="flex items-center gap-2 font-medium bg-[#C50000] text-white rounded-[10px] px-4 py-2.5 transition-colors justify-center cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 flex-1"
-        >
-          <span>Decline</span>
-        </button>
-      </div>
+          <ActionButtons
+            actions={[
+              {
+                icon: <Check className="w-6 h-6" />,
+                label: "Approve",
+                onClick: () => handleApprove?.(restaurantId ?? "", post.id),
+                variant: "success",
+                active: true,
+              },
+              {
+                icon: <X className="w-6 h-6" />,
+                label: "Decline",
+                onClick: () => handleDecline?.(restaurantId ?? "", post.id),
+                variant: "danger",
+                active: true,
+              },
+            ]}
+            className="w-full h-13"
+          />
+        </div>
+      ) : (
+        <div className="flex items-center border-t border-[#D2D4D5] pt-4 gap-[18px] px-7.5 justify-center">
+          <ActionButtons
+            actions={[
+              {
+                icon: post.status === ApprovalStatusEnum.APPROVED ? <Check className="w-6 h-6" /> : <X className="w-6 h-6" />,
+                label: post.status === ApprovalStatusEnum.APPROVED ? "Approved" : "Declined",
+                onClick: () => { },
+                variant: post.status === ApprovalStatusEnum.APPROVED ? "success" : "danger",
+                active: true,
+                disabled: true,
+              }
+            ]}
+            className="w-full h-13"
+          />
+        </div>
+      )
+      }
     </div >
   );
 };

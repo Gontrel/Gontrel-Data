@@ -12,25 +12,28 @@ import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
 import Logo from "@/assets/images/logo.png";
+import { Post } from "@/types";
 
 /**
  * Creates column definitions for pending restaurants table
+ * @param openVideoPreview - Handler for open video preview action
  * @param handleApprove - Handler for approve action
  * @param handleDecline - Handler for decline action
  * @param handleSendFeedback - Handler for send feedback action
  * @param handleSave - Handler for save action
  */
 export const createPendingRestaurantsColumns = (
+  openVideoPreview: (posts: Post[], restaurantId: string) => void,
   handleApprove: (
-    restaurant: PendingRestaurantType,
+    restaurantId: string,
     statusKey?: PendingRestaurantStatusKey
   ) => void,
   handleDecline: (
-    restaurant: PendingRestaurantType,
+    restaurantId: string,
     statusKey?: PendingRestaurantStatusKey
   ) => void,
-  handleSendFeedback: (restaurant: PendingRestaurantType) => void,
-  handleSave: (restaurant: PendingRestaurantType) => void
+  handleSendFeedback: (restaurant: PendingRestaurantType, comment?: string) => void,
+  handleSaveRestaurant: (restaurant: PendingRestaurantType) => void
 ): ColumnDef<PendingRestaurantType>[] => [
     {
       accessorKey: "id",
@@ -66,22 +69,20 @@ export const createPendingRestaurantsColumns = (
       cell: ({ row }) => {
         const posts = row.original.posts;
         return (
-          <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton
-              text={`${posts?.filter((post) => post.status !== ApprovalStatusEnum.PENDING)
-                .length
-                }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
-              textColor={getTextColor(posts)}
-              bgColor={getBgColor(posts)}
-            />
-            <button
-              onClick={() => {
-                // TODO: Open video modal
-              }}
-              className="text-blue-500 text-left"
-            >
-              View
-            </button>
+            <div className="flex flex-col gap-y-2 w-fit">
+              <PillButton
+                text={`${posts?.filter((post) => post.status !== ApprovalStatusEnum.PENDING)
+                  .length
+                  }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
+                textColor={getTextColor(posts.map((post) => ({ status: post.status })))}
+                bgColor={getBgColor(posts.map((post) => ({ status: post.status })))}
+              />
+              <button
+              onClick={() => openVideoPreview(posts, row.original.id)}
+                className="text-blue-500 text-left"
+              >
+                View
+              </button>
           </div>
         );
       },
@@ -121,13 +122,13 @@ export const createPendingRestaurantsColumns = (
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original, "address"),
+                onClick: () => handleApprove(row.original.id, "address"),
                 variant: "success",
                 active: isApproved,
               },
               {
                 icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original, "address"),
+                onClick: () => handleDecline(row.original.id, "address"),
                 variant: "danger",
                 active: isDeclined,
               },
@@ -155,13 +156,13 @@ export const createPendingRestaurantsColumns = (
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original, "menu"),
+                onClick: () => handleApprove(row.original.id, "menu"),
                 variant: "success",
                 active: isApproved,
               },
               {
                 icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original, "menu"),
+                onClick: () => handleDecline(row.original.id, "menu"),
                 variant: "danger",
                 active: isDeclined,
               },
@@ -189,13 +190,13 @@ export const createPendingRestaurantsColumns = (
             actions={[
               {
                 icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original, "reservation"),
+                onClick: () => handleApprove(row.original.id, "reservation"),
                 variant: "success",
                 active: isApproved,
               },
               {
                 icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original, "reservation"),
+                onClick: () => handleDecline(row.original.id, "reservation"),
                 variant: "danger",
                 active: isDeclined,
               },
@@ -263,7 +264,7 @@ export const createPendingRestaurantsColumns = (
           reservation.status === ApprovalStatusEnum.REJECTED;
 
         const isPending = posts.some(
-          (video: { status: ApprovalStatusEnum }) =>
+          (video: { status: string }) =>
             video.status === ApprovalStatusEnum.PENDING
         ) ||
           address.status === ApprovalStatusEnum.PENDING ||
@@ -277,10 +278,10 @@ export const createPendingRestaurantsColumns = (
                 label: shouldSendFeedback ? "Send Feedback" : "Save",
                 onClick: () =>
                   shouldSendFeedback
-                    ? handleSendFeedback(row.original)
-                    : handleSave(row.original),
+                    ? handleSendFeedback(row.original, "Feedback")
+                    : handleSaveRestaurant(row.original),
                 variant: shouldSendFeedback ? "danger" : "primary",
-                disabled: isPending,
+                disabled: isPending
               },
             ]}
             className="w-42.5 h-12"
