@@ -1,10 +1,9 @@
 import React from 'react'
 import { Sheet } from '@/components/modals/Sheet'
 import Icon from '@/components/svgs/Icons';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { VideoData } from '@/stores/videoStore';
 import { LivePostCard } from '../restaurants/LivePostCard';
-import { Post } from '@/types';
+import { Post } from '@/interfaces/posts';
+
 
 interface TableVideoPreviewSheetProps {
   open: boolean;
@@ -35,10 +34,9 @@ const TableVideoPreviewSheetContent = ({ posts }: Pick<TableVideoPreviewSheetPro
     {posts!.map((post, index) => (
       <LivePostCard
         key={index}
-        handleApprove={() => { }}
-        handleDecline={() => { }}
-        post={post}
-      />
+        handleApprove={() => { } }
+        handleDecline={() => { } }
+        post={post} restaurant={undefined}      />
     ))}
   </section>
 )
@@ -63,7 +61,8 @@ const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [] }: TableVideoPr
       videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       thumbUrl: "https://example.com/thumbnail.jpg",
       postedAt: "2024-01-15T14:30:00Z",
-      status: "pending"
+      status: "pending",
+      tags: []
     };
     posts = Array(5).fill(post);
   }

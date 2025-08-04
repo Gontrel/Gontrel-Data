@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CenterModal } from "@/components/ui/CenterModal";
 import { trpc } from "@/lib/trpc-client";
-import Button from "@/components/ui/Button";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,

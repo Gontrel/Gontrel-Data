@@ -9,7 +9,7 @@ interface LivePostCardProps {
   handleApprove?: () => void;
   handleDecline?: () => void;
   post: Post;
-  restaurant: Restaurant;
+  restaurant?: Restaurant;
 }
 
 export const LivePostCard = ({

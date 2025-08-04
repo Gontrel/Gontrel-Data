@@ -11,7 +11,7 @@ import { Restaurant, RestaurantData } from "@/interfaces/restaurants";
 interface GontrelPostViewProps {
   /** The URL of the video to display */
   videoUrl: string | null;
-  restaurantData: RestaurantData | Restaurant;
+  restaurantData: RestaurantData | Restaurant | undefined;
   tiktokUsername?: string | null;
   width?: string;
   height?: string;
