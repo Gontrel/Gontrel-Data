@@ -277,6 +277,25 @@ export const updateLocationSchema = z.object({
   locationId: z.string().uuid(),
 });
 
+export const bulkApproveRestaurantStatusSchema = z.object({
+  locationId: z.string().uuid(),
+  comment: z.string().optional(),
+  data: z.array(
+    z.object({
+      type: z.enum(ApprovalType),
+      status: z.enum(ApprovalStatusEnum),
+    })
+  ),
+});
+
+export const approveRestaurantStatusSchema = z.object({
+  resourceId: z.string().uuid().optional(),
+  locationId: z.string().uuid(),
+  comment: z.string().optional(),
+  type: z.enum(ApprovalType),
+  status: z.enum(ApprovalStatusEnum),
+});
+
 /**
  * PUT /admin-approve-location - LocationApprovalRequest
  */
@@ -284,8 +303,8 @@ export const locationApprovalSchema = z.object({
   resourceId: z.string().uuid().optional(),
   locationId: z.string().uuid(),
   comment: z.string().optional(),
-  type: z.nativeEnum(ApprovalType),
-  status: z.nativeEnum(ApprovalStatusEnum),
+  type: z.enum(ApprovalType),
+  status: z.enum(ApprovalStatusEnum),
 });
 
 /**

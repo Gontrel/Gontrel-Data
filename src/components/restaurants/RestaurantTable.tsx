@@ -23,7 +23,6 @@ interface RestaurantTableProps<T> {
   currentPage?: number;
   pageSize?: number;
   totalPages?: number;
-  onRowClick?: (row: T) => void;
   onPageSizeChange?: (pageSize: number) => void;
   onPageChange?: (pageIndex: number) => void;
 }
@@ -35,7 +34,6 @@ export function RestaurantTable<T>({
   restaurants,
   loading = false,
   onRowSelect,
-  onRowClick,
   showSelection = false,
   columns,
   currentPage = 1,
@@ -103,7 +101,6 @@ export function RestaurantTable<T>({
                 <RestaurantRow<T>
                   key={row.id}
                   row={row}
-                  onRowClick={onRowClick}
                 />
               ))}
             </tbody>

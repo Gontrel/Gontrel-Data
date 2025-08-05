@@ -3,12 +3,19 @@ import { Sheet } from '@/components/modals/Sheet'
 import Icon from '@/components/svgs/Icons';
 import { LivePostCard } from '../restaurants/LivePostCard';
 import { Post } from '@/interfaces/posts';
+import { GontrelRestaurantData } from '@/interfaces/restaurants';
 
+
+type TableVideoPreviewSheetOnApprove = (restaurantId: string, postId: string) => void;
+type TableVideoPreviewSheetOnDecline = (restaurantId: string, postId: string) => void;
 
 interface TableVideoPreviewSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   posts: Post[];
+  onApprove: TableVideoPreviewSheetOnApprove;
+  onDecline: TableVideoPreviewSheetOnDecline;
+  restaurant: GontrelRestaurantData & { id: string, adminName: string };
 }
 
 interface TableVideoPreviewSheetHeaderProps {
@@ -29,19 +36,21 @@ const TableVideoPreviewSheetHeader = ({ onOpenChange, posts }: TableVideoPreview
   )
 }
 
-const TableVideoPreviewSheetContent = ({ posts }: Pick<TableVideoPreviewSheetProps, "posts">) => (
+const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant }: Omit<TableVideoPreviewSheetProps, 'open' | 'onOpenChange'>) => (
   <section className="flex flex-col gap-y-4.5 py-5 px-6">
     {posts!.map((post, index) => (
       <LivePostCard
         key={index}
-        handleApprove={() => { } }
-        handleDecline={() => { } }
-        post={post} restaurant={undefined}      />
+        handleApprove={onApprove}
+        handleDecline={onDecline}
+        post={post}
+        restaurant={restaurant}
+      />
     ))}
   </section>
 )
 
-const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [] }: TableVideoPreviewSheetProps) => {
+export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onDecline, restaurant }: TableVideoPreviewSheetProps) => {
   if (posts.length === 0) {
     const post: Post = {
       id: "post_123456789",
@@ -62,6 +71,7 @@ const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [] }: TableVideoPr
       thumbUrl: "https://example.com/thumbnail.jpg",
       postedAt: "2024-01-15T14:30:00Z",
       status: "pending",
+      source: "tiktok",
       tags: []
     };
     posts = Array(5).fill(post);
@@ -75,9 +85,7 @@ const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [] }: TableVideoPr
       className="bg-white p-0 overflow-y-auto"
     >
       <TableVideoPreviewSheetHeader onOpenChange={onOpenChange} posts={posts} />
-      <TableVideoPreviewSheetContent posts={posts} />
+      <TableVideoPreviewSheetContent posts={posts} onApprove={onApprove} onDecline={onDecline} restaurant={restaurant} />
     </Sheet>
   )
 }
-
-export default TableVideoPreviewSheet

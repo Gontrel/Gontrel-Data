@@ -1,17 +1,19 @@
 import { ApprovalStatusEnum } from "@/types/enums";
-import { Admin } from "@/types/restaurant";
+import { Admin } from "./user";
 import { Post } from "./posts";
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
-  pagination: {
-    lastTokenId?: string | null;
-    total?: number;
-    perPage?: number;
-    pageSize: number;
-    pageNumber?: number;
-  };
+  pagination: Pagination
   meta: Record<string, unknown> | undefined;
+}
+
+export interface Pagination {
+  total: number;
+  perPage: number;
+  pageNumber: number;
+  pageSize: number;
+  lastTokenId: string;
 }
 
 export interface IAdminApproval {
@@ -41,9 +43,11 @@ export interface LocationTag {
   updatedAt: Date;
 }
 
-export interface Analytics {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
+export interface Videos {
+  total: number;
+  approved: number;
+  pending: number;
+  declined: number;
 }
 
 export interface ApiLocation {

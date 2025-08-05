@@ -20,21 +20,15 @@ export enum ApprovalType {
 }
 
 export enum ManagerTableTabsEnum {
-  ACTIVE_RESTAURANTS = 'active_restaurants',
-  PENDING_RESTAURANTS = 'pending_restaurants',
-  PENDING_VIDEOS = 'pending_videos'
+  ACTIVE_RESTAURANTS = 'activeRestaurants',
+  PENDING_RESTAURANTS = 'pendingRestaurants',
+  PENDING_VIDEOS = 'pendingVideos'
 }
 
 export enum AnalystTableTabsEnum {
-  ACTIVE_RESTAURANTS = 'active_restaurants',
-  SUBMITTED_RESTAURANTS = 'submitted_restaurants',
-  SUBMITTED_VIDEOS = 'submitted_videos'
-}
-
-export enum TableStatusEnum {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  DECLINED = 'declined'
+  ACTIVE_RESTAURANTS = 'activeRestaurants',
+  SUBMITTED_RESTAURANTS = 'submittedRestaurants',
+  SUBMITTED_VIDEOS = 'submittedVideos'
 }
 
 export enum TrendEnum {

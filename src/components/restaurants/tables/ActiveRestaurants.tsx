@@ -1,13 +1,14 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useMemo, useEffect, useState } from "react";
+'use client';
+
+import React, { useCallback, useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
-import { ActiveRestaurantType } from "@/types/restaurant";
+import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useActiveRestaurantQuery } from "@/hooks/useActiveRestaurants";
+
+import { ApprovalStatusEnum } from "@/types/enums";
+import { useActiveRestaurantsStore } from "@/stores/tableStore";
+import { trpc } from "@/lib/trpc-client";
 import { useRouter } from "next/navigation";
-import { ManagerTableTabsEnum } from "@/types/enums";
-import { useRestaurants } from "@/hooks/useRestaurants";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -18,7 +19,7 @@ interface ActiveRestaurantsProps {
 }
 
 /**
- * Component for displaying and managing pending restaurants
+ * Component for displaying and managing active restaurants
  */
 const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   searchTerm,
@@ -27,44 +28,55 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   pageSize,
   handlePageSize,
 }: ActiveRestaurantsProps) => {
-  // Create columns with proper dependencies
-  const columns = useMemo(() => createActiveRestaurantsColumns(), []);
-
   const router = useRouter();
+  const {
+    setSelectedRows,
+  } = useActiveRestaurantsStore();
 
-  // Fetch data
-  const { data: restaurantsData, isLoading: restaurantsLoading } =
-    useRestaurants({
-      tableId: ManagerTableTabsEnum.ACTIVE_RESTAURANTS,
-      search: searchTerm,
-      page: currentPage,
-      limit: pageSize,
-    });
+  // Use tRPC to fetch data directly
+  const {
+    data: queryData,
+    isLoading,
+    error,
+  } = trpc.restaurant.getRestaurants.useQuery({
+    pageNumber: currentPage,
+    quantity: pageSize,
+    status: ApprovalStatusEnum.APPROVED,
+    query: searchTerm,
+  });
 
-  // Calculate total pages from API response
-  const totalPages = useMemo(() => {
-    if (!restaurantsData?.pagination?.total || !pageSize) {
-      return 1;
-    }
-    return Math.ceil(restaurantsData.pagination.total / pageSize);
-  }, [restaurantsData?.pagination?.total, pageSize]);
+  // Extract data from tRPC response
+  const restaurants = queryData?.data || [];
+  const paginationData = queryData?.pagination;
+  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
-  const handleRowSelect = (selectedRows: ActiveRestaurantType[]): void => {
-    if (selectedRows.length > 0) {
-    }
-  };
+  // Handle errors (removed from useEffect to prevent loops)
+  if (error) {
+    console.error('Active restaurants error:', error.message);
+  }
 
-  const handleOnRowClick = (selectedRows: ActiveRestaurantType): void => {
+  const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantTableTypes): void => {
     const restaurantId = selectedRows.id;
     router.push(`/restaurants/${restaurantId}`);
+  }, [router]);
+  // Create columns with proper dependencies
+  const columns = useMemo(() => createActiveRestaurantsColumns(handleOnRowClick), [handleOnRowClick]);
+
+
+
+  // Handle row selection - extract IDs from selected rows
+  const handleRowSelection = (selectedRows: ActiveRestaurantTableTypes[]) => {
+    const selectedIds = selectedRows.map(row => row.id);
+    setSelectedRows(selectedIds);
   };
 
+
+
   return (
-    <RestaurantTable<ActiveRestaurantType>
-      restaurants={restaurantsData?.data || []}
-      loading={restaurantsLoading}
-      onRowSelect={handleRowSelect}
-      onRowClick={handleOnRowClick}
+    <RestaurantTable<ActiveRestaurantTableTypes>
+      restaurants={restaurants}
+      loading={isLoading}
+      onRowSelect={handleRowSelection}
       showSelection={true}
       columns={columns}
       currentPage={currentPage}

@@ -1,5 +1,4 @@
 import { AnalystTableTabsEnum, ManagerTableTabsEnum } from "@/types/enums";
-import { useRestaurantsMock } from "./useRestaurantsMock";
 import { useRestaurantsTRPC } from "./useRestaurantsTRPC";
 
 /**
@@ -18,15 +17,16 @@ interface RestaurantQueryParams {
  */
 export function useRestaurants(params: RestaurantQueryParams & { tableId: ManagerTableTabsEnum | AnalystTableTabsEnum }) {
   // Configuration to switch between mock and TRPC implementations
-  const mode = "trpc" as "mock" | "trpc";
+  // const mode = "trpc" as "mock" | "trpc";
 
-  const mockResult = useRestaurantsMock(params as Parameters<typeof useRestaurantsMock>[0]);
+  // const mockResult = useRestaurantsMock(params);
 
   const trpcResult = useRestaurantsTRPC(params);
 
-  if (mode === "mock") {
-    return mockResult;
-  }
+  // if (mode === "mock") {
+  //   return mockResult;
+  // }
 
+  console.log(trpcResult.data);
   return trpcResult;
 }

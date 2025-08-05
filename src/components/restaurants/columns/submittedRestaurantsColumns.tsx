@@ -1,11 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { SubmittedRestaurantType } from '@/types/restaurant';
+import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
 import { Check, X } from 'lucide-react';
 import { ActionButtons } from '../../ui/ActionButtons';
 import { ExternalLink } from '../../ui/ExternalLink';
 import { formatDate } from '@/lib/utils';
 import { TABLE_COLUMN_SIZES } from "@/constants";
-import { TableStatusEnum } from "@/types/enums";
+import { ApprovalStatusEnum } from "@/types/enums";
 import { getBgColor, getTextColor } from '@/lib/tableUtils';
 import { PillButton } from '@/components/ui/PillButton';
 import { TableHeader } from './utils';
@@ -15,8 +15,8 @@ import { TableHeader } from './utils';
  * @param handleResubmit - Handler for resubmit action
  */
 export const createSubmittedRestaurantsColumns = (
-  handleResubmit: (restaurant: SubmittedRestaurantType) => void
-): ColumnDef<SubmittedRestaurantType>[] => [
+  handleResubmit: (restaurant: SubmittedRestaurantTableTypes) => void
+): ColumnDef<SubmittedRestaurantTableTypes>[] => [
     {
       accessorKey: 'id',
       header: () => (
@@ -66,7 +66,7 @@ export const createSubmittedRestaurantsColumns = (
 
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={text} textColor={getTextColor(posts)} bgColor={getBgColor(posts)} />
+            <PillButton text={text} textColor={getTextColor(posts.map((post) => ({ status: post.status })))} bgColor={getBgColor(posts.map((post) => ({ status: post.status })))} />
             <button onClick={() => {
               // TODO: Open video modal
             }} className="text-blue-500 text-left">
@@ -100,8 +100,8 @@ export const createSubmittedRestaurantsColumns = (
       cell: ({ row }) => {
         const { content, status } = row.original.address;
         const maplink = row.original.mapLink ?? '';
-        const isApproved = status === TableStatusEnum.APPROVED;
-        const isPending = status === TableStatusEnum.PENDING;
+        const isApproved = status === ApprovalStatusEnum.APPROVED;
+        const isPending = status === ApprovalStatusEnum.PENDING;
 
         return (
           <div className={`flex flex-col gap-y-2 ${!isPending && 'items-center'}`}>
@@ -138,8 +138,8 @@ export const createSubmittedRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const { content, status } = row.original.menu;
-        const isApproved = status === TableStatusEnum.APPROVED;
-        const isPending = status === TableStatusEnum.PENDING;
+        const isApproved = status === ApprovalStatusEnum.APPROVED;
+        const isPending = status === ApprovalStatusEnum.PENDING;
         return (
           <div className={`flex flex-col gap-y-2 ${!isPending && 'items-center'}`}>
             <ExternalLink href={content} title={content}>
@@ -172,8 +172,8 @@ export const createSubmittedRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const { content, status } = row.original.reservation;
-        const isApproved = status === TableStatusEnum.APPROVED;
-        const isPending = status === TableStatusEnum.PENDING;
+        const isApproved = status === ApprovalStatusEnum.APPROVED;
+        const isPending = status === ApprovalStatusEnum.PENDING;
         return (
           <div className={`flex flex-col gap-y-2 ${!isPending && 'items-center'}`}>
             <ExternalLink href={content} title={content}>
@@ -243,7 +243,7 @@ export const createSubmittedRestaurantsColumns = (
         <TableHeader title="Actions" />
       ),
       cell: ({ row }) => {
-        const isPending = row.original.videos.pending > 0 || row.original.address.status === TableStatusEnum.PENDING || row.original.menu.status === TableStatusEnum.PENDING || row.original.reservation.status === TableStatusEnum.PENDING;
+        const isPending = row.original.videos.pending > 0 || row.original.address.status === ApprovalStatusEnum.PENDING || row.original.menu.status === ApprovalStatusEnum.PENDING || row.original.reservation.status === ApprovalStatusEnum.PENDING;
         return (
           !isPending && <ActionButtons
             actions={[

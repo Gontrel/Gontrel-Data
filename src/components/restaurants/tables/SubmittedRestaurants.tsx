@@ -1,10 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { RestaurantTable } from '../RestaurantTable';
-import { useRestaurants } from '@/hooks/useRestaurants';
-import { AnalystTableTabsEnum } from '@/types';
 import { useSubmittedRestaurants } from '@/hooks/useSubmittedRestaurants';
-import { SubmittedRestaurantType } from '@/types/restaurant';
+import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
 import { createSubmittedRestaurantsColumns } from '../columns/submittedRestaurantsColumns';
+import { useSubmittedRestaurantsStore } from '@/stores/tableStore';
 
 interface SubmittedRestaurantsProps {
     searchTerm: string;
@@ -15,19 +14,27 @@ interface SubmittedRestaurantsProps {
 }
 
 /**
- * Component for displaying and managing pending restaurants
+ * Component for displaying and managing submitted restaurants
  */
 const SubmittedRestaurants = ({
-    searchTerm,
-    currentPage,
     handleCurrentPage,
-    pageSize,
     handlePageSize
 }: SubmittedRestaurantsProps) => {
     const {
-        handleRowSelect,
         handleResubmit
     } = useSubmittedRestaurants();
+
+    const {
+        data,
+        loading,
+        error,
+        pagination,
+        hasUnsavedChanges,
+        saveLoading,
+        saveChanges,
+        discardChanges,
+        setSelectedRows,
+    } = useSubmittedRestaurantsStore();
 
     // Create columns with proper dependencies
     const columns = useMemo(
@@ -37,35 +44,63 @@ const SubmittedRestaurants = ({
         [handleResubmit]
     );
 
-    // Fetch data
-    const { data: restaurantsData, isLoading: restaurantsLoading } = useRestaurants({
-        tableId: AnalystTableTabsEnum.SUBMITTED_RESTAURANTS,
-        search: searchTerm,
-        page: currentPage,
-        limit: pageSize
-    });
 
-    // Calculate total pages from API response
-    const totalPages = useMemo(() => {
-        if (!restaurantsData?.pagination?.total || !pageSize) {
-            return 1;
+    // Handle errors
+    useEffect(() => {
+        if (error) {
+            console.error('Submitted restaurants error:', error);
         }
-        return Math.ceil(restaurantsData.pagination.total / pageSize);
-    }, [restaurantsData?.pagination?.total, pageSize]);
+    }, [error]);
+
+    // Handle save/discard actions
+    const handleSave = async () => {
+        await saveChanges();
+    };
+
+    const handleDiscard = () => {
+        discardChanges();
+    };
+
+    // Handle row selection - extract IDs from selected rows
+    const handleRowSelection = (selectedRows: SubmittedRestaurantTableTypes[]) => {
+        const selectedIds = selectedRows.map(row => row.id);
+        setSelectedRows(selectedIds);
+    };
 
     return (
-        <RestaurantTable<SubmittedRestaurantType>
-            restaurants={restaurantsData?.data || []}
-            loading={restaurantsLoading}
-            onRowSelect={handleRowSelect}
-            showSelection={true}
-            columns={columns}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalPages={totalPages}
-            onPageSizeChange={handlePageSize}
-            onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
-        />
+        <div>
+            {/* Save/Discard buttons */}
+            {hasUnsavedChanges && (
+                <div className="flex gap-2 mb-4">
+                    <button
+                        onClick={handleSave}
+                        disabled={saveLoading}
+                        className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+                    >
+                        {saveLoading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                        onClick={handleDiscard}
+                        className="px-4 py-2 bg-gray-600 text-white rounded"
+                    >
+                        Discard Changes
+                    </button>
+                </div>
+            )}
+
+            <RestaurantTable<SubmittedRestaurantTableTypes>
+                restaurants={data}
+                loading={loading}
+                onRowSelect={handleRowSelection}
+                showSelection={true}
+                columns={columns}
+                currentPage={pagination.currentPage}
+                pageSize={pagination.pageSize}
+                totalPages={pagination.totalPages}
+                onPageSizeChange={handlePageSize}
+                onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
+            />
+        </div>
     );
 };
 

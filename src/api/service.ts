@@ -16,6 +16,12 @@ import {
   FetchAnalystLocationsRequest,
   UpdatePostRequest,
   CreateBulkPostRequest,
+  GetPostsResponse,
+  GetRestaurantsResponse,
+  BulkApproveRestaurantStatusRequest,
+  BulkApproveRestaurantStatusResponse,
+  ApproveRestaurantStatusRequest,
+  ApproveRestaurantStatusResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -114,7 +120,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
   // getRestaurants
-  getRestaurants = async (data: FetchLocationsRequest) => {
+  getRestaurants = async (data: FetchLocationsRequest): Promise<GetRestaurantsResponse> => {
     const params = this.buildSearchParams(data);
 
     try {
@@ -139,6 +145,22 @@ export default class APIRequest {
   updateRestaurant = async (data: UpdateLocationRequest) => {
     const response = await this.authenticatedClient.put(
       `/admin-location/${data.locationId}`,
+      data
+    );
+    return this.handleResponse(response);
+  };
+
+  approveRestaurantStatus = async (data: ApproveRestaurantStatusRequest): Promise<ApproveRestaurantStatusResponse> => {
+    const response = await this.authenticatedClient.put(
+      `/admin-approve-location`,
+      data
+    );
+    return this.handleResponse(response);
+  };
+
+  bulkApproveRestaurantStatus = async (data: BulkApproveRestaurantStatusRequest): Promise<BulkApproveRestaurantStatusResponse> => {
+    const response = await this.authenticatedClient.put(
+      `/admin-bulk-approve-location`,
       data
     );
     return this.handleResponse(response);
@@ -176,7 +198,7 @@ export default class APIRequest {
     }
   };
   // getPosts
-  getPosts = async (data: FetchAdminPostsRequest) => {
+  getPosts = async (data: FetchAdminPostsRequest): Promise<GetPostsResponse> => {
     const params = this.buildSearchParams(data);
     try {
       const response = await this.authenticatedClient.get(

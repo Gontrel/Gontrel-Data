@@ -1,7 +1,5 @@
-import { Analytics } from "@/types";
-
 export interface Post {
-  id: string;
+   id: string;
   createdAt: string;
   modifiedAt: string;
   deletedAt: string | null;
@@ -14,6 +12,7 @@ export interface Post {
   thumbUrl: string;
   postedAt: string | null;
   status: string;
+  source: string;
   tags: Tag[];
 }
 
@@ -33,3 +32,6 @@ export interface Tag {
   isTaste: boolean;
 }
 
+export interface Analytics {
+  [key: string]: unknown;
+}

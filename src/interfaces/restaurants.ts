@@ -1,78 +1,6 @@
-import { Admin } from "@/types/restaurant";
-import { Post } from "./posts";
-
-export interface OpeningHours {
-  dayOfTheWeek: string;
-  opensAt: number;
-  closesAt: number;
-}
-
-export interface Address {
-  status: string;
-  content: string;
-}
-
-export interface Menu {
-  status: string;
-  content: string;
-}
-
-export interface Reservation {
-  status: string;
-  content: string;
-}
-
-export interface RestaurantAdmin {
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  name: string;
-  phoneNumber: string;
-  profileImage: string;
-  email: string;
-  password: string;
-  isVerified: boolean;
-  role: string;
-}
-
-export interface RestaurantAnalytics {
-  [key: string]: unknown;
-}
-
-export interface RestaurantPost {
-  id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  analytics: RestaurantAnalytics;
-  tiktokLink: string;
-  videoUrl: string;
-  thumbUrl: string;
-  postedAt: string | null;
-  status: string;
-}
-
-export interface Videos {
-  total: number;
-  approved: number;
-  pending: number;
-  declined: number;
-}
-
-export interface Pagination {
-  total: number;
-  perPage: number;
-  pageNumber: number;
-  pageSize: number;
-  lastTokenId: string;
-}
+import { ApprovalStatusEnum } from "@/types";
+import { Post, Tag } from "./posts";
+import { Admin } from "./user";
 
 export interface Meta {
   totalLocations: number;
@@ -151,12 +79,70 @@ export interface Restaurant {
   type: "RESTAURANT" | "CAFE" | "BAR";
   createdAt: string;
   modifiedAt: string;
-  status: "approved" | "pending" | "rejected";
+  status: ApprovalStatusEnum;
   posts: Post[];
   admin: Admin;
   mapLink: string;
   country: string;
   analytics: Record<string, unknown>;
-  summary: Summary;
+  summary?: Summary;
   placeId?: string;
+}
+
+export interface Address {
+  status: ApprovalStatusEnum;
+  content: string;
+}
+
+export interface Reservation {
+  status: ApprovalStatusEnum;
+  content: string;
+}
+
+
+export interface Menu {
+  status: ApprovalStatusEnum;
+  content: string;
+}
+
+export interface Location {
+    id: string;
+    createdAt: string;
+    modifiedAt: string;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    updatedBy: string | null;
+    firebaseId: string | null;
+    address: Address;
+    lat: number;
+    lng: number;
+    menu: Menu;
+    name: string;
+    openingHours: OpeningHours[];
+    photos: string[];
+    phoneNumber: string | null;
+    priceLevel: number;
+    rating: number;
+    reservation: Reservation;
+    toilets: boolean;
+    type: string;
+    website: string;
+    status: ApprovalStatusEnum;
+    comment: string | null;
+    mapLink: string;
+    country: string;
+    tags: Tag[];
+  }
+
+  export interface OpeningHours {
+  dayOfTheWeek: string;
+  opensAt: number;
+  closesAt: number;
+}
+
+export interface GontrelRestaurantData {
+  name: string;
+  menu: string;
+  reservation: string;
+  rating: number;
 }

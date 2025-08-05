@@ -2,8 +2,7 @@
  * Utility functions for table operations
  */
 
-import { TableStatusEnum } from "@/types/enums";
-import { VideoType } from "@/types/restaurant";
+  import { ApprovalStatusEnum } from "@/types/enums";
 
 /**
  * Toggles a value in a Set and returns a new Set
@@ -62,23 +61,23 @@ export const removeFromSet = <T>(set: Set<T>, value: T): Set<T> => {
   return newSet;
 };
 
-export const getBgColor = (videos: VideoType[]) => {
-  if(videos.some(video => video.status === TableStatusEnum.PENDING)) {
+export const getBgColor = (videos: {status: string}[]) => {
+  if(videos.some(video => video.status === ApprovalStatusEnum.PENDING)) {
     return 'bg-gray-50';
-  } else if (videos.some(video => video.status === TableStatusEnum.APPROVED)) {
+  } else if (videos.some(video => video.status === ApprovalStatusEnum.APPROVED)) {
     return 'bg-green-50';
-  } else if (videos.every(video => video.status === TableStatusEnum.DECLINED)) {
+  } else if (videos.every(video => video.status === ApprovalStatusEnum.REJECTED)) {
     return 'bg-red-50';
   }
   return 'bg-gray-100';
 };
 
-export const getTextColor = (videos: VideoType[]) => {
-  if(videos.some(video => video.status === TableStatusEnum.PENDING)) {
+export const getTextColor = (videos: {status: string}[]) => {
+  if(videos.some(video => video.status === ApprovalStatusEnum.PENDING)) {
     return 'text-gray-900';
-  } else if (videos.some(video => video.status === TableStatusEnum.APPROVED)) {
+  } else if (videos.some(video => video.status === ApprovalStatusEnum.APPROVED)) {
     return 'text-green-800';
-  } else if (videos.every(video => video.status === TableStatusEnum.DECLINED)) {
+  } else if (videos.every(video => video.status === ApprovalStatusEnum.REJECTED)) {
     return 'text-red-500';
   }
   return 'text-gray-900';

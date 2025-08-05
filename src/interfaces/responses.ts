@@ -1,12 +1,15 @@
-import { Admin } from "@/types/restaurant";
+import { ApprovalStatusEnum, ApprovalType } from '@/types';
+import { Admin } from "./user";
 import {
   IPaginatedRes,
   ApiLocation,
   DashboardStats,
   StaffStats,
   LocationStats,
+  Videos
 } from "./api";
-import { Post } from "./posts";
+import { Post, Tag } from "./posts";
+import { Address, Location, Menu, OpeningHours, Reservation } from "./restaurants";
 
 // Authentication responses
 export interface LoginResponse {
@@ -31,8 +34,25 @@ export interface GetAdminProfileResponse {
   admin: Admin;
 }
 
+export interface ApproveRestaurantStatusResponse {
+  resourceId?: string;
+  locationId: string;
+  comment?: string;
+  type: ApprovalType;
+  status: ApprovalStatusEnum;
+}
+
+export interface BulkApproveRestaurantStatusResponse {
+  message: string;
+}
+
+
 // Location management responses
-export type GetRestaurantsResponse = IPaginatedRes<ApiLocation>;
+export type GetRestaurantsResponse = IPaginatedRes<{
+  admin: Admin;
+  posts: Post[];
+  videos: Videos;
+} & Location>;
 
 export interface GetRestaurantByIdResponse {
   location: ApiLocation;
@@ -56,12 +76,12 @@ export interface GetLocationStatsResponse {
   stats: LocationStats;
 }
 
-export interface ApproveLocationResponse {
-  message: string;
-}
-
 // Post management responses
-export type GetPostsResponse = IPaginatedRes<Post>;
+export type GetPostsResponse = IPaginatedRes<{
+  location: Location;
+  admin: Admin;
+  tags: Tag[];
+} & Post>;
 
 export interface GetPostByIdResponse {
   post: Post;
@@ -129,34 +149,6 @@ export interface PlaceDetailsResponse {
       width: number;
     }>;
   };
-}
-
-export interface Address {
-  status: "pending" | "approved" | "rejected";
-  content: string;
-}
-
-export interface Menu {
-  status: "pending" | "approved" | "rejected";
-  content: string; // URL
-}
-
-export interface Reservation {
-  status: "pending" | "approved" | "rejected";
-  content: string; // URL
-}
-
-export interface OpeningHours {
-  dayOfTheWeek:
-    | "MONDAY"
-    | "TUESDAY"
-    | "WEDNESDAY"
-    | "THURSDAY"
-    | "FRIDAY"
-    | "SATURDAY"
-    | "SUNDAY";
-  opensAt?: number;
-  closesAt?: number;
 }
 
 export interface GetRestaurantByIdResponse {

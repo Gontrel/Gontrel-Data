@@ -8,6 +8,8 @@ import {
   createLocationSchema,
   updateLocationSchema,
   fetchAnalystLocationsSchema,
+  bulkApproveRestaurantStatusSchema,
+  approveRestaurantStatusSchema,
 } from "./schemas";
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -83,6 +85,38 @@ export const restaurantRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.updateRestaurant(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  bulkApproveRestaurantStatus: protectedProcedure
+    .input(bulkApproveRestaurantStatusSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.bulkApproveRestaurantStatus(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  approveRestaurantStatus: protectedProcedure
+    .input(approveRestaurantStatusSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.approveRestaurantStatus(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

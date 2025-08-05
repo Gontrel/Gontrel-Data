@@ -9,6 +9,7 @@ import {
   createPostSchema,
   createBulkPostSchema,
 } from "./schemas";
+import { GetPostsResponse } from "@/interfaces/responses";
 
 export const postRouter = router({
   createPost: publicProcedure
@@ -47,7 +48,7 @@ export const postRouter = router({
   // Posts/Content management (protected)
   getPosts: protectedProcedure
     .input(fetchAdminPostsSchema)
-    .query(async ({ input, ctx }) => {
+    .query<GetPostsResponse>(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getPosts(input);

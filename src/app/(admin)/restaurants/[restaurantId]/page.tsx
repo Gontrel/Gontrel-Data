@@ -11,6 +11,7 @@ import { trpc } from "@/lib/trpc-client";
 import { RestaurantDetailsSkeleton } from "@/components/Loader/restaurants/RestaurantDetailsSkeleton";
 import { Post } from "@/interfaces/posts";
 import Icon from "@/components/svgs/Icons";
+import { GontrelRestaurantData } from "@/interfaces";
 
 const RestaurantDetailsPage = ({
   params,
@@ -70,6 +71,13 @@ const RestaurantDetailsPage = ({
     );
   }
 
+  const gontrelRestaurantData: GontrelRestaurantData = {
+    name: restaurant.name,
+    menu: restaurant.menu,
+    reservation: restaurant.reservation,
+    rating: restaurant.rating
+  }
+
   const handleNewPostModalOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setActiveVideoUrl(null);
@@ -86,7 +94,7 @@ const RestaurantDetailsPage = ({
         {restaurantData && (
           <GontrelPostView
             videoUrl={activeVideoUrl}
-            restaurantData={restaurantData}
+            restaurantData={gontrelRestaurantData}
             tiktokUsername={tiktokUsername || ""}
           />
         )}

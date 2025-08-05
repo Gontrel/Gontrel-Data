@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { VideoOverlay } from "./VideoOverlay";
 import { VideoPlayer } from "./VideoPlayer";
-import { Restaurant, RestaurantData } from "@/interfaces/restaurants";
+import { GontrelRestaurantData } from "@/interfaces/restaurants";
 
 /**
  * Props interface for the GontrelPostView component
@@ -11,7 +11,7 @@ import { Restaurant, RestaurantData } from "@/interfaces/restaurants";
 interface GontrelPostViewProps {
   /** The URL of the video to display */
   videoUrl: string | null;
-  restaurantData: RestaurantData | Restaurant | undefined;
+  restaurantData: GontrelRestaurantData | undefined;
   tiktokUsername?: string | null;
   width?: string;
   height?: string;
@@ -101,16 +101,8 @@ export const GontrelPostView = ({
       <VideoOverlay
         onTogglePlay={togglePlay}
         restaurantName={restaurantData?.name || ""}
-        menuLink={
-          typeof restaurantData?.menu === "string"
-            ? restaurantData?.menu || ""
-            : restaurantData?.menu?.content
-        }
-        bookLink={
-          typeof restaurantData?.reservation === "string"
-            ? restaurantData?.reservation || ""
-            : restaurantData?.reservation?.content
-        }
+        menuLink={restaurantData?.menu || ""}
+        bookLink={restaurantData?.reservation || ""}
         deliveryTime={"0 min"}
         openingHours="12:00pm - 2:00pm"
         rating={restaurantData?.rating || 0}

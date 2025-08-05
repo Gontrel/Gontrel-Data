@@ -268,15 +268,28 @@ export interface UpdateLocationRequest {
 }
 
 /**
+ * PUT /bulk-admin-approve-location
+ * Bulk approves or rejects a location
+ */
+export interface BulkApproveRestaurantStatusRequest {
+  locationId: string; // UUID, required
+  comment?: string;
+  data: Array<{
+    type: ApprovalType; // ApprovalType enum values
+    status: ApprovalStatusEnum; // enum values from ApprovalStatus, required
+  }>;
+}
+
+/**
  * PUT /admin-approve-location
  * Approves or rejects a location
  */
-export interface LocationApprovalRequest {
-  resourceId?: string; // UUID
+export interface ApproveRestaurantStatusRequest {
+  resourceId?: string;
   locationId: string; // UUID, required
   comment?: string;
   type: ApprovalType; // ApprovalType enum values
-  status: ApprovalStatusEnum; // enum values from ApprovalStatus, required
+  status: ApprovalStatusEnum; // enum values from ApprovalStatus
 }
 
 /**
