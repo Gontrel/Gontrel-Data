@@ -1,4 +1,4 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
@@ -11,7 +11,9 @@ import { PendingVideoTableTypes } from "@/types/restaurant";
 /**
  * Creates column definitions for pending videos table
  */
-export const createPendingVideosColumns = (): ColumnDef<PendingVideoTableTypes>[] => [
+export const createPendingVideosColumns = (
+  onRowClick?: (row: PendingVideoTableTypes) => void
+): ColumnDef<PendingVideoTableTypes>[] => [
   {
     accessorKey: "id",
     header: () => <TableHeader title="#" />,
@@ -30,15 +32,39 @@ export const createPendingVideosColumns = (): ColumnDef<PendingVideoTableTypes>[
     meta: { sticky: true },
   },
   {
-    accessorKey: "name",
-    header: () => <TableHeader title="Restaurant name" />,
-    cell: ({ row }) => (
-      <div className="font-medium text-[#181D1F] max-w-60 truncate">
-        {row.original.location.name}
-      </div>
+    accessorKey: 'name',
+    header: () => (
+      <TableHeader title="Restaurant name" />
     ),
+    cell: ({ row }) => {
+      const handleClick = (e: React.MouseEvent, row: Row<PendingVideoTableTypes>) => {
+        onRowClick?.(row.original);
+      };
+      const handleKeyDown = (
+        e: React.KeyboardEvent,
+        row: Row<PendingVideoTableTypes>,
+        onRowClick?: (row: PendingVideoTableTypes) => void
+      ) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onRowClick?.(row.original);
+        }
+      };
+      return (
+        <div
+          onClick={(e) => handleClick(e, row)}
+          onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
+          role="button"
+          tabIndex={0}
+          aria-label="View restaurant details"
+          className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] hover:text-blue-500 max-w-60 w-full h-full hover:bg-gray-50 overflow-hidden"
+        >
+          <span className="truncate w-full">{row.original.location.name}</span>
+        </div>
+      );
+    },
     minSize: TABLE_COLUMN_SIZES.NAME,
-    meta: { sticky: true },
+    meta: { sticky: true }
   },
   {
     accessorKey: "posts",

@@ -3,12 +3,13 @@ import React, { useCallback, useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { ApprovalStatusEnum, ApprovalType } from "@/types";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
-import { PendingRestaurantType } from "@/types/restaurant";
+import { PendingRestaurantTableType } from "@/types/restaurant";
 import { usePendingRestaurants } from "@/hooks/usePendingRestaurants";
 import { usePendingRestaurantsStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
-import TableVideoPreviewSheet from "@/components/modals/TableVideoPreviewSheet";
+import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { errorToast, successToast } from "@/utils/toast";
+import { GontrelRestaurantData } from "@/interfaces/restaurants";
 
 interface PendingRestaurantsProps {
   searchTerm: string;
@@ -70,7 +71,7 @@ const PendingRestaurants = ({
     }
   });
 
-  const handleSaveRestaurant = useCallback((restaurant: PendingRestaurantType, comment?: string) => {
+  const handleSaveRestaurant = useCallback((restaurant: PendingRestaurantTableType, comment?: string) => {
     updateRestaurantStatus({
       locationId: restaurant.id,
       comment: comment || "",
@@ -95,7 +96,7 @@ const PendingRestaurants = ({
     });
   }, [updateRestaurantStatus]);
 
-  const handleSendFeedback = useCallback((restaurant: PendingRestaurantType, comment?: string) => {
+  const handleSendFeedback = useCallback((restaurant: PendingRestaurantTableType, comment?: string) => {
     handleSaveRestaurant(restaurant, comment);
   }, [handleSaveRestaurant]);
 
@@ -107,7 +108,7 @@ const PendingRestaurants = ({
       const updatedRestaurant = { ...restaurant };
 
       // Check for property-level changes (address, menu, reservation)
-      const propertyKeys: (keyof Pick<PendingRestaurantType, 'address' | 'menu' | 'reservation'>)[] = ['address', 'menu', 'reservation'];
+      const propertyKeys: (keyof Pick<PendingRestaurantTableType, 'address' | 'menu' | 'reservation'>)[] = ['address', 'menu', 'reservation'];
 
       propertyKeys.forEach(propertyKey => {
         const changeKey = `${restaurant.id}-${propertyKey}`;
@@ -164,7 +165,7 @@ const PendingRestaurants = ({
   }
 
   // Handle row selection - extract IDs from selected rows
-  const handleRowSelection = (selectedRows: PendingRestaurantType[]) => {
+  const handleRowSelection = (selectedRows: PendingRestaurantTableType[]) => {
     const selectedIds = selectedRows.map(row => row.id);
     setSelectedRows(selectedIds);
   };
@@ -175,17 +176,36 @@ const PendingRestaurants = ({
     }
   };
 
+  const restaurant: GontrelRestaurantData & { id:string, adminName: string } = useMemo(() => {
+    const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreviewModal.currentRestaurantId);
+    return currentRestaurant ? {
+      id: currentRestaurant.id,
+      name: currentRestaurant.name,
+      menu: currentRestaurant.menu?.content || "",
+      reservation: currentRestaurant.reservation?.content || "",
+      rating: currentRestaurant.rating,
+      adminName: currentRestaurant.admin.name
+    } : {
+      id: "",
+      name: "",
+      menu: "",
+      reservation: "",
+      rating: 0,
+      adminName: ""
+    };
+  }, [restaurants, videoPreviewModal.currentRestaurantId]);
+
   return (
     <div>
       <TableVideoPreviewSheet
         open={videoPreviewModal.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
         posts={videoPreviewModal.posts}
-        restaurantId={videoPreviewModal.currentRestaurantId ?? ""}
+        restaurant={restaurant}
         onApprove={handleApprovePost}
         onDecline={handleDeclinePost}
       />
-      <RestaurantTable<PendingRestaurantType>
+      <RestaurantTable<PendingRestaurantTableType>
         restaurants={restaurants}
         loading={isLoading}
         onRowSelect={handleRowSelection}

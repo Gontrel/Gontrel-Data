@@ -2,8 +2,8 @@
 import { create, StateCreator } from 'zustand';
 import { ManagerTableTabsEnum, AnalystTableTabsEnum, ApprovalStatusEnum } from '@/types/enums';
 import {
-  ActiveRestaurantType,
-  PendingRestaurantType,
+  ActiveRestaurantTableType,
+  PendingRestaurantTableType,
   PendingVideoTableTypes,
   SubmittedRestaurantTableTypes,
   SubmittedVideoTableTypes
@@ -39,9 +39,9 @@ export interface TableState<T> {
 
 export interface TableStore {
   // State for different table types
-  pendingRestaurants: TableState<PendingRestaurantType>;
+  pendingRestaurants: TableState<PendingRestaurantTableType>;
   pendingVideos: TableState<PendingVideoTableTypes>;
-  activeRestaurants: TableState<ActiveRestaurantType>;
+  activeRestaurants: TableState<ActiveRestaurantTableType>;
   submittedRestaurants: TableState<SubmittedRestaurantTableTypes>;
   submittedVideos: TableState<SubmittedVideoTableTypes>;
 
@@ -106,9 +106,9 @@ const createInitialTableState = <T>(): TableState<T> => ({
 
 const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   // Initial states for each table type
-  pendingRestaurants: createInitialTableState<PendingRestaurantType>(),
+  pendingRestaurants: createInitialTableState<PendingRestaurantTableType>(),
   pendingVideos: createInitialTableState<PendingVideoTableTypes>(),
-  activeRestaurants: createInitialTableState<ActiveRestaurantType>(),
+  activeRestaurants: createInitialTableState<ActiveRestaurantTableType>(),
   submittedRestaurants: createInitialTableState<SubmittedRestaurantTableTypes>(),
   submittedVideos: createInitialTableState<SubmittedVideoTableTypes>(),
   mutationLoading: false,
@@ -203,7 +203,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       return;
     }
     const store = get();
-    const currentState = store[tableType] as TableState<PendingRestaurantType>;
+    const currentState = store[tableType] as TableState<PendingRestaurantTableType>;
     const newPendingChanges = new Map(currentState.pendingChanges);
 
     const changeKey = postId
@@ -231,7 +231,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       return;
     }
     const store = get();
-    const currentState = store[tableType] as TableState<PendingRestaurantType>;
+    const currentState = store[tableType] as TableState<PendingRestaurantTableType>;
     const newPendingChanges = new Map(currentState.pendingChanges);
 
     // Create unique key based on what's being changed
@@ -332,7 +332,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       return;
     }
     const store = get();
-    const currentState = store[tableType] as TableState<PendingRestaurantType>;
+    const currentState = store[tableType] as TableState<PendingRestaurantTableType>;
 
     if (currentState.pendingChanges.size === 0) {
       return; // No changes to save
@@ -384,7 +384,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       return new Map<string, { newStatus: ApprovalStatusEnum; propertyKey?: string; postId?: string }>();
     }
     const store = get();
-    const currentState = store[tableType] as TableState<PendingRestaurantType>;
+    const currentState = store[tableType] as TableState<PendingRestaurantTableType>;
     return currentState.pendingChanges;
   },
 
@@ -457,10 +457,10 @@ export const usePendingRestaurantsStore = () => {
       store.openVideoPreview(ManagerTableTabsEnum.PENDING_RESTAURANTS, posts, restaurantId),
     closeVideoPreview: () =>
       store.closeVideoPreview(ManagerTableTabsEnum.PENDING_RESTAURANTS),
-    setData: (data: PendingRestaurantType[]) => store.setData(ManagerTableTabsEnum.PENDING_RESTAURANTS, data),
+    setData: (data: PendingRestaurantTableType[]) => store.setData(ManagerTableTabsEnum.PENDING_RESTAURANTS, data),
     setLoading: (loading: boolean) => store.setLoading(ManagerTableTabsEnum.PENDING_RESTAURANTS, loading),
     setError: (error: string | null) => store.setError(ManagerTableTabsEnum.PENDING_RESTAURANTS, error),
-    setPagination: (pagination: Partial<TableState<PendingRestaurantType>['pagination']>) =>
+    setPagination: (pagination: Partial<TableState<PendingRestaurantTableType>['pagination']>) =>
       store.setPagination(ManagerTableTabsEnum.PENDING_RESTAURANTS, pagination),
     setSearchTerm: (searchTerm: string) => store.setSearchTerm(ManagerTableTabsEnum.PENDING_RESTAURANTS, searchTerm),
     setSelectedRows: (selectedRows: string[]) => store.setSelectedRows(ManagerTableTabsEnum.PENDING_RESTAURANTS, selectedRows),
@@ -478,10 +478,10 @@ export const useActiveRestaurantsStore = () => {
     saveChanges: () => store.saveChanges(ManagerTableTabsEnum.ACTIVE_RESTAURANTS),
     discardChanges: () => store.discardChanges(ManagerTableTabsEnum.ACTIVE_RESTAURANTS),
     getPendingChanges: () => store.getPendingChanges(ManagerTableTabsEnum.ACTIVE_RESTAURANTS),
-    setData: (data: ActiveRestaurantType[]) => store.setData(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, data),
+    setData: (data: ActiveRestaurantTableType[]) => store.setData(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, data),
     setLoading: (loading: boolean) => store.setLoading(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, loading),
     setError: (error: string | null) => store.setError(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, error),
-    setPagination: (pagination: Partial<TableState<ActiveRestaurantType>['pagination']>) =>
+    setPagination: (pagination: Partial<TableState<ActiveRestaurantTableType>['pagination']>) =>
       store.setPagination(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, pagination),
     setSearchTerm: (searchTerm: string) => store.setSearchTerm(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, searchTerm),
     setSelectedRows: (selectedRows: string[]) => store.setSelectedRows(ManagerTableTabsEnum.ACTIVE_RESTAURANTS, selectedRows),

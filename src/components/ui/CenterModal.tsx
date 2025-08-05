@@ -1,8 +1,6 @@
 'use client';
 
-'use client';
-
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { mergeClasses } from '../../lib/utils';
@@ -40,6 +38,11 @@ export function CenterModal({
   showCloseButton = true
 }: CenterModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Handle escape key press
   useEffect(() => {
@@ -75,8 +78,9 @@ export function CenterModal({
     xl: 'max-w-xl'
   };
 
-  if (typeof window === 'undefined') return null;
-
+  if (!isMounted) {
+    return null;
+  }
   return createPortal(
     <>
       {/* Backdrop */}

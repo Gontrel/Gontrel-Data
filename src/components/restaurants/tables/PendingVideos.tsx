@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { PendingVideoTableTypes } from "@/types/restaurant";
 import { ApprovalStatusEnum } from "@/types";
@@ -6,6 +6,7 @@ import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
 
 import { usePendingVideosStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
+import { useRouter } from "next/navigation";
 
 interface PendingVideosProps {
   searchTerm: string;
@@ -22,6 +23,7 @@ const PendingVideos = ({
   handleCurrentPage,
   handlePageSize,
 }: PendingVideosProps) => {
+  const router = useRouter();
   const {
     hasUnsavedChanges,
     saveLoading,
@@ -52,8 +54,6 @@ const PendingVideos = ({
     console.error('Pending videos error:', error.message);
   }
 
-  // Create columns with proper dependencies
-  const columns = useMemo(() => createPendingVideosColumns(), []);
 
   // Handle save/discard actions
   const handleSave = async () => {
@@ -64,11 +64,19 @@ const PendingVideos = ({
     discardChanges();
   };
 
+  const handleOnRowClick = useCallback((selectedRows: PendingVideoTableTypes): void => {
+    const restaurantId = selectedRows.location.id;
+    router.push(`/restaurants/${restaurantId}`);
+  }, [router]);
+
   // Handle row selection - extract IDs from selected rows
   const handleRowSelection = (selectedRows: PendingVideoTableTypes[]) => {
     const selectedIds = selectedRows.map(row => row.id);
     setSelectedRows(selectedIds);
   };
+
+  // Create columns with proper dependencies
+  const columns = useMemo(() => createPendingVideosColumns(handleOnRowClick), [handleOnRowClick]);
 
   return (
     <div>

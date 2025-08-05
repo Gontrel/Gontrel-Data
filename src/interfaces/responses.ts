@@ -1,5 +1,15 @@
 import { ApprovalStatusEnum, ApprovalType } from '@/types';
-import { IPaginatedRes, ApiLocation, Post, Admin, DashboardStats, StaffStats, LocationStats, Tag, Videos, Location } from './api';
+import { Admin } from "./user";
+import {
+  IPaginatedRes,
+  ApiLocation,
+  DashboardStats,
+  StaffStats,
+  LocationStats,
+  Videos
+} from "./api";
+import { Post, Tag } from "./posts";
+import { Address, Location, Menu, OpeningHours, Reservation } from "./restaurants";
 
 // Authentication responses
 export interface LoginResponse {
@@ -139,34 +149,6 @@ export interface PlaceDetailsResponse {
       width: number;
     }>;
   };
-}
-
-export interface Address {
-  status: "pending" | "approved" | "rejected";
-  content: string;
-}
-
-export interface Menu {
-  status: "pending" | "approved" | "rejected";
-  content: string; // URL
-}
-
-export interface Reservation {
-  status: "pending" | "approved" | "rejected";
-  content: string; // URL
-}
-
-export interface OpeningHours {
-  dayOfTheWeek:
-    | "MONDAY"
-    | "TUESDAY"
-    | "WEDNESDAY"
-    | "THURSDAY"
-    | "FRIDAY"
-    | "SATURDAY"
-    | "SUNDAY";
-  opensAt?: number;
-  closesAt?: number;
 }
 
 export interface GetRestaurantByIdResponse {

@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { PendingRestaurantType } from "@/types/restaurant";
+import { PendingRestaurantTableType } from "@/types/restaurant";
 import { PendingRestaurantStatusKey } from "@/hooks/usePendingRestaurants";
 import { Check, X } from "lucide-react";
 import { ActionButtons } from "../../ui/ActionButtons";
@@ -12,7 +12,7 @@ import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
 import Logo from "@/assets/images/logo.png";
-import { Post } from "@/types";
+import { Post } from "@/interfaces";
 
 /**
  * Creates column definitions for pending restaurants table
@@ -32,9 +32,9 @@ export const createPendingRestaurantsColumns = (
     restaurantId: string,
     statusKey?: PendingRestaurantStatusKey
   ) => void,
-  handleSendFeedback: (restaurant: PendingRestaurantType, comment?: string) => void,
-  handleSaveRestaurant: (restaurant: PendingRestaurantType) => void
-): ColumnDef<PendingRestaurantType>[] => [
+  handleSendFeedback: (restaurant: PendingRestaurantTableType, comment?: string) => void,
+  handleSaveRestaurant: (restaurant: PendingRestaurantTableType) => void
+): ColumnDef<PendingRestaurantTableType>[] => [
     {
       accessorKey: "id",
       header: () => <TableHeader title="#" />,

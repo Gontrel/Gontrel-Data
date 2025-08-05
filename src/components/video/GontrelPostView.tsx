@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { RestaurantData } from "@/stores/videoStore";
 import { VideoOverlay } from "./VideoOverlay";
 import { VideoPlayer } from "./VideoPlayer";
+import { GontrelRestaurantData } from "@/interfaces/restaurants";
 
 /**
  * Props interface for the GontrelPostView component
@@ -11,8 +11,8 @@ import { VideoPlayer } from "./VideoPlayer";
 interface GontrelPostViewProps {
   /** The URL of the video to display */
   videoUrl: string | null;
-  restaurantData: RestaurantData;
-  tiktokUsername: string | null;
+  restaurantData: GontrelRestaurantData | undefined;
+  tiktokUsername?: string | null;
   width?: string;
   height?: string;
   borderRadius?: string;
@@ -76,11 +76,11 @@ export const GontrelPostView = ({
 
   if (!videoUrl) {
     return (
-      <div className={`${width} ${height} flex items-center justify-center bg-gray-100 ${borderRadius} ${className}`}>
+      <div
+        className={`${width} ${height} flex items-center justify-center bg-gray-100 ${borderRadius} ${className}`}
+      >
         <div className="text-center py-8">
-          <p className="text-gray-500">
-            Enter a TikTok URL to see a preview.
-          </p>
+          <p className="text-gray-500">Enter a TikTok URL to see a preview.</p>
         </div>
       </div>
     );
@@ -100,12 +100,12 @@ export const GontrelPostView = ({
       />
       <VideoOverlay
         onTogglePlay={togglePlay}
-        restaurantName={restaurantData.name || ""}
-        menuLink={restaurantData.menu || ""}
-        bookLink={restaurantData.reservation || ""}
-        deliveryTime={"75 min"}
+        restaurantName={restaurantData?.name || ""}
+        menuLink={restaurantData?.menu || ""}
+        bookLink={restaurantData?.reservation || ""}
+        deliveryTime={"0 min"}
         openingHours="12:00pm - 2:00pm"
-        rating={restaurantData.rating || 0}
+        rating={restaurantData?.rating || 0}
         tiktokUsername={tiktokUsername || ""}
       />
     </div>

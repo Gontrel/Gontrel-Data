@@ -4,9 +4,9 @@ import { AdminRoleEnum } from "./enums";
 /**
  * Restaurant data model representing the production/live data
  */
-export type ActiveRestaurantType = GetRestaurantsResponse['data'][number];
+export type ActiveRestaurantTableType = GetRestaurantsResponse['data'][number];
 
-export type PendingRestaurantType = GetRestaurantsResponse['data'][number];
+export type PendingRestaurantTableType = GetRestaurantsResponse['data'][number];
 
 export type PendingVideoTableTypes = GetPostsResponse['data'][number];
 

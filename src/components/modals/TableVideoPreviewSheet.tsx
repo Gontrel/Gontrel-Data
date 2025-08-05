@@ -1,10 +1,10 @@
 import React from 'react'
 import { Sheet } from '@/components/modals/Sheet'
 import Icon from '@/components/svgs/Icons';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { VideoData } from '@/stores/videoStore';
 import { LivePostCard } from '../restaurants/LivePostCard';
-import { Post } from '@/types';
+import { Post } from '@/interfaces/posts';
+import { GontrelRestaurantData } from '@/interfaces/restaurants';
+
 
 type TableVideoPreviewSheetOnApprove = (restaurantId: string, postId: string) => void;
 type TableVideoPreviewSheetOnDecline = (restaurantId: string, postId: string) => void;
@@ -15,14 +15,7 @@ interface TableVideoPreviewSheetProps {
   posts: Post[];
   onApprove: TableVideoPreviewSheetOnApprove;
   onDecline: TableVideoPreviewSheetOnDecline;
-  restaurantId: string;
-}
-
-interface TableVideoPreviewSheetContentProps {
-  posts: Post[];
-  onApprove: TableVideoPreviewSheetOnApprove;
-  onDecline: TableVideoPreviewSheetOnDecline;
-  restaurantId: string;
+  restaurant: GontrelRestaurantData & { id: string, adminName: string };
 }
 
 interface TableVideoPreviewSheetHeaderProps {
@@ -43,7 +36,7 @@ const TableVideoPreviewSheetHeader = ({ onOpenChange, posts }: TableVideoPreview
   )
 }
 
-const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurantId }: TableVideoPreviewSheetContentProps) => (
+const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant }: Omit<TableVideoPreviewSheetProps, 'open' | 'onOpenChange'>) => (
   <section className="flex flex-col gap-y-4.5 py-5 px-6">
     {posts!.map((post, index) => (
       <LivePostCard
@@ -51,13 +44,13 @@ const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant
         handleApprove={onApprove}
         handleDecline={onDecline}
         post={post}
-        restaurantId={restaurantId}
+        restaurant={restaurant}
       />
     ))}
   </section>
 )
 
-const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onDecline, restaurantId }: TableVideoPreviewSheetProps) => {
+export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onDecline, restaurant }: TableVideoPreviewSheetProps) => {
   if (posts.length === 0) {
     const post: Post = {
       id: "post_123456789",
@@ -92,9 +85,7 @@ const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onD
       className="bg-white p-0 overflow-y-auto"
     >
       <TableVideoPreviewSheetHeader onOpenChange={onOpenChange} posts={posts} />
-      <TableVideoPreviewSheetContent posts={posts} onApprove={onApprove} onDecline={onDecline} restaurantId={restaurantId} />
+      <TableVideoPreviewSheetContent posts={posts} onApprove={onApprove} onDecline={onDecline} restaurant={restaurant} />
     </Sheet>
   )
 }
-
-export default TableVideoPreviewSheet

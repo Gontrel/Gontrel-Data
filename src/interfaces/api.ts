@@ -1,4 +1,6 @@
-import { ApprovalStatusEnum } from '@/types/enums';
+import { ApprovalStatusEnum } from "@/types/enums";
+import { Admin } from "./user";
+import { Post } from "./posts";
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
@@ -41,116 +43,11 @@ export interface LocationTag {
   updatedAt: Date;
 }
 
-export interface Admin {
-   id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  name: string;
-  phoneNumber: string;
-  profileImage: string;
-  email: string;
-  password: string;
-  isVerified: boolean;
-  role: string;
-}
-
-export interface Tag {
- id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string;
-  count: number;
-  name: string;
-  imageUrl: string;
-  resource: string;
-  type: string;
-  isTaste: boolean;
-}
-
-export interface Post {
-   id: string;
-  createdAt: string;
-  modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
-  analytics: Analytics;
-  tiktokLink: string;
-  videoUrl: string;
-  thumbUrl: string;
-  postedAt: string | null;
-  status: string;
-  source: string;
-  tags: Tag[];
-}
-
-export interface Location {
-    id: string;
-    createdAt: string;
-    modifiedAt: string;
-    deletedAt: string | null;
-    deletedBy: string | null;
-    updatedBy: string | null;
-    firebaseId: string | null;
-    address: Address;
-    lat: number;
-    lng: number;
-    menu: Menu;
-    name: string;
-    openingHours: OpeningHours[];
-    photos: string[];
-    phoneNumber: string | null;
-    priceLevel: number;
-    rating: number;
-    reservation: Reservation;
-    toilets: boolean;
-    type: string;
-    website: string;
-    status: string;
-    comment: string | null;
-    mapLink: string;
-    country: string;
-    tags: Tag[];
-  }
-
-export interface OpeningHours {
-  dayOfTheWeek: string;
-  opensAt: number;
-  closesAt: number;
-}
-
 export interface Videos {
   total: number;
   approved: number;
   pending: number;
   declined: number;
-}
-
-export interface Analytics {
-  [key: string]: unknown;
-}
-
-export interface Menu {
-  status: string;
-  content: string;
-}
-
-export interface Reservation {
-  status: string;
-  content: string;
-}
-
-export interface Address {
-  status: string;
-  content: string;
 }
 
 export interface ApiLocation {
@@ -214,7 +111,7 @@ export interface QueryParams {
   pageNumber?: number;
   quantity?: number;
   query?: string;
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
   sortBy?: string;
   startDate?: string;
   endDate?: string;
@@ -253,9 +150,9 @@ export const DEFAULT_API_RESPONSES = {
       pageSize: 10,
       pageNumber: 1,
       total: 0,
-      lastTokenId: null
+      lastTokenId: null,
     },
-    meta: undefined
+    meta: undefined,
   },
   dashboardStats: {
     totalLocations: 0,
@@ -263,12 +160,12 @@ export const DEFAULT_API_RESPONSES = {
     pendingLocations: 0,
     inactiveLocations: 0,
     totalPosts: 0,
-    totalStaff: 0
+    totalStaff: 0,
   },
   staffStats: {
     totalAdmins: 0,
     totalManagers: 0,
-    totalAnalysts: 0
+    totalAnalysts: 0,
   },
   locationStats: {
     total: 0,
@@ -276,6 +173,6 @@ export const DEFAULT_API_RESPONSES = {
     pending: 0,
     inactive: 0,
     approved: 0,
-    rejected: 0
-  }
+    rejected: 0,
+  },
 };

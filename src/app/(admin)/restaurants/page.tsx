@@ -173,7 +173,12 @@ export default function RestaurantsPage() {
         {restaurantData && (
           <GontrelPostView
             videoUrl={activeVideoUrl}
-            restaurantData={restaurantData}
+            restaurantData={{
+              name: restaurantData.name || "",
+              menu: restaurantData.menu || "",
+              reservation: restaurantData.reservation || "",
+              rating: restaurantData.rating || 0
+            }}
             tiktokUsername={tiktokUsername || ""}
           />
         )}
