@@ -2,6 +2,7 @@
 
 import { mergeClasses } from "@/lib/utils";
 import { flexRender, Row } from "@tanstack/react-table";
+import React from "react";
 
 interface RestaurantRowProps<T> {
   row: Row<T>;
@@ -15,8 +16,8 @@ export function RestaurantRow<T>({ row }: RestaurantRowProps<T>) {
     <tr>
       {row.getVisibleCells().map((cell, index) => {
         const isSticky = cell.column.columnDef.meta?.sticky;
-
         let leftOffset = 0;
+
         if (isSticky) {
           const visibleCells = row.getVisibleCells();
           for (let i = 0; i < index; i++) {
@@ -29,14 +30,12 @@ export function RestaurantRow<T>({ row }: RestaurantRowProps<T>) {
           }
         }
 
-        const stickyCellClass = isSticky ? "sticky z-10" : "";
-
         return (
           <td
             key={cell.id}
             className={mergeClasses(
-              `py-5 px-2.5 text-left bg-white`,
-              stickyCellClass
+              "py-5 px-2.5 text-left bg-white transition-colors duration-150",
+              isSticky ? "sticky z-10" : "relative"
             )}
             style={
               isSticky

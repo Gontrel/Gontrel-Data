@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Link, X, Plus, Loader } from "lucide-react";
+import { X, Plus, Loader } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { VideoCard } from "./VideoCard";
 import { trpc } from "@/lib/trpc-client";
@@ -25,8 +24,8 @@ export const VideoStep = ({
   postOnly,
   isLoading,
 }: VideoStepProps) => {
+  const videos = useVideoStore((state) => state.videos);
   const {
-    videos,
     addVideo,
     updateVideo,
     setActiveVideoUrl,
@@ -42,6 +41,7 @@ export const VideoStep = ({
     locationName: "",
     rating: 0,
   });
+
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState<string>("");
 
@@ -49,10 +49,11 @@ export const VideoStep = ({
   const debouncedUrl = useDebounce(urlInput, 500);
 
   // We use a query, but disable it so it only runs when we call `refetch`
-  const { refetch } = trpc.external.getTiktokLinkInfo.useQuery(
-    { link: debouncedUrl },
-    { enabled: false }
-  );
+  const { refetch, isLoading: isLoadingTiktok } =
+    trpc.external.getTiktokLinkInfo.useQuery(
+      { link: debouncedUrl },
+      { enabled: false }
+    );
 
   // Effect to handle debounced TikTok URL processing
   useEffect(() => {
@@ -75,8 +76,7 @@ export const VideoStep = ({
           } else {
             errorToast("Could not retrieve video information from this URL.");
           }
-        } catch (error) {
-          console.error("TikTok URL processing error:", error);
+        } catch {
           errorToast(
             "Failed to fetch TikTok video information. Please check the URL."
           );
@@ -149,7 +149,7 @@ export const VideoStep = ({
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
-      addVideo(videoData);
+      await addVideo(videoData);
     }
 
     setCurrentVideo({
@@ -161,6 +161,7 @@ export const VideoStep = ({
       locationName: "",
       rating: 0,
     });
+
     setActiveVideoUrl(null);
     setTiktokUsername(null);
   };
@@ -183,8 +184,34 @@ export const VideoStep = ({
     }
   };
 
+  const handleOnNext = () => {
+    if (currentVideo.url !== "" && currentVideo.tags.length !== 0)
+      handleAddOrUpdateVideo();
+    onNext();
+  };
+
+  const shouldDisable =
+    (currentVideo.tags.length < 1 &&
+      currentVideo.url === "" &&
+      videos.length === 0) ||
+    (currentVideo.tags.length < 1 &&
+      currentVideo.url !== "" &&
+      videos.length === 0) ||
+    (currentVideo.tags.length >= 1 &&
+      currentVideo.url === "" &&
+      videos.length === 0);
+
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
+      {isLoadingTiktok && (
+        <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <Loader className="animate-spin w-8 h-8 text-[#0070F3]" />
+            <p className="mt-3 text-gray-700">Fetching TikTok video...</p>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
           <VideoCard key={video.id} video={video} onEdit={handleEdit} />
@@ -276,7 +303,7 @@ export const VideoStep = ({
       </div>
 
       {!postOnly ? (
-        <div className="flex-shrink-0 pt-6 flex items-center gap-4">
+        <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
           <button
             onClick={() => {
               resetVideos();
@@ -289,10 +316,10 @@ export const VideoStep = ({
             Previous
           </button>
           <button
-            onClick={onNext}
-            disabled={videos.length === 0}
+            onClick={handleOnNext}
+            disabled={shouldDisable}
             className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-              videos.length === 0
+              shouldDisable
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
             }`}

@@ -22,14 +22,19 @@ const getErrorMessage = (error: unknown): string => {
 
 export const externalRouter = router({
   getPlaceAutocomplete: publicProcedure
-    .input(z.object({
-      input: z.string().min(1),
-      sessionToken: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        input: z.string().min(1),
+        sessionToken: z.string().optional(),
+      })
+    )
     .query(async ({ input: { input, sessionToken } }) => {
       const apiRequest = new APIRequest();
       try {
-        const response = await apiRequest.placeAutoComplete({ query: input, sessionToken: sessionToken ?? "" });
+        const response = await apiRequest.placeAutoComplete({
+          query: input,
+          sessionToken: sessionToken ?? "",
+        });
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -41,16 +46,22 @@ export const externalRouter = router({
     }),
 
   getPlaceDetails: publicProcedure
-    .input(z.object({
-      placeId: z.string(),
-      sessionToken: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        placeId: z.string(),
+        sessionToken: z.string().optional(),
+      })
+    )
     .query(async ({ input }) => {
       const apiRequest = new APIRequest();
       const { placeId, sessionToken } = input;
       try {
-        const response = await apiRequest.placeDetails({ placeId, sessionToken: sessionToken ?? "" });
-        console.log(response, "getPlaceDetailsgetPlaceDetails");
+        const response = await apiRequest.placeDetails({
+          placeId,
+          sessionToken: sessionToken ?? "",
+        });
+        
+
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -60,7 +71,7 @@ export const externalRouter = router({
         });
       }
     }),
-    getTiktokLinkInfo: publicProcedure
+  getTiktokLinkInfo: publicProcedure
     .input(z.object({ link: z.string().url() }))
     .query(async ({ input, ctx }) => {
       const { link } = input;
@@ -70,8 +81,7 @@ export const externalRouter = router({
       try {
         const response = await apiRequest.getTiktokDetails({ link });
         return response;
-      } catch (error) {
-        console.error("Failed to fetch TikTok link info:", error);
+      } catch {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch TikTok link info.",

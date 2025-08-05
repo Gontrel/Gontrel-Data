@@ -14,9 +14,11 @@ import { trpc } from "@/lib/trpc-client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useVideoStore } from "@/stores/videoStore";
 import { convertTimeTo24Hour, formatTime } from "@/lib/utils";
-import { ProgressBar } from "../progressiveLoader/ProgressiveBar";
+import { ProgressBar } from "../Loader/ProgressiveBar";
 import { errorToast, successToast } from "@/utils/toast";
 import { TimeSlot } from "./EditWorkingHoursModal";
+import { CreateLocationRequest } from "@/interfaces/requests";
+import { DayOfTheWeek } from "@/types/enums";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -184,27 +186,22 @@ export const NewRestaurantSheet = ({
 
     if (!selectedRestaurant) return;
 
-    const payload = {
+    const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
       address: selectedRestaurant.address,
       menu: data.menuUrl ? data.menuUrl : "",
       name: selectedRestaurant.name,
-      photos: selectedRestaurant.imageUrl
-        ? [selectedRestaurant.imageUrl]
-        : ["https://example.com/photo1.jpg"],
+      photos: selectedRestaurant.imageUrl ? [selectedRestaurant.imageUrl] : [],
       rating: selectedRestaurant.rating ?? 0,
       reservation: data.reservationUrl ? data.reservationUrl : "",
       type: "RESTAURANT" as const,
-      website: selectedRestaurant.websiteUrl
-        ? selectedRestaurant.websiteUrl
-        : "https://example.com",
       isVerified: false,
       posts:
         videos.map((video) => ({
           isVerified: false,
           tiktokLink: video.url,
-          videoUrl: video.videoUrl,
+          videoUrl: video.videoUrl || "",
           thumbUrl: video.thumbUrl,
           locationName: selectedRestaurant.name,
           rating: 0,
@@ -212,18 +209,26 @@ export const NewRestaurantSheet = ({
         })) ?? [],
       openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
         ([day, hours]) => {
-          // Handle "24 hours" case
           if (hours[0].toLowerCase() === "24 hours") {
             return {
-              dayOfTheWeek: day.toUpperCase() as unknown,
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
               opensAt: 0, // Represents 00:00 (midnight)
               closesAt: 24, // Represents 24:00 (end of day)
             };
           }
 
-          const [startTime, endTime] = hours[0].split(" - ");
+          if (hours[0].toLowerCase().trim() === "closed") {
+            return {
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+              opensAt: 0, // Represents 00:00 (midnight)
+              closesAt: 0, // Represents 00:00 (end of day)
+            };
+          }
+
+          const [startTime, endTime] = hours[0].split(" – ");
+
           return {
-            dayOfTheWeek: day.toUpperCase() as unknown,
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
             opensAt: convertTimeTo24Hour(startTime),
             closesAt: convertTimeTo24Hour(endTime),
           };
@@ -231,8 +236,7 @@ export const NewRestaurantSheet = ({
       ),
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createAdminLocation(payload as any);
+    createAdminLocation(payload);
   };
 
   const handleOnNext = () => {

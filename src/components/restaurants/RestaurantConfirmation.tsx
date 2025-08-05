@@ -54,7 +54,7 @@ export const RestaurantConfirmation = ({
     setIsEditHoursModalOpen(false);
   };
 
-  // const workingHour = restaurant.workingHours ? restaurant.workingHours  :
+  // const workingHour = restaurant.workingHours ? restaurant.workingHours :
 
   return (
     <div className="flex flex-col gap-y-5 max-h-full mt-[62px] justify-between">

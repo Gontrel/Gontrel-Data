@@ -47,8 +47,8 @@ export const restaurantRouter = router({
   // Get restaurant by ID (protected)
   getRestaurantById: protectedProcedure
     .input(fetchLocationByIdSchema)
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getRestaurantById(input);
         return response;

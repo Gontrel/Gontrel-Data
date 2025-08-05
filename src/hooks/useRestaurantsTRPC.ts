@@ -70,8 +70,8 @@ export function useRestaurantsTRPC(
         return failureCount < 2;
       },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      refetchOnWindowFocus: true,
-      refetchOnMount: true,
+      refetchInterval: 30000, // Only refetch every 30 seconds
+      refetchIntervalInBackground: false,
     }
   );
 
@@ -150,7 +150,10 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (activeRestaurantsQuery.error) {
-      console.log('Active restaurants error:', activeRestaurantsQuery.error.message);
+      console.log(
+        "Active restaurants error:",
+        activeRestaurantsQuery.error.message
+      );
       errorToast(
         activeRestaurantsQuery.error.message ||
           "Failed to fetch active restaurants"
@@ -180,7 +183,10 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (submittedRestaurantsQuery.error) {
-      console.log('Submitted restaurants error:', submittedRestaurantsQuery.error.message);
+      console.log(
+        "Submitted restaurants error:",
+        submittedRestaurantsQuery.error.message
+      );
       errorToast(
         submittedRestaurantsQuery.error.message ||
           "Failed to fetch submitted restaurants"
@@ -190,10 +196,12 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (submittedVideosQuery.error) {
-      console.log('Submitted videos error:', submittedVideosQuery.error.message);
+      console.log(
+        "Submitted videos error:",
+        submittedVideosQuery.error.message
+      );
       errorToast(
-        submittedVideosQuery.error.message ||
-          "Failed to fetch submitted videos"
+        submittedVideosQuery.error.message || "Failed to fetch submitted videos"
       );
     }
   }, [submittedVideosQuery.error]);

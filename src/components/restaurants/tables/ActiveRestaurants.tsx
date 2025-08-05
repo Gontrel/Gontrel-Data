@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { ActiveRestaurantType } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
@@ -8,6 +8,7 @@ import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColu
 import { ApprovalStatusEnum } from "@/types/enums";
 import { useActiveRestaurantsStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
+import { useRouter } from "next/navigation";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -27,6 +28,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   pageSize,
   handlePageSize,
 }: ActiveRestaurantsProps) => {
+  const router = useRouter();
   const {
     setSelectedRows,
   } = useActiveRestaurantsStore();
@@ -53,8 +55,12 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     console.error('Active restaurants error:', error.message);
   }
 
+  const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantType): void => {
+    const restaurantId = selectedRows.id;
+    router.push(`/restaurants/${restaurantId}`);
+  }, [router]);
   // Create columns with proper dependencies
-  const columns = useMemo(() => createActiveRestaurantsColumns(), []);
+  const columns = useMemo(() => createActiveRestaurantsColumns(handleOnRowClick), [handleOnRowClick]);
 
 
 
@@ -63,6 +69,8 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     const selectedIds = selectedRows.map(row => row.id);
     setSelectedRows(selectedIds);
   };
+
+
 
   return (
     <RestaurantTable<ActiveRestaurantType>
