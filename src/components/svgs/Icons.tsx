@@ -595,6 +595,38 @@ const icons: Record<TIconNames, TRenderSvg> = {
       />
     </svg>
   ),
+
+  warningIcon: ({ width = 24, height = 24, fill = "#FCD34D", stroke = "#1F1F1F" }) => (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* filled yellow triangle */}
+      <polygon
+        points="12,2 22,20 2,20"
+        fill={fill}
+        stroke="none"
+      />
+      {/* black exclamation stem */}
+      <rect
+        x="11"
+        y="8"
+        width="2"
+        height="6"
+        fill={stroke}
+        rx="1"
+      />
+      {/* black exclamation dot */}
+      <circle
+        cx="12"
+        cy="17"
+        r="1.5"
+        fill={stroke}
+      />
+    </svg>
+  )
 };
 
 const Icon = (props: TIcon & { name: TIconNames }) =>

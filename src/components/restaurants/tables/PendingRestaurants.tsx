@@ -1,5 +1,5 @@
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc-client";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { errorToast, successToast } from "@/utils/toast";
 import { GontrelRestaurantData } from "@/interfaces/restaurants";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 
 interface PendingRestaurantsProps {
   searchTerm: string;
@@ -17,6 +18,12 @@ interface PendingRestaurantsProps {
   handleCurrentPage: (page: number) => void;
   pageSize: number;
   handlePageSize: (pageSize: number) => void;
+}
+
+interface FeedbackModalState {
+  isOpen: boolean;
+  restaurant: PendingRestaurantTableTypes | null;
+  comment: string;
 }
 
 /**
@@ -44,11 +51,19 @@ const PendingRestaurants = ({
     declineRestaurant,
   } = usePendingRestaurantsStore();
 
+  // Feedback modal state
+  const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
+    isOpen: false,
+    restaurant: null,
+    comment: "",
+  });
+
   // Use tRPC to fetch data directly
   const {
     data: queryData,
     isLoading,
     error,
+    refetch,
   } = trpc.restaurant.getRestaurants.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
@@ -65,6 +80,7 @@ const PendingRestaurants = ({
   } = trpc.restaurant.bulkApproveRestaurantStatus.useMutation({
     onSuccess: () => {
       successToast('Restaurant status updated successfully');
+      refetch();
     },
     onError: (error) => {
       errorToast(error.message);
@@ -76,6 +92,7 @@ const PendingRestaurants = ({
   } = trpc.restaurant.approveRestaurantStatus.useMutation({
     onSuccess: () => {
       successToast('Restaurant status updated successfully');
+      refetch();
     },
     onError: (error) => {
       errorToast(error.message);
@@ -93,21 +110,24 @@ const PendingRestaurants = ({
       type: ApprovalType.POST,
       status: ApprovalStatusEnum.APPROVED
     });
-  }, [approveRestaurant, approveRestaurantStatus]);
+    refetch();
+  }, [approveRestaurant, approveRestaurantStatus, refetch]);
 
   const handleDeclinePost = useCallback((
     locationId: string,
     postId: string,
+    comment: string,
   ) => {
-    console.log("handleDeclinePost", postId, locationId);
     declineRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, locationId, "posts", postId);
     approveRestaurantStatus({
       resourceId: postId,
       locationId,
       type: ApprovalType.POST,
-      status: ApprovalStatusEnum.REJECTED
+      status: ApprovalStatusEnum.REJECTED,
+      comment
     });
-  }, [declineRestaurant, approveRestaurantStatus]);
+    refetch();
+  }, [declineRestaurant, approveRestaurantStatus, refetch]);
 
   const handleSaveRestaurant = useCallback((restaurant: PendingRestaurantTableTypes, comment?: string) => {
     bulkApproveRestaurantStatus({
@@ -130,9 +150,65 @@ const PendingRestaurants = ({
     });
   }, [bulkApproveRestaurantStatus]);
 
-  const handleSendFeedback = useCallback((restaurant: PendingRestaurantTableTypes, comment?: string) => {
-    handleSaveRestaurant(restaurant, comment);
-  }, [handleSaveRestaurant]);
+
+  const openFeedbackModal = useCallback((restaurant: PendingRestaurantTableTypes) => {
+    setFeedbackModal({
+      isOpen: true,
+      restaurant,
+      comment: "",
+    });
+  }, []);
+
+  /**
+   * Closes the feedback modal and resets state
+   */
+  const closeFeedbackModal = useCallback(() => {
+    setFeedbackModal({
+      isOpen: false,
+      restaurant: null,
+      comment: "",
+    });
+  }, []);
+
+  const handleCommentChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFeedbackModal(prev => ({
+      ...prev,
+      comment: event.target.value,
+    }));
+  }, []);
+
+  const handleSubmitFeedback = useCallback(() => {
+    if (!feedbackModal.restaurant) return;
+    const { comment, restaurant } = feedbackModal;
+
+    bulkApproveRestaurantStatus({
+      locationId: restaurant.id,
+      comment,
+      data: [
+        {
+          type: ApprovalType.ADDRESS,
+          status: restaurant.address.status as ApprovalStatusEnum,
+        },
+        {
+          type: ApprovalType.MENU,
+          status: restaurant.menu.status as ApprovalStatusEnum,
+        },
+        {
+          type: ApprovalType.RESERVATION,
+          status: restaurant.reservation.status as ApprovalStatusEnum,
+        }
+      ]
+    });
+    closeFeedbackModal();
+  }, [feedbackModal, closeFeedbackModal, bulkApproveRestaurantStatus]);
+
+  /**
+   * Opens the feedback modal for a restaurant
+   * @param restaurant - The restaurant to send feedback for
+   */
+  const handleSendFeedback = useCallback((restaurant: PendingRestaurantTableTypes) => {
+    openFeedbackModal(restaurant);
+  }, [openFeedbackModal]);
 
   // Merge pending changes with fetched data for visual updates
   const restaurants = useMemo(() => {
@@ -212,7 +288,6 @@ const PendingRestaurants = ({
 
   const restaurant: GontrelRestaurantData & { id: string, adminName: string } = useMemo(() => {
     const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreviewModal.currentRestaurantId);
-    console.log(currentRestaurant, "currentRestaurant");
     return currentRestaurant ? {
       id: currentRestaurant.id,
       name: currentRestaurant.name,
@@ -232,6 +307,17 @@ const PendingRestaurants = ({
 
   return (
     <div>
+      <ConfirmationModal
+        isOpen={feedbackModal.isOpen}
+        onClose={closeFeedbackModal}
+        title="Send feedback"
+        description="Drop a comment for the analyst that<br />submitted this restaurant"
+        comment={feedbackModal.comment}
+        onCommentChange={handleCommentChange}
+        onConfirm={handleSubmitFeedback}
+        confirmLabel="Send feedback"
+        cancelLabel="Cancel"
+      />
       <TableVideoPreviewSheet
         open={videoPreviewModal.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}

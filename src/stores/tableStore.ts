@@ -198,7 +198,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
 
 
   approveRestaurant: (tableType: ManagerTableTabsEnum, restaurantId: string, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts', postId?: string) => {
-    console.log('Approving restaurant:', restaurantId);
     if(tableType !== ManagerTableTabsEnum.PENDING_RESTAURANTS) {
       return;
     }
@@ -226,7 +225,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   },
 
   declineRestaurant: (tableType: ManagerTableTabsEnum, restaurantId: string, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts', postId?: string) => {
-    console.log('Declining restaurant:', restaurantId);
     if(tableType !== ManagerTableTabsEnum.PENDING_RESTAURANTS) {
       return;
     }
@@ -344,8 +342,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       // Process all pending changes
       // Note: Save changes functionality needs to be implemented with proper API calls
       // For now, just clear pending changes
-      console.log('Saving changes for tableType:', tableType);
-      console.log('Pending changes:', Array.from(currentState.pendingChanges.entries()));
 
       // Clear pending changes - actual API calls should be handled by components
       set((state) => ({

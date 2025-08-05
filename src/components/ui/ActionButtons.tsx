@@ -1,5 +1,7 @@
 'use client';
 
+import { mergeClasses } from "@/lib/utils";
+
 interface ActionButton {
   label?: string;
   icon?: React.ReactNode;
@@ -7,6 +9,7 @@ interface ActionButton {
   variant: 'success' | 'primary' | 'danger';
   disabled?: boolean;
   active?: boolean;
+  className?: string;
 }
 
 interface ActionButtonsProps {
@@ -25,7 +28,7 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
       case 'primary':
         return 'text-blue-500 disabled:text-[#B0D3FB]';
       case 'danger':
-        return 'text-[#C50000]';
+        return 'text-[#C50000] disabled:text-[#C50000]';
       default:
         return 'text-blue-500 disabled:text-[#B0D3FB]';
     }
@@ -51,10 +54,13 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
           key={index}
           onClick={action.onClick}
           disabled={action.disabled}
-          className={`flex items-center gap-2 font-medium border border-[#F0F1F2] rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center cursor-pointer disable:border disabled:cursor-not-allowed ${action.active
-            ? `text-white ${getActiveVariantStyles(action.variant)}`
-            : `bg-[#F9F9F9] ${getVariantStyles(action.variant)}`
-            }`}
+          className={mergeClasses(
+            "flex items-center gap-2 font-medium border border-[#F0F1F2] rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center cursor-pointer disabled:border-none disabled:cursor-not-allowed",
+            action.active
+              ? `text-white ${getActiveVariantStyles(action.variant)}`
+              : `bg-[#F9F9F9] ${getVariantStyles(action.variant)}`,
+            action.className
+          )}
         >
           {action.icon && action.icon}
           {action.label && <span>{action.label}</span>}

@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Sheet } from '@/components/modals/Sheet'
 import Icon from '@/components/svgs/Icons';
 import { LivePostCard } from '../restaurants/LivePostCard';
 import { Post } from '@/interfaces/posts';
 import { GontrelRestaurantData } from '@/interfaces/restaurants';
+import ConfirmationModal from './ConfirmationModal';
 
 
 type TableVideoPreviewSheetOnApprove = (restaurantId: string, postId: string) => void;
-type TableVideoPreviewSheetOnDecline = (restaurantId: string, postId: string) => void;
+type TableVideoPreviewSheetOnDecline = (restaurantId: string, postId: string, comment: string) => void;
 
 interface TableVideoPreviewSheetProps {
   open: boolean;
@@ -17,6 +18,7 @@ interface TableVideoPreviewSheetProps {
   onDecline: TableVideoPreviewSheetOnDecline;
   restaurant: GontrelRestaurantData & { id: string, adminName: string };
 }
+
 
 interface TableVideoPreviewSheetHeaderProps {
   onOpenChange: (open: boolean) => void;
@@ -42,7 +44,7 @@ const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant
       <LivePostCard
         key={index}
         handleApprove={onApprove}
-        handleDecline={onDecline}
+        handleDecline={() => onDecline(restaurant.id, post.id, "")}
         post={post}
         restaurant={restaurant}
       />
@@ -51,6 +53,29 @@ const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant
 )
 
 export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onDecline, restaurant }: TableVideoPreviewSheetProps) => {
+  const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean, comment: string, postId: string, restaurantId: string }>({
+    isOpen: false,
+    comment: "",
+    postId: "",
+    restaurantId: ""
+  });
+
+  const closeFeedbackModal = () => {
+    setFeedbackModal({
+      isOpen: false,
+      comment: "",
+      postId: "",
+      restaurantId: ""
+    });
+  }
+
+  const handleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFeedbackModal({
+      ...feedbackModal,
+      comment: event.target.value
+    });
+  }
+
   if (posts.length === 0) {
     const post: Post = {
       id: "post_123456789",
@@ -76,6 +101,13 @@ export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onAppro
     };
     posts = Array(5).fill(post);
   }
+  const handleDecline = (restaurantId: string, postId: string) => {
+    setFeedbackModal({ isOpen: true, comment: "", postId, restaurantId });
+  }
+  const handleSubmitFeedback = () => {
+    onDecline(feedbackModal.restaurantId, feedbackModal.postId, feedbackModal.comment);
+    closeFeedbackModal();
+  }
   return (
     <Sheet
       open={open}
@@ -85,7 +117,18 @@ export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onAppro
       className="bg-white p-0 overflow-y-auto"
     >
       <TableVideoPreviewSheetHeader onOpenChange={onOpenChange} posts={posts} />
-      <TableVideoPreviewSheetContent posts={posts} onApprove={onApprove} onDecline={onDecline} restaurant={restaurant} />
+      <TableVideoPreviewSheetContent posts={posts} onApprove={onApprove} onDecline={handleDecline} restaurant={restaurant} />
+      <ConfirmationModal
+        isOpen={feedbackModal.isOpen && open}
+        onClose={closeFeedbackModal}
+        title="Decline post?"
+        description="Are you sure you want to decline this post?"
+        comment={feedbackModal.comment}
+        onCommentChange={handleCommentChange}
+        onConfirm={handleSubmitFeedback}
+        confirmLabel="Send feedback"
+        cancelLabel="Cancel"
+      />
     </Sheet>
   )
 }

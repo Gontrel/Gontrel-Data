@@ -86,6 +86,15 @@ export interface FetchPostByIdRequest {
 }
 
 /**
+ * GET /admin-grouped-posts
+ * Fetches grouped posts for admin dashboard
+ */
+export interface FetchGroupedPostsRequest extends BaseQueryRequest {
+  // Post-specific filters
+  status?: ApprovalStatusEnum; // enum values from ApprovalStatus
+}
+
+/**
  * POST /admin-post
  * Creates a new post via admin panel
  */

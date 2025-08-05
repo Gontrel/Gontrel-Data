@@ -22,6 +22,8 @@ import {
   BulkApproveRestaurantStatusResponse,
   ApproveRestaurantStatusRequest,
   ApproveRestaurantStatusResponse,
+  FetchGroupedPostsRequest,
+  GetGroupedPostsResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -214,6 +216,15 @@ export default class APIRequest {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-post-by-id?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // getGroupedPosts
+  getGroupedPosts = async (data: FetchGroupedPostsRequest): Promise<GetGroupedPostsResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-grouped-posts?${params.toString()}`
     );
     return this.handleResponse(response);
   };

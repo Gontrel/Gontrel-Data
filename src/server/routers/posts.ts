@@ -8,6 +8,7 @@ import {
   updatePostSchema,
   createPostSchema,
   createBulkPostSchema,
+  fetchGroupedPostsSchema,
 } from "./schemas";
 import { GetPostsResponse } from "@/interfaces/responses";
 
@@ -68,6 +69,22 @@ export const postRouter = router({
       const apiRequest = new APIRequest();
       try {
         const response = await apiRequest.getPostById(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  getGroupedPosts: protectedProcedure
+    .input(fetchGroupedPostsSchema)
+    .query(async ({ input }) => {
+      const apiRequest = new APIRequest();
+      try {
+        const response = await apiRequest.getGroupedPosts(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

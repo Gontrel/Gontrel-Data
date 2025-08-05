@@ -32,7 +32,7 @@ export const createPendingRestaurantsColumns = (
     restaurantId: string,
     statusKey?: PendingRestaurantStatusKey
   ) => void,
-  handleSendFeedback: (restaurant: PendingRestaurantTableTypes, comment?: string) => void,
+  handleSendFeedback: (restaurant: PendingRestaurantTableTypes) => void,
   handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void
 ): ColumnDef<PendingRestaurantTableTypes>[] => [
     {
@@ -278,7 +278,7 @@ export const createPendingRestaurantsColumns = (
                 label: shouldSendFeedback ? "Send Feedback" : "Save",
                 onClick: () =>
                   shouldSendFeedback
-                    ? handleSendFeedback(row.original, "Feedback")
+                    ? handleSendFeedback(row.original)
                     : handleSaveRestaurant(row.original),
                 variant: shouldSendFeedback ? "danger" : "primary",
                 disabled: isPending

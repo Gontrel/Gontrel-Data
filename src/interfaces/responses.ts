@@ -78,10 +78,16 @@ export interface GetLocationStatsResponse {
 
 // Post management responses
 export type GetPostsResponse = IPaginatedRes<{
-  location: Location;
+  location: Location | null;
   admin: Admin;
   tags: Tag[];
 } & Post>;
+
+export type GetGroupedPostsResponse = IPaginatedRes<{
+  admin: Admin;
+  location: Location;
+  postCount: number;
+}>
 
 export interface GetPostByIdResponse {
   post: Post;

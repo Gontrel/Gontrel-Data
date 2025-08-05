@@ -99,6 +99,13 @@ export const fetchPostByIdSchema = z.object({
 });
 
 /**
+ * GET /admin-grouped-posts - FetchGroupedPostsRequest
+ */
+export const fetchGroupedPostsSchema = baseQuerySchema.extend({
+  status: z.nativeEnum(ApprovalStatusEnum).optional(),
+});
+
+/**
  * POST /admin-post - CreatePostRequest
  */
 export const createPostSchema = z.object({
