@@ -55,10 +55,10 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
           onClick={action.onClick}
           disabled={action.disabled}
           className={mergeClasses(
-            "flex items-center gap-2 font-medium border border-[#F0F1F2] rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center cursor-pointer disabled:border-none disabled:cursor-not-allowed",
+            "flex items-center gap-2 font-medium rounded-[10px] px-2 py-1.5 transition-colors w-full justify-center cursor-pointer disabled:border-none disabled:cursor-not-allowed",
             action.active
               ? `text-white ${getActiveVariantStyles(action.variant)}`
-              : `bg-[#F9F9F9] ${getVariantStyles(action.variant)}`,
+              : `bg-[#F9F9F9] border border-[#F0F1F2] ${getVariantStyles(action.variant)}`,
             action.className
           )}
         >
