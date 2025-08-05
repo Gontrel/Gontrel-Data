@@ -58,7 +58,6 @@ export const useTabState = () => {
    * Update search term for a specific tab
    */
   const updateTabSearchTerm = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, searchTerm: string) => {
-    console.log(`🔍 Updating search term for ${tab}:`, searchTerm);
     setTabStates(prev => ({
       ...prev,
       [tab]: {
@@ -73,7 +72,6 @@ export const useTabState = () => {
    * Update analyst filter for a specific tab
    */
   const updateTabAnalyst = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, analyst: string) => {
-    console.log(`👤 Updating analyst filter for ${tab}:`, analyst);
     setTabStates(prev => ({
       ...prev,
       [tab]: {
@@ -88,7 +86,6 @@ export const useTabState = () => {
    * Update time period filter for a specific tab
    */
   const updateTabTimePeriod = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, timePeriod: string) => {
-    console.log(`⏰ Updating time period filter for ${tab}:`, timePeriod);
     setTabStates(prev => ({
       ...prev,
       [tab]: {
@@ -103,7 +100,6 @@ export const useTabState = () => {
    * Update current page for a specific tab
    */
   const updateTabPage = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, page: number) => {
-    console.log(`📄 Updating page for ${tab}:`, page);
     setTabStates(prev => ({
       ...prev,
       [tab]: {
@@ -117,7 +113,6 @@ export const useTabState = () => {
    * Update page size for a specific tab
    */
   const updateTabPageSize = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, pageSize: number) => {
-    console.log(`📏 Updating page size for ${tab}:`, pageSize);
     setTabStates(prev => ({
       ...prev,
       [tab]: {
@@ -139,7 +134,6 @@ export const useTabState = () => {
    * Reset all filters for a specific tab
    */
   const resetTabFilters = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum) => {
-    console.log(`🔄 Resetting filters for ${tab}`);
     setTabStates(prev => ({
       ...prev,
       [tab]: {
@@ -156,7 +150,6 @@ export const useTabState = () => {
    * Reset all tabs to default state
    */
   const resetAllTabs = useCallback(() => {
-    console.log('🔄 Resetting all tabs to default state');
     setTabStates({
       [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: {
         searchTerm: '',

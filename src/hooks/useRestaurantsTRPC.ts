@@ -150,10 +150,6 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (activeRestaurantsQuery.error) {
-      console.log(
-        "Active restaurants error:",
-        activeRestaurantsQuery.error.message
-      );
       errorToast(
         activeRestaurantsQuery.error.message ||
           "Failed to fetch active restaurants"
@@ -163,7 +159,6 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (pendingVideosQuery.error) {
-      console.log('Error:', pendingVideosQuery.error.message);
       errorToast(
         pendingVideosQuery.error.message ||
           "Failed to fetch pending videos"
@@ -173,7 +168,6 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (pendingRestaurantsQuery.error) {
-      console.log('Pending restaurants error:', pendingRestaurantsQuery.error.message);
       errorToast(
         pendingRestaurantsQuery.error.message ||
           "Failed to fetch pending restaurants"
@@ -183,10 +177,6 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (submittedRestaurantsQuery.error) {
-      console.log(
-        "Submitted restaurants error:",
-        submittedRestaurantsQuery.error.message
-      );
       errorToast(
         submittedRestaurantsQuery.error.message ||
           "Failed to fetch submitted restaurants"
@@ -196,10 +186,6 @@ export function useRestaurantsTRPC(
 
   useEffect(() => {
     if (submittedVideosQuery.error) {
-      console.log(
-        "Submitted videos error:",
-        submittedVideosQuery.error.message
-      );
       errorToast(
         submittedVideosQuery.error.message || "Failed to fetch submitted videos"
       );

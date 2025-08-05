@@ -8,7 +8,6 @@ export const useSubmittedVideos = () => {
   const [restaurants, setRestaurants] = useState<SubmittedVideoTableTypes[]>([]);
 
   const handleRowSelect = useCallback((selectedRows: SubmittedVideoTableTypes[]) => {
-    console.log('Selected videos:', selectedRows);
   }, []);
 
   const setRestaurantsData = useCallback((data: SubmittedVideoTableTypes[]) => {

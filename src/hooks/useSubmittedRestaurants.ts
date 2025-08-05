@@ -18,7 +18,7 @@ export const useSubmittedRestaurants = () => {
   const { resubmitRestaurant } = useSubmittedRestaurantsStore();
 
   const handleRowSelect = useCallback((selectedRows: SubmittedRestaurantTableTypes[]) => {
-    console.log('Selected restaurants:', selectedRows);
+
     // Handle bulk actions here
   }, []);
 

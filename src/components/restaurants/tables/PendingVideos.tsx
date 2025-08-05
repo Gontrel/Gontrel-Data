@@ -42,6 +42,7 @@ const PendingVideos = ({
     data: queryData,
     isLoading,
     error,
+    refetch
   } = trpc.post.getPosts.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
@@ -62,17 +63,18 @@ const PendingVideos = ({
   const handleVideoPreviewOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       closeVideoPreview();
+      refetch();
     }
   };
 
   const restaurant: GontrelRestaurantData & { id: string, adminName: string } = useMemo(() => {
-    const currentRestaurant = videos.find(({ location }) => location.id === videoPreviewModal.currentRestaurantId);
+    const currentRestaurant = videos.find(({ location }) => location?.id === videoPreviewModal.currentRestaurantId);
     return currentRestaurant ? {
-      id: currentRestaurant.location.id,
-      name: currentRestaurant.location.name,
-      menu: currentRestaurant.location.menu?.content || "",
-      reservation: currentRestaurant.location.reservation?.content || "",
-      rating: currentRestaurant.location.rating,
+      id: currentRestaurant.location?.id ?? "",
+      name: currentRestaurant.location?.name ?? "",
+      menu: currentRestaurant.location?.menu?.content || "",
+      reservation: currentRestaurant.location?.reservation?.content || "",
+      rating: currentRestaurant.location?.rating ?? 0,
       adminName: currentRestaurant.admin.name
     } : {
       id: "",
@@ -84,7 +86,7 @@ const PendingVideos = ({
     };
   }, [videos, videoPreviewModal.currentRestaurantId]);
   const handleOnRowClick = useCallback((selectedRows: PendingVideoTableTypes): void => {
-    const restaurantId = selectedRows.location.id;
+    const restaurantId = selectedRows.location?.id ?? "";
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
 
@@ -116,7 +118,6 @@ const PendingVideos = ({
     locationId: string,
     postId: string,
   ) => {
-    console.log("handleDeclinePost", postId, locationId);
     declineVideo(postId);
     approveRestaurantStatus({
       resourceId: postId,

@@ -20,7 +20,7 @@ interface CenterModalProps {
   /** Additional class names */
   className?: string;
   /** Modal width */
-  width?: 'sm' | 'md' | 'lg' | 'xl';
+  width?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   /** Whether to show close button */
   showCloseButton?: boolean;
 }
@@ -75,7 +75,8 @@ export function CenterModal({
     sm: 'max-w-sm',
     md: 'max-w-md',
     lg: 'max-w-lg',
-    xl: 'max-w-xl'
+    xl: 'max-w-xl',
+    '2xl': 'max-w-2xl'
   };
 
   if (!isMounted) {

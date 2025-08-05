@@ -12,11 +12,11 @@ interface AnalystTableTabsProps {
 /**
  * AnalystTableTabs Component
  */
-export function AnalystTableTabs({
+export const AnalystTableTabs = ({
   activeTab,
   onTabChange,
   tableTotals
-}: AnalystTableTabsProps): React.JSX.Element {
+}: AnalystTableTabsProps) => {
   const activeTabStyles = 'text-blue-500 border-b-4 border-blue-500 font-semibold';
   const inactiveTabStyles = 'text-gray-300 font-medium';
 
@@ -51,4 +51,4 @@ export function AnalystTableTabs({
       </div>
     </div>
   );
-}
+};

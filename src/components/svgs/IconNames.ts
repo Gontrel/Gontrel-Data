@@ -29,4 +29,5 @@ export type TIconNames =
   | "restaurantReversationIcon"
   | "restaurantTiktokIcon"
   | "postCalendarIcon"
-  | "globeIcon";
+  | "globeIcon"
+  | "warningIcon";
