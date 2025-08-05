@@ -1,12 +1,16 @@
 import React, { useCallback, useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
 import { PendingVideoTableTypes } from "@/types/restaurant";
-import { ApprovalStatusEnum } from "@/types";
+import { ApprovalStatusEnum, ApprovalType
+ } from "@/types";
 import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
 
 import { usePendingVideosStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
 import { useRouter } from "next/navigation";
+import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
+import { GontrelRestaurantData } from "@/interfaces";
+import { errorToast, successToast } from "@/utils/toast";
 
 interface PendingVideosProps {
   searchTerm: string;
@@ -25,11 +29,12 @@ const PendingVideos = ({
 }: PendingVideosProps) => {
   const router = useRouter();
   const {
-    hasUnsavedChanges,
-    saveLoading,
-    saveChanges,
-    discardChanges,
     setSelectedRows,
+    videoPreviewModal,
+    approveVideo,
+    declineVideo,
+    openVideoPreview,
+    closeVideoPreview,
   } = usePendingVideosStore();
 
   // Use tRPC to fetch data directly
@@ -45,7 +50,7 @@ const PendingVideos = ({
   });
 
   // Extract data from tRPC response
-  const videos = queryData?.data || [];
+  const videos = useMemo(() => queryData?.data || [], [queryData]);
   const paginationData = queryData?.pagination;
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
@@ -54,20 +59,72 @@ const PendingVideos = ({
     console.error('Pending videos error:', error.message);
   }
 
-
-  // Handle save/discard actions
-  const handleSave = async () => {
-    await saveChanges();
+  const handleVideoPreviewOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      closeVideoPreview();
+    }
   };
 
-  const handleDiscard = () => {
-    discardChanges();
-  };
-
+  const restaurant: GontrelRestaurantData & { id: string, adminName: string } = useMemo(() => {
+    const currentRestaurant = videos.find(({ location }) => location.id === videoPreviewModal.currentRestaurantId);
+    return currentRestaurant ? {
+      id: currentRestaurant.location.id,
+      name: currentRestaurant.location.name,
+      menu: currentRestaurant.location.menu?.content || "",
+      reservation: currentRestaurant.location.reservation?.content || "",
+      rating: currentRestaurant.location.rating,
+      adminName: currentRestaurant.admin.name
+    } : {
+      id: "",
+      name: "",
+      menu: "",
+      reservation: "",
+      rating: 0,
+      adminName: ""
+    };
+  }, [videos, videoPreviewModal.currentRestaurantId]);
   const handleOnRowClick = useCallback((selectedRows: PendingVideoTableTypes): void => {
     const restaurantId = selectedRows.location.id;
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
+
+  const {
+    mutate: approveRestaurantStatus,
+  } = trpc.restaurant.approveRestaurantStatus.useMutation({
+    onSuccess: () => {
+      successToast('Restaurant status updated successfully');
+    },
+    onError: (error) => {
+      errorToast(error.message);
+    }
+  });
+
+  const handleApprovePost = useCallback((
+    locationId: string,
+    postId: string,
+    ) => {
+      approveVideo(postId);
+    approveRestaurantStatus({
+      resourceId: postId,
+      locationId,
+      type: ApprovalType.POST,
+      status: ApprovalStatusEnum.APPROVED
+    });
+  }, [approveVideo, approveRestaurantStatus]);
+
+  const handleDeclinePost = useCallback((
+    locationId: string,
+    postId: string,
+  ) => {
+    console.log("handleDeclinePost", postId, locationId);
+    declineVideo(postId);
+    approveRestaurantStatus({
+      resourceId: postId,
+      locationId,
+      type: ApprovalType.POST,
+      status: ApprovalStatusEnum.REJECTED
+    });
+  }, [declineVideo, approveRestaurantStatus]);
 
   // Handle row selection - extract IDs from selected rows
   const handleRowSelection = (selectedRows: PendingVideoTableTypes[]) => {
@@ -76,29 +133,18 @@ const PendingVideos = ({
   };
 
   // Create columns with proper dependencies
-  const columns = useMemo(() => createPendingVideosColumns(handleOnRowClick), [handleOnRowClick]);
+  const columns = useMemo(() => createPendingVideosColumns(openVideoPreview, handleOnRowClick), [openVideoPreview, handleOnRowClick]);
 
   return (
     <div>
-      {/* Save/Discard buttons */}
-      {hasUnsavedChanges && (
-        <div className="flex gap-2 mb-4">
-          <button
-            onClick={handleSave}
-            disabled={saveLoading}
-            className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-          >
-            {saveLoading ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button
-            onClick={handleDiscard}
-            className="px-4 py-2 bg-gray-600 text-white rounded"
-          >
-            Discard Changes
-          </button>
-        </div>
-      )}
-
+      <TableVideoPreviewSheet
+        open={videoPreviewModal.isOpen}
+        onOpenChange={handleVideoPreviewOpenChange}
+        posts={videoPreviewModal.posts}
+        restaurant={restaurant}
+        onApprove={handleApprovePost}
+        onDecline={handleDeclinePost}
+      />
       <RestaurantTable<PendingVideoTableTypes>
         restaurants={videos}
         loading={isLoading}

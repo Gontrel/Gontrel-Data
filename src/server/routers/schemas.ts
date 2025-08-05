@@ -277,7 +277,7 @@ export const updateLocationSchema = z.object({
   locationId: z.string().uuid(),
 });
 
-export const updateRestaurantStatusSchema = z.object({
+export const bulkApproveRestaurantStatusSchema = z.object({
   locationId: z.string().uuid(),
   comment: z.string().optional(),
   data: z.array(
@@ -286,6 +286,14 @@ export const updateRestaurantStatusSchema = z.object({
       status: z.enum(ApprovalStatusEnum),
     })
   ),
+});
+
+export const approveRestaurantStatusSchema = z.object({
+  resourceId: z.string().uuid().optional(),
+  locationId: z.string().uuid(),
+  comment: z.string().optional(),
+  type: z.enum(ApprovalType),
+  status: z.enum(ApprovalStatusEnum),
 });
 
 /**

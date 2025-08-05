@@ -21,19 +21,10 @@ export const usePendingRestaurants = () => {
     declineRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId,  type);
   }, [declineRestaurant]);
 
-  const handleApprovePost = useCallback((restaurantId: string, postId: string) => {
-    approveRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId, "posts", postId);
-  }, [approveRestaurant]);
-
-  const handleDeclinePost = useCallback((restaurantId: string, postId: string) => {
-    declineRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId, "posts", postId);
-  }, [declineRestaurant]);
-
-
   return {
     handleApprove,
     handleDecline,
-    handleApprovePost,
-    handleDeclinePost
+    approveRestaurant,
+    declineRestaurant,
   };
 };

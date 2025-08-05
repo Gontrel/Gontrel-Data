@@ -7,11 +7,13 @@ import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
 import Logo from "@/assets/images/logo.png";
 import { PendingVideoTableTypes } from "@/types/restaurant";
+import { Post } from "@/interfaces/posts";
 
 /**
  * Creates column definitions for pending videos table
  */
 export const createPendingVideosColumns = (
+  openVideoPreview: (posts: Post[], restaurantId: string) => void,
   onRowClick?: (row: PendingVideoTableTypes) => void
 ): ColumnDef<PendingVideoTableTypes>[] => [
   {
@@ -81,7 +83,8 @@ export const createPendingVideosColumns = (
           />
           <button
             onClick={() => {
-              // TODO: Open video modal
+              console.log("openVideoPreview", row.original);
+              openVideoPreview([row.original], row.original.location.id);
             }}
             className="text-left text-blue-500"
           >

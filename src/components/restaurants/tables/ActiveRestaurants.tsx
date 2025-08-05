@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo } from "react";
 import { RestaurantTable } from "../RestaurantTable";
-import { ActiveRestaurantTableType } from "@/types/restaurant";
+import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
 
 import { ApprovalStatusEnum } from "@/types/enums";
@@ -55,7 +55,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     console.error('Active restaurants error:', error.message);
   }
 
-  const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantTableType): void => {
+  const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantTableTypes): void => {
     const restaurantId = selectedRows.id;
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
@@ -65,7 +65,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
 
 
   // Handle row selection - extract IDs from selected rows
-  const handleRowSelection = (selectedRows: ActiveRestaurantTableType[]) => {
+  const handleRowSelection = (selectedRows: ActiveRestaurantTableTypes[]) => {
     const selectedIds = selectedRows.map(row => row.id);
     setSelectedRows(selectedIds);
   };
@@ -73,7 +73,7 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
 
 
   return (
-    <RestaurantTable<ActiveRestaurantTableType>
+    <RestaurantTable<ActiveRestaurantTableTypes>
       restaurants={restaurants}
       loading={isLoading}
       onRowSelect={handleRowSelection}

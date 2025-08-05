@@ -1,5 +1,5 @@
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { ActiveRestaurantTableType } from "@/types/restaurant";
+import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 import { TableHeader } from "./utils";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
@@ -8,8 +8,8 @@ import { ExternalLink } from "@/components/ui/ExternalLink";
 import Logo from "@/assets/images/logo.png";
 
 export const createActiveRestaurantsColumns = (
-  onRowClick?: (row: ActiveRestaurantTableType) => void
-): ColumnDef<ActiveRestaurantTableType>[] => [
+  onRowClick?: (row: ActiveRestaurantTableTypes) => void
+): ColumnDef<ActiveRestaurantTableTypes>[] => [
     {
       accessorKey: 'id',
       header: () => (
@@ -35,13 +35,13 @@ export const createActiveRestaurantsColumns = (
         <TableHeader title="Restaurant name" />
       ),
       cell: ({ row }) => {
-        const handleClick = (e: React.MouseEvent, row: Row<ActiveRestaurantTableType>) => {
+        const handleClick = (e: React.MouseEvent, row: Row<ActiveRestaurantTableTypes>) => {
           onRowClick?.(row.original);
         };
         const handleKeyDown = (
           e: React.KeyboardEvent,
-          row: Row<ActiveRestaurantTableType>,
-          onRowClick?: (row: ActiveRestaurantTableType) => void
+          row: Row<ActiveRestaurantTableTypes>,
+          onRowClick?: (row: ActiveRestaurantTableTypes) => void
         ) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();

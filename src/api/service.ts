@@ -18,8 +18,10 @@ import {
   CreateBulkPostRequest,
   GetPostsResponse,
   GetRestaurantsResponse,
-  UpdateRestaurantStatusRequest,
-  UpdateRestaurantStatusResponse,
+  BulkApproveRestaurantStatusRequest,
+  BulkApproveRestaurantStatusResponse,
+  ApproveRestaurantStatusRequest,
+  ApproveRestaurantStatusResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -148,7 +150,15 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
-  updateRestaurantStatus = async (data: UpdateRestaurantStatusRequest): Promise<UpdateRestaurantStatusResponse> => {
+  approveRestaurantStatus = async (data: ApproveRestaurantStatusRequest): Promise<ApproveRestaurantStatusResponse> => {
+    const response = await this.authenticatedClient.put(
+      `/admin-approve-location`,
+      data
+    );
+    return this.handleResponse(response);
+  };
+
+  bulkApproveRestaurantStatus = async (data: BulkApproveRestaurantStatusRequest): Promise<BulkApproveRestaurantStatusResponse> => {
     const response = await this.authenticatedClient.put(
       `/admin-bulk-approve-location`,
       data

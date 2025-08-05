@@ -8,7 +8,8 @@ import {
   createLocationSchema,
   updateLocationSchema,
   fetchAnalystLocationsSchema,
-  updateRestaurantStatusSchema,
+  bulkApproveRestaurantStatusSchema,
+  approveRestaurantStatusSchema,
 } from "./schemas";
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -93,13 +94,13 @@ export const restaurantRouter = router({
         });
       }
     }),
-  updateRestaurantStatus: protectedProcedure
-    .input(updateRestaurantStatusSchema)
+
+  bulkApproveRestaurantStatus: protectedProcedure
+    .input(bulkApproveRestaurantStatusSchema)
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.updateRestaurantStatus(input);
-        console.log(response, "response");
+        const response = await apiRequest.bulkApproveRestaurantStatus(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -109,6 +110,23 @@ export const restaurantRouter = router({
         });
       }
     }),
+
+  approveRestaurantStatus: protectedProcedure
+    .input(approveRestaurantStatusSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.approveRestaurantStatus(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
   // Delete restaurant (protected)
   // deleteRestaurant: protectedProcedure
   //   .input(z.object({ id: z.string() }))

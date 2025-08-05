@@ -34,14 +34,18 @@ export interface GetAdminProfileResponse {
   admin: Admin;
 }
 
-export interface UpdateRestaurantStatusResponse {
-  locationId: string; // UUID, required
+export interface ApproveRestaurantStatusResponse {
+  resourceId?: string;
+  locationId: string;
   comment?: string;
-  data: Array<{
-    type: ApprovalType; // ApprovalType enum values
-    status: ApprovalStatusEnum; // enum values from ApprovalStatus, required
-  }>;
+  type: ApprovalType;
+  status: ApprovalStatusEnum;
 }
+
+export interface BulkApproveRestaurantStatusResponse {
+  message: string;
+}
+
 
 // Location management responses
 export type GetRestaurantsResponse = IPaginatedRes<{
@@ -70,10 +74,6 @@ export interface DeleteLocationResponse {
 
 export interface GetLocationStatsResponse {
   stats: LocationStats;
-}
-
-export interface ApproveLocationResponse {
-  message: string;
 }
 
 // Post management responses

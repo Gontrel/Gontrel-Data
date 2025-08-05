@@ -1,28 +1,17 @@
 import { GetRestaurantsResponse, GetPostsResponse } from "@/interfaces";
-import { AdminRoleEnum } from "./enums";
 
 /**
  * Restaurant data model representing the production/live data
  */
-export type ActiveRestaurantTableType = GetRestaurantsResponse['data'][number];
+export type ActiveRestaurantTableTypes = GetRestaurantsResponse['data'][number];
 
-export type PendingRestaurantTableType = GetRestaurantsResponse['data'][number];
+export type PendingRestaurantTableTypes = GetRestaurantsResponse['data'][number];
 
 export type PendingVideoTableTypes = GetPostsResponse['data'][number];
 
 export type SubmittedRestaurantTableTypes = GetRestaurantsResponse['data'][number];
 
 export type SubmittedVideoTableTypes = GetPostsResponse['data'][number];
-
-/**
- * User model
- */
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: AdminRoleEnum;
-};
 
 /**
  * API response types
