@@ -11,24 +11,35 @@ import { StatsGrid } from "@/components/ui/StatsGrid";
 import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
-import { AdminRoleEnum, AnalystTableTabsEnum } from '@/types/enums';
-import TableTabs from '@/components/restaurants/TableTabs';
+import { AdminRoleEnum, AnalystTableTabsEnum } from "@/types/enums";
+import TableTabs from "@/components/restaurants/TableTabs";
 import { GontrelPostView } from "@/components/video/GontrelPostView";
+import { useCurrentUser } from "@/stores/authStore";
 
 /**
  * Restaurants Page Component
  */
 export default function RestaurantsPage() {
-  const [view, setView] = useState<AdminRoleEnum>(AdminRoleEnum.ANALYST);
+  const currentUser = useCurrentUser();
+  const [view, setView] = useState<AdminRoleEnum | null>(null);
+
+  const initialTab =
+    currentUser?.role === AdminRoleEnum.ANALYST
+      ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS
+      : ManagerTableTabsEnum.ACTIVE_RESTAURANTS;
+
   const [activeTab, setActiveTab] = useState<
     ManagerTableTabsEnum | AnalystTableTabsEnum
-  >(
-    view === AdminRoleEnum.ANALYST
-      ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS
-      : ManagerTableTabsEnum.ACTIVE_RESTAURANTS
-  );
-  const { activeVideoUrl, restaurantData, tiktokUsername, setActiveVideoUrl } = useVideoStore();
+  >(initialTab);
+  const { activeVideoUrl, restaurantData, tiktokUsername, setActiveVideoUrl } =
+    useVideoStore();
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
+
+  useEffect(() => {
+    if (currentUser?.role && !view) {
+      setView(currentUser.role);
+    }
+  }, [currentUser?.role, view]);
 
   // Use custom hook for tab-specific state management
   const {
@@ -52,10 +63,6 @@ export default function RestaurantsPage() {
       setActiveVideoUrl(null);
     }
   };
-
-  useEffect(() => {
-    setView(AdminRoleEnum.MANAGER);
-  }, []);
 
   /**
    * Creates page numbers object for all tabs
@@ -177,7 +184,7 @@ export default function RestaurantsPage() {
               name: restaurantData.name || "",
               menu: restaurantData.menu || "",
               reservation: restaurantData.reservation || "",
-              rating: restaurantData.rating || 0
+              rating: restaurantData.rating || 0,
             }}
             tiktokUsername={tiktokUsername || ""}
           />

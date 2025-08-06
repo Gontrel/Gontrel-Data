@@ -9,18 +9,23 @@ import Button from "../components/ui/Button";
 import { useRouter } from "next/navigation";
 import { errorToast, successToast } from "@/utils/toast";
 import { trpc } from "@/lib/trpc-client";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setUser } = useAuthStore();
 
   const router = useRouter();
   const togglePassword = () => setShowPassword((prev) => !prev);
 
   const { mutate: login, isPending: isLoading } = trpc.auth.login.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       successToast("Login successful!");
+      // Store User details
+      setUser(data.user);
+
       router.push("/restaurants");
     },
     onError: (error) => {

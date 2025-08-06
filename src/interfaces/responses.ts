@@ -14,7 +14,7 @@ import { Address, Location, Menu, OpeningHours, Reservation } from "./restaurant
 // Authentication responses
 export interface LoginResponse {
   token: string;
-  admin: Admin;
+  user: Admin;
 }
 
 export interface CreateAdminResponse {
