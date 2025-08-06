@@ -20,6 +20,7 @@ import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfa
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
 import { Post } from "@/interfaces/posts";
+import { useRouter } from "next/navigation";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -56,6 +57,8 @@ const PendingRestaurants = ({
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
+
+  const router = useRouter();
   const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
     isOpen: false,
     posts: [],
@@ -122,13 +125,19 @@ const PendingRestaurants = ({
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
-  const openVideoPreview = useCallback((posts: Post[], restaurantId: string) => {
+  const handleOnRowClick = useCallback((selectedRows: PendingRestaurantTableTypes): void => {
+    const restaurantId = selectedRows.id ?? "";
+    router.push(`/restaurants/${restaurantId}`);
+  }, [router]);
+
+  const handleOpenVideoPreview = useCallback((posts: Post[], restaurantId: string) => {
     setVideoPreview({ isOpen: true, posts, currentRestaurantId: restaurantId });
   }, []);
 
-  const closeVideoPreview = useCallback(() => {
+  const handleCloseVideoPreview = useCallback(() => {
     setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
-  }, []);
+    refetch();
+  }, [refetch]);
 
   const handleApprovePost = useCallback((
     locationId: string,
@@ -179,7 +188,8 @@ const PendingRestaurants = ({
         }
       ]
     });
-  }, [bulkApproveRestaurantStatus]);
+    refetch();
+  }, [bulkApproveRestaurantStatus, refetch]);
 
   const openFeedbackModal = useCallback((restaurant: PendingRestaurantTableTypes) => {
     setFeedbackModal({
@@ -227,7 +237,8 @@ const PendingRestaurants = ({
       ]
     });
     closeFeedbackModal();
-  }, [feedbackModal, closeFeedbackModal, bulkApproveRestaurantStatus]);
+    refetch();
+  }, [feedbackModal, closeFeedbackModal, bulkApproveRestaurantStatus, refetch]);
 
   const handleSendFeedback = useCallback((restaurant: PendingRestaurantTableTypes) => {
     openFeedbackModal(restaurant);
@@ -237,13 +248,6 @@ const PendingRestaurants = ({
     const selectedIds = selectedRows.map(row => row.id);
     setSelectedRows(selectedIds);
   }, [setSelectedRows]);
-
-  const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
-    if (!isOpen) {
-      closeVideoPreview();
-      refetch();
-    }
-  }, [closeVideoPreview, refetch]);
 
   // ---------------------------------------------------------------------------
   // COMPUTED VALUES
@@ -321,13 +325,14 @@ const PendingRestaurants = ({
   const columns = useMemo(
     () =>
       createPendingRestaurantsColumns(
-        openVideoPreview,
+        handleOpenVideoPreview,
         handleApprove,
         handleDecline,
         handleSendFeedback,
         handleSaveRestaurant,
+        handleOnRowClick,
       ),
-    [handleApprove, handleDecline, handleSaveRestaurant, handleSendFeedback, openVideoPreview]
+    [handleApprove, handleDecline, handleSaveRestaurant, handleSendFeedback, handleOpenVideoPreview, handleOnRowClick]
   );
 
   // ---------------------------------------------------------------------------
@@ -359,7 +364,7 @@ const PendingRestaurants = ({
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_RESTAURANTS}
         open={videoPreview.isOpen}
-        onOpenChange={handleVideoPreviewOpenChange}
+        onOpenChange={handleCloseVideoPreview}
         posts={videoPreview.posts}
         restaurant={restaurant}
         onApprove={handleApprovePost}

@@ -77,13 +77,13 @@ export const createSubmittedVideosColumns = (
       cell: ({ row }) => {
         const { postCount } = row.original;
         return (
-          <div className="flex flex-col gap-y-2 w-fit" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.admin.id ?? "")}>
+          <div className="flex flex-col gap-y-2 w-fit">
             <PillButton
               text={`${postCount} video${postCount > 1 ? "s" : ""}`}
-              textColor={getTextColor([{ status: ApprovalStatusEnum.REJECTED }])}
-              bgColor={getBgColor([{ status: ApprovalStatusEnum.REJECTED }])}
+              textColor={getTextColor([{ status: ApprovalStatusEnum.PENDING }])}
+              bgColor={getBgColor([{ status: ApprovalStatusEnum.PENDING }])}
             />
-            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer">View</span>
+            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.admin.id ?? "")}>View</span>
           </div>
         );
       },

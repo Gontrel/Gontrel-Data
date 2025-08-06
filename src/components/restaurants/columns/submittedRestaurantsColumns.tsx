@@ -69,12 +69,14 @@ export const createSubmittedRestaurantsColumns = (
 
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={text} textColor={getTextColor(posts.map((post) => ({ status: post.status })))} bgColor={getBgColor(posts.map((post) => ({ status: post.status })))} />
-            <button onClick={() => {
-              handleOpenVideoPreview(posts, row.original.id);
-            }} className="text-blue-500 text-left">
-              View
-            </button>
+            <PillButton
+              text={`${posts?.filter((post) => post.status !== ApprovalStatusEnum.PENDING)
+                .length
+                }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
+              textColor={getTextColor(posts.map((post) => ({ status: post.status })))}
+              bgColor={getBgColor(posts.map((post) => ({ status: post.status })))}
+            />
+            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(posts, row.original.id)}>View</span>
           </div>
         );
       },

@@ -93,7 +93,7 @@ const PendingVideos = ({
     setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
   }, [setVideoPreview]);
 
-  const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
+  const handleCloseVideoPreview = useCallback((isOpen: boolean) => {
     if (!isOpen) {
       setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
       refetch();
@@ -185,7 +185,7 @@ const PendingVideos = ({
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_VIDEOS}
         open={videoPreview.isOpen}
-        onOpenChange={handleVideoPreviewOpenChange}
+        onOpenChange={handleCloseVideoPreview}
         posts={videoPreview.posts}
         restaurant={restaurant}
         onApprove={handleApprovePost}
