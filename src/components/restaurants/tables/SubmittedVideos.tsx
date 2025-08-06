@@ -62,6 +62,7 @@ const SubmittedVideos = ({
     currentRestaurantId: null,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [resubmitModal, setResubmitModal] = useState<ResubmitModalState>({
     isOpen: false,
     restaurant: null,
