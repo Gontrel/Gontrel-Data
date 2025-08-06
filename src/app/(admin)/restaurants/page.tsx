@@ -8,13 +8,13 @@ import { useTabState } from "@/hooks/useTabState";
 import { useTableTotals } from "@/hooks/useTableTotals";
 import { DEFAULT_RESTAURANT_STATS } from "@/constants/";
 import { StatsGrid } from "@/components/ui/StatsGrid";
-import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
 import { AdminRoleEnum, AnalystTableTabsEnum } from "@/types/enums";
 import TableTabs from "@/components/restaurants/TableTabs";
 import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useCurrentUser } from "@/stores/authStore";
+import { ResubmitRestaurant } from "@/components/restaurants/analysts/ResubmitRestaurant";
 
 /**
  * Restaurants Page Component
@@ -183,7 +183,7 @@ export default function RestaurantsPage() {
             restaurantData={{
               name: restaurantData.name || "",
               menu: restaurantData.menu || "",
-              reservation: restaurantData.reservation || "",
+              reservation: restaurantData.reservation?.content || "",
               rating: restaurantData.rating || 0,
             }}
             tiktokUsername={tiktokUsername || ""}
@@ -228,7 +228,17 @@ export default function RestaurantsPage() {
       </div>
 
       {/* New Restaurant Modal */}
-      <NewRestaurantSheet
+      {/* <NewRestaurantSheet
+        open={showNewRestaurantModal}
+        onOpenChange={setShowNewRestaurantModal}
+      /> */}
+
+      {/* New Restaurant Modal */}
+      <ResubmitRestaurant
+        restaurantId="20bc913f-97b0-4c10-a793-77b3832b0ab7"
+        title="Resubmit restaurant details"
+        description="Some of the details you submitted were rejected"
+        isRestaurantFlow={true}
         open={showNewRestaurantModal}
         onOpenChange={setShowNewRestaurantModal}
       />

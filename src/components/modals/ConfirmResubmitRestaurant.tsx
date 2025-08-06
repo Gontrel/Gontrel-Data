@@ -3,32 +3,35 @@
 import { useState } from "react";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
+import logo from "@/assets/images/logo.png";
+import { formatDateTime, transformToModalHours } from "@/lib/utils";
+import { RestaurantData } from "@/types/restaurant";
+import Icon from "@/components/svgs/Icons";
 import {
   EditWorkingHoursModal,
   WorkingHours,
-} from "../modals/EditWorkingHoursModal";
-import Icon from "../svgs/Icons";
-import logo from "@/assets/images/logo.png";
-import { transformToModalHours } from "@/lib/utils";
-import { RestaurantData } from "@/types/restaurant";
+} from "@/components/modals/EditWorkingHoursModal";
+import { useIsAdmin, useIsAnalyst } from "@/stores/authStore";
+import Button from "../ui/Button";
 
-
-
-interface RestaurantConfirmationProps {
+interface ConfirmResubmitRestaurantProps {
   restaurant: RestaurantData;
   onGoBackToSearch: () => void;
-  onNext: () => void;
+  onContinue: (data: { openingHour: Record<string, string[]> }) => void;
 }
 
-export const RestaurantConfirmation = ({
+export const ConfirmResubmitRestaurant = ({
   restaurant,
   onGoBackToSearch,
-  onNext,
+  onContinue,
   onWorkingHoursSave,
-}: RestaurantConfirmationProps & {
+}: ConfirmResubmitRestaurantProps & {
   onWorkingHoursSave: (updatedHours: WorkingHours) => void;
 }) => {
   const [isEditHoursModalOpen, setIsEditHoursModalOpen] = useState(false);
+  const [workingHours, setWorkingHours] = useState(restaurant.workingHours);
+  const isAdmin = useIsAdmin();
+  const isAnalyst = useIsAnalyst();
 
   const daysOfWeek: (keyof WorkingHours)[] = [
     "Monday",
@@ -40,14 +43,32 @@ export const RestaurantConfirmation = ({
     "Sunday",
   ];
 
+  const formatHoursForState = (hours: WorkingHours): Record<string, string[]> => {
+    const formatted: Record<string, string[]> = {};
+    for (const day of Object.keys(hours)) {
+      const dayData = hours[day as keyof WorkingHours];
+      if (!dayData.isOpen) {
+        formatted[day] = ["Closed"];
+      } else if (dayData.isAllDay) {
+        formatted[day] = ["24 hours"];
+      } else {
+        formatted[day] = dayData.slots.map(
+          (slot) => `${slot.start} - ${slot.end}`
+        );
+      }
+    }
+    return formatted;
+  };
+
   const handleSaveHours = (updatedHours: WorkingHours) => {
     onWorkingHoursSave(updatedHours);
+    setWorkingHours(formatHoursForState(updatedHours));
     setIsEditHoursModalOpen(false);
   };
 
-  console.log(restaurant.workingHours, "restaurant.workingHoursrestaurant.workingHours");
-
-  // const workingHour = restaurant.workingHours ? restaurant.workingHours :
+  const handleOnContinue = () => {
+    onContinue({ openingHour: workingHours });
+  };
 
   return (
     <div className="flex flex-col gap-y-5 max-h-full mt-[62px] justify-between">
@@ -66,16 +87,38 @@ export const RestaurantConfirmation = ({
               <div>
                 <h3 className="font-semibold text-lg">{restaurant?.name}</h3>
                 <p className="text-[#9DA1A5] text-[17px] leading-[100%] font-medium flex-wrap ">
-                  {restaurant?.address}
+                  {typeof restaurant?.address === "string"
+                    ? restaurant?.address
+                    : restaurant?.address?.content}
                 </p>
+
+                {/* Only display for Analyst */}
+                {isAnalyst && (
+                  <div className="space-y-2 mt-2">
+                    <p className="text-[#9DA1A5] text-[17px] leading-[100%] font-medium flex-wrap ">
+                      Submitted:{" "}
+                      {formatDateTime(new Date(restaurant?.createdAt ?? ""))}
+                    </p>
+                    <p className="text-[#9DA1A5] text-[17px] leading-[100%] font-medium flex-wrap ">
+                      Rejected:{" "}
+                      {formatDateTime(new Date(restaurant?.modifiedAt ?? ""))}
+                    </p>
+                    <p className="text-[#9DA1A5] text-[17px] leading-[100%] font-medium flex-wrap ">
+                      Comment: Not allowed
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
-            <button
-              onClick={onGoBackToSearch}
-              className="text-[#D80000] font-semibold text-base  pl-2"
-            >
-              Change
-            </button>
+            {/* Only show for Admins */}
+            {isAdmin && (
+              <button
+                onClick={onGoBackToSearch}
+                className="text-[#D80000] font-semibold text-base  pl-2"
+              >
+                Change
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-200">
             <a
@@ -88,7 +131,7 @@ export const RestaurantConfirmation = ({
               website <Icon name="externalLinkIcon" className="w-5 h-5" />
             </a>
             <a
-              href={restaurant.address}
+              href={restaurant.mapLink}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-medium text-sm p-2 rounded-lg bg-[#FFFFFF] hover:bg-gray-100"
@@ -113,7 +156,7 @@ export const RestaurantConfirmation = ({
           </div>
           <div className="space-y-3 max-h-[380px] overflow-y-auto">
             {daysOfWeek.map((day) => {
-              const hours = restaurant.workingHours[day];
+              const hours = workingHours[day];
               return (
                 <div
                   key={day}
@@ -140,21 +183,20 @@ export const RestaurantConfirmation = ({
           </div>
         </div>
       </div>
-
       <div className="flex-shrink-0 mb-10">
         <button
           type="submit"
-          onClick={onNext}
+          onClick={handleOnContinue}
           className="w-full bg-[#0070F3] text-white py-[20px] px-[22px] rounded-[20px] font-semibold hover:bg-blue-600 transition-colors"
         >
-          Next
+          Continue
         </button>
       </div>
 
       <EditWorkingHoursModal
         isOpen={isEditHoursModalOpen}
         onClose={() => setIsEditHoursModalOpen(false)}
-        workingHours={transformToModalHours(restaurant.workingHours)}
+        workingHours={transformToModalHours(workingHours)}
         onSave={handleSaveHours}
       />
     </div>

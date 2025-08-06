@@ -1,16 +1,16 @@
 export interface Post {
-   id: string;
+  id: string;
   createdAt: string;
   modifiedAt: string;
-  deletedAt: string | null;
-  deletedBy: string | null;
-  updatedBy: string | null;
-  firebaseId: string | null;
+  deletedAt?: string;
+  deletedBy?: string;
+  updatedBy?: string;
+  firebaseId?: string;
   analytics: Analytics;
   tiktokLink: string;
   videoUrl: string;
   thumbUrl: string;
-  postedAt: string | null;
+  postedAt?: string;
   status: string;
   source: string;
   tags: Tag[];
@@ -26,7 +26,7 @@ export interface Tag {
   firebaseId: string | null;
   count: number;
   name: string;
-  imageUrl: string;
+  image: string;
   resource: string;
   type: string;
   isTaste: boolean;

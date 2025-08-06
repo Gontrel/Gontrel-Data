@@ -1,6 +1,7 @@
 import { create, StateCreator } from "zustand";
 import React from "react";
-import { RestaurantData, VideoData } from "@/interfaces/restaurants";
+import { VideoData } from "@/interfaces/restaurants";
+import { RestaurantData } from "@/types/restaurant";
 
 export interface VideoPlayerInstance {
   id: string;
@@ -16,6 +17,7 @@ export interface VideoState {
   currentlyPlayingVideoId: string | null;
   videoPlayerInstances: Map<string, VideoPlayerInstance>;
   addVideo: (video: Omit<VideoData, "id">) => void;
+  addVideos: (videos: VideoData[]) => void;
   removeVideo: (id: string) => void;
   updateVideo: (id: string, video: Partial<VideoData>) => void;
   setActiveVideoUrl: (url: string | null) => void;
@@ -43,27 +45,46 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
     set({ videos: [...get().videos, newVideo] });
     return newVideo;
   },
+
+  addVideos: (newVideos: VideoData[]) => {
+    set((state) => {
+      const existingIds = new Set(state.videos.map((v) => v.id));
+
+      const uniqueNewVideos = newVideos.filter(
+        (video) => !existingIds.has(video.id)
+      );
+
+      return {
+        videos: [...state.videos, ...uniqueNewVideos],
+      };
+    });
+  },
+
   removeVideo: (id: string) =>
     set((state: VideoState) => ({
       videos: state.videos.filter((v) => v.id !== id),
     })),
+
   updateVideo: (id: string, updatedVideo: Partial<VideoData>) =>
     set((state: VideoState) => ({
       videos: state.videos.map((v) =>
         v.id === id ? { ...v, ...updatedVideo } : v
       ),
     })),
+
   setActiveVideoUrl: (url) => set({ activeVideoUrl: url }),
   setTiktokUsername: (username) => set({ tiktokUsername: username }),
   resetVideos: () => set({ videos: [] }),
   addRestaurantData: (restaurantData: RestaurantData) =>
     set({ restaurantData: restaurantData }),
+
   registerVideoPlayer: (instance: VideoPlayerInstance) =>
     set((state: VideoState) => {
       const newInstances = new Map(state.videoPlayerInstances);
       newInstances.set(instance.id, instance);
       return { videoPlayerInstances: newInstances };
     }),
+
   unregisterVideoPlayer: (id: string) =>
     set((state: VideoState) => {
       const newInstances = new Map(state.videoPlayerInstances);
@@ -76,12 +97,14 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
             : state.currentlyPlayingVideoId,
       };
     }),
+
   playVideo: (id: string) => {
     const state = get();
     // Pause all other videos first
     state.pauseAllVideosExcept(id);
     set({ currentlyPlayingVideoId: id });
   },
+  
   pauseAllVideosExcept: (playingVideoId: string) => {
     const state = get();
     state.videoPlayerInstances.forEach((instance, id) => {

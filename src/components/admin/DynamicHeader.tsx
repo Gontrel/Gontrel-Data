@@ -71,7 +71,7 @@ export function DynamicHeader() {
   const config = getConfigForPath(pathname);
 
   return (
-    <header className="sticky top-0 z-50 flex flex-row items-center justify-between w-full py-4 sm:py-8.5 px-4 sm:px-10 bg-[#FAFAFA] border-b border-gray-200">
+    <header className="sticky top-0 flex flex-row items-center justify-between w-full py-4 sm:py-8.5 px-4 sm:px-10 bg-[#FAFAFA] border-b border-gray-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           {config.showBackButton && (
@@ -109,4 +109,3 @@ export function DynamicHeader() {
     </header>
   );
 }
-

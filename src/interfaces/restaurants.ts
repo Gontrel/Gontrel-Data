@@ -22,20 +22,7 @@ export interface VideoData {
   author?: string;
   locationName?: string;
   rating?: number;
-}
-
-export interface RestaurantData {
-  sessionToken?: string;
-  placeId: string;
-  address: string;
-  menu?: string;
-  name?: string;
-  photos?: string[];
-  rating?: number;
-  reservation?: string;
-  website?: string;
-  posts?: VideoData[];
-  openingHours?: openingHours[];
+  isUpdated?: boolean
 }
 
 export interface openingHours {
@@ -44,7 +31,7 @@ export interface openingHours {
   closesAt: number;
 }
 
-interface OpeningHour {
+export interface OpeningHour {
   dayOfTheWeek:
     | "MONDAY"
     | "TUESDAY"
@@ -99,6 +86,12 @@ export interface Reservation {
   content: string;
 }
 
+export interface OpeningHoursDay {
+  day: string;
+  open: string;
+  close: string;
+  closed?: boolean;
+}
 
 export interface Menu {
   status: ApprovalStatusEnum;
@@ -106,38 +99,32 @@ export interface Menu {
 }
 
 export interface Location {
-    id: string;
-    createdAt: string;
-    modifiedAt: string;
-    deletedAt: string | null;
-    deletedBy: string | null;
-    updatedBy: string | null;
-    firebaseId: string | null;
-    address: Address;
-    lat: number;
-    lng: number;
-    menu: Menu;
-    name: string;
-    openingHours: OpeningHours[];
-    photos: string[];
-    phoneNumber: string | null;
-    priceLevel: number;
-    rating: number;
-    reservation: Reservation;
-    toilets: boolean;
-    type: string;
-    website: string;
-    status: ApprovalStatusEnum;
-    comment: string | null;
-    mapLink: string;
-    country: string;
-    tags: Tag[];
-  }
-
-  export interface OpeningHours {
-  dayOfTheWeek: string;
-  opensAt: number;
-  closesAt: number;
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  address: Address;
+  lat: number;
+  lng: number;
+  menu: Menu;
+  name: string;
+  openingHours: OpeningHour[];
+  photos: string[];
+  phoneNumber: string | null;
+  priceLevel: number;
+  rating: number;
+  reservation: Reservation;
+  toilets: boolean;
+  type: string;
+  website: string;
+  status: ApprovalStatusEnum;
+  comment: string | null;
+  mapLink: string;
+  country: string;
+  tags: Tag[];
 }
 
 export interface GontrelRestaurantData {
@@ -145,4 +132,8 @@ export interface GontrelRestaurantData {
   menu: string;
   reservation: string;
   rating: number;
+}
+
+export interface ConverTedWorkingHours {
+  [day: string]: string[];
 }

@@ -81,9 +81,6 @@ export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onAppro
       id: "post_123456789",
       createdAt: "2024-01-15T14:30:00Z",
       modifiedAt: "2024-01-15T14:30:00Z",
-      deletedAt: null,
-      deletedBy: null,
-      updatedBy: null,
       firebaseId: "firebase_post_123",
       analytics: {
         views: 1250,
