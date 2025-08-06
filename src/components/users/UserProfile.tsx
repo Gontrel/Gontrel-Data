@@ -11,13 +11,16 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
+import { useAuthStore } from "@/stores/authStore";
 
 export const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { logout } = useAuthStore();
   const router = useRouter();
 
   const { mutate: logoutMutation, isSuccess } = trpc.auth.logout.useMutation({
     onSuccess: () => {
+      logout();
       router.push("/");
     },
     onError: (error) => {
