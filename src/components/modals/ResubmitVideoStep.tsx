@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Plus, Loader } from "lucide-react";
+import { X, Loader } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
@@ -10,10 +10,8 @@ import { VideoCard } from "../restaurants/VideoCard";
 import Icon from "@/components/svgs/Icons";
 import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
-import { useIsAdmin, useIsAnalyst } from "@/stores/authStore";
 import Button from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
-import { UpdatePostRequest } from "@/interfaces/requests";
 
 interface ResubmitVideoStepProps {
   onNext: () => void;
@@ -33,15 +31,12 @@ export const ResubmitVideoStepStep = ({
 }: ResubmitVideoStepProps) => {
   const videos = useVideoStore((state) => state.videos);
   const {
-    addVideo,
     addVideos,
     updateVideo,
     setActiveVideoUrl,
     resetVideos,
     setTiktokUsername,
   } = useVideoStore();
-  const isAdmin = useIsAdmin();
-  const isAnalyst = useIsAnalyst();
   const [currentVideo, setCurrentVideo] = useState({
     url: "",
     tags: [] as string[],
