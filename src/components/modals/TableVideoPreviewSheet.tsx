@@ -18,15 +18,15 @@ interface TableVideoPreviewSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   posts: Post[];
-  onApprove: TableVideoPreviewSheetOnApprove;
-  onDecline: TableVideoPreviewSheetOnDecline;
+  onApprove?: TableVideoPreviewSheetOnApprove;
+  onDecline?: TableVideoPreviewSheetOnDecline;
   restaurant: GontrelRestaurantDetailedData;
 }
 
 interface TableVideoPreviewSheetContentProps {
   posts: Post[];
-  onApprove: TableVideoPreviewSheetOnApprove;
-  onDecline: TableVideoPreviewSheetOnDecline;
+  onApprove?: TableVideoPreviewSheetOnApprove;
+  onDecline?: TableVideoPreviewSheetOnDecline;
   restaurant: GontrelRestaurantData & { id: string, adminName: string };
 }
 
@@ -54,8 +54,8 @@ const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant
     {posts.length > 0 ? posts.map((post, index) => (
       <LivePostCard
         key={index}
-        handleApprove={onApprove}
-        handleDecline={() => onDecline(restaurant.id, post.id, "")}
+        handleApprove={onApprove ?? undefined}
+        handleDecline={onDecline ? () => onDecline(restaurant.id, post.id, "") : undefined}
         post={post}
         restaurant={restaurant}
       />
@@ -106,7 +106,7 @@ export const TableVideoPreviewSheet = ({ table, open, onOpenChange, posts = [], 
     setFeedbackModal({ isOpen: true, comment: "", postId, restaurantId });
   }
   const handleSubmitFeedback = () => {
-    onDecline(feedbackModal.restaurantId, feedbackModal.postId, feedbackModal.comment);
+    onDecline?.(feedbackModal.restaurantId, feedbackModal.postId, feedbackModal.comment);
     closeFeedbackModal();
   }
   return (

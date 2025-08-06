@@ -14,6 +14,7 @@ import { ApprovalStatusEnum } from "@/types";
  */
 export const createSubmittedVideosColumns = (
   handleOpenVideoPreview: (locationId: string, adminId: string) => void,
+  handleOpenResubmitModal: (restaurant: SubmittedVideoTableTypes) => void,
   onRowClick?: (row: SubmittedVideoTableTypes) => void
 ): ColumnDef<SubmittedVideoTableTypes>[] => [
     {

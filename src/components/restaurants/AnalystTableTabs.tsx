@@ -44,7 +44,7 @@ export const AnalystTableTabs = ({
               onClick={() => onTabChange(tabKey)}
             >
               {label}
-              {showTotal && <span>{` (${total})`}</span>}
+              <span>{` (${showTotal ? total : 0})`}</span>
             </button>
           );
         })}

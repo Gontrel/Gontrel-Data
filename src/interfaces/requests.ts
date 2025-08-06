@@ -95,6 +95,15 @@ export interface FetchGroupedPostsRequest extends BaseQueryRequest {
 }
 
 /**
+ * GET /admin-user-grouped-posts
+ * Fetches grouped posts for user dashboard
+ */
+export interface FetchUserGroupedPostsRequest extends BaseQueryRequest {
+  adminId: string; // UUID
+  status?: ApprovalStatusEnum; // enum values from ApprovalStatus
+}
+
+/**
  * POST /admin-post
  * Creates a new post via admin panel
  */
@@ -186,15 +195,8 @@ export interface FetchLocationsRequest extends BaseQueryRequest {
  * @extends BaseQueryRequest
  */
 export interface FetchAnalystLocationsRequest extends BaseQueryRequest {
-  // Location-specific filters (same as FetchLocationsRequest - filtering done server-side based on JWT)
-  lat?: number;
-  lng?: number;
-  radius?: number;
-  userId?: string; // UUID
   adminId?: string; // UUID
-  tagId?: string;
   status?: ApprovalStatusEnum;
-  isVerified?: boolean;
 }
 
 /**

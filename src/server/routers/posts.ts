@@ -9,6 +9,7 @@ import {
   createPostSchema,
   createBulkPostSchema,
   fetchGroupedPostsSchema,
+  fetchUserGroupedPostsSchema,
 } from "./schemas";
 import { GetPostsResponse } from "@/interfaces/responses";
 
@@ -85,6 +86,22 @@ export const postRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getGroupedPosts(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+    getUserGroupedPosts: protectedProcedure
+    .input(fetchUserGroupedPostsSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.getUserGroupedPosts(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

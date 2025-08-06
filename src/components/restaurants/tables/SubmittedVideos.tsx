@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // External dependencies
@@ -12,8 +12,8 @@ import { trpc } from "@/lib/trpc-client";
 
 // Types and enums
 import { SubmittedVideoTableTypes } from "@/types/restaurant";
-import { ApprovalStatusEnum, ApprovalType, AnalystTableTabsEnum } from "@/types";
-import { GontrelRestaurantDetailedData } from "@/interfaces";
+import { AnalystTableTabsEnum } from "@/types";
+import { GontrelRestaurantDetailedData, Post, VideoPreviewModalProps } from "@/interfaces";
 
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
@@ -49,11 +49,14 @@ const SubmittedVideos = ({
   const router = useRouter();
   const {
     setSelectedRows,
-    videoPreviewModal,
     resubmitVideo,
-    openVideoPreview,
-    closeVideoPreview,
   } = useSubmittedVideosStore();
+
+  const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
+    isOpen: false,
+    posts: [],
+    currentRestaurantId: null,
+  });
 
   const { queryData, isLoading, error, refetch } = useSubmittedVideos({
     currentPage,
@@ -85,29 +88,20 @@ const SubmittedVideos = ({
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
 
-  const handleOpenVideoPreview = useCallback((locationId: string, adminId: string): void => {
-    openVideoPreview([], locationId);
-  }, [openVideoPreview]);
+  const handleOpenVideoPreview = useCallback((locationId: string): void => {
+    setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
+  }, [setVideoPreview]);
 
   const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
     if (!isOpen) {
-      closeVideoPreview();
+      setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
       refetch();
     }
-  }, [closeVideoPreview, refetch]);
+  }, [setVideoPreview, refetch]);
 
-  const handleResubmitPost = useCallback((
-    locationId: string,
-    postId: string,
-  ) => {
-    resubmitVideo({ location: { id: locationId } } as SubmittedVideoTableTypes);
-    approveRestaurantStatus({
-      resourceId: postId,
-      locationId,
-      type: ApprovalType.POST,
-      status: ApprovalStatusEnum.PENDING
-    });
-  }, [resubmitVideo, approveRestaurantStatus]);
+  const handleResubmitPost = useCallback((row: SubmittedVideoTableTypes): void => {
+    resubmitVideo(row);
+  }, [resubmitVideo]);
 
   const handleRowSelection = useCallback((selectedRows: SubmittedVideoTableTypes[]) => {
     const selectedIds = selectedRows.map(row => row.location?.id ?? "");
@@ -124,7 +118,7 @@ const SubmittedVideos = ({
 
   const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
     const currentRestaurant = videos.find(({ location }) =>
-      location?.id === videoPreviewModal.currentRestaurantId
+      location?.id === videoPreview.currentRestaurantId
     );
 
     return currentRestaurant ? {
@@ -144,11 +138,11 @@ const SubmittedVideos = ({
       adminName: "",
       adminId: ""
     };
-  }, [videos, videoPreviewModal.currentRestaurantId]);
+  }, [videos, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(() =>
-    createSubmittedVideosColumns(handleOpenVideoPreview, handleOnRowClick),
-    [handleOpenVideoPreview, handleOnRowClick]
+    createSubmittedVideosColumns(handleOpenVideoPreview, handleOnRowClick, handleResubmitPost),
+    [handleOpenVideoPreview, handleOnRowClick, handleResubmitPost]
   );
 
   // ---------------------------------------------------------------------------
@@ -167,11 +161,10 @@ const SubmittedVideos = ({
     <>
       <TableVideoPreviewSheet
         table={AnalystTableTabsEnum.SUBMITTED_VIDEOS}
-        open={videoPreviewModal.isOpen}
+        open={videoPreview.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
-        posts={videoPreviewModal.posts}
+        posts={videoPreview.posts}
         restaurant={restaurant}
-        onResubmit={handleResubmitPost}
       />
 
       <RestaurantTable<SubmittedVideoTableTypes>

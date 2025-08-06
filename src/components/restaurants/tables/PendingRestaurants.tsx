@@ -15,10 +15,11 @@ import { trpc } from "@/lib/trpc-client";
 // Types and enums
 import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
 import { PendingRestaurantTableTypes } from "@/types/restaurant";
-import { GontrelRestaurantDetailedData } from "@/interfaces/restaurants";
+import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfaces/restaurants";
 
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
+import { Post } from "@/interfaces/posts";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -55,18 +56,24 @@ const PendingRestaurants = ({
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
+  const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
+    isOpen: false,
+    posts: [],
+    currentRestaurantId: null,
+  });
 
   const {
     handleApprove,
     handleDecline,
-  } = usePendingRestaurants();
+    queryData,
+    isLoading,
+    error,
+    refetch,
+  } = usePendingRestaurants({ currentPage, pageSize, searchTerm });
 
   const {
     setSelectedRows,
     pendingChanges,
-    videoPreviewModal,
-    openVideoPreview,
-    closeVideoPreview,
     approveRestaurant,
     declineRestaurant,
   } = usePendingRestaurantsStore();
@@ -81,17 +88,7 @@ const PendingRestaurants = ({
   // DATA FETCHING
   // ---------------------------------------------------------------------------
 
-  const {
-    data: queryData,
-    isLoading,
-    error,
-    refetch,
-  } = trpc.restaurant.getRestaurants.useQuery({
-    pageNumber: currentPage,
-    quantity: pageSize,
-    status: ApprovalStatusEnum.PENDING,
-    query: searchTerm,
-  });
+
 
   // ---------------------------------------------------------------------------
   // MUTATIONS
@@ -124,6 +121,14 @@ const PendingRestaurants = ({
   // ---------------------------------------------------------------------------
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
+
+  const openVideoPreview = useCallback((posts: Post[], restaurantId: string) => {
+    setVideoPreview({ isOpen: true, posts, currentRestaurantId: restaurantId });
+  }, []);
+
+  const closeVideoPreview = useCallback(() => {
+    setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
+  }, []);
 
   const handleApprovePost = useCallback((
     locationId: string,
@@ -293,7 +298,7 @@ const PendingRestaurants = ({
   }, [queryData?.data, pendingChanges]);
 
   const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
-    const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreviewModal.currentRestaurantId);
+    const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreview.currentRestaurantId);
     return currentRestaurant ? {
       id: currentRestaurant.id,
       name: currentRestaurant.name,
@@ -311,7 +316,7 @@ const PendingRestaurants = ({
         adminName: "",
         adminId: ""
     };
-  }, [restaurants, videoPreviewModal.currentRestaurantId]);
+  }, [restaurants, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(
     () =>
@@ -353,9 +358,9 @@ const PendingRestaurants = ({
 
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_RESTAURANTS}
-        open={videoPreviewModal.isOpen}
+        open={videoPreview.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
-        posts={videoPreviewModal.posts}
+        posts={videoPreview.posts}
         restaurant={restaurant}
         onApprove={handleApprovePost}
         onDecline={handleDeclinePost}
