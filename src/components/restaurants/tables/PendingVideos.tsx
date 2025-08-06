@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // External dependencies
@@ -13,7 +13,7 @@ import { trpc } from "@/lib/trpc-client";
 // Types and enums
 import { PendingVideoTableTypes } from "@/types/restaurant";
 import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
-import { GontrelRestaurantDetailedData } from "@/interfaces";
+import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfaces";
 
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
@@ -49,12 +49,15 @@ const PendingVideos = ({
   const router = useRouter();
   const {
     setSelectedRows,
-    videoPreviewModal,
     approveVideo,
     declineVideo,
-    openVideoPreview,
-    closeVideoPreview,
   } = usePendingVideosStore();
+
+  const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
+    isOpen: false,
+    posts: [],
+    currentRestaurantId: null,
+  });
 
   const { queryData, isLoading, error, refetch } = usePendingVideos({
     currentPage,
@@ -86,17 +89,16 @@ const PendingVideos = ({
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
 
-  const handleOpenVideoPreview = useCallback((locationId: string, adminId: string): void => {
-
-    openVideoPreview([], locationId);
-  }, [openVideoPreview]);
+  const handleOpenVideoPreview = useCallback((locationId: string): void => {
+    setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
+  }, [setVideoPreview]);
 
   const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
     if (!isOpen) {
-      closeVideoPreview();
+      setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
       refetch();
     }
-  }, [closeVideoPreview, refetch]);
+  }, [setVideoPreview, refetch]);
 
   const handleApprovePost = useCallback((
     locationId: string,
@@ -139,7 +141,7 @@ const PendingVideos = ({
 
   const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
     const currentRestaurant = videos.find(({ location }) =>
-      location?.id === videoPreviewModal.currentRestaurantId
+      location?.id === videoPreview.currentRestaurantId
     );
 
     return currentRestaurant ? {
@@ -159,7 +161,7 @@ const PendingVideos = ({
       adminName: "",
       adminId: ""
     };
-  }, [videos, videoPreviewModal.currentRestaurantId]);
+  }, [videos, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(() =>
     createPendingVideosColumns(handleOpenVideoPreview, handleOnRowClick),
@@ -182,9 +184,9 @@ const PendingVideos = ({
     <>
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_VIDEOS}
-        open={videoPreviewModal.isOpen}
+        open={videoPreview.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
-        posts={videoPreviewModal.posts}
+        posts={videoPreview.posts}
         restaurant={restaurant}
         onApprove={handleApprovePost}
         onDecline={handleDeclinePost}

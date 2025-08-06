@@ -62,6 +62,14 @@ export const restaurantRouter = router({
       }
     }),
 
+  getAnalystRestaurants: protectedProcedure
+    .input(fetchAnalystLocationsSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      const response = await apiRequest.getAnalystRestaurants(input);
+      return response;
+    }),
+
   // Create new restaurant (protected)
   createRestaurant: protectedProcedure
     .input(createLocationSchema)

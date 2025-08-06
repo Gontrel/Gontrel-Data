@@ -152,3 +152,9 @@ export interface GontrelRestaurantDetailedData extends GontrelRestaurantData {
   adminName: string;
   adminId: string;
 }
+
+export interface VideoPreviewModalProps {
+  isOpen: boolean;
+  posts: Post[];
+  currentRestaurantId: string | null;
+}

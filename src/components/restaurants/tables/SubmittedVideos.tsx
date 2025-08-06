@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // External dependencies
@@ -8,16 +8,15 @@ import { createSubmittedVideosColumns } from "../columns/submittedVideosColumn";
 
 // Store and API
 import { useSubmittedVideosStore } from "@/stores/tableStore";
-import { trpc } from "@/lib/trpc-client";
 
 // Types and enums
 import { SubmittedVideoTableTypes } from "@/types/restaurant";
-import { ApprovalStatusEnum, ApprovalType, AnalystTableTabsEnum } from "@/types";
-import { GontrelRestaurantDetailedData } from "@/interfaces";
+import { AnalystTableTabsEnum } from "@/types";
+import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfaces";
 
 // Utils
-import { errorToast, successToast } from "@/utils/toast";
 import { useSubmittedVideos } from "@/hooks/useSubmittedVideos";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -29,6 +28,11 @@ interface SubmittedVideosProps {
   pageSize: number;
   handleCurrentPage: (page: number) => void;
   handlePageSize: (pageSize: number) => void;
+}
+
+interface ResubmitModalState {
+  isOpen: boolean;
+  restaurant: SubmittedVideoTableTypes | null;
 }
 
 // =============================================================================
@@ -49,31 +53,29 @@ const SubmittedVideos = ({
   const router = useRouter();
   const {
     setSelectedRows,
-    videoPreviewModal,
     resubmitVideo,
-    openVideoPreview,
-    closeVideoPreview,
   } = useSubmittedVideosStore();
+
+  const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
+    isOpen: false,
+    posts: [],
+    currentRestaurantId: null,
+  });
+
+  const [resubmitModal, setResubmitModal] = useState<ResubmitModalState>({
+    isOpen: false,
+    restaurant: null,
+  });
+
+  const [confirmationModal, setConfirmationModal] = useState<ResubmitModalState>({
+    isOpen: false,
+    restaurant: null,
+  });
 
   const { queryData, isLoading, error, refetch } = useSubmittedVideos({
     currentPage,
     pageSize,
     searchTerm,
-  });
-
-  // ---------------------------------------------------------------------------
-  // MUTATIONS
-  // ---------------------------------------------------------------------------
-
-  const {
-    mutate: approveRestaurantStatus,
-  } = trpc.restaurant.approveRestaurantStatus.useMutation({
-    onSuccess: () => {
-      successToast("Video resubmitted successfully");
-    },
-    onError: (error) => {
-      errorToast(error.message);
-    }
   });
 
   // ---------------------------------------------------------------------------
@@ -85,34 +87,30 @@ const SubmittedVideos = ({
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
 
-  const handleOpenVideoPreview = useCallback((locationId: string, adminId: string): void => {
-    openVideoPreview([], locationId);
-  }, [openVideoPreview]);
+  const handleOpenVideoPreview = useCallback((locationId: string): void => {
+    setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
+  }, [setVideoPreview]);
 
   const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
     if (!isOpen) {
-      closeVideoPreview();
+      setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
       refetch();
     }
-  }, [closeVideoPreview, refetch]);
+  }, [setVideoPreview, refetch]);
 
-  const handleResubmitPost = useCallback((
-    locationId: string,
-    postId: string,
-  ) => {
-    resubmitVideo({ location: { id: locationId } } as SubmittedVideoTableTypes);
-    approveRestaurantStatus({
-      resourceId: postId,
-      locationId,
-      type: ApprovalType.POST,
-      status: ApprovalStatusEnum.PENDING
-    });
-  }, [resubmitVideo, approveRestaurantStatus]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleResubmitPost = useCallback((data: any): void => {
+    resubmitVideo(data);
+  }, [resubmitVideo]);
 
   const handleRowSelection = useCallback((selectedRows: SubmittedVideoTableTypes[]) => {
     const selectedIds = selectedRows.map(row => row.location?.id ?? "");
     setSelectedRows(selectedIds);
   }, [setSelectedRows]);
+
+  const closeConfirmationModal = useCallback(() => {
+    setConfirmationModal({ isOpen: false, restaurant: null });
+  }, [setConfirmationModal]);
 
   // ---------------------------------------------------------------------------
   // COMPUTED VALUES
@@ -124,7 +122,7 @@ const SubmittedVideos = ({
 
   const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
     const currentRestaurant = videos.find(({ location }) =>
-      location?.id === videoPreviewModal.currentRestaurantId
+      location?.id === videoPreview.currentRestaurantId
     );
 
     return currentRestaurant ? {
@@ -144,11 +142,11 @@ const SubmittedVideos = ({
       adminName: "",
       adminId: ""
     };
-  }, [videos, videoPreviewModal.currentRestaurantId]);
+  }, [videos, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(() =>
-    createSubmittedVideosColumns(handleOpenVideoPreview, handleOnRowClick),
-    [handleOpenVideoPreview, handleOnRowClick]
+    createSubmittedVideosColumns(handleOpenVideoPreview, handleOnRowClick, handleResubmitPost),
+    [handleOpenVideoPreview, handleOnRowClick, handleResubmitPost]
   );
 
   // ---------------------------------------------------------------------------
@@ -165,13 +163,21 @@ const SubmittedVideos = ({
 
   return (
     <>
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={closeConfirmationModal}
+        title="Resubmit video?"
+        description="Are you sure you want to resubmit this video?"
+        onConfirm={() => handleResubmitPost(confirmationModal.restaurant)}
+        confirmLabel="Resubmit video"
+        cancelLabel="Cancel"
+      />
       <TableVideoPreviewSheet
         table={AnalystTableTabsEnum.SUBMITTED_VIDEOS}
-        open={videoPreviewModal.isOpen}
+        open={videoPreview.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
-        posts={videoPreviewModal.posts}
+        posts={videoPreview.posts}
         restaurant={restaurant}
-        onResubmit={handleResubmitPost}
       />
 
       <RestaurantTable<SubmittedVideoTableTypes>

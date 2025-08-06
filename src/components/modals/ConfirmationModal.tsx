@@ -8,8 +8,8 @@ interface ConfirmationModalProps {
     onClose: () => void;
     title: string;
     description: string;
-    comment: string;
-    onCommentChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+    comment?: string;
+    onCommentChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
     onConfirm: () => void;
     confirmLabel?: string;
     cancelLabel?: string;
@@ -26,8 +26,8 @@ export const ConfirmationModal = ({
     onClose,
     title,
     description,
-    comment,
-    onCommentChange,
+    comment = "",
+    onCommentChange = () => { },
     onConfirm,
     confirmLabel = "Send feedback",
     cancelLabel = "Cancel",

@@ -3,7 +3,7 @@ import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 import { TableHeader } from "./utils";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
-import { TABLE_COLUMN_SIZES } from "@/constants/table";
+import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ExternalLink } from "@/components/ui/ExternalLink";
 import Logo from "@/assets/images/logo.png";
 

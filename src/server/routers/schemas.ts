@@ -42,7 +42,7 @@ export const createAdminSchema = z.object({
   password: z.string().min(1),
   phoneNumber: z.string().optional(),
   profileImage: z.string().optional(),
-  role: z.nativeEnum(AdminRoleEnum),
+  role: z.enum(AdminRoleEnum),
 });
 
 /**
@@ -87,7 +87,7 @@ export const fetchAdminsSchema = baseQuerySchema.extend({
 export const fetchAdminPostsSchema = baseQuerySchema.extend({
   userId: z.string().uuid().optional(),
   isVerified: z.boolean().optional(),
-  status: z.nativeEnum(ApprovalStatusEnum).optional(),
+  status: z.enum(ApprovalStatusEnum).optional(),
   locationId: z.string().uuid().optional(),
   adminId: z.string().uuid().optional(),
 });
@@ -104,7 +104,15 @@ export const fetchPostByIdSchema = z.object({
  * GET /admin-grouped-posts - FetchGroupedPostsRequest
  */
 export const fetchGroupedPostsSchema = baseQuerySchema.extend({
-  status: z.nativeEnum(ApprovalStatusEnum).optional(),
+  status: z.enum(ApprovalStatusEnum).optional(),
+});
+
+/**
+ * GET /admin-user-grouped-posts - FetchUserGroupedPostsRequest
+ */
+export const fetchUserGroupedPostsSchema = baseQuerySchema.extend({
+  adminId: z.string().uuid(),
+  status: z.enum(ApprovalStatusEnum).optional(),
 });
 
 /**
@@ -180,7 +188,7 @@ export const deletePostSchema = z.object({
  * Opening hours schema for LocationAvailabilityRequest
  */
 const locationAvailabilitySchema = z.object({
-  dayOfTheWeek: z.nativeEnum(DayOfTheWeek),
+  dayOfTheWeek: z.enum(DayOfTheWeek),
   opensAt: z.number().optional(),
   closesAt: z.number().optional(),
 });
@@ -213,7 +221,7 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   userId: z.string().optional(),
   adminId: z.string().optional(),
   tagId: z.string().optional(),
-  status: z.nativeEnum(ApprovalStatusEnum).optional(),
+  status: z.enum(ApprovalStatusEnum).optional(),
   isVerified: z.boolean().optional(),
 });
 
@@ -221,14 +229,8 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
  * GET /admin-analyst-locations - FetchAnalystLocationsRequest
  */
 export const fetchAnalystLocationsSchema = baseQuerySchema.extend({
-  lat: z.number().optional(),
-  lng: z.number().optional(),
-  radius: z.number().optional(),
-  userId: z.string().uuid().optional(),
   adminId: z.string().uuid().optional(),
-  tagId: z.string().optional(),
-  status: z.nativeEnum(ApprovalStatusEnum).optional(),
-  isVerified: z.boolean().optional(),
+  status: z.enum(ApprovalStatusEnum).optional(),
 });
 
 /**

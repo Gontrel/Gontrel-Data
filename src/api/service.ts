@@ -24,6 +24,7 @@ import {
   ApproveRestaurantStatusResponse,
   FetchGroupedPostsRequest,
   GetGroupedPostsResponse,
+  FetchUserGroupedPostsRequest,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -136,6 +137,7 @@ export default class APIRequest {
     }
   };
 
+  // getRestaurantById
   getRestaurantById = async (data: FetchLocationByIdRequest) => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
@@ -144,6 +146,16 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  // getAnalystRestaurants
+  getAnalystRestaurants = async (data: FetchAnalystLocationsRequest): Promise<GetRestaurantsResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-analyst-locations?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // updateRestaurant
   updateRestaurant = async (data: UpdateLocationRequest) => {
     const response = await this.authenticatedClient.put(
       `/admin-location/${data.locationId}`,
@@ -152,6 +164,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  // approveRestaurantStatus
   approveRestaurantStatus = async (data: ApproveRestaurantStatusRequest): Promise<ApproveRestaurantStatusResponse> => {
     const response = await this.authenticatedClient.put(
       `/admin-approve-location`,
@@ -160,6 +173,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  // bulkApproveRestaurantStatus
   bulkApproveRestaurantStatus = async (data: BulkApproveRestaurantStatusRequest): Promise<BulkApproveRestaurantStatusResponse> => {
     const response = await this.authenticatedClient.put(
       `/admin-bulk-approve-location`,
@@ -168,6 +182,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  // getAnalystLocations
   getAnalystLocations = async (data: FetchAnalystLocationsRequest) => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
@@ -225,6 +240,15 @@ export default class APIRequest {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-grouped-posts?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // getUserGroupedPosts
+  getUserGroupedPosts = async (data: FetchUserGroupedPostsRequest): Promise<GetGroupedPostsResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-user-grouped-posts?${params.toString()}`
     );
     return this.handleResponse(response);
   };
