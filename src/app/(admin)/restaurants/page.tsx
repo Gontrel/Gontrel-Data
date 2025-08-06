@@ -185,7 +185,7 @@ export default function RestaurantsPage() {
               menu:
                 typeof restaurantData?.menu === "string"
                   ? restaurantData?.menu
-                  : restaurantData?.menu?.content ?? "",
+                  : restaurantData?.menu?.content ?? "", 
               reservation: restaurantData.reservation?.content || "",
               rating: restaurantData.rating || 0,
             }}
