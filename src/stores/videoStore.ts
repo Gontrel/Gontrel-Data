@@ -35,11 +35,6 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
   tiktokUsername: null,
   currentlyPlayingVideoId: null,
   videoPlayerInstances: new Map<string, VideoPlayerInstance>(),
-  // addVideo: (video: Omit<VideoData, "id">) =>
-  //   set((state: VideoState) => ({
-  //     videos: [...state.videos, { ...video, id: Date.now().toString() }],
-  //   })),
-
   addVideo: (video: Omit<VideoData, "id">) => {
     const newVideo = {
       ...video,
