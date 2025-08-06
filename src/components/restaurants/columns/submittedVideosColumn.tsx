@@ -8,6 +8,7 @@ import { TableHeader } from "./utils";
 import Logo from "@/assets/images/logo.png";
 import { SubmittedVideoTableTypes } from "@/types/restaurant";
 import { ApprovalStatusEnum } from "@/types";
+import { ActionButtons } from "@/components/ui/ActionButtons";
 
 /**
  * Creates column definitions for submitted videos table
@@ -129,5 +130,27 @@ export const createSubmittedVideosColumns = (
         );
       },
       minSize: TABLE_COLUMN_SIZES.DATE_ADDED,
+    },
+    {
+      id: 'action',
+      header: () => (
+        <TableHeader title="Actions" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <ActionButtons
+            actions={[
+              {
+                label: 'Resubmit',
+                onClick: () => handleOpenResubmitModal(row.original),
+                variant: 'primary',
+                disabled: false,
+              },
+            ]}
+            className="w-42.5 h-12"
+          />
+        );
+      },
+      minSize: TABLE_COLUMN_SIZES.ACTIONS,
     },
   ];

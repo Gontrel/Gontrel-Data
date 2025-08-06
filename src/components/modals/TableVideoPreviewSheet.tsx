@@ -91,11 +91,22 @@ export const TableVideoPreviewSheet = ({ table, open, onOpenChange, posts = [], 
     });
   }
 
-  if (table === ManagerTableTabsEnum.PENDING_VIDEOS || table === AnalystTableTabsEnum.SUBMITTED_VIDEOS) {
+  if (table === ManagerTableTabsEnum.PENDING_VIDEOS) {
     const { data: queryData } = trpc.post.getPosts.useQuery({
       pageNumber: 1,
-      quantity: 100,
+      quantity: 50,
       status: ApprovalStatusEnum.PENDING,
+      locationId: restaurant.id,
+      adminId: restaurant.adminId,
+    });
+    posts = queryData?.data ?? [];
+  }
+
+  if (table === AnalystTableTabsEnum.SUBMITTED_VIDEOS) {
+    const { data: queryData } = trpc.post.getPosts.useQuery({
+      pageNumber: 1,
+      quantity: 50,
+      status: ApprovalStatusEnum.REJECTED,
       locationId: restaurant.id,
       adminId: restaurant.adminId,
     });
