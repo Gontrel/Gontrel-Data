@@ -509,6 +509,16 @@ export const useSubmittedRestaurantsStore = () => {
     setSelectedRows: (selectedRows: string[]) => store.setSelectedRows(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, selectedRows),
     clearSelection: () => store.clearSelection(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
     resetTable: () => store.resetTable(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
+    pendingChanges: store.getPendingChanges(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
+    videoPreviewModal: store.submittedRestaurants.videoPreviewModal,
+    openVideoPreview: (posts: Post[], restaurantId: string) =>
+      store.openVideoPreview(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, posts, restaurantId),
+    closeVideoPreview: () =>
+      store.closeVideoPreview(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
+    approveRestaurant: (table: AnalystTableTabsEnum, restaurantId: string, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts', postId?: string) =>
+      store.approveRestaurant(table as unknown as ManagerTableTabsEnum, restaurantId, propertyKey, postId),
+    declineRestaurant: (table: AnalystTableTabsEnum, restaurantId: string, propertyKey?: 'address' | 'menu' | 'reservation' | 'posts', postId?: string) =>
+      store.declineRestaurant(table as unknown as ManagerTableTabsEnum, restaurantId, propertyKey, postId),
   };
 };
 

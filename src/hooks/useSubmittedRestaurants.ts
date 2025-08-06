@@ -1,32 +1,30 @@
-import { useCallback } from 'react';
-import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
-import { ApprovalStatusEnum } from '@/types/enums';
-import { useSubmittedRestaurantsStore } from '@/stores/tableStore';
+import { useCallback } from "react";
+import { AnalystTableTabsEnum } from "@/types/enums";
+import { useSubmittedRestaurantsStore } from "@/stores/tableStore";
 
 /**
  * Type for keys of SubmittedRestaurantType that have a status property
  */
-export type SubmittedRestaurantStatusKey = {
-  [K in keyof SubmittedRestaurantTableTypes]: SubmittedRestaurantTableTypes[K] extends { status: ApprovalStatusEnum } ? K : never
-}[keyof SubmittedRestaurantTableTypes];
+export type SubmittedRestaurantStatusKey = "address" | "menu" | "reservation" | "posts";
 
 /**
  * Custom hook for managing submitted restaurants state and actions
  */
 export const useSubmittedRestaurants = () => {
-  // Use the new store for proper state management
-  const { resubmitRestaurant } = useSubmittedRestaurantsStore();
+  const { approveRestaurant, declineRestaurant } = useSubmittedRestaurantsStore();
 
-  const handleRowSelect = useCallback(() => {
-  }, []);
+  const handleApprove = useCallback((restaurantId: string, type?: SubmittedRestaurantStatusKey) => {
+    approveRestaurant(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, restaurantId, type);
+  }, [approveRestaurant]);
 
-  const handleResubmit = useCallback((restaurant: SubmittedRestaurantTableTypes) => {
-    // Trigger temporary state change
-    resubmitRestaurant(restaurant);
-  }, [resubmitRestaurant]);
+  const handleDecline = useCallback((restaurantId: string, type?: SubmittedRestaurantStatusKey) => {
+    declineRestaurant(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, restaurantId, type);
+  }, [declineRestaurant]);
 
   return {
-    handleRowSelect,
-    handleResubmit
+    handleApprove,
+    handleDecline,
+    approveRestaurant,
+    declineRestaurant,
   };
 };

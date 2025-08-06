@@ -1,21 +1,39 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
-import { Check, X } from 'lucide-react';
-import { ActionButtons } from '../../ui/ActionButtons';
-import { ExternalLink } from '../../ui/ExternalLink';
-import { formatDate } from '@/lib/utils';
+import { ColumnDef } from "@tanstack/react-table";
+import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
+import { SubmittedRestaurantStatusKey } from "@/hooks/useSubmittedRestaurants";
+import { Check, X } from "lucide-react";
+import { ActionButtons } from "../../ui/ActionButtons";
+import { ExternalLink } from "../../ui/ExternalLink";
+import Image from "next/image";
+import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ApprovalStatusEnum } from "@/types/enums";
-import { getBgColor, getTextColor } from '@/lib/tableUtils';
-import { PillButton } from '@/components/ui/PillButton';
-import { TableHeader } from './utils';
+import { getBgColor, getTextColor } from "@/lib/tableUtils";
+import { PillButton } from "@/components/ui/PillButton";
+import { TableHeader } from "./utils";
+import Logo from "@/assets/images/logo.png";
+import { Post } from "@/interfaces";
 
 /**
  * Creates column definitions for submitted restaurants table
- * @param handleResubmit - Handler for resubmit action
+ * @param openVideoPreview - Handler for open video preview action
+ * @param handleApprove - Handler for approve action
+ * @param handleDecline - Handler for decline action
+ * @param handleSendFeedback - Handler for send feedback action
+ * @param handleSave - Handler for save action
  */
 export const createSubmittedRestaurantsColumns = (
-  handleResubmit: (restaurant: SubmittedRestaurantTableTypes) => void
+  openVideoPreview: (posts: Post[], restaurantId: string) => void,
+  handleApprove: (
+    restaurantId: string,
+    statusKey?: SubmittedRestaurantStatusKey
+  ) => void,
+  handleDecline: (
+    restaurantId: string,
+    statusKey?: SubmittedRestaurantStatusKey
+  ) => void,
+  handleSendFeedback: (restaurant: SubmittedRestaurantTableTypes) => void,
+  handleSaveRestaurant: (restaurant: SubmittedRestaurantTableTypes) => void
 ): ColumnDef<SubmittedRestaurantTableTypes>[] => [
     {
       accessorKey: 'id',

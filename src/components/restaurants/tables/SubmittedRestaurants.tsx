@@ -1,9 +1,28 @@
-import React, { useMemo, useEffect } from 'react';
-import { RestaurantTable } from '../RestaurantTable';
-import { useSubmittedRestaurants } from '@/hooks/useSubmittedRestaurants';
-import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
-import { createSubmittedRestaurantsColumns } from '../columns/submittedRestaurantsColumns';
-import { useSubmittedRestaurantsStore } from '@/stores/tableStore';
+
+import React, { useCallback, useMemo, useState } from "react";
+
+// External dependencies
+import { RestaurantTable } from "../RestaurantTable";
+import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+import { createSubmittedRestaurantsColumns } from "../columns/submittedRestaurantsColumns";
+
+// Store and API
+import { useSubmittedRestaurants } from "@/hooks/useSubmittedRestaurants";
+import { useSubmittedRestaurantsStore } from "@/stores/tableStore";
+import { trpc } from "@/lib/trpc-client";
+
+// Types and enums
+import { ApprovalStatusEnum, ApprovalType, AnalystTableTabsEnum } from "@/types";
+import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
+import { GontrelRestaurantDetailedData } from "@/interfaces/restaurants";
+
+// Utils
+import { errorToast, successToast } from "@/utils/toast";
+
+// =============================================================================
+// TYPES & INTERFACES
+// =============================================================================
 
 interface SubmittedRestaurantsProps {
     searchTerm: string;
@@ -13,90 +32,344 @@ interface SubmittedRestaurantsProps {
     handlePageSize: (pageSize: number) => void;
 }
 
+interface FeedbackModalState {
+    isOpen: boolean;
+    restaurant: SubmittedRestaurantTableTypes | null;
+    comment: string;
+}
+
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
 /**
  * Component for displaying and managing submitted restaurants
  */
 const SubmittedRestaurants = ({
+    searchTerm,
+    currentPage,
     handleCurrentPage,
-    handlePageSize
+    pageSize,
+    handlePageSize,
 }: SubmittedRestaurantsProps) => {
+    // ---------------------------------------------------------------------------
+    // HOOKS & STATE
+    // ---------------------------------------------------------------------------
+
     const {
-        handleResubmit
+        handleApprove,
+        handleDecline,
     } = useSubmittedRestaurants();
 
     const {
-        data,
-        loading,
-        error,
-        pagination,
-        hasUnsavedChanges,
-        saveLoading,
-        saveChanges,
-        discardChanges,
         setSelectedRows,
+        pendingChanges,
+        videoPreviewModal,
+        openVideoPreview,
+        closeVideoPreview,
+        approveRestaurant,
+        declineRestaurant,
     } = useSubmittedRestaurantsStore();
 
-    // Create columns with proper dependencies
-    const columns = useMemo(
-        () => createSubmittedRestaurantsColumns(
-            handleResubmit
-        ),
-        [handleResubmit]
-    );
+    const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
+        isOpen: false,
+        restaurant: null,
+        comment: "",
+    });
 
+    // ---------------------------------------------------------------------------
+    // DATA FETCHING
+    // ---------------------------------------------------------------------------
 
-    // Handle errors
-    useEffect(() => {
-        if (error) {
-            console.error('Submitted restaurants error:', error);
+    const {
+        data: queryData,
+        isLoading,
+        error,
+        refetch,
+    } = trpc.restaurant.getRestaurants.useQuery({
+        pageNumber: currentPage,
+        quantity: pageSize,
+        status: ApprovalStatusEnum.PENDING,
+        query: searchTerm,
+    });
+
+    // ---------------------------------------------------------------------------
+    // MUTATIONS
+    // ---------------------------------------------------------------------------
+
+    const {
+        mutate: bulkApproveRestaurantStatus,
+    } = trpc.restaurant.bulkApproveRestaurantStatus.useMutation({
+        onSuccess: () => {
+            successToast("Restaurant status updated successfully");
+            refetch();
+        },
+        onError: (error) => {
+            errorToast(error.message);
         }
-    }, [error]);
+    });
 
-    // Handle save/discard actions
-    const handleSave = async () => {
-        await saveChanges();
-    };
+    const {
+        mutate: approveRestaurantStatus,
+    } = trpc.restaurant.approveRestaurantStatus.useMutation({
+        onSuccess: () => {
+            successToast("Restaurant status updated successfully");
+            refetch();
+        },
+        onError: (error) => {
+            errorToast(error.message);
+        }
+    });
 
-    const handleDiscard = () => {
-        discardChanges();
-    };
+    // ---------------------------------------------------------------------------
+    // EVENT HANDLERS
+    // ---------------------------------------------------------------------------
 
-    // Handle row selection - extract IDs from selected rows
-    const handleRowSelection = (selectedRows: SubmittedRestaurantTableTypes[]) => {
+    const handleApprovePost = useCallback((
+        locationId: string,
+        postId: string,
+    ) => {
+        approveRestaurant(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, locationId, "posts", postId);
+        approveRestaurantStatus({
+            resourceId: postId,
+            locationId,
+            type: ApprovalType.POST,
+            status: ApprovalStatusEnum.APPROVED
+        });
+        refetch();
+    }, [approveRestaurant, approveRestaurantStatus, refetch]);
+
+    const handleDeclinePost = useCallback((
+        locationId: string,
+        postId: string,
+        comment: string,
+    ) => {
+        declineRestaurant(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, locationId, "posts", postId);
+        approveRestaurantStatus({
+            resourceId: postId,
+            locationId,
+            type: ApprovalType.POST,
+            status: ApprovalStatusEnum.REJECTED,
+            comment
+        });
+        refetch();
+    }, [declineRestaurant, approveRestaurantStatus, refetch]);
+
+    const handleSaveRestaurant = useCallback((restaurant: SubmittedRestaurantTableTypes, comment?: string) => {
+        bulkApproveRestaurantStatus({
+            locationId: restaurant.id,
+            comment: comment || undefined,
+            data: [
+                {
+                    type: ApprovalType.ADDRESS,
+                    status: restaurant.address.status as ApprovalStatusEnum,
+                },
+                {
+                    type: ApprovalType.MENU,
+                    status: restaurant.menu.status as ApprovalStatusEnum,
+                },
+                {
+                    type: ApprovalType.RESERVATION,
+                    status: restaurant.reservation.status as ApprovalStatusEnum,
+                }
+            ]
+        });
+    }, [bulkApproveRestaurantStatus]);
+
+    const openFeedbackModal = useCallback((restaurant: SubmittedRestaurantTableTypes) => {
+        setFeedbackModal({
+            isOpen: true,
+            restaurant,
+            comment: "",
+        });
+    }, []);
+
+    const closeFeedbackModal = useCallback(() => {
+        setFeedbackModal({
+            isOpen: false,
+            restaurant: null,
+            comment: "",
+        });
+    }, []);
+
+    const handleCommentChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setFeedbackModal(prev => ({
+            ...prev,
+            comment: event.target.value,
+        }));
+    }, []);
+
+    const handleSubmitFeedback = useCallback(() => {
+        if (!feedbackModal.restaurant) return;
+        const { comment, restaurant } = feedbackModal;
+
+        bulkApproveRestaurantStatus({
+            locationId: restaurant.id,
+            comment,
+            data: [
+                {
+                    type: ApprovalType.ADDRESS,
+                    status: restaurant.address.status as ApprovalStatusEnum,
+                },
+                {
+                    type: ApprovalType.MENU,
+                    status: restaurant.menu.status as ApprovalStatusEnum,
+                },
+                {
+                    type: ApprovalType.RESERVATION,
+                    status: restaurant.reservation.status as ApprovalStatusEnum,
+                }
+            ]
+        });
+        closeFeedbackModal();
+    }, [feedbackModal, closeFeedbackModal, bulkApproveRestaurantStatus]);
+
+    const handleSendFeedback = useCallback((restaurant: SubmittedRestaurantTableTypes) => {
+        openFeedbackModal(restaurant);
+    }, [openFeedbackModal]);
+
+    const handleRowSelection = useCallback((selectedRows: SubmittedRestaurantTableTypes[]) => {
         const selectedIds = selectedRows.map(row => row.id);
         setSelectedRows(selectedIds);
+    }, [setSelectedRows]);
+
+    const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
+        if (!isOpen) {
+            closeVideoPreview();
+            refetch();
+        }
+    }, [closeVideoPreview, refetch]);
+
+    // ---------------------------------------------------------------------------
+    // COMPUTED VALUES
+    // ---------------------------------------------------------------------------
+
+    const paginationData = queryData?.pagination;
+    const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+
+    const restaurants = useMemo(() => {
+        const baseRestaurants = queryData?.data || [];
+        return baseRestaurants.map(restaurant => {
+            // Create a copy of the restaurant with potential updates
+            const updatedRestaurant = { ...restaurant };
+
+            // Check for property-level changes (address, menu, reservation)
+            const propertyKeys: (keyof Pick<SubmittedRestaurantTableTypes, "address" | "menu" | "reservation">)[] = ["address", "menu", "reservation"];
+
+            propertyKeys.forEach(propertyKey => {
+                const changeKey = `${restaurant.id}-${propertyKey}`;
+                const pendingChange = pendingChanges.get(changeKey);
+                if (pendingChange && propertyKey in updatedRestaurant) {
+                    const property = updatedRestaurant[propertyKey] as { status: ApprovalStatusEnum };
+                    property.status = pendingChange.newStatus;
+                }
+            });
+
+            // Check for post-level changes
+            updatedRestaurant.posts = updatedRestaurant.posts.map(post => {
+                const postChangeKey = `${restaurant.id}-post-${post.id}`;
+                const postPendingChange = pendingChanges.get(postChangeKey);
+                if (postPendingChange) {
+                    return {
+                        ...post,
+                        status: postPendingChange.newStatus
+                    };
+                }
+                return post;
+            });
+
+            // Check for bulk posts changes
+            const postsChangeKey = `${restaurant.id}-posts`;
+            const postsPendingChange = pendingChanges.get(postsChangeKey);
+            if (postsPendingChange) {
+                updatedRestaurant.posts = updatedRestaurant.posts.map(post => ({
+                    ...post,
+                    status: postsPendingChange.newStatus
+                }));
+            }
+
+            return updatedRestaurant;
+        });
+    }, [queryData?.data, pendingChanges]);
+
+    const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
+        const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreviewModal.currentRestaurantId);
+        return currentRestaurant ? {
+            id: currentRestaurant.id,
+            name: currentRestaurant.name,
+            menu: currentRestaurant.menu?.content || "",
+            reservation: currentRestaurant.reservation?.content || "",
+            rating: currentRestaurant.rating,
+            adminName: currentRestaurant.admin.name,
+            adminId: currentRestaurant.admin.id
+        } : {
+            id: "",
+            name: "",
+            menu: "",
+            reservation: "",
+            rating: 0,
+            adminName: "",
+            adminId: ""
     };
+    }, [restaurants, videoPreviewModal.currentRestaurantId]);
+
+    const columns = useMemo(
+        () =>
+            createSubmittedRestaurantsColumns(
+                openVideoPreview,
+                handleApprove,
+                handleDecline,
+                handleSendFeedback,
+                handleSaveRestaurant,
+            ),
+        [handleApprove, handleDecline, handleSaveRestaurant, handleSendFeedback, openVideoPreview]
+    );
+
+    // ---------------------------------------------------------------------------
+    // ERROR HANDLING
+    // ---------------------------------------------------------------------------
+
+    if (error) {
+        console.error("Submitted restaurants error:", error.message);
+    }
+
+    // ---------------------------------------------------------------------------
+    // RENDER
+    // ---------------------------------------------------------------------------
 
     return (
         <div>
-            {/* Save/Discard buttons */}
-            {hasUnsavedChanges && (
-                <div className="flex gap-2 mb-4">
-                    <button
-                        onClick={handleSave}
-                        disabled={saveLoading}
-                        className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-                    >
-                        {saveLoading ? 'Saving...' : 'Save Changes'}
-                    </button>
-                    <button
-                        onClick={handleDiscard}
-                        className="px-4 py-2 bg-gray-600 text-white rounded"
-                    >
-                        Discard Changes
-                    </button>
-                </div>
-            )}
+            <ConfirmationModal
+                isOpen={feedbackModal.isOpen}
+                onClose={closeFeedbackModal}
+                title="Send feedback"
+                description="Drop a comment for the analyst that<br />submitted this restaurant"
+                comment={feedbackModal.comment}
+                onCommentChange={handleCommentChange}
+                onConfirm={handleSubmitFeedback}
+                confirmLabel="Send feedback"
+                cancelLabel="Cancel"
+            />
+
+            <TableVideoPreviewSheet
+                table={AnalystTableTabsEnum.SUBMITTED_RESTAURANTS}
+                open={videoPreviewModal.isOpen}
+                onOpenChange={handleVideoPreviewOpenChange}
+                posts={videoPreviewModal.posts}
+                restaurant={restaurant}
+                onApprove={handleApprovePost}
+                onDecline={handleDeclinePost}
+            />
 
             <RestaurantTable<SubmittedRestaurantTableTypes>
-                restaurants={data}
-                loading={loading}
+                restaurants={restaurants}
+                loading={isLoading}
                 onRowSelect={handleRowSelection}
                 showSelection={true}
                 columns={columns}
-                currentPage={pagination.currentPage}
-                pageSize={pagination.pageSize}
-                totalPages={pagination.totalPages}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                totalPages={totalPages}
                 onPageSizeChange={handlePageSize}
                 onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
             />
