@@ -32,7 +32,7 @@ export const GontrelPostView = ({
   height = "h-[564px]",
   borderRadius = "rounded-[15px]",
   autoPlay = false,
-  muted = true,
+  muted = false,
   loop = true,
   className = "",
   onPlay,

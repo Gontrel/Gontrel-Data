@@ -88,6 +88,8 @@ export const fetchAdminPostsSchema = baseQuerySchema.extend({
   userId: z.string().uuid().optional(),
   isVerified: z.boolean().optional(),
   status: z.nativeEnum(ApprovalStatusEnum).optional(),
+  locationId: z.string().uuid().optional(),
+  adminId: z.string().uuid().optional(),
 });
 
 /**

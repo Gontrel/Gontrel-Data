@@ -31,7 +31,6 @@ export const VideoPlayer = ({
   const internalRef = useRef<HTMLVideoElement>(null);
   const videoRef = externalRef || internalRef;
   const [isLoading, setIsLoading] = useState(true);
-  const [isMuted, setIsMuted] = useState(muted || autoPlay);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
 
   const { registerVideoPlayer, unregisterVideoPlayer, playVideo } = useVideoStore();
@@ -40,8 +39,12 @@ export const VideoPlayer = ({
   useEffect(() => {
     const pauseVideo = () => {
       if (videoRef.current) {
-        videoRef.current.pause();
-        setIsPlaying(false);
+        try {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        } catch (error) {
+          console.error('Error pausing video:', error);
+        }
       }
     };
 
@@ -99,6 +102,20 @@ export const VideoPlayer = ({
     };
   }, [videoRef]);
 
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    const video = e.currentTarget;
+    const error = video.error;
+
+    console.error('Video error:', error);
+    try {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    } catch (cleanupError) {
+      console.warn('Error during video cleanup after error:', cleanupError);
+    }
+  }
+
   return (
     <div className={`relative aspect-video bg-transparent $`}>
       {/* Video Element */}
@@ -108,7 +125,7 @@ export const VideoPlayer = ({
         poster={poster}
         autoPlay={autoPlay}
         playsInline
-        muted={isMuted}
+        muted={muted}
         onCanPlay={() => {
           setIsLoading(false);
           if (autoPlay && videoRef.current) {
@@ -127,6 +144,7 @@ export const VideoPlayer = ({
           onPause?.();
         }}
         onEnded={() => setIsPlaying(false)}
+        onError={handleVideoError}
         preload="metadata"
         loop={loop}
       >
@@ -144,7 +162,6 @@ export const VideoPlayer = ({
           <button
             onClick={() => {
               videoRef.current?.play();
-              setIsMuted(false);
             }}
             title="Play video"
             className="bg-black/30 hover:bg-black/50 transition rounded-full p-4"

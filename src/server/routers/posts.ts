@@ -65,8 +65,8 @@ export const postRouter = router({
 
   getPostById: protectedProcedure
     .input(fetchPostByIdSchema)
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getPostById(input);
         return response;
@@ -81,8 +81,8 @@ export const postRouter = router({
 
   getGroupedPosts: protectedProcedure
     .input(fetchGroupedPostsSchema)
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getGroupedPosts(input);
         return response;
@@ -97,8 +97,8 @@ export const postRouter = router({
 
   updatePost: protectedProcedure
     .input(updatePostSchema)
-    .mutation(async ({ input }) => {
-      const apiRequest = new APIRequest();
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.updatePost(input);
         return response;

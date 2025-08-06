@@ -9,6 +9,7 @@ import { ApprovalStatusEnum } from "@/types/enums";
 import { useActiveRestaurantsStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
 import { useRouter } from "next/navigation";
+import { useActiveRestaurants } from "@/hooks/useActiveRestaurants";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -33,16 +34,10 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
     setSelectedRows,
   } = useActiveRestaurantsStore();
 
-  // Use tRPC to fetch data directly
-  const {
-    data: queryData,
-    isLoading,
-    error,
-  } = trpc.restaurant.getRestaurants.useQuery({
-    pageNumber: currentPage,
-    quantity: pageSize,
-    status: ApprovalStatusEnum.APPROVED,
-    query: searchTerm,
+  const { data: queryData, isLoading, isError, error } = useActiveRestaurants({
+    page: currentPage,
+    limit: pageSize,
+    search: searchTerm,
   });
 
   // Extract data from tRPC response
@@ -51,8 +46,8 @@ const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
   // Handle errors (removed from useEffect to prevent loops)
-  if (error) {
-    console.error('Active restaurants error:', error.message);
+  if (isError) {
+    console.error('Active restaurants error:', error?.message);
   }
 
   const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantTableTypes): void => {

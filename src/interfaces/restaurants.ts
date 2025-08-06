@@ -146,3 +146,9 @@ export interface GontrelRestaurantData {
   reservation: string;
   rating: number;
 }
+
+export interface GontrelRestaurantDetailedData extends GontrelRestaurantData {
+  id: string;
+  adminName: string;
+  adminId: string;
+}

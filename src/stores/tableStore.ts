@@ -311,7 +311,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
     const currentState = store.submittedVideos;
     const newPendingChanges = new Map(currentState.pendingChanges);
 
-    newPendingChanges.set(video.id, {
+    newPendingChanges.set(video.location.id, {
       newStatus: ApprovalStatusEnum.PENDING,
     });
 
@@ -522,6 +522,10 @@ export const useSubmittedVideosStore = () => {
     saveChanges: () => store.saveChanges(AnalystTableTabsEnum.SUBMITTED_VIDEOS),
     discardChanges: () => store.discardChanges(AnalystTableTabsEnum.SUBMITTED_VIDEOS),
     getPendingChanges: () => store.getPendingChanges(AnalystTableTabsEnum.SUBMITTED_VIDEOS),
+    openVideoPreview: (posts: Post[], restaurantId: string) =>
+      store.openVideoPreview(AnalystTableTabsEnum.SUBMITTED_VIDEOS, posts, restaurantId),
+    closeVideoPreview: () =>
+      store.closeVideoPreview(AnalystTableTabsEnum.SUBMITTED_VIDEOS),
     setData: (data: SubmittedVideoTableTypes[]) => store.setData(AnalystTableTabsEnum.SUBMITTED_VIDEOS, data),
     setLoading: (loading: boolean) => store.setLoading(AnalystTableTabsEnum.SUBMITTED_VIDEOS, loading),
     setError: (error: string | null) => store.setError(AnalystTableTabsEnum.SUBMITTED_VIDEOS, error),

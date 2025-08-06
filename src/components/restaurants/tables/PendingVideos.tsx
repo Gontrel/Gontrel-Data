@@ -1,16 +1,27 @@
 import React, { useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+
+// External dependencies
 import { RestaurantTable } from "../RestaurantTable";
-import { PendingVideoTableTypes } from "@/types/restaurant";
-import { ApprovalStatusEnum, ApprovalType
- } from "@/types";
+import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
 
+// Store and API
 import { usePendingVideosStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
-import { useRouter } from "next/navigation";
-import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
-import { GontrelRestaurantData } from "@/interfaces";
+
+// Types and enums
+import { PendingVideoTableTypes } from "@/types/restaurant";
+import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
+import { GontrelRestaurantDetailedData } from "@/interfaces";
+
+// Utils
 import { errorToast, successToast } from "@/utils/toast";
+import { usePendingVideos } from "@/hooks/usePendingVideos";
+
+// =============================================================================
+// TYPES & INTERFACES
+// =============================================================================
 
 interface PendingVideosProps {
   searchTerm: string;
@@ -20,6 +31,10 @@ interface PendingVideosProps {
   handlePageSize: (pageSize: number) => void;
 }
 
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
 const PendingVideos = ({
   searchTerm,
   currentPage,
@@ -27,6 +42,10 @@ const PendingVideos = ({
   handleCurrentPage,
   handlePageSize,
 }: PendingVideosProps) => {
+  // ---------------------------------------------------------------------------
+  // HOOKS & STATE
+  // ---------------------------------------------------------------------------
+
   const router = useRouter();
   const {
     setSelectedRows,
@@ -37,75 +56,53 @@ const PendingVideos = ({
     closeVideoPreview,
   } = usePendingVideosStore();
 
-  // Use tRPC to fetch data directly
-  const {
-    data: queryData,
-    isLoading,
-    error,
-    refetch
-  } = trpc.post.getPosts.useQuery({
-    pageNumber: currentPage,
-    quantity: pageSize,
-    status: ApprovalStatusEnum.PENDING,
-    query: searchTerm,
+  const { queryData, isLoading, error, refetch } = usePendingVideos({
+    currentPage,
+    pageSize,
+    searchTerm,
   });
 
-  // Extract data from tRPC response
-  const videos = useMemo(() => queryData?.data || [], [queryData]);
-  const paginationData = queryData?.pagination;
-  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
-
-  // Handle errors (removed from useEffect to prevent loops)
-  if (error) {
-    console.error('Pending videos error:', error.message);
-  }
-
-  const handleVideoPreviewOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      closeVideoPreview();
-      refetch();
-    }
-  };
-
-  const restaurant: GontrelRestaurantData & { id: string, adminName: string } = useMemo(() => {
-    const currentRestaurant = videos.find(({ location }) => location?.id === videoPreviewModal.currentRestaurantId);
-    return currentRestaurant ? {
-      id: currentRestaurant.location?.id ?? "",
-      name: currentRestaurant.location?.name ?? "",
-      menu: currentRestaurant.location?.menu?.content || "",
-      reservation: currentRestaurant.location?.reservation?.content || "",
-      rating: currentRestaurant.location?.rating ?? 0,
-      adminName: currentRestaurant.admin.name
-    } : {
-      id: "",
-      name: "",
-      menu: "",
-      reservation: "",
-      rating: 0,
-      adminName: ""
-    };
-  }, [videos, videoPreviewModal.currentRestaurantId]);
-  const handleOnRowClick = useCallback((selectedRows: PendingVideoTableTypes): void => {
-    const restaurantId = selectedRows.location?.id ?? "";
-    router.push(`/restaurants/${restaurantId}`);
-  }, [router]);
+  // ---------------------------------------------------------------------------
+  // MUTATIONS
+  // ---------------------------------------------------------------------------
 
   const {
     mutate: approveRestaurantStatus,
   } = trpc.restaurant.approveRestaurantStatus.useMutation({
     onSuccess: () => {
-      successToast('Restaurant status updated successfully');
+      successToast("Restaurant status updated successfully");
     },
     onError: (error) => {
       errorToast(error.message);
     }
   });
 
+  // ---------------------------------------------------------------------------
+  // EVENT HANDLERS
+  // ---------------------------------------------------------------------------
+
+  const handleOnRowClick = useCallback((selectedRows: PendingVideoTableTypes): void => {
+    const restaurantId = selectedRows.location?.id ?? "";
+    router.push(`/restaurants/${restaurantId}`);
+  }, [router]);
+
+  const handleOpenVideoPreview = useCallback((locationId: string, adminId: string): void => {
+
+    openVideoPreview([], locationId);
+  }, [openVideoPreview]);
+
+  const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
+    if (!isOpen) {
+      closeVideoPreview();
+      refetch();
+    }
+  }, [closeVideoPreview, refetch]);
+
   const handleApprovePost = useCallback((
     locationId: string,
     postId: string,
-    ) => {
-      approveVideo(postId);
+  ) => {
+    approveVideo(postId);
     approveRestaurantStatus({
       resourceId: postId,
       locationId,
@@ -127,18 +124,64 @@ const PendingVideos = ({
     });
   }, [declineVideo, approveRestaurantStatus]);
 
-  // Handle row selection - extract IDs from selected rows
-  const handleRowSelection = (selectedRows: PendingVideoTableTypes[]) => {
-    const selectedIds = selectedRows.map(row => row.id);
+  const handleRowSelection = useCallback((selectedRows: PendingVideoTableTypes[]) => {
+    const selectedIds = selectedRows.map(row => row.location?.id ?? "");
     setSelectedRows(selectedIds);
-  };
+  }, [setSelectedRows]);
 
-  // Create columns with proper dependencies
-  const columns = useMemo(() => createPendingVideosColumns(openVideoPreview, handleOnRowClick), [openVideoPreview, handleOnRowClick]);
+  // ---------------------------------------------------------------------------
+  // COMPUTED VALUES
+  // ---------------------------------------------------------------------------
+
+  const videos = useMemo(() => queryData?.data || [], [queryData]);
+  const paginationData = queryData?.pagination;
+  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+
+  const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
+    const currentRestaurant = videos.find(({ location }) =>
+      location?.id === videoPreviewModal.currentRestaurantId
+    );
+
+    return currentRestaurant ? {
+      id: currentRestaurant.location?.id ?? "",
+      name: currentRestaurant.location?.name ?? "",
+      menu: currentRestaurant.location?.menu?.content || "",
+      reservation: currentRestaurant.location?.reservation?.content || "",
+      rating: currentRestaurant.location?.rating ?? 0,
+      adminName: currentRestaurant.admin.name,
+      adminId: currentRestaurant.admin.id
+    } : {
+      id: "",
+      name: "",
+      menu: "",
+      reservation: "",
+      rating: 0,
+      adminName: "",
+      adminId: ""
+    };
+  }, [videos, videoPreviewModal.currentRestaurantId]);
+
+  const columns = useMemo(() =>
+    createPendingVideosColumns(handleOpenVideoPreview, handleOnRowClick),
+    [handleOpenVideoPreview, handleOnRowClick]
+  );
+
+  // ---------------------------------------------------------------------------
+  // ERROR HANDLING
+  // ---------------------------------------------------------------------------
+
+  if (error) {
+    console.error("Pending videos error:", error.message);
+  }
+
+  // ---------------------------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------------------------
 
   return (
-    <div>
+    <>
       <TableVideoPreviewSheet
+        table={ManagerTableTabsEnum.PENDING_VIDEOS}
         open={videoPreviewModal.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
         posts={videoPreviewModal.posts}
@@ -146,6 +189,7 @@ const PendingVideos = ({
         onApprove={handleApprovePost}
         onDecline={handleDeclinePost}
       />
+
       <RestaurantTable<PendingVideoTableTypes>
         restaurants={videos}
         loading={isLoading}
@@ -158,7 +202,7 @@ const PendingVideos = ({
         onPageSizeChange={handlePageSize}
         onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
       />
-    </div>
+    </>
   );
 };
 

@@ -92,11 +92,16 @@ export const createActiveRestaurantsColumns = (
         <TableHeader iconName="linkIcon" title="Website" />
       ),
       cell: ({ row }) => {
-        const url = row.getValue('website') as string;
+        const url = row.original.website ?? "";
+        console.log('website:', url);
         return (
+          url.length > 0 ? (
           <ExternalLink href={url} title={url}>
             <span className="text-black">View website</span>
           </ExternalLink>
+          ) : (
+            <span className="text-black">N/A</span>
+          )
         );
       },
       minSize: TABLE_COLUMN_SIZES.WEBSITE,

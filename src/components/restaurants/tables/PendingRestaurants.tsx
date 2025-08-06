@@ -1,16 +1,28 @@
 
 import React, { useCallback, useMemo, useState } from "react";
+
+// External dependencies
 import { RestaurantTable } from "../RestaurantTable";
-import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
+import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
-import { PendingRestaurantTableTypes } from "@/types/restaurant";
+
+// Store and API
 import { usePendingRestaurants } from "@/hooks/usePendingRestaurants";
 import { usePendingRestaurantsStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
-import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
+
+// Types and enums
+import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
+import { PendingRestaurantTableTypes } from "@/types/restaurant";
+import { GontrelRestaurantDetailedData } from "@/interfaces/restaurants";
+
+// Utils
 import { errorToast, successToast } from "@/utils/toast";
-import { GontrelRestaurantData } from "@/interfaces/restaurants";
-import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+
+// =============================================================================
+// TYPES & INTERFACES
+// =============================================================================
 
 interface PendingRestaurantsProps {
   searchTerm: string;
@@ -26,6 +38,10 @@ interface FeedbackModalState {
   comment: string;
 }
 
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
 /**
  * Component for displaying and managing pending restaurants
  */
@@ -36,6 +52,10 @@ const PendingRestaurants = ({
   pageSize,
   handlePageSize,
 }: PendingRestaurantsProps) => {
+  // ---------------------------------------------------------------------------
+  // HOOKS & STATE
+  // ---------------------------------------------------------------------------
+
   const {
     handleApprove,
     handleDecline,
@@ -51,14 +71,16 @@ const PendingRestaurants = ({
     declineRestaurant,
   } = usePendingRestaurantsStore();
 
-  // Feedback modal state
   const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
     isOpen: false,
     restaurant: null,
     comment: "",
   });
 
-  // Use tRPC to fetch data directly
+  // ---------------------------------------------------------------------------
+  // DATA FETCHING
+  // ---------------------------------------------------------------------------
+
   const {
     data: queryData,
     isLoading,
@@ -71,15 +93,15 @@ const PendingRestaurants = ({
     query: searchTerm,
   });
 
-  // Extract data from tRPC response and merge with pending changes
-  const paginationData = queryData?.pagination;
-  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+  // ---------------------------------------------------------------------------
+  // MUTATIONS
+  // ---------------------------------------------------------------------------
 
   const {
     mutate: bulkApproveRestaurantStatus,
   } = trpc.restaurant.bulkApproveRestaurantStatus.useMutation({
     onSuccess: () => {
-      successToast('Restaurant status updated successfully');
+      successToast("Restaurant status updated successfully");
       refetch();
     },
     onError: (error) => {
@@ -91,13 +113,17 @@ const PendingRestaurants = ({
     mutate: approveRestaurantStatus,
   } = trpc.restaurant.approveRestaurantStatus.useMutation({
     onSuccess: () => {
-      successToast('Restaurant status updated successfully');
+      successToast("Restaurant status updated successfully");
       refetch();
     },
     onError: (error) => {
       errorToast(error.message);
     }
   });
+
+  // ---------------------------------------------------------------------------
+  // EVENT HANDLERS
+  // ---------------------------------------------------------------------------
 
   const handleApprovePost = useCallback((
     locationId: string,
@@ -150,7 +176,6 @@ const PendingRestaurants = ({
     });
   }, [bulkApproveRestaurantStatus]);
 
-
   const openFeedbackModal = useCallback((restaurant: PendingRestaurantTableTypes) => {
     setFeedbackModal({
       isOpen: true,
@@ -159,9 +184,6 @@ const PendingRestaurants = ({
     });
   }, []);
 
-  /**
-   * Closes the feedback modal and resets state
-   */
   const closeFeedbackModal = useCallback(() => {
     setFeedbackModal({
       isOpen: false,
@@ -202,15 +224,29 @@ const PendingRestaurants = ({
     closeFeedbackModal();
   }, [feedbackModal, closeFeedbackModal, bulkApproveRestaurantStatus]);
 
-  /**
-   * Opens the feedback modal for a restaurant
-   * @param restaurant - The restaurant to send feedback for
-   */
   const handleSendFeedback = useCallback((restaurant: PendingRestaurantTableTypes) => {
     openFeedbackModal(restaurant);
   }, [openFeedbackModal]);
 
-  // Merge pending changes with fetched data for visual updates
+  const handleRowSelection = useCallback((selectedRows: PendingRestaurantTableTypes[]) => {
+    const selectedIds = selectedRows.map(row => row.id);
+    setSelectedRows(selectedIds);
+  }, [setSelectedRows]);
+
+  const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
+    if (!isOpen) {
+      closeVideoPreview();
+      refetch();
+    }
+  }, [closeVideoPreview, refetch]);
+
+  // ---------------------------------------------------------------------------
+  // COMPUTED VALUES
+  // ---------------------------------------------------------------------------
+
+  const paginationData = queryData?.pagination;
+  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+
   const restaurants = useMemo(() => {
     const baseRestaurants = queryData?.data || [];
     return baseRestaurants.map(restaurant => {
@@ -218,7 +254,7 @@ const PendingRestaurants = ({
       const updatedRestaurant = { ...restaurant };
 
       // Check for property-level changes (address, menu, reservation)
-      const propertyKeys: (keyof Pick<PendingRestaurantTableTypes, 'address' | 'menu' | 'reservation'>)[] = ['address', 'menu', 'reservation'];
+      const propertyKeys: (keyof Pick<PendingRestaurantTableTypes, "address" | "menu" | "reservation">)[] = ["address", "menu", "reservation"];
 
       propertyKeys.forEach(propertyKey => {
         const changeKey = `${restaurant.id}-${propertyKey}`;
@@ -256,7 +292,27 @@ const PendingRestaurants = ({
     });
   }, [queryData?.data, pendingChanges]);
 
-  // Create columns with proper dependencies
+  const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
+    const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreviewModal.currentRestaurantId);
+    return currentRestaurant ? {
+      id: currentRestaurant.id,
+      name: currentRestaurant.name,
+      menu: currentRestaurant.menu?.content || "",
+      reservation: currentRestaurant.reservation?.content || "",
+      rating: currentRestaurant.rating,
+      adminName: currentRestaurant.admin.name,
+      adminId: currentRestaurant.admin.id
+    } : {
+      id: "",
+      name: "",
+      menu: "",
+      reservation: "",
+      rating: 0,
+        adminName: "",
+        adminId: ""
+    };
+  }, [restaurants, videoPreviewModal.currentRestaurantId]);
+
   const columns = useMemo(
     () =>
       createPendingRestaurantsColumns(
@@ -269,41 +325,17 @@ const PendingRestaurants = ({
     [handleApprove, handleDecline, handleSaveRestaurant, handleSendFeedback, openVideoPreview]
   );
 
-  // Handle errors
+  // ---------------------------------------------------------------------------
+  // ERROR HANDLING
+  // ---------------------------------------------------------------------------
+
   if (error) {
-    console.error('Pending restaurants error:', error.message);
+    console.error("Pending restaurants error:", error.message);
   }
 
-  // Handle row selection - extract IDs from selected rows
-  const handleRowSelection = (selectedRows: PendingRestaurantTableTypes[]) => {
-    const selectedIds = selectedRows.map(row => row.id);
-    setSelectedRows(selectedIds);
-  };
-
-  const handleVideoPreviewOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      closeVideoPreview();
-    }
-  };
-
-  const restaurant: GontrelRestaurantData & { id: string, adminName: string } = useMemo(() => {
-    const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreviewModal.currentRestaurantId);
-    return currentRestaurant ? {
-      id: currentRestaurant.id,
-      name: currentRestaurant.name,
-      menu: currentRestaurant.menu?.content || "",
-      reservation: currentRestaurant.reservation?.content || "",
-      rating: currentRestaurant.rating,
-      adminName: currentRestaurant.admin.name
-    } : {
-      id: "",
-      name: "",
-      menu: "",
-      reservation: "",
-      rating: 0,
-      adminName: ""
-    };
-  }, [restaurants, videoPreviewModal.currentRestaurantId]);
+  // ---------------------------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------------------------
 
   return (
     <div>
@@ -318,7 +350,9 @@ const PendingRestaurants = ({
         confirmLabel="Send feedback"
         cancelLabel="Cancel"
       />
+
       <TableVideoPreviewSheet
+        table={ManagerTableTabsEnum.PENDING_RESTAURANTS}
         open={videoPreviewModal.isOpen}
         onOpenChange={handleVideoPreviewOpenChange}
         posts={videoPreviewModal.posts}
@@ -326,6 +360,7 @@ const PendingRestaurants = ({
         onApprove={handleApprovePost}
         onDecline={handleDeclinePost}
       />
+
       <RestaurantTable<PendingRestaurantTableTypes>
         restaurants={restaurants}
         loading={isLoading}

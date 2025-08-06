@@ -17,9 +17,7 @@ export const useSubmittedRestaurants = () => {
   // Use the new store for proper state management
   const { resubmitRestaurant } = useSubmittedRestaurantsStore();
 
-  const handleRowSelect = useCallback((selectedRows: SubmittedRestaurantTableTypes[]) => {
-
-    // Handle bulk actions here
+  const handleRowSelect = useCallback(() => {
   }, []);
 
   const handleResubmit = useCallback((restaurant: SubmittedRestaurantTableTypes) => {

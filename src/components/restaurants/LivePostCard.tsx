@@ -68,14 +68,20 @@ export const LivePostCard = ({
               {
                 icon: <Check className="w-6 h-6" />,
                 label: "Approve",
-                onClick: () => handleApprove?.(restaurant?.id ?? "", post.id),
+                onClick: () => {
+                  post.status = ApprovalStatusEnum.APPROVED;
+                  handleApprove?.(restaurant?.id ?? "", post.id)
+                },
                 variant: "success",
                 active: true,
               },
               {
                 icon: <X className="w-6 h-6" />,
                 label: "Decline",
-                onClick: () => handleDecline?.(restaurant?.id ?? "", post.id),
+                onClick: () => {
+                  post.status = ApprovalStatusEnum.REJECTED;
+                  handleDecline?.(restaurant?.id ?? "", post.id)
+                },
                 variant: "danger",
                 active: true,
               },

@@ -7,13 +7,13 @@ import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
 import Logo from "@/assets/images/logo.png";
 import { PendingVideoTableTypes } from "@/types/restaurant";
-import { Post } from "@/interfaces/posts";
+import { ApprovalStatusEnum } from "@/types";
 
 /**
  * Creates column definitions for pending videos table
  */
 export const createPendingVideosColumns = (
-  openVideoPreview: (posts: Post[], restaurantId: string) => void,
+  handleOpenVideoPreview: (locationId: string, adminId: string) => void,
   onRowClick?: (row: PendingVideoTableTypes) => void
 ): ColumnDef<PendingVideoTableTypes>[] => [
   {
@@ -72,23 +72,15 @@ export const createPendingVideosColumns = (
     accessorKey: "posts",
     header: () => <TableHeader iconName="videoIcon" title="Video" />,
     cell: ({ row }) => {
-      const { status } = row.original;
-      const postsLength = 1
+      const { postCount } = row.original;
       return (
-        <div className="flex flex-col gap-y-2 w-fit">
+        <div className="flex flex-col gap-y-2 w-fit" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.admin.id ?? "")}>
           <PillButton
-            text={`${postsLength} video${postsLength > 1 ? "s" : ""}`}
-            textColor={getTextColor([{ status }])}
-            bgColor={getBgColor([{ status }])}
+            text={`${postCount} video${postCount > 1 ? "s" : ""}`}
+            textColor={getTextColor([{ status: ApprovalStatusEnum.PENDING }])}
+            bgColor={getBgColor([{ status: ApprovalStatusEnum.PENDING }])}
           />
-          <button
-            onClick={() => {
-              openVideoPreview([row.original], row.original.location?.id ?? "");
-            }}
-            className="text-left text-blue-500"
-          >
-            View
-          </button>
+          <span className="text-left text-blue-500 hover:underline hover:cursor-pointer">View</span>
         </div>
       );
     },
@@ -121,7 +113,7 @@ export const createPendingVideosColumns = (
     accessorKey: "dateAdded",
     header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
     cell: ({ row }) => {
-      const dateAdded = new Date(row.original.postedAt ?? row.original.modifiedAt);
+      const dateAdded = new Date(row.original.location?.createdAt ?? row.original.admin.createdAt);
 
       return (
         <div className="relative">

@@ -25,6 +25,7 @@
 *.pem
 *.history
 *settings.json
+*.cursor
 
 # debug
 npm-debug.log*
