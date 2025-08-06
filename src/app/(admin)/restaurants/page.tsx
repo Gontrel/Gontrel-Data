@@ -182,7 +182,10 @@ export default function RestaurantsPage() {
             videoUrl={activeVideoUrl}
             restaurantData={{
               name: restaurantData.name || "",
-              menu: restaurantData.menu || "",
+              menu:
+                typeof restaurantData?.menu === "string"
+                  ? restaurantData?.menu
+                  : restaurantData?.menu?.content ?? "",
               reservation: restaurantData.reservation?.content || "",
               rating: restaurantData.rating || 0,
             }}
