@@ -12,8 +12,6 @@ import logo from "@/assets/images/logo.png";
 import { transformToModalHours } from "@/lib/utils";
 import { RestaurantData } from "@/types/restaurant";
 
-
-
 interface RestaurantConfirmationProps {
   restaurant: RestaurantData;
   onGoBackToSearch: () => void;
@@ -45,7 +43,10 @@ export const RestaurantConfirmation = ({
     setIsEditHoursModalOpen(false);
   };
 
-  console.log(restaurant.workingHours, "restaurant.workingHoursrestaurant.workingHours");
+  console.log(
+    restaurant.workingHours,
+    "restaurant.workingHoursrestaurant.workingHours"
+  );
 
   // const workingHour = restaurant.workingHours ? restaurant.workingHours :
 
@@ -66,7 +67,9 @@ export const RestaurantConfirmation = ({
               <div>
                 <h3 className="font-semibold text-lg">{restaurant?.name}</h3>
                 <p className="text-[#9DA1A5] text-[17px] leading-[100%] font-medium flex-wrap ">
-                  {restaurant?.address}
+                  {typeof restaurant?.address === "string"
+                    ? restaurant?.address
+                    : restaurant?.address.content}
                 </p>
               </div>
             </div>
@@ -88,7 +91,11 @@ export const RestaurantConfirmation = ({
               website <Icon name="externalLinkIcon" className="w-5 h-5" />
             </a>
             <a
-              href={restaurant.address}
+              href={
+                typeof restaurant?.address === "string"
+                  ? restaurant?.address
+                  : restaurant?.address.content
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-medium text-sm p-2 rounded-lg bg-[#FFFFFF] hover:bg-gray-100"
