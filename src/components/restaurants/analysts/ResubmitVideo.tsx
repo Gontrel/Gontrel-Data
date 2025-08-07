@@ -126,10 +126,7 @@ export const ResubmitVideo = ({
     menuUrl: string;
     reservationUrl: string;
   }) => {
-    console.log(
-      data,
-      "handleSubmitRestauranthandleSubmitRestauranthandleSubmitRestauranthandleSubmitRestaurant"
-    );
+
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
       status: "pending",

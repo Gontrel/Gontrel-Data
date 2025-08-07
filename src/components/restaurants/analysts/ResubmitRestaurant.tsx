@@ -124,25 +124,17 @@ export const ResubmitRestaurant = ({
     menuUrl: string;
     reservationUrl: string;
   }) => {
-    console.log(
-      data,
-      "handleSubmitRestauranthandleSubmitRestauranthandleSubmitRestauranthandleSubmitRestaurant"
-    );
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
       status: "pending",
-      // Conditional address (only include if exists)
       ...(selectedRestaurant?.address && {
         address:
           typeof selectedRestaurant.address === "string"
             ? selectedRestaurant.address
             : selectedRestaurant.address?.content,
       }),
-      // Conditional menu (only include if data.menuUrl exists)
       ...(data.menuUrl && { menu: data.menuUrl }),
-      // Conditional reservation (only include if data.reservationUrl exists)
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
-      // Conditional name (only include if selectedRestaurant.name exists)
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
       openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
         ([day, hours]) => {
@@ -169,11 +161,6 @@ export const ResubmitRestaurant = ({
         }
       ),
     };
-
-    console.log(
-      selectedRestaurant,
-      "selectedRestaurantselectedRestaurantselectedRestaurantselectedRestaurant"
-    );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateAdminLocation(payload as any);

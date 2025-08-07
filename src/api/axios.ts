@@ -30,18 +30,16 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-     console.log("responseresponseresponseresponse", response);
     return response;
   },
   (error) => {
     if (error.response) {
-      console.log("responseresponseresponseresponse", error);
-      // if (error.response.status === 200) {
-      //   if (typeof window !== "undefined") {
-      //     // Redirect to login
-      //     window.location.href = "/";
-      //   }
-      // }
+      if (error.response.status === 200) {
+        if (typeof window !== "undefined") {
+          // Redirect to login
+          window.location.href = "/";
+        }
+      }
     }
 
     return Promise.reject(error);
