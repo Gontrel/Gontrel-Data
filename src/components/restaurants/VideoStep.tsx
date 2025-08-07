@@ -219,10 +219,11 @@ export const VideoStep = ({
 
     setActiveVideoUrl(null);
     setTiktokUsername(null);
-  }
+  };
 
   const shouldDisable =
-    videos.length === 0 && (currentVideo.tags.length < 1 || currentVideo.url === "");
+    videos.length === 0 &&
+    (currentVideo.tags.length < 1 || currentVideo.url === "");
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -344,7 +345,7 @@ export const VideoStep = ({
               shouldDisable
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
-              }`}
+            }`}
           >
             Next
           </Button>
@@ -354,10 +355,12 @@ export const VideoStep = ({
           clickFunc={onSubmit}
           type="submit"
           disabled={shouldDisable}
-            className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${shouldDisable
+          loading={isLoading}
+          className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
+            shouldDisable
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
-              }`}
+          }`}
         >
           Submit
         </Button>

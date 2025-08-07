@@ -265,7 +265,7 @@ export interface UpdateLocationRequest {
     dayOfTheWeek: DayOfTheWeek;
     opensAt?: number;
     closesAt?: number;
-  }>;
+  }> | string[];
   photos?: string[];
   phoneNumber?: string;
   priceLevel?: number;
