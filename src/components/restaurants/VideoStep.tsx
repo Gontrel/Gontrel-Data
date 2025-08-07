@@ -195,15 +195,7 @@ export const VideoStep = ({
   }
 
   const shouldDisable =
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url !== "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length >= 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0);
+    videos.length === 0 && (currentVideo.tags.length < 1 || currentVideo.url === "");
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">

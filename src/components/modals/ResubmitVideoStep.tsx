@@ -250,16 +250,7 @@ export const ResubmitVideoStepStep = ({
     setTiktokUsername(null);
   }
 
-  const shouldDisable =
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url !== "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length >= 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0);
+  const shouldDisable = videos.length === 0 && (currentVideo.tags.length < 1 || currentVideo.url === "") || videos.some(video => !video.isUpdated);
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -378,11 +369,10 @@ export const ResubmitVideoStepStep = ({
           <Button
             clickFunc={handleOnNext}
             disabled={shouldDisable}
-            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-              shouldDisable
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-[#0070F3] text-white hover:bg-blue-600"
-            }`}
+            className={mergeClasses(
+              "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
+              "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+            )}
           >
             {isRestaurantFlow ? "Next" : "Resubmit"}
           </Button>
@@ -392,11 +382,10 @@ export const ResubmitVideoStepStep = ({
           clickFunc={onSubmit}
           type="submit"
           disabled={shouldDisable}
-          className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
-            shouldDisable
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-[#0070F3] text-white hover:bg-blue-600"
-          }`}
+            className={mergeClasses(
+              "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
+              "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+            )}
         >
           Submit
         </Button>

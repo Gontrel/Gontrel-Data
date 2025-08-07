@@ -59,7 +59,7 @@ export const ResubmitRestaurant = ({
   useEffect(() => {
     const processRestaurant = async () => {
       if (restaurant) {
-      
+
         try {
           const formattedHours = await formatOpeningHours(
             restaurant.openingHours || []
@@ -172,8 +172,8 @@ export const ResubmitRestaurant = ({
         };
       }),
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateAdminLocation(payload as any);
+
+    updateAdminLocation(payload);
   };
 
   if (isLoading) {
