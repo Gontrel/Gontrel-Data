@@ -93,7 +93,6 @@ export const createActiveRestaurantsColumns = (
       ),
       cell: ({ row }) => {
         const url = row.original.website ?? "";
-        console.log('website:', url);
         return (
           url.length > 0 ? (
           <ExternalLink href={url} title={url}>

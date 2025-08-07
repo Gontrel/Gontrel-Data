@@ -28,7 +28,6 @@ export const useTableState = () => {
    */
   const setTablePageNumber = useCallback((tab: ManagerTableTabsEnum, page: number): void => {
     if (typeof page !== 'number' || !Number.isInteger(page) || page < 1) {
-      console.error(`Invalid page number: ${page} for tab: ${tab}`);
       return;
     }
     setTablePageNumbers(prev => ({
@@ -42,7 +41,6 @@ export const useTableState = () => {
    */
   const setTablePageSize = useCallback((tab: ManagerTableTabsEnum, pageSize: number): void => {
     if (typeof pageSize !== 'number' || !Number.isInteger(pageSize) || pageSize < 1 || pageSize > 50) {
-      console.error(`Invalid page size: ${pageSize} for tab: ${tab}`);
       return;
     }
     setTablePageSizes(prev => ({

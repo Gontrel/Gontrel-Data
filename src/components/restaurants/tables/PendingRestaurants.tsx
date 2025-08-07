@@ -70,7 +70,6 @@ const PendingRestaurants = ({
     handleDecline,
     queryData,
     isLoading,
-    error,
     refetch,
   } = usePendingRestaurants({ currentPage, pageSize, searchTerm });
 
@@ -338,10 +337,6 @@ const PendingRestaurants = ({
   // ---------------------------------------------------------------------------
   // ERROR HANDLING
   // ---------------------------------------------------------------------------
-
-  if (error) {
-    console.error("Pending restaurants error:", error.message);
-  }
 
   // ---------------------------------------------------------------------------
   // RENDER

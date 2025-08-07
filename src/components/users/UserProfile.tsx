@@ -23,8 +23,7 @@ export const UserProfile = () => {
       logout();
       router.push("/");
     },
-    onError: (error) => {
-      console.error("Failed to sign out:", error);
+    onError: () => {
     },
   });
 

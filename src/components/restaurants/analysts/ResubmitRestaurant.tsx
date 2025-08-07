@@ -36,7 +36,7 @@ export const ResubmitRestaurant = ({
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
-  const { setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
+  const { setActiveVideoUrl, resetVideos } = useVideoStore();
 
   const { data: restaurant, isLoading } =
     trpc.restaurant.getRestaurantById.useQuery(
@@ -44,7 +44,8 @@ export const ResubmitRestaurant = ({
       { enabled: !!restaurantId && open }
     );
 
-  const { mutate: updateAdminLocation, isPending: isLoadingUpdate } =
+
+  const { mutate: updateAdminLocation, } =
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
@@ -58,6 +59,7 @@ export const ResubmitRestaurant = ({
   useEffect(() => {
     const processRestaurant = async () => {
       if (restaurant) {
+      
         try {
           const formattedHours = await formatOpeningHours(
             restaurant.openingHours || []
@@ -68,10 +70,7 @@ export const ResubmitRestaurant = ({
           };
 
           setSelectedRestaurant(updatedRestaurant);
-          addRestaurantData(updatedRestaurant);
-          console.log("Processed restaurant:", updatedRestaurant);
-        } catch (error) {
-          console.error("Error formatting hours:", error);
+        } catch  {
         }
       } else {
         setSelectedRestaurant(null);
@@ -79,15 +78,15 @@ export const ResubmitRestaurant = ({
     };
 
     processRestaurant();
-  }, [restaurant, addRestaurantData]);
+  }, [restaurant, open]);
 
   const handleClose = useCallback(() => {
     onOpenChange(false);
     setStep(1);
-    setSelectedRestaurant(null);
-    setActiveVideoUrl(null);
     resetVideos();
-  }, [onOpenChange, setActiveVideoUrl, resetVideos]);
+    setActiveVideoUrl(null);
+    setSelectedRestaurant(null);
+  }, [onOpenChange, resetVideos, setActiveVideoUrl]);
 
   const handleGoBackToSearch = useCallback(() => {
     setSelectedRestaurant(null);
@@ -126,9 +125,8 @@ export const ResubmitRestaurant = ({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCreateRestaurant = (data: any) => {
-    console.log(data, "data");
-    console.log(selectedRestaurant, "selectedRestaurantselectedRestaurant");
-    const payload = {};
+    console.log(data)
+    // const payload = {};
     //  updateAdminLocation(payload);
   };
 

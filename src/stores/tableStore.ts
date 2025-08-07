@@ -341,7 +341,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
 
 
     } catch (error: unknown) {
-      console.error('❌ Failed to save changes:', error);
       store.setError(tableType, error instanceof Error ? error.message : 'Failed to save changes');
     } finally {
       store.setSaveLoading(false);

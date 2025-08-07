@@ -1,5 +1,5 @@
 
-import { GetRestaurantsResponse, GetGroupedPostsResponse, GetPostsResponse, OpeningHoursDay, Reservation, Summary, Admin, Post, Address, Menu } from "@/interfaces";
+import { GetRestaurantsResponse, GetGroupedPostsResponse, OpeningHoursDay, Reservation, Summary, Admin, Post, Address, Menu } from "@/interfaces";
 
 /**
  * Restaurant data model representing the production/live data
