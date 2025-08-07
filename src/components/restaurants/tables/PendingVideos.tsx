@@ -59,7 +59,7 @@ const PendingVideos = ({
     currentRestaurantId: null,
   });
 
-  const { queryData, isLoading, error, refetch } = usePendingVideos({
+  const { queryData, isLoading, refetch } = usePendingVideos({
     currentPage,
     pageSize,
     searchTerm,
@@ -171,10 +171,6 @@ const PendingVideos = ({
   // ---------------------------------------------------------------------------
   // ERROR HANDLING
   // ---------------------------------------------------------------------------
-
-  if (error) {
-    console.error("Pending videos error:", error.message);
-  }
 
   // ---------------------------------------------------------------------------
   // RENDER

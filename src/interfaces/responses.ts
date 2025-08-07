@@ -96,7 +96,7 @@ export type GetGroupedPostsResponse = IPaginatedRes<{
   admin: Admin;
   location: Location;
   postCount: number;
-}>;
+}  & Location>;
 
 export interface GetPostByIdResponse {
   post: Post;

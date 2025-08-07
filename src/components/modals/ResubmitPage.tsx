@@ -29,6 +29,7 @@ interface ResubmitRestaurantSheetProps {
 export const ResubmitPage = ({
   title,
   description,
+  isRestaurantFlow,
   restaurant,
   step,
   isLoading,
@@ -80,18 +81,19 @@ export const ResubmitPage = ({
               )}
               {step === 2 && (
                 <ResubmitVideoStepStep
+                isRestaurantFlow={isRestaurantFlow}
                   restaurant={restaurant ?? []}
                   onPrevious={onPreviousVideoStep}
                   onNext={onNextVideoStep}
                 />
               )}
-              {step === 3 && (
+              {step === 3 && isRestaurantFlow ? (
                 <ResubmitRestaurantMenu
                   isLoading={isLoading}
                   onPrevious={onPreviousRestaurantMenu}
                   onSubmit={onSubmit}
                 />
-              )}
+              ): null}
             </>
           ) : null}
         </div>

@@ -20,6 +20,8 @@ interface ResubmitVideoStepProps {
   postOnly?: boolean | null;
   restaurant: RestaurantData;
   isLoading?: boolean;
+  isRestaurantFlow?: boolean
+
 }
 
 export const ResubmitVideoStepStep = ({
@@ -27,6 +29,7 @@ export const ResubmitVideoStepStep = ({
   onPrevious,
   onSubmit,
   postOnly,
+  isRestaurantFlow,
   restaurant,
 }: ResubmitVideoStepProps) => {
   const videos = useVideoStore((state) => state.videos);
@@ -138,8 +141,7 @@ export const ResubmitVideoStepStep = ({
       try {
         const convertedPosts = await convertPosts(restaurant?.posts ?? []);
         addVideos(convertedPosts);
-      } catch (error) {
-        console.error("Failed to convert and add videos:", error);
+      } catch {
       }
     };
 
@@ -242,7 +244,10 @@ export const ResubmitVideoStepStep = ({
   const handleOnNext = () => {
     if (currentVideo.url !== "" && currentVideo.tags.length !== 0)
       handleAddOrUpdateVideo();
-    onNext();
+    if (isRestaurantFlow) {
+      onNext();
+      return;
+    } 
   };
 
   const shouldDisable =
@@ -374,7 +379,7 @@ export const ResubmitVideoStepStep = ({
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
             }`}
           >
-            Next
+            {isRestaurantFlow ? "Next" : "Resubmit"}
           </Button>
         </div>
       ) : (

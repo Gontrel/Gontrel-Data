@@ -47,7 +47,7 @@ const ActiveRestaurants = ({
     setSelectedRows,
   } = useActiveRestaurantsStore();
 
-  const { queryData, isLoading, error } = useActiveRestaurants({
+  const { queryData, isLoading } = useActiveRestaurants({
     currentPage,
     pageSize,
     searchTerm,
@@ -90,9 +90,6 @@ const ActiveRestaurants = ({
   // ERROR HANDLING
   // ---------------------------------------------------------------------------
 
-  if (error) {
-    console.error("Active restaurants error:", error.message);
-  }
 
   // ---------------------------------------------------------------------------
   // RENDER

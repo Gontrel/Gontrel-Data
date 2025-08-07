@@ -14,7 +14,7 @@ import { AdminRoleEnum, AnalystTableTabsEnum } from "@/types/enums";
 import TableTabs from "@/components/restaurants/TableTabs";
 import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useCurrentUser } from "@/stores/authStore";
-import { ResubmitRestaurant } from "@/components/restaurants/analysts/ResubmitRestaurant";
+import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
 
 /**
  * Restaurants Page Component
@@ -185,7 +185,7 @@ export default function RestaurantsPage() {
               menu:
                 typeof restaurantData?.menu === "string"
                   ? restaurantData?.menu
-                  : restaurantData?.menu?.content ?? "", 
+                  : restaurantData?.menu?.content ?? "",
               reservation: restaurantData.reservation?.content || "",
               rating: restaurantData.rating || 0,
             }}
@@ -231,17 +231,7 @@ export default function RestaurantsPage() {
       </div>
 
       {/* New Restaurant Modal */}
-      {/* <NewRestaurantSheet
-        open={showNewRestaurantModal}
-        onOpenChange={setShowNewRestaurantModal}
-      /> */}
-
-      {/* New Restaurant Modal */}
-      <ResubmitRestaurant
-        restaurantId="20bc913f-97b0-4c10-a793-77b3832b0ab7"
-        title="Resubmit restaurant details"
-        description="Some of the details you submitted were rejected"
-        isRestaurantFlow={true}
+      <NewRestaurantSheet
         open={showNewRestaurantModal}
         onOpenChange={setShowNewRestaurantModal}
       />

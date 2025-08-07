@@ -43,7 +43,9 @@ export const ConfirmResubmitRestaurant = ({
     "Sunday",
   ];
 
-  const formatHoursForState = (hours: WorkingHours): Record<string, string[]> => {
+  const formatHoursForState = (
+    hours: WorkingHours
+  ): Record<string, string[]> => {
     const formatted: Record<string, string[]> = {};
     for (const day of Object.keys(hours)) {
       const dayData = hours[day as keyof WorkingHours];
@@ -53,7 +55,7 @@ export const ConfirmResubmitRestaurant = ({
         formatted[day] = ["24 hours"];
       } else {
         formatted[day] = dayData.slots.map(
-          (slot) => `${slot.start} - ${slot.end}`
+          (slot) => `${slot.start} AM – ${slot.end} PM`
         );
       }
     }
@@ -184,13 +186,13 @@ export const ConfirmResubmitRestaurant = ({
         </div>
       </div>
       <div className="flex-shrink-0 mb-10">
-        <button
+        <Button
           type="submit"
-          onClick={handleOnContinue}
+          clickFunc={handleOnContinue}
           className="w-full bg-[#0070F3] text-white py-[20px] px-[22px] rounded-[20px] font-semibold hover:bg-blue-600 transition-colors"
         >
           Continue
-        </button>
+        </Button>
       </div>
 
       <EditWorkingHoursModal

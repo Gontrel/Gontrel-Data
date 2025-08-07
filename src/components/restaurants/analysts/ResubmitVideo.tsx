@@ -5,9 +5,12 @@ import { ResubmitPage } from "@/components/modals/ResubmitPage";
 import { RestaurantData, TimeSlot } from "@/types/restaurant";
 import { RestaurantConfirmationSkeleton } from "@/components/Loader/restaurants/RestaurantConfirmationSkeleton";
 import { trpc } from "@/lib/trpc-client";
-import { formatOpeningHours, formatTime } from "@/lib/utils";
+import { convertTimeTo24Hour, formatOpeningHours, formatTime } from "@/lib/utils";
 import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
+import { DayOfTheWeek } from "@/types";
+import { UpdateLocationRequest } from "@/interfaces";
+import { successToast, errorToast } from "@/utils/toast";
 
 interface ResubmitVideoSheetProps {
   open: boolean;
@@ -37,6 +40,17 @@ export const ResubmitVideo = ({
       { enabled: !!restaurantId && open }
     );
 
+  const { mutate: updateAdminLocation, } =
+    trpc.restaurant.updateRestaurant.useMutation({
+      onSuccess: () => {
+        successToast("Restaurant updated successfully!");
+        setStep(2);
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
+
   useEffect(() => {
     const processRestaurant = async () => {
       if (restaurant) {
@@ -51,9 +65,8 @@ export const ResubmitVideo = ({
 
           setSelectedRestaurant(updatedRestaurant);
           addRestaurantData(updatedRestaurant);
-          console.log("Processed restaurant:", updatedRestaurant);
-        } catch (error) {
-          console.error("Error formatting hours:", error);
+        } catch {
+        
         }
       } else {
         setSelectedRestaurant(null);
@@ -107,11 +120,56 @@ export const ResubmitVideo = ({
   );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCreateRestaurant = (data: any) => {};
+  const handleCreateRestaurant = (data: any) => {
+    console.log(data)
+    // const payload = {};
+    //  updateAdminLocation(payload);
+  };
 
-  const handleOnNext = () => {
-    setStep(2);
-    addRestaurantData(selectedRestaurant!);
+  const handleOnNext = (data: { openingHour: Record<string, string[]> }) => {
+    const payload: UpdateLocationRequest = {
+      locationId: selectedRestaurant?.id ?? "",
+      address:
+        typeof selectedRestaurant?.address === "string"
+          ? selectedRestaurant?.address
+          : selectedRestaurant?.address?.content,
+      menu:
+        typeof selectedRestaurant?.menu === "string"
+          ? selectedRestaurant?.menu
+          : selectedRestaurant?.menu?.content,
+      name: selectedRestaurant?.name,
+      reservation:
+        typeof selectedRestaurant?.reservation === "string"
+          ? selectedRestaurant.reservation
+          : selectedRestaurant?.reservation?.content,
+      openingHours: Object.entries(data.openingHour)?.map(([day, hours]) => {
+        if (hours[0].toLowerCase() === "24 hours") {
+          return {
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+            opensAt: 0, // Represents 00:00 (midnight)
+            closesAt: 24, // Represents 24:00 (end of day)
+          };
+        }
+
+        if (hours[0].toLowerCase().trim() === "closed") {
+          return {
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+            opensAt: 0, // Represents 00:00 (midnight)
+            closesAt: 0, // Represents 00:00 (end of day)
+          };
+        }
+
+        const [startTime, endTime] = hours[0].split(" – ");
+
+        return {
+          dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+          opensAt: convertTimeTo24Hour(startTime),
+          closesAt: convertTimeTo24Hour(endTime),
+        };
+      }),
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateAdminLocation(payload as any);
   };
 
   if (isLoading) {

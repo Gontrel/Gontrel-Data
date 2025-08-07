@@ -42,8 +42,8 @@ export const VideoPlayer = ({
         try {
           videoRef.current.pause();
           setIsPlaying(false);
-        } catch (error) {
-          console.error('Error pausing video:', error);
+        } catch {
+      
         }
       }
     };
@@ -104,9 +104,7 @@ export const VideoPlayer = ({
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     const video = e.currentTarget;
-    const error = video.error;
 
-    console.error('Video error:', error);
     try {
       video.pause();
       video.removeAttribute('src');
