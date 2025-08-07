@@ -8,12 +8,9 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast } from "@/utils/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
-<<<<<<< HEAD
 import Button from "../ui/Button";
-
-=======
 import { cleanTiktokUrl } from "@/lib/utils";
->>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
+
 interface VideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
@@ -46,10 +43,6 @@ export const VideoStep = ({
     locationName: "",
     rating: 0,
   });
-<<<<<<< HEAD
-=======
-
->>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
 
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
 
@@ -115,7 +108,6 @@ export const VideoStep = ({
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-<<<<<<< HEAD
       const inputValue = event.currentTarget.value.trim();
 
       if (!inputValue) return;
@@ -128,12 +120,6 @@ export const VideoStep = ({
 
       if (newTags.length === 0) {
         errorToast("Please enter valid tags.");
-=======
-      const tag = event.currentTarget.value.trim();
-      if (tag && !currentVideo.tags.includes(tag)) {
-        setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
-        event.currentTarget.value = "";
->>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
         return;
       }
 
@@ -354,13 +340,8 @@ export const VideoStep = ({
           <Button
             clickFunc={handleOnNext}
             disabled={shouldDisable}
-<<<<<<< HEAD
-            loading={shouldDisable}
             className={`w-full py-3 rounded-lg font-semibold transition-colors ${
               shouldDisable
-=======
-            className={`w-full py-3 rounded-lg font-semibold transition-colors ${shouldDisable
->>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
               }`}
@@ -372,15 +353,8 @@ export const VideoStep = ({
         <Button
           clickFunc={onSubmit}
           type="submit"
-<<<<<<< HEAD
-          disabled={shouldDisable || isLoading}
-          loading={isLoading}
-          className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
-            shouldDisable
-=======
           disabled={shouldDisable}
             className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${shouldDisable
->>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
               }`}

@@ -392,6 +392,18 @@ export const ResubmitVideoStepStep = ({
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
             }`}
           >
+            Next
+          </Button>
+        )}
+        {!isRestaurantFlow && (
+          <Button
+            clickFunc={handleResubmit}
+            disabled={shouldDisable}
+            className={mergeClasses(
+              "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
+              "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+            )}
+          >
             Resubmit
           </Button>
         )}
