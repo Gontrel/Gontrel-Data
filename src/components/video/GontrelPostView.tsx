@@ -69,7 +69,9 @@ export const GontrelPostView = ({
 
   // Clean up video when URL changes
   useEffect(() => {
-    if (!videoUrl && videoRef.current) {
+    if (videoUrl && videoRef.current) {
+      videoRef.current.src = videoUrl;
+    } else if (!videoUrl && videoRef.current) {
       videoRef.current.src = "";
     }
   }, [videoUrl]);

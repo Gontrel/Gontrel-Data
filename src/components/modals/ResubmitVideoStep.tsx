@@ -12,7 +12,7 @@ import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
 import Button from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
-import { cleanTiktokUrl } from "@/lib/utils";
+import { cleanTiktokUrl, mergeClasses } from "@/lib/utils";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
@@ -176,11 +176,11 @@ export const ResubmitVideoStepStep = ({
     }
   };
 
-  const handleAddOrUpdateVideo = async () => {
-    await handleInputError();
+  const handleAddOrUpdateVideo = () => {
+    handleInputError();
     const videoData = {
       url: currentVideo.url,
-      tags: currentVideo.tags || [],
+      tags: currentVideo.tags,
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
@@ -205,18 +205,7 @@ export const ResubmitVideoStepStep = ({
       updatePost(payload as any);
     }
 
-    setCurrentVideo({
-      url: "",
-      tags: [],
-      thumbUrl: "",
-      videoUrl: "",
-      author: "",
-      locationName: "",
-      rating: 0,
-    });
-
-    setActiveVideoUrl(null);
-    setTiktokUsername(null);
+    resetVideo();
   };
 
   const handleEdit = (id: string) => {
@@ -245,6 +234,21 @@ export const ResubmitVideoStepStep = ({
       return;
     }
   };
+
+  const resetVideo = () => {
+    setCurrentVideo({
+      url: "",
+      tags: [],
+      thumbUrl: "",
+      videoUrl: "",
+      author: "",
+      locationName: "",
+      rating: 0,
+    });
+
+    setActiveVideoUrl(null);
+    setTiktokUsername(null);
+  }
 
   const shouldDisable =
     (currentVideo.tags.length < 1 &&
@@ -339,11 +343,16 @@ export const ResubmitVideoStepStep = ({
               {editingVideoId && videos?.length >= 0 && (
                 <div className="mt-6 pt-4 flex justify-left">
                   <Button
-                    disabled={isLoadingUpdate}
+                    disabled={isLoadingUpdate || currentVideo.tags.length === 0 || currentVideo.url === ""}
                     clickFunc={handleAddOrUpdateVideo}
-                    className="flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] font-semibold"
+                    className={
+                      mergeClasses(
+                        "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
+                        "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
+                        "hover:bg-blue-600"
+                      )}
                   >
-                    <Icon name="saveIcon" stroke="#24B314" />
+                    <Icon name="saveIcon" stroke={isLoadingUpdate || currentVideo.tags.length === 0 || currentVideo.url === "" ? "#99a1af" : "white"} />
                     <span>Save</span>
                   </Button>
                 </div>

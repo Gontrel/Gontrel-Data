@@ -88,6 +88,7 @@ export const ConfirmationModal = ({
                                 {
                                     label: confirmLabel,
                                     onClick: onConfirm,
+                                    disabled: comment.length === 0 && showCommentField,
                                     variant: "danger",
                                     active: true,
                                     className: "w-full h-18 bg-[#D80000] text-white rounded-[20px] transition-colors text-[20px] font-semibold"

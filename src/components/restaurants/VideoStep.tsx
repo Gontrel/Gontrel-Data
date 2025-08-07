@@ -134,11 +134,11 @@ export const VideoStep = ({
     }
   };
 
-  const handleAddOrUpdateVideo = async () => {
-    await handleInputError();
+  const handleAddOrUpdateVideo = () => {
+    handleInputError();
     const videoData = {
       url: currentVideo.url,
-      tags: currentVideo.tags || [],
+      tags: currentVideo.tags,
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
@@ -149,21 +149,10 @@ export const VideoStep = ({
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
-      await addVideo(videoData);
+      addVideo(videoData);
     }
 
-    setCurrentVideo({
-      url: "",
-      tags: [],
-      thumbUrl: "",
-      videoUrl: "",
-      author: "",
-      locationName: "",
-      rating: 0,
-    });
-
-    setActiveVideoUrl(null);
-    setTiktokUsername(null);
+    resetVideo();
   };
 
   const handleEdit = (id: string) => {
@@ -189,6 +178,21 @@ export const VideoStep = ({
       handleAddOrUpdateVideo();
     onNext();
   };
+
+  const resetVideo = () => {
+    setCurrentVideo({
+      url: "",
+      tags: [],
+      thumbUrl: "",
+      videoUrl: "",
+      author: "",
+      locationName: "",
+      rating: 0,
+    });
+
+    setActiveVideoUrl(null);
+    setTiktokUsername(null);
+  }
 
   const shouldDisable =
     (currentVideo.tags.length < 1 &&
