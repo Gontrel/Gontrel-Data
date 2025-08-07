@@ -8,8 +8,12 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast } from "@/utils/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
+<<<<<<< HEAD
 import Button from "../ui/Button";
 
+=======
+import { cleanTiktokUrl } from "@/lib/utils";
+>>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
 interface VideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
@@ -42,12 +46,15 @@ export const VideoStep = ({
     locationName: "",
     rating: 0,
   });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
 
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
-  const [urlInput, setUrlInput] = useState<string>("");
 
   // Debounce the URL input to avoid excessive API calls
-  const debouncedUrl = useDebounce(urlInput, 500);
+  const debouncedUrl = useDebounce(currentVideo.url, 1000);
 
   // We use a query, but disable it so it only runs when we call `refetch`
   const { refetch, isLoading: isLoadingTiktok } =
@@ -95,21 +102,20 @@ export const VideoStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let value = "";
+    let cleanedUrl = "";
     if ("clipboardData" in e) {
-      value = e.clipboardData.getData("text");
+      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
     } else {
-      value = e.target.value;
+      cleanedUrl = cleanTiktokUrl(e.target.value);
     }
-
     // Update both the input state and current video URL immediately for UI responsiveness
-    setUrlInput(value);
-    setCurrentVideo({ ...currentVideo, url: value });
+    setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
+<<<<<<< HEAD
       const inputValue = event.currentTarget.value.trim();
 
       if (!inputValue) return;
@@ -122,6 +128,12 @@ export const VideoStep = ({
 
       if (newTags.length === 0) {
         errorToast("Please enter valid tags.");
+=======
+      const tag = event.currentTarget.value.trim();
+      if (tag && !currentVideo.tags.includes(tag)) {
+        setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
+        event.currentTarget.value = "";
+>>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
         return;
       }
 
@@ -162,11 +174,11 @@ export const VideoStep = ({
     }
   };
 
-  const handleAddOrUpdateVideo = async () => {
-    await handleInputError();
+  const handleAddOrUpdateVideo = () => {
+    handleInputError();
     const videoData = {
       url: currentVideo.url,
-      tags: currentVideo.tags || [],
+      tags: currentVideo.tags,
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
@@ -178,21 +190,10 @@ export const VideoStep = ({
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
-      await addVideo(videoData);
+      addVideo(videoData);
     }
 
-    setCurrentVideo({
-      url: "",
-      tags: [],
-      thumbUrl: "",
-      videoUrl: "",
-      author: "",
-      locationName: "",
-      rating: 0,
-    });
-
-    setActiveVideoUrl(null);
-    setTiktokUsername(null);
+    resetVideo();
   };
 
   const handleEdit = (id: string) => {
@@ -219,16 +220,23 @@ export const VideoStep = ({
     onNext();
   };
 
+  const resetVideo = () => {
+    setCurrentVideo({
+      url: "",
+      tags: [],
+      thumbUrl: "",
+      videoUrl: "",
+      author: "",
+      locationName: "",
+      rating: 0,
+    });
+
+    setActiveVideoUrl(null);
+    setTiktokUsername(null);
+  }
+
   const shouldDisable =
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url !== "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length >= 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0);
+    videos.length === 0 && (currentVideo.tags.length < 1 || currentVideo.url === "");
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -257,7 +265,7 @@ export const VideoStep = ({
           <input
             type="url"
             id="tiktok-link"
-            placeholder="https://tiktok.com"
+            placeholder="https://www.tiktok.com/@username/video/1234567890"
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             value={currentVideo.url?.trim()}
             onChange={handleUrlChange}
@@ -346,12 +354,16 @@ export const VideoStep = ({
           <Button
             clickFunc={handleOnNext}
             disabled={shouldDisable}
+<<<<<<< HEAD
             loading={shouldDisable}
             className={`w-full py-3 rounded-lg font-semibold transition-colors ${
               shouldDisable
+=======
+            className={`w-full py-3 rounded-lg font-semibold transition-colors ${shouldDisable
+>>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
-            }`}
+              }`}
           >
             Next
           </Button>
@@ -360,13 +372,18 @@ export const VideoStep = ({
         <Button
           clickFunc={onSubmit}
           type="submit"
+<<<<<<< HEAD
           disabled={shouldDisable || isLoading}
           loading={isLoading}
           className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
             shouldDisable
+=======
+          disabled={shouldDisable}
+            className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${shouldDisable
+>>>>>>> 84ee50fde79fb13a7e4391765f8a9a16ab79de53
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
-          }`}
+              }`}
         >
           Submit
         </Button>

@@ -12,7 +12,7 @@ import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
 import Button from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
-
+import { cleanTiktokUrl, mergeClasses } from "@/lib/utils";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   handleResubmit?: () => void;
@@ -46,12 +46,10 @@ export const ResubmitVideoStepStep = ({
     locationName: "",
     rating: 0,
   });
-
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
-  const [urlInput, setUrlInput] = useState<string>("");
 
   // Debounce the URL input to avoid excessive API calls
-  const debouncedUrl = useDebounce(urlInput, 500);
+  const debouncedUrl = useDebounce(currentVideo.url, 500);
 
   // We use a query, but disable it so it only runs when we call `refetch`
   const { refetch, isLoading: isLoadingTiktok } =
@@ -109,16 +107,14 @@ export const ResubmitVideoStepStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let value = "";
+    let cleanedUrl = "";
     if ("clipboardData" in e) {
-      value = e.clipboardData.getData("text");
+      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
     } else {
-      value = e.target.value;
+      cleanedUrl = cleanTiktokUrl(e.target.value);
     }
-
     // Update both the input state and current video URL immediately for UI responsiveness
-    setUrlInput(value);
-    setCurrentVideo({ ...currentVideo, url: value });
+    setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
   const convertPosts = async (posts: Post[]): Promise<VideoData[]> => {
@@ -199,11 +195,11 @@ export const ResubmitVideoStepStep = ({
     }
   };
 
-  const handleAddOrUpdateVideo = async () => {
-    await handleInputError();
+  const handleAddOrUpdateVideo = () => {
+    handleInputError();
     const videoData = {
       url: currentVideo.url,
-      tags: currentVideo.tags || [],
+      tags: currentVideo.tags,
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
@@ -228,18 +224,6 @@ export const ResubmitVideoStepStep = ({
       updatePost(payload as any);
     }
 
-    setCurrentVideo({
-      url: "",
-      tags: [],
-      thumbUrl: "",
-      videoUrl: "",
-      author: "",
-      locationName: "",
-      rating: 0,
-    });
-
-    setActiveVideoUrl(null);
-    setTiktokUsername(null);
   };
 
   const handleEdit = (id: string) => {
@@ -357,9 +341,14 @@ export const ResubmitVideoStepStep = ({
                     disabled={shouldDisable}
                     loading={isLoadingUpdate}
                     clickFunc={handleAddOrUpdateVideo}
-                    className="flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] font-semibold"
+                    className={
+                      mergeClasses(
+                        "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
+                        "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
+                        "hover:bg-blue-600"
+                      )}
                   >
-                    <Icon name="saveIcon" stroke="#24B314" />
+                    <Icon name="saveIcon" stroke={isLoadingUpdate || currentVideo.tags.length === 0 || currentVideo.url === "" ? "#99a1af" : "white"} />
                     <span>Save</span>
                   </Button>
                 </div>
@@ -385,11 +374,10 @@ export const ResubmitVideoStepStep = ({
           <Button
             clickFunc={handleOnNext}
             disabled={shouldDisable}
-            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-              shouldDisable
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-[#0070F3] text-white hover:bg-blue-600"
-            }`}
+            className={mergeClasses(
+              "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
+              "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+            )}
           >
             Next
           </Button>
