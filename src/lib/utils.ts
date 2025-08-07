@@ -293,3 +293,17 @@ export function formatOpeningHours(
 
   return result;
 }
+
+export function cleanTiktokUrl(url: string): string {
+  const match = url.match(
+    /(https?:\/\/)?(www\.)?tiktok\.com\/(@[\w.-]+\/video\/\d+)/
+  );
+
+  if (match && match[3]) {
+    const cleanedUrl = `https://www.tiktok.com/${match[3]}`;
+    console.log("cleanedUrl", cleanedUrl);
+    return cleanedUrl;
+  }
+
+  return url.trim();
+}

@@ -8,7 +8,7 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast } from "@/utils/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
-
+import { cleanTiktokUrl } from "@/lib/utils";
 interface VideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
@@ -41,13 +41,12 @@ export const VideoStep = ({
     locationName: "",
     rating: 0,
   });
-  
+
 
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
-  const [urlInput, setUrlInput] = useState<string>("");
 
   // Debounce the URL input to avoid excessive API calls
-  const debouncedUrl = useDebounce(urlInput, 500);
+  const debouncedUrl = useDebounce(currentVideo.url, 1000);
 
   // We use a query, but disable it so it only runs when we call `refetch`
   const { refetch, isLoading: isLoadingTiktok } =
@@ -93,16 +92,14 @@ export const VideoStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let value = "";
+    let cleanedUrl = "";
     if ("clipboardData" in e) {
-      value = e.clipboardData.getData("text");
+      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
     } else {
-      value = e.target.value;
+      cleanedUrl = cleanTiktokUrl(e.target.value);
     }
-
     // Update both the input state and current video URL immediately for UI responsiveness
-    setUrlInput(value);
-    setCurrentVideo({ ...currentVideo, url: value });
+    setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -112,7 +109,7 @@ export const VideoStep = ({
       if (tag && !currentVideo.tags.includes(tag)) {
         setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
         event.currentTarget.value = "";
-           return;
+        return;
       }
       errorToast("Tag already exist");
     }
@@ -231,7 +228,7 @@ export const VideoStep = ({
           <input
             type="url"
             id="tiktok-link"
-            placeholder="https://tiktok.com"
+            placeholder="https://www.tiktok.com/@username/video/1234567890"
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             value={currentVideo.url?.trim()}
             onChange={handleUrlChange}
@@ -321,11 +318,10 @@ export const VideoStep = ({
           <button
             onClick={handleOnNext}
             disabled={shouldDisable}
-            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-              shouldDisable
+            className={`w-full py-3 rounded-lg font-semibold transition-colors ${shouldDisable
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
-            }`}
+              }`}
           >
             Next
           </button>
@@ -335,11 +331,10 @@ export const VideoStep = ({
           onClick={onSubmit}
           type="submit"
           disabled={shouldDisable}
-          className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
-            shouldDisable
+            className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${shouldDisable
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
-          }`}
+              }`}
         >
           {isLoading ? (
             <>

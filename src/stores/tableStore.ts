@@ -8,7 +8,6 @@ import {
   SubmittedRestaurantTableTypes,
   SubmittedVideoTableTypes
 } from '@/types/restaurant';
-import { Location, Post } from '@/interfaces';
 
 export type TableType = ManagerTableTabsEnum | AnalystTableTabsEnum;
 
@@ -366,60 +365,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
     const store = get();
     const currentState = store[tableType] as TableState<PendingRestaurantTableTypes>;
     return currentState.pendingChanges;
-  },
-
-  // Video preview modal actions
-  openVideoPreview: (tableType: TableType, posts: Post[], restaurantId: string) => {
-    set((state) => ({
-      [tableType]: {
-        ...state[tableType],
-        videoPreviewModal: {
-          isOpen: true,
-          posts,
-          currentRestaurantId: restaurantId,
-        },
-      },
-    } as Partial<TableStore>));
-  },
-
-  closeVideoPreview: (tableType: TableType) => {
-    set((state) => ({
-      [tableType]: {
-        ...state[tableType],
-        videoPreviewModal: {
-          isOpen: false,
-          posts: [],
-          currentRestaurantId: null,
-        },
-      },
-    } as Partial<TableStore>));
-  },
-
-  // Resubmit modal actions
-  openResubmitModal: (tableType: TableType, restaurant: Location, posts: Post[]) => {
-    set((state) => ({
-      [tableType]: {
-        ...state[tableType],
-        resubmitModal: {
-          isOpen: true,
-          restaurant,
-          posts,
-        },
-      },
-    } as Partial<TableStore>));
-  },
-
-  closeResubmitModal: (tableType: TableType) => {
-    set((state) => ({
-      [tableType]: {
-        ...state[tableType],
-        resubmitModal: {
-          isOpen: false,
-          restaurant: null,
-          posts: [],
-        },
-      },
-    } as Partial<TableStore>));
   },
 });
 

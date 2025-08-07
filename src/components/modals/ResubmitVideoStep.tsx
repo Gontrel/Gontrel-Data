@@ -12,7 +12,7 @@ import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
 import Button from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
-
+import { cleanTiktokUrl } from "@/lib/utils";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
@@ -49,12 +49,10 @@ export const ResubmitVideoStepStep = ({
     locationName: "",
     rating: 0,
   });
-
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
-  const [urlInput, setUrlInput] = useState<string>("");
 
   // Debounce the URL input to avoid excessive API calls
-  const debouncedUrl = useDebounce(urlInput, 500);
+  const debouncedUrl = useDebounce(currentVideo.url, 500);
 
   // We use a query, but disable it so it only runs when we call `refetch`
   const { refetch, isLoading: isLoadingTiktok } =
@@ -112,16 +110,14 @@ export const ResubmitVideoStepStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let value = "";
+    let cleanedUrl = "";
     if ("clipboardData" in e) {
-      value = e.clipboardData.getData("text");
+      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
     } else {
-      value = e.target.value;
+      cleanedUrl = cleanTiktokUrl(e.target.value);
     }
-
     // Update both the input state and current video URL immediately for UI responsiveness
-    setUrlInput(value);
-    setCurrentVideo({ ...currentVideo, url: value });
+    setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
   const convertPosts = async (posts: Post[]): Promise<VideoData[]> => {
@@ -247,7 +243,7 @@ export const ResubmitVideoStepStep = ({
     if (isRestaurantFlow) {
       onNext();
       return;
-    } 
+    }
   };
 
   const shouldDisable =
