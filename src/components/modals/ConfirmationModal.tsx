@@ -58,23 +58,47 @@ export const ConfirmationModal = ({
             dangerouslySetInnerHTML={{ __html: description }}
           />
 
-          {showCommentField && (
-            <div className="w-full flex flex-col gap-y-4.5">
-              <label
-                htmlFor="feedback-comment"
-                className="text-xl font-medium text-[#2E3032]"
-              >
-                {commentLabel}
-              </label>
-              <textarea
-                id="feedback-comment"
-                placeholder={commentPlaceholder}
-                value={comment}
-                onChange={onCommentChange}
-                className="w-full px-5 py-6 border-[1.5px] border-[#D2D4D5] placeholder:text-[#9DA1A5] text-[#2E3032] rounded-[20px] resize-none text-xl font-medium"
-                rows={4}
-                required
-              />
+                    {showCommentField && (
+                        <div className="w-full flex flex-col gap-y-4.5">
+                            <label htmlFor="feedback-comment" className="text-xl font-medium text-[#2E3032]">
+                                {commentLabel}
+                            </label>
+                            <textarea
+                                id="feedback-comment"
+                                placeholder={commentPlaceholder}
+                                value={comment}
+                                onChange={onCommentChange}
+                                className="w-full px-5 py-6 border-[1.5px] border-[#D2D4D5] placeholder:text-[#9DA1A5] text-[#2E3032] rounded-[20px] resize-none text-xl font-medium"
+                                rows={4}
+                                required
+                            />
+                        </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4 w-full mt-11.5">
+                        <ActionButtons
+                            className="w-full"
+                            actions={[
+                                {
+                                    label: cancelLabel,
+                                    onClick: onClose,
+                                    variant: "primary",
+                                    active: false,
+                                    className: "w-full h-18 bg-[#F0F1F2] text-[#2E3032] rounded-[20px] transition-colors text-[20px] font-semibold",
+                                },
+                                {
+                                    label: confirmLabel,
+                                    onClick: onConfirm,
+                                    disabled: comment.length === 0 && showCommentField,
+                                    variant: "danger",
+                                    active: true,
+                                    className: "w-full h-18 bg-[#D80000] text-white rounded-[20px] transition-colors text-[20px] font-semibold"
+                                },
+                            ]}
+                        />
+                    </div>
+                </div>
             </div>
           )}
 

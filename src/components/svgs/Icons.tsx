@@ -612,7 +612,7 @@ const icons: Record<TIconNames, TRenderSvg> = {
       <circle cx="12" cy="17" r="1.5" fill={stroke} />
     </svg>
   ),
-  saveIcon: ({ width = 17, height = 12 }) => (
+  saveIcon: ({ width = 17, height = 12, stroke = "white" }) => (
     <svg
       width={width}
       height={height}
@@ -622,7 +622,7 @@ const icons: Record<TIconNames, TRenderSvg> = {
     >
       <path
         d="M1 6L6 11L16 1"
-        stroke="white"
+        stroke={stroke}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

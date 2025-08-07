@@ -274,7 +274,7 @@ export const updateLocationSchema = z.object({
   lng: z.number().optional(),
   menu: z.string().optional(),
   name: z.string().optional(),
-  openingHours: z.array(locationAvailabilitySchema).optional(),
+  openingHours: z.array(locationAvailabilitySchema).optional().or(z.array(z.string()).optional()),
   photos: z.array(z.string()).optional(),
   phoneNumber: z.string().optional(),
   priceLevel: z.number().optional(),

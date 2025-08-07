@@ -164,6 +164,7 @@ export const ResubmitRestaurant = ({
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateAdminLocation(payload as any);
+
   };
 
   if (isLoading) {
