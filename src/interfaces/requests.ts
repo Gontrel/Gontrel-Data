@@ -264,7 +264,7 @@ export interface UpdateLocationRequest {
     dayOfTheWeek: DayOfTheWeek; // required, enum values
     opensAt?: number;
     closesAt?: number;
-  }>;
+  }> | string[];
   photos?: string[];
   phoneNumber?: string;
   priceLevel?: number;

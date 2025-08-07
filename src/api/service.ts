@@ -158,7 +158,7 @@ export default class APIRequest {
   // updateRestaurant
   updateRestaurant = async (data: UpdateLocationRequest) => {
     const response = await this.authenticatedClient.put(
-      `/admin-location/${data.locationId}`,
+      `/admin-location`,
       data
     );
     return this.handleResponse(response);

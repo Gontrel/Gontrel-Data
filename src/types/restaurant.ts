@@ -1,17 +1,21 @@
-import { GetRestaurantsResponse, GetGroupedPostsResponse } from "@/interfaces";
+
+import { GetRestaurantsResponse, GetGroupedPostsResponse, GetPostsResponse, OpeningHoursDay, Reservation, Summary, Admin, Post, Address, Menu } from "@/interfaces";
 
 /**
  * Restaurant data model representing the production/live data
  */
-export type ActiveRestaurantTableTypes = GetRestaurantsResponse['data'][number];
+export type ActiveRestaurantTableTypes = GetRestaurantsResponse["data"][number];
 
-export type PendingRestaurantTableTypes = GetRestaurantsResponse['data'][number];
+export type PendingRestaurantTableTypes =
+  GetRestaurantsResponse["data"][number];
 
 export type PendingVideoTableTypes = GetGroupedPostsResponse['data'][number];
 
-export type SubmittedRestaurantTableTypes = GetRestaurantsResponse['data'][number];
+export type SubmittedRestaurantTableTypes =
+  GetRestaurantsResponse["data"][number];
 
 export type SubmittedVideoTableTypes = GetGroupedPostsResponse['data'][number];
+
 
 /**
  * API response types
@@ -93,3 +97,31 @@ export interface RestaurantFormData {
   tags: string[];
   videoFile?: File;
 }
+
+export type RestaurantData = {
+  id?: string;
+  placeId: string;
+  name: string;
+  image: string;
+  address: string | Address;
+  website: string;
+  workingHours: Record<string, string[]>;
+
+  admin?: Admin;
+  country?: string;
+  lat?: number;
+  lng?: number;
+  mapLink?: string;
+  menu?: string | Menu;
+  modifiedAt?: string;
+  createdAt?: string;
+  openingHours?: OpeningHoursDay[];
+  photos?: string[];
+  posts?: Post[];
+  priceLevel?: number;
+  rating?: number;
+  reservation?: Reservation;
+  status?: string;
+  summary?: Summary;
+  toilets?: boolean;
+};

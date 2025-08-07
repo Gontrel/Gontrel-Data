@@ -1,0 +1,210 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { ResubmitPage } from "@/components/modals/ResubmitPage";
+import { RestaurantData, TimeSlot } from "@/types/restaurant";
+import { RestaurantConfirmationSkeleton } from "@/components/Loader/restaurants/RestaurantConfirmationSkeleton";
+import { trpc } from "@/lib/trpc-client";
+import {
+  convertTimeTo24Hour,
+  formatOpeningHours,
+  formatTime,
+} from "@/lib/utils";
+import { useVideoStore } from "@/stores/videoStore";
+import { Sheet } from "@/components/modals/Sheet";
+import { successToast, errorToast } from "@/utils/toast";
+import { UpdateLocationRequest } from "@/interfaces/requests";
+import { DayOfTheWeek } from "@/types/enums";
+
+interface ResubmitRestaurantSheetProps {
+  open: boolean;
+  restaurantId: string;
+  isRestaurantFlow: boolean;
+  title: string;
+  description: string;
+  onOpenChange: (open: boolean) => void;
+}
+
+export const ResubmitRestaurant = ({
+  restaurantId,
+  open,
+  onOpenChange,
+  title,
+  description,
+  isRestaurantFlow,
+}: ResubmitRestaurantSheetProps) => {
+  const [step, setStep] = useState(1);
+  const [selectedRestaurant, setSelectedRestaurant] =
+    useState<RestaurantData | null>(null);
+  const { setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
+
+  const { data: restaurant, isLoading } =
+    trpc.restaurant.getRestaurantById.useQuery(
+      { locationId: restaurantId },
+      { enabled: !!restaurantId && open }
+    );
+
+  const { mutate: updateAdminLocation, isPending: isLoadingUpdate } =
+    trpc.restaurant.updateRestaurant.useMutation({
+      onSuccess: () => {
+        successToast("Restaurant updated successfully!");
+        setStep(2);
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
+
+  useEffect(() => {
+    const processRestaurant = async () => {
+      if (restaurant) {
+        try {
+          const formattedHours = await formatOpeningHours(
+            restaurant.openingHours || []
+          );
+          const updatedRestaurant = {
+            ...restaurant,
+            workingHours: formattedHours,
+          };
+
+          setSelectedRestaurant(updatedRestaurant);
+          addRestaurantData(updatedRestaurant);
+          console.log("Processed restaurant:", updatedRestaurant);
+        } catch (error) {
+          console.error("Error formatting hours:", error);
+        }
+      } else {
+        setSelectedRestaurant(null);
+      }
+    };
+
+    processRestaurant();
+  }, [restaurant, addRestaurantData]);
+
+  const handleClose = useCallback(() => {
+    onOpenChange(false);
+    setStep(1);
+    setSelectedRestaurant(null);
+    setActiveVideoUrl(null);
+    resetVideos();
+  }, [onOpenChange, setActiveVideoUrl, resetVideos]);
+
+  const handleGoBackToSearch = useCallback(() => {
+    setSelectedRestaurant(null);
+    setStep(1);
+  }, []);
+
+  const handleWorkingHoursSave = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (updatedHours: any) => {
+      if (!selectedRestaurant) return;
+
+      const newWorkingHours: Record<string, string[]> = {};
+      for (const day in updatedHours) {
+        const dayData = updatedHours[day];
+        const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+
+        if (dayData.isOpen) {
+          if (dayData.isAllDay) {
+            newWorkingHours[dayName] = ["24 hours"];
+          } else {
+            newWorkingHours[dayName] = dayData.slots?.map(
+              (slot: TimeSlot) =>
+                `${formatTime(slot.start)} - ${formatTime(slot.end)}`
+            );
+          }
+        }
+      }
+
+      setSelectedRestaurant((prev) => ({
+        ...prev!,
+        workingHours: newWorkingHours,
+      }));
+    },
+    [selectedRestaurant]
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleCreateRestaurant = (data: any) => {
+    console.log(data, "data");
+    console.log(selectedRestaurant, "selectedRestaurantselectedRestaurant");
+    const payload = {};
+    //  updateAdminLocation(payload);
+  };
+
+  const handleOnNext = (data: { openingHour: Record<string, string[]> }) => {
+    const payload: UpdateLocationRequest = {
+      locationId: selectedRestaurant?.id ?? "",
+      address:
+        typeof selectedRestaurant?.address === "string"
+          ? selectedRestaurant?.address
+          : selectedRestaurant?.address?.content,
+      menu:
+        typeof selectedRestaurant?.menu === "string"
+          ? selectedRestaurant?.menu
+          : selectedRestaurant?.menu?.content,
+      name: selectedRestaurant?.name,
+      reservation:
+        typeof selectedRestaurant?.reservation === "string"
+          ? selectedRestaurant.reservation
+          : selectedRestaurant?.reservation?.content,
+      openingHours: Object.entries(data.openingHour)?.map(([day, hours]) => {
+        if (hours[0].toLowerCase() === "24 hours") {
+          return {
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+            opensAt: 0, // Represents 00:00 (midnight)
+            closesAt: 24, // Represents 24:00 (end of day)
+          };
+        }
+
+        if (hours[0].toLowerCase().trim() === "closed") {
+          return {
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+            opensAt: 0, // Represents 00:00 (midnight)
+            closesAt: 0, // Represents 00:00 (end of day)
+          };
+        }
+
+        const [startTime, endTime] = hours[0].split(" – ");
+
+        return {
+          dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+          opensAt: convertTimeTo24Hour(startTime),
+          closesAt: convertTimeTo24Hour(endTime),
+        };
+      }),
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateAdminLocation(payload as any);
+  };
+
+  if (isLoading) {
+    return <RestaurantConfirmationSkeleton />;
+  }
+
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={handleClose}
+      width="w-[638px]"
+      className="flex flex-row justify-center z-30"
+    >
+      <ResubmitPage
+        title={title}
+        description={description}
+        restaurant={selectedRestaurant}
+        step={step}
+        isLoading={isLoading}
+        handleClose={handleClose}
+        handleOnSubmitConfirmResubmitRestaurant={(data) => handleOnNext(data)}
+        onNextVideoStep={() => setStep(3)}
+        isRestaurantFlow={isRestaurantFlow}
+        onPreviousVideoStep={() => setStep(1)}
+        onGoBackToSearch={handleGoBackToSearch}
+        onPreviousRestaurantMenu={() => setStep(2)}
+        onWorkingHoursSave={handleWorkingHoursSave}
+        onSubmit={(data) => handleCreateRestaurant(data)}
+      />
+    </Sheet>
+  );
+};

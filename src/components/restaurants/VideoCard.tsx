@@ -13,7 +13,11 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
   const { removeVideo } = useVideoStore();
 
   return (
-    <div className="flex flex-row bg-gray-100 p-4 pe-11 rounded-lg gap-4 items-start">
+    <div
+      className={`flex flex-row ${
+        !video.isUpdated ? "bg-[#FDE6E6]" : "bg-[#F0F1F2]"
+      } p-4 pe-11 rounded-lg gap-4 items-start`}
+    >
       <Image
         src={video.thumbUrl || "/placeholder-image.png"}
         alt="Video thumbnail"

@@ -4,21 +4,23 @@ import { useState, useEffect, useRef } from "react";
 import { Sheet } from "./Sheet";
 import Icon from "../svgs/Icons";
 import { Search } from "lucide-react";
-import {
-  RestaurantConfirmation,
-  RestaurantData,
-} from "../restaurants/RestaurantConfirmation";
+import { RestaurantConfirmation } from "../restaurants/RestaurantConfirmation";
 import { VideoStep } from "../restaurants/VideoStep";
 import { RestaurantMenuWidget } from "../restaurants/RestaurantMenuWidget";
 import { trpc } from "@/lib/trpc-client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useVideoStore } from "@/stores/videoStore";
-import { convertTimeTo24Hour, formatTime } from "@/lib/utils";
+import {
+  convertTimeTo24Hour,
+  formatTime,
+  generateSessionToken,
+} from "@/lib/utils";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { errorToast, successToast } from "@/utils/toast";
 import { TimeSlot } from "./EditWorkingHoursModal";
 import { CreateLocationRequest } from "@/interfaces/requests";
 import { DayOfTheWeek } from "@/types/enums";
+import { RestaurantData } from "@/types/restaurant";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -68,13 +70,6 @@ export const NewRestaurantSheet = ({
   );
 
   useEffect(() => {
-    const generateSessionToken = () => {
-      return (
-        new Date().getTime().toString() +
-        Math.random().toString(36).substring(2)
-      );
-    };
-
     setSessionToken(generateSessionToken());
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -100,6 +95,7 @@ export const NewRestaurantSheet = ({
     }
   }, [autoCompleteData]);
 
+
   useEffect(() => {
     if (placeDetailsData) {
       const result = placeDetailsData;
@@ -114,7 +110,7 @@ export const NewRestaurantSheet = ({
 
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-      const imageUrl =
+      const image =
         photoReference && apiKey
           ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
           : "";
@@ -123,11 +119,11 @@ export const NewRestaurantSheet = ({
         placeId: result.place_id,
         name: result.name,
         address: result.formatted_address,
-        imageUrl: imageUrl,
+        image: image,
         rating: result.rating,
         workingHours: workingHours,
-        websiteUrl: result.website ?? "",
-        addressUrl: result.url ?? "",
+        website: result.website ?? "",
+        // address: result.url ?? "",
       };
 
       setIsRestaurantConfirmed(true);
@@ -189,10 +185,11 @@ export const NewRestaurantSheet = ({
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
-      address: selectedRestaurant.address,
-      menu: data.menuUrl ? data.menuUrl : "",
+      address: typeof selectedRestaurant.address === "string" ? selectedRestaurant.address : selectedRestaurant.address.content,
+      menu: data.menuUrl && data.menuUrl,
+      website: selectedRestaurant?.website && selectedRestaurant?.website,
       name: selectedRestaurant.name,
-      photos: selectedRestaurant.imageUrl ? [selectedRestaurant.imageUrl] : [],
+      photos: selectedRestaurant.image ? [selectedRestaurant.image] : [],
       rating: selectedRestaurant.rating ?? 0,
       reservation: data.reservationUrl ? data.reservationUrl : "",
       type: "RESTAURANT" as const,
