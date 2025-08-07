@@ -1,5 +1,14 @@
-
-import { GetRestaurantsResponse, GetGroupedPostsResponse, OpeningHoursDay, Reservation, Summary, Admin, Post, Address, Menu } from "@/interfaces";
+import {
+  GetRestaurantsResponse,
+  GetGroupedPostsResponse,
+  OpeningHoursDay,
+  Reservation,
+  Summary,
+  Admin,
+  Post,
+  Address,
+  Menu,
+} from "@/interfaces";
 
 /**
  * Restaurant data model representing the production/live data
@@ -9,13 +18,12 @@ export type ActiveRestaurantTableTypes = GetRestaurantsResponse["data"][number];
 export type PendingRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type PendingVideoTableTypes = GetGroupedPostsResponse['data'][number];
+export type PendingVideoTableTypes = GetGroupedPostsResponse["data"][number];
 
 export type SubmittedRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type SubmittedVideoTableTypes = GetGroupedPostsResponse['data'][number];
-
+export type SubmittedVideoTableTypes = GetGroupedPostsResponse["data"][number];
 
 /**
  * API response types
@@ -106,6 +114,7 @@ export type RestaurantData = {
   address: string | Address;
   website: string;
   workingHours: Record<string, string[]>;
+  comment?: string;
 
   admin?: Admin;
   country?: string;
@@ -124,4 +133,9 @@ export type RestaurantData = {
   status?: string;
   summary?: Summary;
   toilets?: boolean;
+};
+
+export type LinkStep = {
+  menu?: string;
+  reservation?: string;
 };

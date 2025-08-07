@@ -43,7 +43,6 @@ export const RestaurantConfirmation = ({
     setIsEditHoursModalOpen(false);
   };
 
-
   return (
     <div className="flex flex-col gap-y-5 max-h-full mt-[62px] justify-between">
       <div className="flex flex-col gap-y-5">
@@ -76,19 +75,31 @@ export const RestaurantConfirmation = ({
           </div>
           <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-200">
             <a
-              href={restaurant.website}
+              href={restaurant?.website || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 font-medium text-sm p-2 rounded-lg bg-[#FFFFFF] hover:bg-gray-100"
+              className={`flex items-center gap-2 font-medium text-sm p-2 rounded-lg ${
+                restaurant?.website
+                  ? "bg-[#FFFFFF] hover:bg-gray-100"
+                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+              }`}
+              onClick={(e) => {
+                if (!restaurant?.website) e.preventDefault();
+              }}
             >
-              <Icon name="globeIcon" className="w-5 h-5" fill="#2E3032" /> View
-              website <Icon name="externalLinkIcon" className="w-5 h-5" />
+              <Icon
+                name="globeIcon"
+                className="w-5 h-5"
+                fill={restaurant?.website ? "#2E3032" : "#D1D5DB"}
+              />
+              {restaurant?.website ? "View website" : "No website available"}
+              {restaurant?.website && (
+                <Icon name="externalLinkIcon" className="w-5 h-5" />
+              )}
             </a>
             <a
               href={
-                typeof restaurant?.address === "string"
-                  ? restaurant?.address
-                  : restaurant?.address.content
+                 restaurant?.mapLink 
               }
               target="_blank"
               rel="noopener noreferrer"

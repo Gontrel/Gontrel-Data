@@ -16,9 +16,8 @@ interface ResubmitRestaurantSheetProps {
   description: string;
   isLoading: boolean;
   handleClose: () => void;
-  handleOnSubmitConfirmResubmitRestaurant: (data: {
-    openingHour: Record<string, string[]>;
-  }) => void;
+  handleResubmit?: () => void;
+  onContinue: () => void;
   onNextVideoStep: () => void;
   onPreviousVideoStep: () => void;
   onGoBackToSearch: () => void;
@@ -34,7 +33,8 @@ export const ResubmitPage = ({
   step,
   isLoading,
   handleClose,
-  handleOnSubmitConfirmResubmitRestaurant,
+  handleResubmit,
+  onContinue,
   onNextVideoStep,
   onPreviousVideoStep,
   onGoBackToSearch,
@@ -75,16 +75,17 @@ export const ResubmitPage = ({
                 <ConfirmResubmitRestaurant
                   restaurant={restaurant}
                   onGoBackToSearch={onGoBackToSearch}
-                  onContinue={handleOnSubmitConfirmResubmitRestaurant}
+                  onContinue={onContinue}
                   onWorkingHoursSave={onWorkingHoursSave}
                 />
               )}
               {step === 2 && (
                 <ResubmitVideoStepStep
-                isRestaurantFlow={isRestaurantFlow}
+                  isRestaurantFlow={isRestaurantFlow}
                   restaurant={restaurant ?? []}
                   onPrevious={onPreviousVideoStep}
                   onNext={onNextVideoStep}
+                  handleResubmit={handleResubmit}
                 />
               )}
               {step === 3 && isRestaurantFlow ? (
@@ -93,7 +94,7 @@ export const ResubmitPage = ({
                   onPrevious={onPreviousRestaurantMenu}
                   onSubmit={onSubmit}
                 />
-              ): null}
+              ) : null}
             </>
           ) : null}
         </div>

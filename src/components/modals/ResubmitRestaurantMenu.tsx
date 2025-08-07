@@ -1,5 +1,3 @@
-import { errorToast } from "@/utils/toast";
-import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 
 interface ResubmitRestaurantMenuProps {
@@ -17,10 +15,6 @@ export const ResubmitRestaurantMenu = ({
   const [reservationUrl, setReservationUrl] = useState("");
 
   const handleSubmit = () => {
-    if (!menuUrl || !reservationUrl) {
-      errorToast("Please provide a menu or reservation URL.");
-      return;
-    }
     onSubmit({ menuUrl, reservationUrl });
   };
 
@@ -73,14 +67,7 @@ export const ResubmitRestaurantMenu = ({
           disabled={isLoading}
           className="w-full bg-[#0070F3] text-white py-3 rounded-lg font-semibold transition-colors hover:bg-blue-600"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              <span>Please wait...</span>
-            </>
-          ) : (
-            <p className="font-semibold text-lg"> Submit</p>
-          )}
+          <span className="font-semibold text-lg"> Submit</span>
         </button>
       </div>
     </div>

@@ -153,7 +153,7 @@ export const VideoPlayer = ({
       {/* Custom Controls */}
       <div className="absolute inset-0 flex items-center justify-center">
         {isLoading && (
-          <div className="animate-pulse text-white">Loading video...</div>
+          <div className="animate-pulse text-blue-400">Loading video...</div>
         )}
 
         {!isPlaying && !isLoading && (
