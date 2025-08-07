@@ -15,20 +15,17 @@ import { RestaurantData } from "@/types";
 
 interface ResubmitVideoStepProps {
   onNext: () => void;
+  handleResubmit?: () => void;
   onPrevious: () => void;
-  onSubmit?: () => void;
-  postOnly?: boolean | null;
   restaurant: RestaurantData;
   isLoading?: boolean;
-  isRestaurantFlow?: boolean
-
+  isRestaurantFlow?: boolean;
 }
 
 export const ResubmitVideoStepStep = ({
   onNext,
   onPrevious,
-  onSubmit,
-  postOnly,
+  handleResubmit,
   isRestaurantFlow,
   restaurant,
 }: ResubmitVideoStepProps) => {
@@ -141,8 +138,7 @@ export const ResubmitVideoStepStep = ({
       try {
         const convertedPosts = await convertPosts(restaurant?.posts ?? []);
         addVideos(convertedPosts);
-      } catch {
-      }
+      } catch {}
     };
 
     loadAndAddVideos();
@@ -151,13 +147,36 @@ export const ResubmitVideoStepStep = ({
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      const tag = event.currentTarget.value.trim();
-      if (tag && !currentVideo.tags.includes(tag)) {
-        setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
-        event.currentTarget.value = "";
+      const inputValue = event.currentTarget.value.trim();
+
+      if (!inputValue) return;
+
+      // Split tags by commas and trim whitespace
+      const newTags = inputValue
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      if (newTags.length === 0) {
+        errorToast("Please enter valid tags.");
         return;
       }
-      errorToast("Tag already exist");
+
+      const uniqueTags = newTags.filter(
+        (tag) => !currentVideo.tags.includes(tag)
+      );
+
+      if (uniqueTags.length === 0) {
+        errorToast("All tags already exist.");
+        return;
+      }
+
+      setCurrentVideo({
+        ...currentVideo,
+        tags: [...currentVideo.tags, ...uniqueTags],
+      });
+
+      event.currentTarget.value = "";
     }
   };
 
@@ -247,19 +266,11 @@ export const ResubmitVideoStepStep = ({
     if (isRestaurantFlow) {
       onNext();
       return;
-    } 
+    }
   };
 
   const shouldDisable =
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length < 1 &&
-      currentVideo.url !== "" &&
-      videos.length === 0) ||
-    (currentVideo.tags.length >= 1 &&
-      currentVideo.url === "" &&
-      videos.length === 0);
+    currentVideo.tags.length >= 1 && currentVideo.url !== "";
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -343,7 +354,8 @@ export const ResubmitVideoStepStep = ({
               {editingVideoId && videos?.length >= 0 && (
                 <div className="mt-6 pt-4 flex justify-left">
                   <Button
-                    disabled={isLoadingUpdate}
+                    disabled={shouldDisable}
+                    loading={isLoadingUpdate}
                     clickFunc={handleAddOrUpdateVideo}
                     className="flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] font-semibold"
                   >
@@ -357,19 +369,19 @@ export const ResubmitVideoStepStep = ({
         </div>
       )}
 
-      {!postOnly ? (
-        <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
-          <Button
-            clickFunc={() => {
-              resetVideos();
-              setActiveVideoUrl(null);
-              setTiktokUsername(null);
-              onPrevious();
-            }}
-            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-          >
-            Previous
-          </Button>
+      <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
+        <Button
+          clickFunc={() => {
+            resetVideos();
+            setActiveVideoUrl(null);
+            setTiktokUsername(null);
+            onPrevious();
+          }}
+          className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+        >
+          Previous
+        </Button>
+        {isRestaurantFlow && (
           <Button
             clickFunc={handleOnNext}
             disabled={shouldDisable}
@@ -379,23 +391,23 @@ export const ResubmitVideoStepStep = ({
                 : "bg-[#0070F3] text-white hover:bg-blue-600"
             }`}
           >
-            {isRestaurantFlow ? "Next" : "Resubmit"}
+            Next
           </Button>
-        </div>
-      ) : (
-        <Button
-          clickFunc={onSubmit}
-          type="submit"
-          disabled={shouldDisable}
-          className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
-            shouldDisable
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-[#0070F3] text-white hover:bg-blue-600"
-          }`}
-        >
-          Submit
-        </Button>
-      )}
+        )}
+        {!isRestaurantFlow && (
+          <Button
+            clickFunc={handleResubmit}
+            disabled={shouldDisable}
+            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+              shouldDisable
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-[#0070F3] text-white hover:bg-blue-600"
+            }`}
+          >
+            Resubmit
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

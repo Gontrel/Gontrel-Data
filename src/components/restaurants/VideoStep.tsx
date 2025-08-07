@@ -8,6 +8,7 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast } from "@/utils/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
+import Button from "../ui/Button";
 
 interface VideoStepProps {
   onNext: () => void;
@@ -41,7 +42,6 @@ export const VideoStep = ({
     locationName: "",
     rating: 0,
   });
-  
 
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
   const [urlInput, setUrlInput] = useState<string>("");
@@ -75,9 +75,11 @@ export const VideoStep = ({
               author: data.author?.nickname,
             }));
           } else {
+            setActiveVideoUrl(null);
             errorToast("Could not retrieve video information from this URL.");
           }
         } catch {
+          setActiveVideoUrl(null);
           errorToast(
             "Failed to fetch TikTok video information. Please check the URL."
           );
@@ -108,13 +110,36 @@ export const VideoStep = ({
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      const tag = event.currentTarget.value.trim();
-      if (tag && !currentVideo.tags.includes(tag)) {
-        setCurrentVideo({ ...currentVideo, tags: [...currentVideo.tags, tag] });
-        event.currentTarget.value = "";
-           return;
+      const inputValue = event.currentTarget.value.trim();
+
+      if (!inputValue) return;
+
+      // Split tags by commas and trim whitespace
+      const newTags = inputValue
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      if (newTags.length === 0) {
+        errorToast("Please enter valid tags.");
+        return;
       }
-      errorToast("Tag already exist");
+
+      const uniqueTags = newTags.filter(
+        (tag) => !currentVideo.tags.includes(tag)
+      );
+
+      if (uniqueTags.length === 0) {
+        errorToast("All tags already exist.");
+        return;
+      }
+
+      setCurrentVideo({
+        ...currentVideo,
+        tags: [...currentVideo.tags, ...uniqueTags],
+      });
+
+      event.currentTarget.value = "";
     }
   };
 
@@ -147,6 +172,7 @@ export const VideoStep = ({
       author: currentVideo.author,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
+      isUpdated: true,
     };
 
     if (editingVideoId) {
@@ -235,7 +261,6 @@ export const VideoStep = ({
             className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             value={currentVideo.url?.trim()}
             onChange={handleUrlChange}
-            onPaste={handleUrlChange}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -282,12 +307,12 @@ export const VideoStep = ({
             </div>
             {editingVideoId && videos?.length >= 0 ? (
               <div className="mt-6 pt-4 flex justify-left">
-                <button
-                  onClick={handleAddOrUpdateVideo}
+                <Button
+                  clickFunc={handleAddOrUpdateVideo}
                   className="flex items-center gap-2 text-white bg-[#0070F3] rounded-lg p-4 font-semibold"
                 >
                   Update video
-                </button>
+                </Button>
               </div>
             ) : null}
             <div className="mt-6 border-t border-gray-200 pt-4 flex justify-center">
@@ -307,8 +332,8 @@ export const VideoStep = ({
 
       {!postOnly ? (
         <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
-          <button
-            onClick={() => {
+          <Button
+            clickFunc={() => {
               resetVideos();
               setActiveVideoUrl(null);
               setTiktokUsername(null);
@@ -317,10 +342,11 @@ export const VideoStep = ({
             className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
           >
             Previous
-          </button>
-          <button
-            onClick={handleOnNext}
+          </Button>
+          <Button
+            clickFunc={handleOnNext}
             disabled={shouldDisable}
+            loading={shouldDisable}
             className={`w-full py-3 rounded-lg font-semibold transition-colors ${
               shouldDisable
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -328,28 +354,22 @@ export const VideoStep = ({
             }`}
           >
             Next
-          </button>
+          </Button>
         </div>
       ) : (
-        <button
-          onClick={onSubmit}
+        <Button
+          clickFunc={onSubmit}
           type="submit"
-          disabled={shouldDisable}
+          disabled={shouldDisable || isLoading}
+          loading={isLoading}
           className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
             shouldDisable
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : "bg-[#0070F3] text-white hover:bg-blue-600"
           }`}
         >
-          {isLoading ? (
-            <>
-              <Loader className="animate-spin mr-2" />
-              <p>Submit</p>
-            </>
-          ) : (
-            "Submit"
-          )}
-        </button>
+          Submit
+        </Button>
       )}
     </div>
   );

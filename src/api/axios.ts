@@ -30,18 +30,18 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
+     console.log("responseresponseresponseresponse", response);
     return response;
   },
   (error) => {
-    // Handle network errors and API errors
     if (error.response) {
-      // Handle 401 Unauthorized
-      if (error.response.status === 200) {
-        if (typeof window !== "undefined") {
-          // Redirect to login
-          window.location.href = "/";
-        }
-      }
+      console.log("responseresponseresponseresponse", error);
+      // if (error.response.status === 200) {
+      //   if (typeof window !== "undefined") {
+      //     // Redirect to login
+      //     window.location.href = "/";
+      //   }
+      // }
     }
 
     return Promise.reject(error);

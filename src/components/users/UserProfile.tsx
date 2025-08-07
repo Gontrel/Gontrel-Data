@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
 import { useAuthStore } from "@/stores/authStore";
+import Button from "../ui/Button";
 
 export const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,8 +24,7 @@ export const UserProfile = () => {
       logout();
       router.push("/");
     },
-    onError: () => {
-    },
+    onError: () => {},
   });
 
   const handleSignOut = () => {
@@ -59,23 +59,23 @@ export const UserProfile = () => {
         <div className="p-4">
           <p className="mb-6 text-center">Are you sure you want to sign out?</p>
           <div className="flex justify-end gap-4">
-            <button
+            <Button
               className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              onClick={() => setIsModalOpen(false)}
+              clickFunc={() => setIsModalOpen(false)}
             >
               No
-            </button>
-            <button
+            </Button>
+            <Button
               className={`px-4 py-2 text-white rounded-lg transition-colors ${
                 isSuccess
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-red-600 hover:bg-red-700"
               }`}
-              onClick={handleSignOut}
+              clickFunc={handleSignOut}
               disabled={isSuccess}
             >
               {isSuccess ? "Signing Out..." : "Yes, Sign Out"}
-            </button>
+            </Button>
           </div>
         </div>
       </CenterModal>

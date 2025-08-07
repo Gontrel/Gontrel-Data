@@ -95,7 +95,6 @@ export const NewRestaurantSheet = ({
     }
   }, [autoCompleteData]);
 
-
   useEffect(() => {
     if (placeDetailsData) {
       const result = placeDetailsData;
@@ -185,45 +184,44 @@ export const NewRestaurantSheet = ({
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
-      address: typeof selectedRestaurant.address === "string" ? selectedRestaurant.address : selectedRestaurant.address.content,
-      menu: data.menuUrl && data.menuUrl,
-      website: selectedRestaurant?.website && selectedRestaurant?.website,
-      name: selectedRestaurant.name,
-      photos: selectedRestaurant.image ? [selectedRestaurant.image] : [],
+      // Conditional address
+      ...(selectedRestaurant.address && {
+        address:
+          typeof selectedRestaurant.address === "string"
+            ? selectedRestaurant.address
+            : selectedRestaurant.address.content,
+      }),
+      ...(data.menuUrl && { menu: data.menuUrl }),
+      ...(selectedRestaurant.name && { name: selectedRestaurant.name }),
+      ...(selectedRestaurant.image && { photos: [selectedRestaurant.image] }),
       rating: selectedRestaurant.rating ?? 0,
-      reservation: data.reservationUrl ? data.reservationUrl : "",
-      type: "RESTAURANT" as const,
-      isVerified: false,
+      ...(data.reservationUrl && { reservation: data.reservationUrl }),
       posts:
         videos.map((video) => ({
-          isVerified: false,
           tiktokLink: video.url,
           videoUrl: video.videoUrl || "",
           thumbUrl: video.thumbUrl,
           locationName: selectedRestaurant.name,
           rating: 0,
-          tags: video.tags ? video.tags : [],
+          ...(video.tags && { tags: video.tags }),
         })) ?? [],
-      openingHours: Object.entries(selectedRestaurant.workingHours)?.map(
+      openingHours: Object.entries(selectedRestaurant.workingHours ?? {}).map(
         ([day, hours]) => {
           if (hours[0].toLowerCase() === "24 hours") {
             return {
               dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-              opensAt: 0, // Represents 00:00 (midnight)
-              closesAt: 24, // Represents 24:00 (end of day)
+              opensAt: 0,
+              closesAt: 24,
             };
           }
-
           if (hours[0].toLowerCase().trim() === "closed") {
             return {
               dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-              opensAt: 0, // Represents 00:00 (midnight)
-              closesAt: 0, // Represents 00:00 (end of day)
+              opensAt: 0,
+              closesAt: 0,
             };
           }
-
           const [startTime, endTime] = hours[0].split(" – ");
-
           return {
             dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
             opensAt: convertTimeTo24Hour(startTime),
@@ -232,7 +230,6 @@ export const NewRestaurantSheet = ({
         }
       ),
     };
-
     createAdminLocation(payload);
   };
 

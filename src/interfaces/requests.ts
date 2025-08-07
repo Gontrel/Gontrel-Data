@@ -260,11 +260,12 @@ export interface UpdateLocationRequest {
   lng?: number;
   menu?: string;
   name?: string;
+  status?: string;
   openingHours?: Array<{
-    dayOfTheWeek: DayOfTheWeek; // required, enum values
+    dayOfTheWeek: DayOfTheWeek;
     opensAt?: number;
     closesAt?: number;
-  }> | string[];
+  }>;
   photos?: string[];
   phoneNumber?: string;
   priceLevel?: number;

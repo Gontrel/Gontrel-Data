@@ -287,7 +287,7 @@ export function formatOpeningHours(
   // Handle days with no hours (set to "Closed")
   Object.keys(result).forEach((day) => {
     if (result[day].length === 0) {
-      result[day] = ["00:00 AM} – 00:00 PM"];
+      result[day] = ["00:00 AM – 00:00 PM"];
     }
   });
 
