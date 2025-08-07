@@ -4,7 +4,7 @@
             "id": "restaurant-001",
             "name": "Chapter One",
             "address": "18-19 Parnell Square, Dublin 1",
-            "maplink": "https://maps.google.com/?q=18-19+Parnell+Square,+Dublin+1,+Ireland", // google maps link gotten from the place details - url
+            "maplink": "https://maps.google.com/?q=18-19+Parnell+Square,+Dublin+1,+Ireland",
             "website": "https://www.chapteronerestaurant.com",
             "menuUrl": "https://www.chapteronerestaurant.com/menu",
             "reservationUrl": "https://www.chapteronerestaurant.com/reservations",
