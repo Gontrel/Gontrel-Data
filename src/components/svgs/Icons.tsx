@@ -554,11 +554,7 @@ const icons: Record<TIconNames, TRenderSvg> = {
       />
     </svg>
   ),
-  restaurantTiktokIcon: ({
-    width = 24,
-    height = 24,
-    fill = "#2E3032",
-  }) => (
+  restaurantTiktokIcon: ({ width = 24, height = 24, fill = "#2E3032" }) => (
     <svg
       width={width}
       height={height}
@@ -596,7 +592,12 @@ const icons: Record<TIconNames, TRenderSvg> = {
     </svg>
   ),
 
-  warningIcon: ({ width = 24, height = 24, fill = "#FCD34D", stroke = "#1F1F1F" }) => (
+  warningIcon: ({
+    width = 24,
+    height = 24,
+    fill = "#FCD34D",
+    stroke = "#1F1F1F",
+  }) => (
     <svg
       width={width}
       height={height}
@@ -604,34 +605,35 @@ const icons: Record<TIconNames, TRenderSvg> = {
       xmlns="http://www.w3.org/2000/svg"
     >
       {/* filled yellow triangle */}
-      <polygon
-        points="12,2 22,20 2,20"
-        fill={fill}
-        stroke="none"
-      />
+      <polygon points="12,2 22,20 2,20" fill={fill} stroke="none" />
       {/* black exclamation stem */}
-      <rect
-        x="11"
-        y="8"
-        width="2"
-        height="6"
-        fill={stroke}
-        rx="1"
-      />
+      <rect x="11" y="8" width="2" height="6" fill={stroke} rx="1" />
       {/* black exclamation dot */}
-      <circle
-        cx="12"
-        cy="17"
-        r="1.5"
-        fill={stroke}
+      <circle cx="12" cy="17" r="1.5" fill={stroke} />
+    </svg>
+  ),
+  saveIcon: ({ width = 17, height = 12 }) => (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 17 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 6L6 11L16 1"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
-  )
+  ),
 };
 
 const Icon = (props: TIcon & { name: TIconNames }) =>
   icons[props.name]?.(props) ?? null;
 export default Icon;
 
-//Usage >>>> <Icon name="websiteLinkIcon" stroke="#24B314" />
+//Usage >>>> <Icon name="saveIcon" stroke="#24B314" />
 //Usage >>>> <Icon name="check" fill="#24B314" />

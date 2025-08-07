@@ -1,4 +1,4 @@
-import { ApprovalStatusEnum, ApprovalType } from '@/types';
+import { ApprovalStatusEnum, ApprovalType } from "@/types";
 import { Admin } from "./user";
 import {
   IPaginatedRes,
@@ -6,10 +6,16 @@ import {
   DashboardStats,
   StaffStats,
   LocationStats,
-  Videos
+  Videos,
 } from "./api";
 import { Post, Tag } from "./posts";
-import { Address, Location, Menu, OpeningHours, Reservation } from "./restaurants";
+import {
+  Address,
+  Location,
+  Menu,
+  OpeningHour,
+  Reservation,
+} from "./restaurants";
 
 // Authentication responses
 export interface LoginResponse {
@@ -46,13 +52,14 @@ export interface BulkApproveRestaurantStatusResponse {
   message: string;
 }
 
-
 // Location management responses
-export type GetRestaurantsResponse = IPaginatedRes<{
-  admin: Admin;
-  posts: Post[];
-  videos: Videos;
-} & Location>;
+export type GetRestaurantsResponse = IPaginatedRes<
+  {
+    admin: Admin;
+    posts: Post[];
+    videos: Videos;
+  } & Location
+>;
 
 export interface GetRestaurantByIdResponse {
   location: ApiLocation;
@@ -77,17 +84,19 @@ export interface GetLocationStatsResponse {
 }
 
 // Post management responses
-export type GetPostsResponse = IPaginatedRes<{
-  location: Location | null;
-  admin: Admin;
-  tags: Tag[];
-} & Post>;
+export type GetPostsResponse = IPaginatedRes<
+  {
+    location: Location | null;
+    admin: Admin;
+    tags: Tag[];
+  } & Post
+>;
 
 export type GetGroupedPostsResponse = IPaginatedRes<{
   admin: Admin;
   location: Location;
   postCount: number;
-}>
+}>;
 
 export interface GetPostByIdResponse {
   post: Post;
@@ -164,7 +173,7 @@ export interface GetRestaurantByIdResponse {
   lng: number;
   menu: Menu;
   name: string;
-  openingHours: OpeningHours[];
+  openingHours: OpeningHour[];
   photos: string[];
   phoneNumber: string;
   priceLevel: number;

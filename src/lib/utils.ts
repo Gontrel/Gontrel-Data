@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { WorkingHours } from "@/components/modals/EditWorkingHoursModal";
+import { ConverTedWorkingHours, OpeningHour } from "@/interfaces/restaurants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,6 +37,15 @@ export function formatDate(date: Date): string {
     minute: "2-digit",
   }).format(date);
 }
+
+export function formatDateTime(date: Date): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
 
 /**
  * Format relative time (e.g., "2 hours ago")
@@ -235,3 +245,51 @@ const parseTimeRange = (range: string): TimeSlot => {
   // If end is empty but start is not, default end to start.
   return { start, end: start && !end ? start : end };
 };
+
+export const generateSessionToken = () => {
+  return (
+    new Date().getTime().toString() + Math.random().toString(36).substring(2)
+  );
+};
+
+export function formatOpeningHours(
+  hours: OpeningHour[]
+): ConverTedWorkingHours {
+  const result: ConverTedWorkingHours = {
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+    Saturday: [],
+    Sunday: [],
+  };
+
+  hours.forEach((hour) => {
+    const dayName =
+      hour.dayOfTheWeek.charAt(0) + hour.dayOfTheWeek.slice(1).toLowerCase();
+
+    const formatTime = (decimalHours: number): string => {
+      const hours = Math.floor(decimalHours);
+      const minutes = Math.round((decimalHours % 1) * 60);
+      const period = hours >= 12 ? "PM" : "AM";
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+    };
+
+    const openTime = formatTime(hour.opensAt);
+    const closeTime = formatTime(hour.closesAt);
+
+    // Add the time range to the appropriate day
+    result[dayName].push(`${openTime} – ${closeTime}`);
+  });
+
+  // Handle days with no hours (set to "Closed")
+  Object.keys(result).forEach((day) => {
+    if (result[day].length === 0) {
+      result[day] = ["00:00 AM} – 00:00 PM"];
+    }
+  });
+
+  return result;
+}

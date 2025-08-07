@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "gontrel-assets.s3.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
     domains: ["p16-pu-sign-no.tiktokcdn-eu.com"],
     minimumCacheTTL: 60,
