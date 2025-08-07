@@ -1,4 +1,4 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { PendingRestaurantTableTypes } from "@/types/restaurant";
 import { PendingRestaurantStatusKey } from "@/hooks/usePendingRestaurants";
 import { Check, X } from "lucide-react";
@@ -16,14 +16,15 @@ import { Post } from "@/interfaces";
 
 /**
  * Creates column definitions for pending restaurants table
- * @param openVideoPreview - Handler for open video preview action
+ * @param handleOpenVideoPreview - Handler for open video preview action
  * @param handleApprove - Handler for approve action
  * @param handleDecline - Handler for decline action
  * @param handleSendFeedback - Handler for send feedback action
  * @param handleSave - Handler for save action
+ * @param onRowClick - Handler for row click action
  */
 export const createPendingRestaurantsColumns = (
-  openVideoPreview: (posts: Post[], restaurantId: string) => void,
+  handleOpenVideoPreview: (posts: Post[], restaurantId: string) => void,
   handleApprove: (
     restaurantId: string,
     statusKey?: PendingRestaurantStatusKey
@@ -33,7 +34,8 @@ export const createPendingRestaurantsColumns = (
     statusKey?: PendingRestaurantStatusKey
   ) => void,
   handleSendFeedback: (restaurant: PendingRestaurantTableTypes) => void,
-  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void
+  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void,
+  onRowClick?: (row: PendingRestaurantTableTypes) => void
 ): ColumnDef<PendingRestaurantTableTypes>[] => [
     {
       accessorKey: "id",
@@ -53,15 +55,39 @@ export const createPendingRestaurantsColumns = (
       meta: { sticky: true },
     },
     {
-      accessorKey: "name",
-      header: () => <TableHeader title="Restaurant name" />,
-      cell: ({ row }) => (
-        <div className="font-medium text-[#181D1F] max-w-60 overflow-auto break-all">
-          {row.getValue("name")}
-        </div>
+      accessorKey: 'name',
+      header: () => (
+        <TableHeader title="Restaurant name" />
       ),
+      cell: ({ row }) => {
+        const handleClick = (e: React.MouseEvent, row: Row<PendingRestaurantTableTypes>) => {
+          onRowClick?.(row.original);
+        };
+        const handleKeyDown = (
+          e: React.KeyboardEvent,
+          row: Row<PendingRestaurantTableTypes>,
+          onRowClick?: (row: PendingRestaurantTableTypes) => void
+        ) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onRowClick?.(row.original);
+          }
+        };
+        return (
+          <div
+            onClick={(e) => handleClick(e, row)}
+            onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
+            role="button"
+            tabIndex={0}
+            aria-label="View restaurant details"
+            className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] hover:text-blue-500 max-w-60 w-full h-full hover:bg-gray-50 overflow-hidden"
+          >
+            <span className="truncate w-full">{row.original.name ?? ""}</span>
+          </div>
+        );
+      },
       minSize: TABLE_COLUMN_SIZES.NAME,
-      meta: { sticky: true },
+      meta: { sticky: true }
     },
     {
       accessorKey: "video",
@@ -69,20 +95,15 @@ export const createPendingRestaurantsColumns = (
       cell: ({ row }) => {
         const posts = row.original.posts;
         return (
-            <div className="flex flex-col gap-y-2 w-fit">
-              <PillButton
-                text={`${posts?.filter((post) => post.status !== ApprovalStatusEnum.PENDING)
-                  .length
-                  }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
-                textColor={getTextColor(posts.map((post) => ({ status: post.status })))}
-                bgColor={getBgColor(posts.map((post) => ({ status: post.status })))}
-              />
-              <button
-              onClick={() => openVideoPreview(posts, row.original.id)}
-                className="text-blue-500 text-left"
-              >
-                View
-              </button>
+          <div className="flex flex-col gap-y-2 w-fit">
+            <PillButton
+              text={`${posts?.filter((post) => post.status !== ApprovalStatusEnum.PENDING)
+                .length
+                }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
+              textColor={getTextColor(posts.map((post) => ({ status: post.status })))}
+              bgColor={getBgColor(posts.map((post) => ({ status: post.status })))}
+            />
+            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(posts, row.original.id)}>View</span>
           </div>
         );
       },
@@ -119,21 +140,21 @@ export const createPendingRestaurantsColumns = (
               <span className="text-black truncate max-w-52">{content}</span>
             </ExternalLink>
             <ActionButtons
-            actions={[
-              {
-                icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original.id, "address"),
-                variant: "success",
-                active: isApproved,
-              },
-              {
-                icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original.id, "address"),
-                variant: "danger",
-                active: isDeclined,
-              },
-            ]}
-            className="w-64 h-9"
+              actions={[
+                {
+                  icon: <Check className="w-6 h-6" />,
+                  onClick: () => handleApprove(row.original.id, "address"),
+                  variant: "success",
+                  active: isApproved,
+                },
+                {
+                  icon: <X className="w-6 h-6" />,
+                  onClick: () => handleDecline(row.original.id, "address"),
+                  variant: "danger",
+                  active: isDeclined,
+                },
+              ]}
+              className="w-64 h-9"
             />
           </div>
         );
@@ -153,21 +174,21 @@ export const createPendingRestaurantsColumns = (
               <span className="text-black">View link</span>
             </ExternalLink>
             <ActionButtons
-            actions={[
-              {
-                icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original.id, "menu"),
-                variant: "success",
-                active: isApproved,
-              },
-              {
-                icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original.id, "menu"),
-                variant: "danger",
-                active: isDeclined,
-              },
-            ]}
-            className="w-64 h-9"
+              actions={[
+                {
+                  icon: <Check className="w-6 h-6" />,
+                  onClick: () => handleApprove(row.original.id, "menu"),
+                  variant: "success",
+                  active: isApproved,
+                },
+                {
+                  icon: <X className="w-6 h-6" />,
+                  onClick: () => handleDecline(row.original.id, "menu"),
+                  variant: "danger",
+                  active: isDeclined,
+                },
+              ]}
+              className="w-64 h-9"
             />
           </div>
         );
@@ -187,21 +208,21 @@ export const createPendingRestaurantsColumns = (
               <span className="text-black">View link</span>
             </ExternalLink>
             <ActionButtons
-            actions={[
-              {
-                icon: <Check className="w-6 h-6" />,
-                onClick: () => handleApprove(row.original.id, "reservation"),
-                variant: "success",
-                active: isApproved,
-              },
-              {
-                icon: <X className="w-6 h-6" />,
-                onClick: () => handleDecline(row.original.id, "reservation"),
-                variant: "danger",
-                active: isDeclined,
-              },
-            ]}
-            className="w-64 h-9"
+              actions={[
+                {
+                  icon: <Check className="w-6 h-6" />,
+                  onClick: () => handleApprove(row.original.id, "reservation"),
+                  variant: "success",
+                  active: isApproved,
+                },
+                {
+                  icon: <X className="w-6 h-6" />,
+                  onClick: () => handleDecline(row.original.id, "reservation"),
+                  variant: "danger",
+                  active: isDeclined,
+                },
+              ]}
+              className="w-64 h-9"
             />
           </div>
         );

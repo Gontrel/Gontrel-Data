@@ -134,6 +134,18 @@ export interface GontrelRestaurantData {
   rating: number;
 }
 
+export interface GontrelRestaurantDetailedData extends GontrelRestaurantData {
+  id: string;
+  adminName: string;
+  adminId: string;
+}
+
+export interface VideoPreviewModalProps {
+  isOpen: boolean;
+  posts: Post[];
+  currentRestaurantId: string | null;
+
 export interface ConverTedWorkingHours {
   [day: string]: string[];
+
 }

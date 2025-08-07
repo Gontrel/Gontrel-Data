@@ -3,7 +3,7 @@ import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 import { TableHeader } from "./utils";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
-import { TABLE_COLUMN_SIZES } from "@/constants/table";
+import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ExternalLink } from "@/components/ui/ExternalLink";
 import Logo from "@/assets/images/logo.png";
 
@@ -92,11 +92,16 @@ export const createActiveRestaurantsColumns = (
         <TableHeader iconName="linkIcon" title="Website" />
       ),
       cell: ({ row }) => {
-        const url = row.getValue('website') as string;
+        const url = row.original.website ?? "";
+        console.log('website:', url);
         return (
+          url.length > 0 ? (
           <ExternalLink href={url} title={url}>
             <span className="text-black">View website</span>
           </ExternalLink>
+          ) : (
+            <span className="text-black">N/A</span>
+          )
         );
       },
       minSize: TABLE_COLUMN_SIZES.WEBSITE,

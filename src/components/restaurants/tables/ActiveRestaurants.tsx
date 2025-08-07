@@ -1,14 +1,20 @@
-'use client';
-
 import React, { useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
+
+// External dependencies
 import { RestaurantTable } from "../RestaurantTable";
-import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
 
-import { ApprovalStatusEnum } from "@/types/enums";
+// Store and API
+import { useActiveRestaurants } from "@/hooks/useActiveRestaurants";
 import { useActiveRestaurantsStore } from "@/stores/tableStore";
-import { trpc } from "@/lib/trpc-client";
-import { useRouter } from "next/navigation";
+
+// Types and enums
+import { ActiveRestaurantTableTypes } from "@/types/restaurant";
+
+// =============================================================================
+// TYPES & INTERFACES
+// =============================================================================
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
@@ -18,59 +24,79 @@ interface ActiveRestaurantsProps {
   handlePageSize: (pageSize: number) => void;
 }
 
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
 /**
  * Component for displaying and managing active restaurants
  */
-const ActiveRestaurants: React.FC<ActiveRestaurantsProps> = ({
+const ActiveRestaurants = ({
   searchTerm,
   currentPage,
   handleCurrentPage,
   pageSize,
   handlePageSize,
 }: ActiveRestaurantsProps) => {
+  // ---------------------------------------------------------------------------
+  // HOOKS & STATE
+  // ---------------------------------------------------------------------------
+
   const router = useRouter();
   const {
     setSelectedRows,
   } = useActiveRestaurantsStore();
 
-  // Use tRPC to fetch data directly
-  const {
-    data: queryData,
-    isLoading,
-    error,
-  } = trpc.restaurant.getRestaurants.useQuery({
-    pageNumber: currentPage,
-    quantity: pageSize,
-    status: ApprovalStatusEnum.APPROVED,
-    query: searchTerm,
+  const { queryData, isLoading, error } = useActiveRestaurants({
+    currentPage,
+    pageSize,
+    searchTerm,
   });
 
-  // Extract data from tRPC response
-  const restaurants = queryData?.data || [];
-  const paginationData = queryData?.pagination;
-  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+  // ---------------------------------------------------------------------------
+  // MUTATIONS
+  // ---------------------------------------------------------------------------
 
-  // Handle errors (removed from useEffect to prevent loops)
-  if (error) {
-    console.error('Active restaurants error:', error.message);
-  }
+
+
+  // ---------------------------------------------------------------------------
+  // EVENT HANDLERS
+  // ---------------------------------------------------------------------------
 
   const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantTableTypes): void => {
     const restaurantId = selectedRows.id;
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
-  // Create columns with proper dependencies
-  const columns = useMemo(() => createActiveRestaurantsColumns(handleOnRowClick), [handleOnRowClick]);
 
-
-
-  // Handle row selection - extract IDs from selected rows
-  const handleRowSelection = (selectedRows: ActiveRestaurantTableTypes[]) => {
+  const handleRowSelection = useCallback((selectedRows: ActiveRestaurantTableTypes[]) => {
     const selectedIds = selectedRows.map(row => row.id);
     setSelectedRows(selectedIds);
-  };
+  }, [setSelectedRows]);
 
+  // ---------------------------------------------------------------------------
+  // COMPUTED VALUES
+  // ---------------------------------------------------------------------------
 
+  const restaurants = useMemo(() => queryData?.data || [], [queryData]);
+  const paginationData = queryData?.pagination;
+  const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+
+  const columns = useMemo(() =>
+    createActiveRestaurantsColumns(handleOnRowClick),
+    [handleOnRowClick]
+  );
+
+  // ---------------------------------------------------------------------------
+  // ERROR HANDLING
+  // ---------------------------------------------------------------------------
+
+  if (error) {
+    console.error("Active restaurants error:", error.message);
+  }
+
+  // ---------------------------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------------------------
 
   return (
     <RestaurantTable<ActiveRestaurantTableTypes>

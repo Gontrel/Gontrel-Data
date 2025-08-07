@@ -1,34 +1,48 @@
-import { useCallback } from 'react';
-import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
-import { ApprovalStatusEnum } from '@/types/enums';
-import { useSubmittedRestaurantsStore } from '@/stores/tableStore';
+import { useCallback } from "react";
+import { useSubmittedRestaurantsStore } from "@/stores/tableStore";
+import { trpc } from "@/lib/trpc-client";
+import { useCurrentUser } from "@/stores/authStore";
+import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
 
 /**
  * Type for keys of SubmittedRestaurantType that have a status property
  */
-export type SubmittedRestaurantStatusKey = {
-  [K in keyof SubmittedRestaurantTableTypes]: SubmittedRestaurantTableTypes[K] extends { status: ApprovalStatusEnum } ? K : never
-}[keyof SubmittedRestaurantTableTypes];
+export type SubmittedRestaurantStatusKey = "address" | "menu" | "reservation" | "posts";
+
+interface UseSubmittedRestaurantsProps {
+  currentPage: number;
+  pageSize: number;
+  searchTerm?: string;
+}
 
 /**
  * Custom hook for managing submitted restaurants state and actions
  */
-export const useSubmittedRestaurants = () => {
-  // Use the new store for proper state management
+export const useSubmittedRestaurants = ({ currentPage, pageSize, searchTerm }: UseSubmittedRestaurantsProps) => {
+  const currentUser = useCurrentUser();
   const { resubmitRestaurant } = useSubmittedRestaurantsStore();
 
-  const handleRowSelect = useCallback((selectedRows: SubmittedRestaurantTableTypes[]) => {
-
-    // Handle bulk actions here
-  }, []);
+  const {
+    data: queryData,
+    isLoading,
+    error,
+    refetch,
+  } = trpc.restaurant.getAnalystRestaurants.useQuery({
+    pageNumber: currentPage,
+    quantity: pageSize,
+    query: searchTerm,
+    adminId: currentUser?.id,
+  });
 
   const handleResubmit = useCallback((restaurant: SubmittedRestaurantTableTypes) => {
-    // Trigger temporary state change
     resubmitRestaurant(restaurant);
   }, [resubmitRestaurant]);
 
   return {
-    handleRowSelect,
-    handleResubmit
+    handleResubmit,
+    queryData,
+    isLoading,
+    error,
+    refetch,
   };
 };

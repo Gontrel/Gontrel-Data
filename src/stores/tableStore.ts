@@ -8,15 +8,10 @@ import {
   SubmittedRestaurantTableTypes,
   SubmittedVideoTableTypes
 } from '@/types/restaurant';
-import { Post } from '@/interfaces';
+import { Location, Post } from '@/interfaces';
 
 export type TableType = ManagerTableTabsEnum | AnalystTableTabsEnum;
 
-export interface VideoPreviewModalProps {
-  isOpen: boolean;
-  posts: Post[];
-  currentRestaurantId: string | null;
-}
 
 export interface TableState<T> {
   data: T[];
@@ -33,8 +28,6 @@ export interface TableState<T> {
   // Track pending changes
   pendingChanges: Map<string, { newStatus: ApprovalStatusEnum; propertyKey?: string; postId?: string }>;
   hasUnsavedChanges: boolean;
-  // Video preview modal state
-  videoPreviewModal: VideoPreviewModalProps;
 }
 
 export interface TableStore {
@@ -78,9 +71,6 @@ export interface TableStore {
   // Get pending changes for UI
   getPendingChanges: (tableType: TableType) => Map<string, { newStatus: ApprovalStatusEnum; propertyKey?: string; postId?: string }>;
 
-  // Video preview modal actions
-  openVideoPreview: (tableType: TableType, posts: Post[], restaurantId: string) => void;
-  closeVideoPreview: (tableType: TableType) => void;
 }
 
 const createInitialTableState = <T>(): TableState<T> => ({
@@ -96,12 +86,7 @@ const createInitialTableState = <T>(): TableState<T> => ({
   searchTerm: '',
   selectedRows: [],
   pendingChanges: new Map(),
-  hasUnsavedChanges: false,
-  videoPreviewModal: {
-    isOpen: false,
-    posts: [],
-    currentRestaurantId: null,
-  },
+  hasUnsavedChanges: false
 });
 
 const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
@@ -311,7 +296,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
     const currentState = store.submittedVideos;
     const newPendingChanges = new Map(currentState.pendingChanges);
 
-    newPendingChanges.set(video.id, {
+    newPendingChanges.set(video.location.id, {
       newStatus: ApprovalStatusEnum.PENDING,
     });
 
@@ -410,6 +395,33 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       },
     } as Partial<TableStore>));
   },
+
+  // Resubmit modal actions
+  openResubmitModal: (tableType: TableType, restaurant: Location, posts: Post[]) => {
+    set((state) => ({
+      [tableType]: {
+        ...state[tableType],
+        resubmitModal: {
+          isOpen: true,
+          restaurant,
+          posts,
+        },
+      },
+    } as Partial<TableStore>));
+  },
+
+  closeResubmitModal: (tableType: TableType) => {
+    set((state) => ({
+      [tableType]: {
+        ...state[tableType],
+        resubmitModal: {
+          isOpen: false,
+          restaurant: null,
+          posts: [],
+        },
+      },
+    } as Partial<TableStore>));
+  },
 });
 
 export const useTableStore = create(tableStateCreator);
@@ -426,10 +438,6 @@ export const usePendingVideosStore = () => {
     saveChanges: () => store.saveChanges(ManagerTableTabsEnum.PENDING_VIDEOS),
     discardChanges: () => store.discardChanges(ManagerTableTabsEnum.PENDING_VIDEOS),
     getPendingChanges: () => store.getPendingChanges(ManagerTableTabsEnum.PENDING_VIDEOS),
-    openVideoPreview: (posts: Post[], restaurantId: string) =>
-      store.openVideoPreview(ManagerTableTabsEnum.PENDING_VIDEOS, posts, restaurantId),
-    closeVideoPreview: () =>
-      store.closeVideoPreview(ManagerTableTabsEnum.PENDING_VIDEOS),
     setData: (data: PendingVideoTableTypes[]) => store.setData(ManagerTableTabsEnum.PENDING_VIDEOS, data),
     setLoading: (loading: boolean) => store.setLoading(ManagerTableTabsEnum.PENDING_VIDEOS, loading),
     setError: (error: string | null) => store.setError(ManagerTableTabsEnum.PENDING_VIDEOS, error),
@@ -453,10 +461,6 @@ export const usePendingRestaurantsStore = () => {
     saveChanges: () => store.saveChanges(ManagerTableTabsEnum.PENDING_RESTAURANTS),
     discardChanges: () => store.discardChanges(ManagerTableTabsEnum.PENDING_RESTAURANTS),
     getPendingChanges: () => store.getPendingChanges(ManagerTableTabsEnum.PENDING_RESTAURANTS),
-    openVideoPreview: (posts: Post[], restaurantId: string) =>
-      store.openVideoPreview(ManagerTableTabsEnum.PENDING_RESTAURANTS, posts, restaurantId),
-    closeVideoPreview: () =>
-      store.closeVideoPreview(ManagerTableTabsEnum.PENDING_RESTAURANTS),
     setData: (data: PendingRestaurantTableTypes[]) => store.setData(ManagerTableTabsEnum.PENDING_RESTAURANTS, data),
     setLoading: (loading: boolean) => store.setLoading(ManagerTableTabsEnum.PENDING_RESTAURANTS, loading),
     setError: (error: string | null) => store.setError(ManagerTableTabsEnum.PENDING_RESTAURANTS, error),
@@ -509,6 +513,7 @@ export const useSubmittedRestaurantsStore = () => {
     setSelectedRows: (selectedRows: string[]) => store.setSelectedRows(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS, selectedRows),
     clearSelection: () => store.clearSelection(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
     resetTable: () => store.resetTable(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
+    pendingChanges: store.getPendingChanges(AnalystTableTabsEnum.SUBMITTED_RESTAURANTS),
   };
 };
 

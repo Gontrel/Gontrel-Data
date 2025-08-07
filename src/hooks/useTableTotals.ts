@@ -1,5 +1,9 @@
-import { trpc } from '@/lib/trpc-client';
-import { AnalystTableTabsEnum, ManagerTableTabsEnum, ApprovalStatusEnum } from '@/types/enums';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { usePendingRestaurants } from './usePendingRestaurants';
+import { usePendingVideos } from './usePendingVideos';
+import { useActiveRestaurants } from './useActiveRestaurants';
+import { useSubmittedRestaurants } from './useSubmittedRestaurants';
+import { useSubmittedVideos } from './useSubmittedVideos';
 
 /**
  * Interface for tab-specific state
@@ -17,82 +21,39 @@ interface TabState {
  */
 export const useTableTotals = (tabStates: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, TabState>) => {
   // Fetch pending restaurants total with tab-specific search
-  const { data: pendingRestaurantsTotal } = trpc.restaurant.getRestaurants.useQuery(
-    {
-      pageNumber: 1,
-      quantity: 1,
-      status: ApprovalStatusEnum.PENDING,
-      query: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm || undefined,
-    },
-    {
-      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-      gcTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: true, // Enable refetch on window focus
-      refetchOnMount: true, // Always refetch on mount
-    }
-  );
+  const { queryData: pendingRestaurantsTotal } = usePendingRestaurants({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm || ""
+  });
 
   // Fetch pending videos total with tab-specific search
-  const { data: pendingVideosTotal } = trpc.post.getPosts.useQuery(
-    {
-      pageNumber: 1,
-      quantity: 1,
-      query: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm || undefined,
-    },
-    {
-      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-      gcTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: true, // Enable refetch on window focus
-      refetchOnMount: true, // Always refetch on mount
-    }
-  );
+  const { queryData: pendingVideosTotal } = usePendingVideos({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm || "",
+  });
 
   // Fetch active restaurants total with tab-specific search
-  const { data: activeRestaurantsTotal } = trpc.restaurant.getRestaurants.useQuery(
-    {
-      pageNumber: 1,
-      quantity: 1,
-      status: ApprovalStatusEnum.APPROVED,
-      query: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm || undefined,
-    },
-    {
-      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-      gcTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: true, // Enable refetch on window focus
-      refetchOnMount: true, // Always refetch on mount
-    }
-  );
+  const { queryData: activeRestaurantsTotal } = useActiveRestaurants({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm || ""
+  });
 
   // Fetch submitted restaurants total with tab-specific search (for analysts)
-  const { data: submittedRestaurantsTotal } = trpc.restaurant.getRestaurants.useQuery(
-    {
-      pageNumber: 1,
-      quantity: 1,
-      status: ApprovalStatusEnum.PENDING,
-      query: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm || undefined,
-    },
-    {
-      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-      gcTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: true, // Enable refetch on window focus
-      refetchOnMount: true, // Always refetch on mount
-    }
-  );
+  const { queryData: submittedRestaurantsTotal } = useSubmittedRestaurants({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm || ""
+  });
 
   // Fetch submitted videos total with tab-specific search (for analysts)
-  const { data: submittedVideosTotal } = trpc.post.getPosts.useQuery(
-    {
-      pageNumber: 1,
-      quantity: 1,
-      query: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm || undefined,
-    },
-    {
-      staleTime: 30 * 1000, // 30 seconds - reduced for better responsiveness
-      gcTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: true, // Enable refetch on window focus
-      refetchOnMount: true, // Always refetch on mount
-    }
-  );
+  const { queryData: submittedVideosTotal } = useSubmittedVideos({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm || "",
+  });
 
   // Extract totals from tRPC responses
   const getTotalFromResponse = (response: unknown): number => {

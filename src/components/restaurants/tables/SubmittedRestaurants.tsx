@@ -1,9 +1,27 @@
-import React, { useMemo, useEffect } from 'react';
-import { RestaurantTable } from '../RestaurantTable';
-import { useSubmittedRestaurants } from '@/hooks/useSubmittedRestaurants';
-import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
-import { createSubmittedRestaurantsColumns } from '../columns/submittedRestaurantsColumns';
-import { useSubmittedRestaurantsStore } from '@/stores/tableStore';
+
+import React, { useCallback, useMemo, useState } from "react";
+
+// External dependencies
+import { RestaurantTable } from "../RestaurantTable";
+import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
+import { createSubmittedRestaurantsColumns } from "../columns/submittedRestaurantsColumns";
+
+// Store and API
+import { useSubmittedRestaurants } from "@/hooks/useSubmittedRestaurants";
+import { useSubmittedRestaurantsStore } from "@/stores/tableStore";
+
+
+// Types and enums
+import { ApprovalStatusEnum, AnalystTableTabsEnum } from "@/types";
+import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
+import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfaces/restaurants";
+import { Post } from "@/interfaces/posts";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+
+
+// =============================================================================
+// TYPES & INTERFACES
+// =============================================================================
 
 interface SubmittedRestaurantsProps {
     searchTerm: string;
@@ -13,90 +31,215 @@ interface SubmittedRestaurantsProps {
     handlePageSize: (pageSize: number) => void;
 }
 
+interface ResubmitModalState {
+    isOpen: boolean;
+    restaurant: SubmittedRestaurantTableTypes | null;
+}
+
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
 /**
  * Component for displaying and managing submitted restaurants
  */
 const SubmittedRestaurants = ({
+    searchTerm,
+    currentPage,
     handleCurrentPage,
-    handlePageSize
+    pageSize,
+    handlePageSize,
 }: SubmittedRestaurantsProps) => {
-    const {
-        handleResubmit
-    } = useSubmittedRestaurants();
+    // ---------------------------------------------------------------------------
+    // HOOKS & STATE
+    // ---------------------------------------------------------------------------
 
     const {
-        data,
-        loading,
+        queryData,
+        isLoading,
         error,
-        pagination,
-        hasUnsavedChanges,
-        saveLoading,
-        saveChanges,
-        discardChanges,
+        refetch,
+    } = useSubmittedRestaurants({ currentPage, pageSize, searchTerm });
+
+    const {
         setSelectedRows,
+        pendingChanges,
+        resubmitRestaurant,
     } = useSubmittedRestaurantsStore();
 
-    // Create columns with proper dependencies
-    const columns = useMemo(
-        () => createSubmittedRestaurantsColumns(
-            handleResubmit
-        ),
-        [handleResubmit]
-    );
+    const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
+        isOpen: false,
+        posts: [],
+        currentRestaurantId: null,
+    });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [resubmitModal, setResubmitModal] = useState<ResubmitModalState>({
+        isOpen: false,
+        restaurant: null,
+    });
 
-    // Handle errors
-    useEffect(() => {
-        if (error) {
-            console.error('Submitted restaurants error:', error);
-        }
-    }, [error]);
+    const [confirmationModal, setConfirmationModal] = useState<ResubmitModalState>({
+        isOpen: false,
+        restaurant: null,
+    });
 
-    // Handle save/discard actions
-    const handleSave = async () => {
-        await saveChanges();
-    };
+    // ---------------------------------------------------------------------------
+    // EVENT HANDLERS
+    // ---------------------------------------------------------------------------
 
-    const handleDiscard = () => {
-        discardChanges();
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleResubmitRestaurant = useCallback((data: any): void => {
+        resubmitRestaurant(data);
+    }, [resubmitRestaurant]);
 
-    // Handle row selection - extract IDs from selected rows
-    const handleRowSelection = (selectedRows: SubmittedRestaurantTableTypes[]) => {
+    const handleRowSelection = useCallback((selectedRows: SubmittedRestaurantTableTypes[]) => {
         const selectedIds = selectedRows.map(row => row.id);
         setSelectedRows(selectedIds);
+    }, [setSelectedRows]);
+
+    const handleVideoPreviewOpenChange = useCallback((isOpen: boolean) => {
+        if (!isOpen) {
+            setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
+            refetch();
+        }
+    }, [setVideoPreview, refetch]);
+
+    const handleOpenVideoPreview = useCallback((posts: Post[], restaurantId: string) => {
+        setVideoPreview({ isOpen: true, posts, currentRestaurantId: restaurantId });
+    }, [setVideoPreview]);
+
+    const handleOpenResubmitModal = useCallback((restaurant: SubmittedRestaurantTableTypes) => {
+        setConfirmationModal({ isOpen: true, restaurant });
+    }, [setConfirmationModal]);
+
+    const closeConfirmationModal = useCallback(() => {
+        setConfirmationModal({ isOpen: false, restaurant: null });
+    }, [setConfirmationModal]);
+
+    // ---------------------------------------------------------------------------
+    // COMPUTED VALUES
+    // ---------------------------------------------------------------------------
+
+    const paginationData = queryData?.pagination;
+    const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
+
+    const restaurants = useMemo(() => {
+        const baseRestaurants = queryData?.data || [];
+        return baseRestaurants.map(restaurant => {
+            // Create a copy of the restaurant with potential updates
+            const updatedRestaurant = { ...restaurant };
+
+            // Check for property-level changes (address, menu, reservation)
+            const propertyKeys: (keyof Pick<SubmittedRestaurantTableTypes, "address" | "menu" | "reservation">)[] = ["address", "menu", "reservation"];
+
+            propertyKeys.forEach(propertyKey => {
+                const changeKey = `${restaurant.id}-${propertyKey}`;
+                const pendingChange = pendingChanges.get(changeKey);
+                if (pendingChange && propertyKey in updatedRestaurant) {
+                    const property = updatedRestaurant[propertyKey] as { status: ApprovalStatusEnum };
+                    property.status = pendingChange.newStatus;
+                }
+            });
+
+            // Check for post-level changes
+            updatedRestaurant.posts = updatedRestaurant.posts.map(post => {
+                const postChangeKey = `${restaurant.id}-post-${post.id}`;
+                const postPendingChange = pendingChanges.get(postChangeKey);
+                if (postPendingChange) {
+                    return {
+                        ...post,
+                        status: postPendingChange.newStatus
+                    };
+                }
+                return post;
+            });
+
+            // Check for bulk posts changes
+            const postsChangeKey = `${restaurant.id}-posts`;
+            const postsPendingChange = pendingChanges.get(postsChangeKey);
+            if (postsPendingChange) {
+                updatedRestaurant.posts = updatedRestaurant.posts.map(post => ({
+                    ...post,
+                    status: postsPendingChange.newStatus
+                }));
+            }
+
+            return updatedRestaurant;
+        });
+    }, [queryData?.data, pendingChanges]);
+
+    const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
+        const currentRestaurant = restaurants.find(restaurant => restaurant.id === videoPreview.currentRestaurantId);
+        return currentRestaurant ? {
+            id: currentRestaurant.id,
+            name: currentRestaurant.name,
+            menu: currentRestaurant.menu?.content || "",
+            reservation: currentRestaurant.reservation?.content || "",
+            rating: currentRestaurant.rating,
+            adminName: currentRestaurant.admin.name,
+            adminId: currentRestaurant.admin.id
+        } : {
+            id: "",
+            name: "",
+            menu: "",
+            reservation: "",
+            rating: 0,
+            adminName: "",
+            adminId: ""
     };
+    }, [restaurants, videoPreview.currentRestaurantId]);
+
+    const columns = useMemo(
+        () =>
+            createSubmittedRestaurantsColumns(
+                handleOpenVideoPreview,
+                handleOpenResubmitModal
+            ),
+        [handleOpenVideoPreview, handleOpenResubmitModal]
+    );
+
+    // ---------------------------------------------------------------------------
+    // ERROR HANDLING
+    // ---------------------------------------------------------------------------
+
+    if (error) {
+        console.error("Submitted restaurants error:", error.message);
+    }
+
+    // ---------------------------------------------------------------------------
+    // RENDER
+    // ---------------------------------------------------------------------------
 
     return (
         <div>
-            {/* Save/Discard buttons */}
-            {hasUnsavedChanges && (
-                <div className="flex gap-2 mb-4">
-                    <button
-                        onClick={handleSave}
-                        disabled={saveLoading}
-                        className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-                    >
-                        {saveLoading ? 'Saving...' : 'Save Changes'}
-                    </button>
-                    <button
-                        onClick={handleDiscard}
-                        className="px-4 py-2 bg-gray-600 text-white rounded"
-                    >
-                        Discard Changes
-                    </button>
-                </div>
-            )}
+            <ConfirmationModal
+                isOpen={confirmationModal.isOpen}
+                onClose={closeConfirmationModal}
+                title="Resubmit restaurant?"
+                description="Are you sure you want to resubmit this restaurant?"
+                onConfirm={() => handleResubmitRestaurant(confirmationModal.restaurant)}
+                confirmLabel="Resubmit restaurant"
+                cancelLabel="Cancel"
+            />
+
+            <TableVideoPreviewSheet
+                table={AnalystTableTabsEnum.SUBMITTED_RESTAURANTS}
+                open={videoPreview.isOpen}
+                onOpenChange={handleVideoPreviewOpenChange}
+                posts={videoPreview.posts}
+                restaurant={restaurant}
+            />
 
             <RestaurantTable<SubmittedRestaurantTableTypes>
-                restaurants={data}
-                loading={loading}
+                restaurants={restaurants}
+                loading={isLoading}
                 onRowSelect={handleRowSelection}
                 showSelection={true}
                 columns={columns}
-                currentPage={pagination.currentPage}
-                pageSize={pagination.pageSize}
-                totalPages={pagination.totalPages}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                totalPages={totalPages}
                 onPageSizeChange={handlePageSize}
                 onPageChange={(pageIndex) => handleCurrentPage(pageIndex + 1)}
             />

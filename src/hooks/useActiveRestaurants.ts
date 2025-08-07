@@ -1,26 +1,32 @@
 import { trpc } from "@/lib/trpc-client";
 import { ApprovalStatusEnum } from "@/types/enums";
 
-interface UseRestaurantProps {
-  page: number;
-  limit: number;
-  search?: string;
+interface UseActiveRestaurantsProps {
+  currentPage: number;
+  pageSize: number;
+  searchTerm?: string;
 }
 
-export const useActiveRestaurantQuery = ({
-  page,
-  limit,
-  search,
-}: UseRestaurantProps) => {
-  const { data, isLoading, isError } = trpc.restaurant.getRestaurants.useQuery(
-    {
-      pageNumber: page,
-      quantity: limit,
-      query: search,
-      status: ApprovalStatusEnum.APPROVED,
-    },
-    { enabled: false }
-  );
+/**
+ * Custom hook for managing active restaurants data fetching
+ */
+export const useActiveRestaurants = ({ currentPage, pageSize, searchTerm }: UseActiveRestaurantsProps) => {
+  const {
+    data: queryData,
+    isLoading,
+    error,
+    refetch,
+  } = trpc.restaurant.getRestaurants.useQuery({
+    pageNumber: currentPage,
+    quantity: pageSize,
+    status: ApprovalStatusEnum.APPROVED,
+    query: searchTerm,
+  });
 
-  return { data, isLoading, isError };
+  return {
+    queryData,
+    isLoading,
+    error,
+    refetch,
+  };
 };

@@ -1,4 +1,5 @@
-import { GetRestaurantsResponse, GetPostsResponse, OpeningHoursDay, Reservation, Summary, Admin, Post, Address, Menu } from "@/interfaces";
+
+import { GetRestaurantsResponse, GetGroupedPostsResponse, GetPostsResponse, OpeningHoursDay, Reservation, Summary, Admin, Post, Address, Menu } from "@/interfaces";
 
 /**
  * Restaurant data model representing the production/live data
@@ -8,12 +9,13 @@ export type ActiveRestaurantTableTypes = GetRestaurantsResponse["data"][number];
 export type PendingRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type PendingVideoTableTypes = GetPostsResponse["data"][number];
+export type PendingVideoTableTypes = GetGroupedPostsResponse['data'][number];
 
 export type SubmittedRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type SubmittedVideoTableTypes = GetPostsResponse["data"][number];
+export type SubmittedVideoTableTypes = GetGroupedPostsResponse['data'][number];
+
 
 /**
  * API response types

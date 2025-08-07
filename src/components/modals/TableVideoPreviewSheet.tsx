@@ -3,19 +3,30 @@ import { Sheet } from '@/components/modals/Sheet'
 import Icon from '@/components/svgs/Icons';
 import { LivePostCard } from '../restaurants/LivePostCard';
 import { Post } from '@/interfaces/posts';
-import { GontrelRestaurantData } from '@/interfaces/restaurants';
+import { GontrelRestaurantData, GontrelRestaurantDetailedData } from '@/interfaces/restaurants';
 import ConfirmationModal from './ConfirmationModal';
+import { AnalystTableTabsEnum, ApprovalStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { trpc } from '@/lib/trpc-client';
+import { LivePostCardSkeleton } from '../Loader/restaurants/LivePostCardSkeleton';
 
 
 type TableVideoPreviewSheetOnApprove = (restaurantId: string, postId: string) => void;
 type TableVideoPreviewSheetOnDecline = (restaurantId: string, postId: string, comment: string) => void;
 
 interface TableVideoPreviewSheetProps {
+  table: ManagerTableTabsEnum | AnalystTableTabsEnum
   open: boolean;
   onOpenChange: (open: boolean) => void;
   posts: Post[];
-  onApprove: TableVideoPreviewSheetOnApprove;
-  onDecline: TableVideoPreviewSheetOnDecline;
+  onApprove?: TableVideoPreviewSheetOnApprove;
+  onDecline?: TableVideoPreviewSheetOnDecline;
+  restaurant: GontrelRestaurantDetailedData;
+}
+
+interface TableVideoPreviewSheetContentProps {
+  posts: Post[];
+  onApprove?: TableVideoPreviewSheetOnApprove;
+  onDecline?: TableVideoPreviewSheetOnDecline;
   restaurant: GontrelRestaurantData & { id: string, adminName: string };
 }
 
@@ -38,21 +49,25 @@ const TableVideoPreviewSheetHeader = ({ onOpenChange, posts }: TableVideoPreview
   )
 }
 
-const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant }: Omit<TableVideoPreviewSheetProps, 'open' | 'onOpenChange'>) => (
+const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant }: TableVideoPreviewSheetContentProps) => (
   <section className="flex flex-col gap-y-4.5 py-5 px-6">
-    {posts!.map((post, index) => (
+    {posts.length > 0 ? posts.map((post, index) => (
       <LivePostCard
         key={index}
-        handleApprove={onApprove}
-        handleDecline={() => onDecline(restaurant.id, post.id, "")}
+        handleApprove={onApprove ?? undefined}
+        handleDecline={onDecline ? () => onDecline(restaurant.id, post.id, "") : undefined}
         post={post}
         restaurant={restaurant}
       />
-    ))}
+    )) : (
+      <div className="flex flex-col gap-y-4.5">
+        <LivePostCardSkeleton />
+      </div>
+    )}
   </section>
 )
 
-export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onApprove, onDecline, restaurant }: TableVideoPreviewSheetProps) => {
+export const TableVideoPreviewSheet = ({ table, open, onOpenChange, posts = [], onApprove, onDecline, restaurant }: TableVideoPreviewSheetProps) => {
   const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean, comment: string, postId: string, restaurantId: string }>({
     isOpen: false,
     comment: "",
@@ -76,33 +91,33 @@ export const TableVideoPreviewSheet = ({ open, onOpenChange, posts = [], onAppro
     });
   }
 
-  if (posts.length === 0) {
-    const post: Post = {
-      id: "post_123456789",
-      createdAt: "2024-01-15T14:30:00Z",
-      modifiedAt: "2024-01-15T14:30:00Z",
-      firebaseId: "firebase_post_123",
-      analytics: {
-        views: 1250,
-        likes: 89,
-        shares: 12,
-        comments: 23
-      },
-      tiktokLink: "https://www.tiktok.com/@kingsyleyyj1009/video/7123456789",
-      videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      thumbUrl: "https://example.com/thumbnail.jpg",
-      postedAt: "2024-01-15T14:30:00Z",
-      status: "pending",
-      source: "tiktok",
-      tags: []
-    };
-    posts = Array(5).fill(post);
+  if (table === ManagerTableTabsEnum.PENDING_VIDEOS) {
+    const { data: queryData } = trpc.post.getPosts.useQuery({
+      pageNumber: 1,
+      quantity: 50,
+      status: ApprovalStatusEnum.PENDING,
+      locationId: restaurant.id,
+      adminId: restaurant.adminId,
+    });
+    posts = queryData?.data ?? [];
   }
+
+  if (table === AnalystTableTabsEnum.SUBMITTED_VIDEOS) {
+    const { data: queryData } = trpc.post.getPosts.useQuery({
+      pageNumber: 1,
+      quantity: 50,
+      status: ApprovalStatusEnum.REJECTED,
+      locationId: restaurant.id,
+      adminId: restaurant.adminId,
+    });
+    posts = queryData?.data ?? [];
+  }
+
   const handleDecline = (restaurantId: string, postId: string) => {
     setFeedbackModal({ isOpen: true, comment: "", postId, restaurantId });
   }
   const handleSubmitFeedback = () => {
-    onDecline(feedbackModal.restaurantId, feedbackModal.postId, feedbackModal.comment);
+    onDecline?.(feedbackModal.restaurantId, feedbackModal.postId, feedbackModal.comment);
     closeFeedbackModal();
   }
   return (

@@ -1,21 +1,24 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { SubmittedRestaurantTableTypes } from '@/types/restaurant';
-import { Check, X } from 'lucide-react';
-import { ActionButtons } from '../../ui/ActionButtons';
-import { ExternalLink } from '../../ui/ExternalLink';
-import { formatDate } from '@/lib/utils';
+import { ColumnDef } from "@tanstack/react-table";
+import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
+import { Check, X } from "lucide-react";
+import { ActionButtons } from "../../ui/ActionButtons";
+import { ExternalLink } from "../../ui/ExternalLink";
+import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ApprovalStatusEnum } from "@/types/enums";
-import { getBgColor, getTextColor } from '@/lib/tableUtils';
-import { PillButton } from '@/components/ui/PillButton';
-import { TableHeader } from './utils';
+import { getBgColor, getTextColor } from "@/lib/tableUtils";
+import { PillButton } from "@/components/ui/PillButton";
+import { TableHeader } from "./utils";
+import { Post } from "@/interfaces";
 
 /**
  * Creates column definitions for submitted restaurants table
- * @param handleResubmit - Handler for resubmit action
+ * @param openVideoPreview - Handler for open video preview action
+ * @param openResubmitModal - Handler for open resubmit modal action
  */
 export const createSubmittedRestaurantsColumns = (
-  handleResubmit: (restaurant: SubmittedRestaurantTableTypes) => void
+  handleOpenVideoPreview: (posts: Post[], restaurantId: string) => void,
+  handleOpenResubmitModal: (restaurant: SubmittedRestaurantTableTypes) => void,
 ): ColumnDef<SubmittedRestaurantTableTypes>[] => [
     {
       accessorKey: 'id',
@@ -66,12 +69,14 @@ export const createSubmittedRestaurantsColumns = (
 
         return (
           <div className="flex flex-col gap-y-2 w-fit">
-            <PillButton text={text} textColor={getTextColor(posts.map((post) => ({ status: post.status })))} bgColor={getBgColor(posts.map((post) => ({ status: post.status })))} />
-            <button onClick={() => {
-              // TODO: Open video modal
-            }} className="text-blue-500 text-left">
-              View
-            </button>
+            <PillButton
+              text={`${posts?.filter((post) => post.status !== ApprovalStatusEnum.PENDING)
+                .length
+                }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
+              textColor={getTextColor(posts.map((post) => ({ status: post.status })))}
+              bgColor={getBgColor(posts.map((post) => ({ status: post.status })))}
+            />
+            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(posts, row.original.id)}>View</span>
           </div>
         );
       },
@@ -249,7 +254,7 @@ export const createSubmittedRestaurantsColumns = (
             actions={[
               {
                 label: 'Resubmit',
-                onClick: () => handleResubmit(row.original),
+                onClick: () => handleOpenResubmitModal(row.original),
                 variant: 'primary',
                 disabled: false,
               },

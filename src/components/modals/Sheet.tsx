@@ -29,7 +29,7 @@ interface SheetProps
   width?: string;
 }
 
-const Sheet = ({
+export const Sheet = ({
   side = "right",
   className,
   children,
@@ -79,8 +79,7 @@ const Sheet = ({
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 transition-opacity duration-500 ${
-          open ? "opacity-100 z-20" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 bg-black/50 transition-opacity duration-500 z-20 ${open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => onOpenChange(false)}
       />
@@ -100,5 +99,3 @@ const Sheet = ({
     </>
   );
 };
-
-export { Sheet };
