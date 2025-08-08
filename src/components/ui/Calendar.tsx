@@ -62,7 +62,7 @@ function Calendar({
           defaultClassNames.button_next
         ),
         month_caption: cn(
-          "relative h-12 w-full mb-4 px-4 flex items-center justify-center", // center the label
+          "absolute top-7 h-12 w-[280px] px-4 flex items-center justify-center pointer-events-none",
           defaultClassNames.month_caption
         ),
         dropdowns: cn(
