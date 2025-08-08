@@ -115,6 +115,7 @@ export type RestaurantData = {
   website: string;
   workingHours: Record<string, string[]>;
   comment?: string;
+  url?: string;
 
   admin?: Admin;
   country?: string;

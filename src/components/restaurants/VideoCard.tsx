@@ -19,7 +19,7 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
       } p-4 pe-11 rounded-lg gap-4 items-start`}
     >
       <Image
-        src={video.thumbUrl || "/placeholder-image.png"}
+        src={video?.thumbUrl || "/placeholder-image.png"}
         alt="Video thumbnail"
         className="rounded-md object-cover"
         width={80}

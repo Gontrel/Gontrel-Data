@@ -32,7 +32,6 @@ export const ResubmitVideo = ({
   onOpenChange,
   title,
   description,
-  isRestaurantFlow,
 }: ResubmitVideoSheetProps) => {
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
@@ -126,7 +125,6 @@ export const ResubmitVideo = ({
     menuUrl: string;
     reservationUrl: string;
   }) => {
-
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
       status: "pending",
@@ -175,7 +173,7 @@ export const ResubmitVideo = ({
 
   const handleSuccessResubmit = () => {
     setIsOpenFeedBack(false);
-    handleClose()
+    handleClose();
     successToast("Videos successfully uploaded");
   };
 
@@ -204,7 +202,7 @@ export const ResubmitVideo = ({
         onContinue={() => setStep(2)}
         onNextVideoStep={() => setStep(3)}
         handleResubmit={handleResubmit}
-        isRestaurantFlow={isRestaurantFlow}
+        isRestaurantFlow={false}
         onPreviousVideoStep={() => setStep(1)}
         onGoBackToSearch={handleGoBackToSearch}
         onPreviousRestaurantMenu={() => setStep(2)}

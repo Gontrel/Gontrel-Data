@@ -75,8 +75,8 @@ const RestaurantDetailsPage = ({
     name: restaurant.name,
     menu: restaurant.menu,
     reservation: restaurant.reservation,
-    rating: restaurant.rating
-  }
+    rating: restaurant.rating,
+  };
 
   const handleNewPostModalOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -280,8 +280,6 @@ const RestaurantDetailsPage = ({
               (activeRestaurantPosts.length > 0 ? (
                 activeRestaurantPosts.map((post: Post) => (
                   <LivePostCard
-                    // handleApprove={}
-                    // handleDecline={}
                     key={post.id}
                     post={post}
                     restaurant={restaurant}
@@ -299,8 +297,6 @@ const RestaurantDetailsPage = ({
               (pendingRestaurantPosts.length > 0 ? (
                 pendingRestaurantPosts.map((post: Post) => (
                   <LivePostCard
-                    // handleApprove={}
-                    // handleDecline={}
                     key={post.id}
                     post={post}
                     restaurant={restaurant}
