@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type DateRange } from 'react-day-picker';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/Popover';
-import { Button } from '@/components/ui/Button';
+import { FilterButton } from '@/components/ui/FilterButton';
 import { Calendar } from '@/components/ui/Calendar';
 import { subDays, subMonths, format, startOfDay, endOfDay, Locale } from 'date-fns';
 import { makePreset, normalizeRange, clamp, toUTCInclusive, type DateRangeValue } from '@/utils/dateRange';
@@ -127,7 +127,7 @@ export default function DateRangeFilter({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
+        <FilterButton
           variant="outline"
           className={mergeClasses('flex items-center justify-between w-fit max-w-[200px] h-14 px-4 py-2',
             'bg-white border border-[#D9D9D9] rounded-lg',
@@ -142,7 +142,7 @@ export default function DateRangeFilter({
             <span className="flex-1 truncate font-medium text-lg">{label}</span>
             <Chevron color="#0070F3" />
           </div>
-        </Button>
+        </FilterButton>
       </PopoverTrigger>
 
       <PopoverContent align="start" className="p-0 w-auto max-w-4xl bg-white rounded-2xl shadow-xl border border-gray-200" role="dialog" aria-label="Date range">
@@ -184,20 +184,20 @@ export default function DateRangeFilter({
             <div className="mt-6 flex items-center justify-between gap-3">
               <div></div>
               <div className="flex gap-3">
-                <Button
+                <FilterButton
                   variant="ghost"
                   onClick={handleCancel}
                   className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium"
                 >
                   Cancel
-                </Button>
-                <Button
+                </FilterButton>
+                <FilterButton
                   onClick={handleApply}
                   disabled={!temp?.from || !temp?.to}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Apply
-                </Button>
+                </FilterButton>
               </div>
             </div>
           </section>

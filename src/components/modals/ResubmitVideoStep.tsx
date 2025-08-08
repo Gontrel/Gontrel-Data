@@ -344,7 +344,7 @@ export const ResubmitVideoStepStep = ({
                   <Button
                     disabled={shouldDisable}
                     loading={isLoadingUpdate}
-                    // clickFunc={handleAddOrUpdateVideo}
+                    onClick={handleAddOrUpdateVideo}
                     className={mergeClasses(
                       "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
                       "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",

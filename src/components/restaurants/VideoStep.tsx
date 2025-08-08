@@ -381,7 +381,7 @@ export const VideoStep = ({
         </div>
       ) : (
         <Button
-          clickFunc={handleOnSubmit}
+            onClick={handleOnSubmit}
           type="submit"
           disabled={shouldDisable}
           loading={isLoading}
