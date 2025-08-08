@@ -109,6 +109,8 @@ export const NewRestaurantSheet = ({
 
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+      console.log(apiKey, "apiKeyapiKeyapiKeyapiKey");
       const image =
         photoReference && apiKey
           ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
@@ -122,7 +124,7 @@ export const NewRestaurantSheet = ({
         rating: result.rating,
         workingHours: workingHours,
         website: result.website ?? "",
-        // address: result.url ?? "",
+        url: result.url ?? "",
       };
 
       setIsRestaurantConfirmed(true);

@@ -31,7 +31,6 @@ export const ResubmitRestaurant = ({
   onOpenChange,
   title,
   description,
-  isRestaurantFlow,
 }: ResubmitRestaurantSheetProps) => {
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
@@ -48,7 +47,7 @@ export const ResubmitRestaurant = ({
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
-        setStep(2);
+        handleClose();
       },
       onError: (error) => {
         errorToast(error.message);
@@ -186,7 +185,7 @@ export const ResubmitRestaurant = ({
         handleClose={handleClose}
         onContinue={() => setStep(2)}
         onNextVideoStep={() => setStep(3)}
-        isRestaurantFlow={isRestaurantFlow}
+        isRestaurantFlow={true}
         onPreviousVideoStep={() => setStep(1)}
         onGoBackToSearch={handleGoBackToSearch}
         onPreviousRestaurantMenu={() => setStep(2)}

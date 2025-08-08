@@ -195,6 +195,8 @@ export const ResubmitVideoStepStep = ({
     }
   };
 
+  let shouldResubmit = 0;
+
   const handleAddOrUpdateVideo = () => {
     handleInputError();
     const videoData = {
@@ -222,8 +224,8 @@ export const ResubmitVideoStepStep = ({
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       updatePost(payload as any);
+      shouldResubmit++;
     }
-
   };
 
   const handleEdit = (id: string) => {
@@ -254,7 +256,9 @@ export const ResubmitVideoStepStep = ({
   };
 
   const shouldDisable =
-    currentVideo.tags.length >= 1 && currentVideo.url !== "";
+    currentVideo.tags.length <= 1 && currentVideo.url === "";
+
+  const shouldResubmitModal = shouldResubmit > 0 ? true : false;
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -338,17 +342,25 @@ export const ResubmitVideoStepStep = ({
               {editingVideoId && videos?.length >= 0 && (
                 <div className="mt-6 pt-4 flex justify-left">
                   <Button
-                    disabled={isLoadingUpdate || shouldDisable}
+                    disabled={shouldDisable}
                     loading={isLoadingUpdate}
-                    onClick={handleAddOrUpdateVideo}
-                    className={
-                      mergeClasses(
-                        "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
-                        "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
-                        "hover:bg-blue-600"
-                      )}
+                    clickFunc={handleAddOrUpdateVideo}
+                    className={mergeClasses(
+                      "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
+                      "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
+                      "hover:bg-blue-600"
+                    )}
                   >
-                    <Icon name="saveIcon" stroke={isLoadingUpdate || currentVideo.tags.length === 0 || currentVideo.url === "" ? "#99a1af" : "white"} />
+                    <Icon
+                      name="saveIcon"
+                      stroke={
+                        isLoadingUpdate ||
+                        currentVideo.tags.length === 0 ||
+                        currentVideo.url === ""
+                          ? "#99a1af"
+                          : "white"
+                      }
+                    />
                     <span>Save</span>
                   </Button>
                 </div>
@@ -382,7 +394,7 @@ export const ResubmitVideoStepStep = ({
             Next
           </Button>
         )}
-        {!isRestaurantFlow && (
+        {/* {isRestaurantFlow && (
           <Button
             onClick={handleResubmit}
             disabled={shouldDisable}
@@ -393,11 +405,11 @@ export const ResubmitVideoStepStep = ({
           >
             Next
           </Button>
-        )}
+        )} */}
         {!isRestaurantFlow && (
           <Button
-            onClick={handleResubmit}
-            disabled={shouldDisable}
+            clickFunc={handleResubmit}
+            disabled={shouldResubmitModal}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
               "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
