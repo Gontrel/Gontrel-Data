@@ -13,12 +13,14 @@ interface UseSubmittedRestaurantsProps {
   currentPage: number;
   pageSize: number;
   searchTerm?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 /**
  * Custom hook for managing submitted restaurants state and actions
  */
-export const useSubmittedRestaurants = ({ currentPage, pageSize, searchTerm }: UseSubmittedRestaurantsProps) => {
+export const useSubmittedRestaurants = ({ currentPage, pageSize, searchTerm, startDate, endDate }: UseSubmittedRestaurantsProps) => {
   const currentUser = useCurrentUser();
   const { resubmitRestaurant } = useSubmittedRestaurantsStore();
 
@@ -32,6 +34,8 @@ export const useSubmittedRestaurants = ({ currentPage, pageSize, searchTerm }: U
     quantity: pageSize,
     query: searchTerm,
     adminId: currentUser?.id,
+    startDate,
+    endDate,
   });
 
   const handleResubmit = useCallback((restaurant: SubmittedRestaurantTableTypes) => {

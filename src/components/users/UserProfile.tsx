@@ -10,9 +10,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "../ui/dropdown-menu";
+} from "../ui/DropdownMenu";
 import { useAuthStore } from "@/stores/authStore";
-import Button from "../ui/Button";
+import { Button } from "../ui/Button";
 
 export const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,7 +61,7 @@ export const UserProfile = () => {
           <div className="flex justify-end gap-4">
             <Button
               className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              clickFunc={() => setIsModalOpen(false)}
+              onClick={() => setIsModalOpen(false)}
             >
               No
             </Button>
@@ -71,7 +71,7 @@ export const UserProfile = () => {
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-red-600 hover:bg-red-700"
               }`}
-              clickFunc={handleSignOut}
+              onClick={handleSignOut}
               disabled={isSuccess}
             >
               {isSuccess ? "Signing Out..." : "Yes, Sign Out"}

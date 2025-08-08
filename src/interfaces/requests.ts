@@ -54,7 +54,7 @@ export interface AdminResetPasswordRequest {
  * Fetches list of admin staff members with optional filtering
  * @extends BaseQueryRequest
  */
-export interface FetchAdminsRequest extends BaseQueryRequest {
+export interface FetchStaffsRequest extends BaseQueryRequest {
   // Admin-specific filters
   role?: string;
   isActive?: boolean;

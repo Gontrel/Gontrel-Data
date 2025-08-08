@@ -10,7 +10,7 @@ import { VideoCard } from "../restaurants/VideoCard";
 import Icon from "@/components/svgs/Icons";
 import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
 import { cleanTiktokUrl, mergeClasses } from "@/lib/utils";
 interface ResubmitVideoStepProps {
@@ -372,7 +372,7 @@ export const ResubmitVideoStepStep = ({
 
       <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
         <Button
-          clickFunc={() => {
+          onClick={() => {
             resetVideos();
             setActiveVideoUrl(null);
             setTiktokUsername(null);
@@ -384,7 +384,7 @@ export const ResubmitVideoStepStep = ({
         </Button>
         {isRestaurantFlow && (
           <Button
-            clickFunc={handleOnNext}
+            onClick={handleOnNext}
             disabled={shouldDisable}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
@@ -396,13 +396,12 @@ export const ResubmitVideoStepStep = ({
         )}
         {/* {isRestaurantFlow && (
           <Button
-            clickFunc={handleResubmit}
+            onClick={handleResubmit}
             disabled={shouldDisable}
-            className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-              shouldDisable
-                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-[#0070F3] text-white hover:bg-blue-600"
-            }`}
+            className={mergeClasses(
+              "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
+              "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+            )}
           >
             Next
           </Button>

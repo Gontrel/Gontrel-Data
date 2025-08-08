@@ -28,10 +28,13 @@ import { useRouter } from "next/navigation";
 
 interface PendingRestaurantsProps {
   searchTerm: string;
+  selectedAnalyst?: string;
   currentPage: number;
   handleCurrentPage: (page: number) => void;
   pageSize: number;
   handlePageSize: (pageSize: number) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface FeedbackModalState {
@@ -49,10 +52,13 @@ interface FeedbackModalState {
  */
 const PendingRestaurants = ({
   searchTerm,
+  selectedAnalyst,
   currentPage,
   handleCurrentPage,
   pageSize,
   handlePageSize,
+  startDate,
+  endDate,
 }: PendingRestaurantsProps) => {
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
@@ -71,7 +77,14 @@ const PendingRestaurants = ({
     queryData,
     isLoading,
     refetch,
-  } = usePendingRestaurants({ currentPage, pageSize, searchTerm });
+  } = usePendingRestaurants({
+    currentPage,
+    pageSize,
+    searchTerm,
+    startDate,
+    endDate,
+    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined,
+  });
 
   const {
     setSelectedRows,
@@ -333,10 +346,6 @@ const PendingRestaurants = ({
       ),
     [handleApprove, handleDecline, handleSaveRestaurant, handleSendFeedback, handleOpenVideoPreview, handleOnRowClick]
   );
-
-  // ---------------------------------------------------------------------------
-  // ERROR HANDLING
-  // ---------------------------------------------------------------------------
 
   // ---------------------------------------------------------------------------
   // RENDER

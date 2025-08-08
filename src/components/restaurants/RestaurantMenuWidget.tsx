@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Button from "../ui/Button";
+import { Button } from "../ui/Button";
 
 interface RestaurantMenuWidgetProps {
   onPrevious: () => void;
@@ -58,13 +58,13 @@ export const RestaurantMenuWidget = ({
 
       <div className="flex items-center gap-4 mt-6">
         <Button
-          clickFunc={onPrevious}
+          onClick={onPrevious}
           className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold transition-colors hover:bg-gray-100"
         >
           Previous
         </Button>
         <Button
-          clickFunc={handleSubmit}
+          onClick={handleSubmit}
           disabled={isLoading}
           loading={isLoading}
           className="w-full bg-[#0070F3] text-white py-3 rounded-lg font-semibold transition-colors hover:bg-blue-600"

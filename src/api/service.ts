@@ -25,6 +25,8 @@ import {
   FetchGroupedPostsRequest,
   GetGroupedPostsResponse,
   FetchUserGroupedPostsRequest,
+  FetchStaffsRequest,
+  GetStaffsResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -256,6 +258,15 @@ export default class APIRequest {
   // updatePost
   updatePost = async (data: UpdatePostRequest) => {
     const response = await this.authenticatedClient.put(`/admin-post`, data);
+    return this.handleResponse(response);
+  };
+
+  // GetStaffs
+  getStaffs = async (data: FetchStaffsRequest): Promise<GetStaffsResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-staffs?${params.toString()}`
+    );
     return this.handleResponse(response);
   };
 

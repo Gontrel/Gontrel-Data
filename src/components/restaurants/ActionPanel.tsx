@@ -1,6 +1,11 @@
 import { SearchBar } from '../admin/SearchBar';
 import { AddRestaurantButton } from './AddRestaurantButton';
 import { FilterDropdowns } from '../admin/FilterDropdowns';
+import { type DateRangeValue } from '@/utils/dateRange';
+import { useCurrentUser } from '@/stores/authStore';
+import { AdminRoleEnum } from '@/types/enums';
+import { useAnalystOptions } from '@/hooks/useAnalysts';
+import { useMemo } from 'react';
 
 /**
  * Props for SearchAndActions component
@@ -13,9 +18,10 @@ interface ActionPanelProps {
   // Filter props
   selectedAnalyst?: string;
   onAnalystChange?: (analyst: string) => void;
-  selectedTimePeriod?: string;
-  onTimePeriodChange?: (period: string) => void;
+  selectedDateRange?: DateRangeValue;
+  onDateRangeChange: (range: DateRangeValue | undefined) => void;
   showFilters?: boolean;
+  analystOptions?: Array<{ value: string; label: string }>;
 }
 
 /**
@@ -29,10 +35,23 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   searchPlaceholder = 'Search using name or location',
   selectedAnalyst = 'all',
   onAnalystChange = () => {},
-  selectedTimePeriod = 'all',
-  onTimePeriodChange = () => {},
-  showFilters = true
+  selectedDateRange,
+  onDateRangeChange,
+  showFilters = true,
+  analystOptions = [],
 }) => {
+  const currentUser = useCurrentUser();
+  const isAnalyst = currentUser?.role === AdminRoleEnum.ANALYST;
+  const { options: fetchedAnalystOptions } = useAnalystOptions();
+
+  const mergedAnalystOptions = useMemo(() => {
+    // prefer server-fetched options; fallback to provided ones
+    return (fetchedAnalystOptions.length > 0 ? fetchedAnalystOptions : analystOptions) as Array<{
+      value: string;
+      label: string;
+    }>;
+  }, [analystOptions, fetchedAnalystOptions]);
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4.5">
       <div className="flex-1 gap-4.5 flex flex-row justify-between w-full">
@@ -41,12 +60,13 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
           onChange={onSearchChange}
           placeholder={searchPlaceholder}
         />
-        {showFilters && (
+        {showFilters && !isAnalyst && (
           <FilterDropdowns
             selectedAnalyst={selectedAnalyst}
             onAnalystChange={onAnalystChange}
-            selectedTimePeriod={selectedTimePeriod}
-            onTimePeriodChange={onTimePeriodChange}
+            selectedDateRange={selectedDateRange}
+            onDateRangeChange={onDateRangeChange}
+            analystOptions={mergedAnalystOptions}
           />
         )}
       </div>
@@ -55,6 +75,8 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
       <div className="flex items-center w-full sm:w-auto">
         <AddRestaurantButton onClick={onAddRestaurant} />
       </div>
+
+      {/* suggestion modal removed as requested */}
     </div>
   );
 };

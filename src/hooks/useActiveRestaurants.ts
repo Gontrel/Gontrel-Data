@@ -5,12 +5,15 @@ interface UseActiveRestaurantsProps {
   currentPage: number;
   pageSize: number;
   searchTerm?: string;
+  startDate?: string;
+  endDate?: string;
+  adminId?: string;
 }
 
 /**
  * Custom hook for managing active restaurants data fetching
  */
-export const useActiveRestaurants = ({ currentPage, pageSize, searchTerm }: UseActiveRestaurantsProps) => {
+export const useActiveRestaurants = ({ currentPage, pageSize, searchTerm, startDate, endDate, adminId }: UseActiveRestaurantsProps) => {
   const {
     data: queryData,
     isLoading,
@@ -21,6 +24,9 @@ export const useActiveRestaurants = ({ currentPage, pageSize, searchTerm }: UseA
     quantity: pageSize,
     status: ApprovalStatusEnum.APPROVED,
     query: searchTerm,
+    startDate,
+    endDate,
+    adminId,
   });
 
   return {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { type DateRangeValue, rangeToYmd } from "@/utils/dateRange";
 import { ManagerTableTabsEnum } from "@/types";
 import { ActionPanel } from "@/components/restaurants/ActionPanel";
 import { TableContent } from "@/components/restaurants/TableContent";
@@ -14,6 +15,7 @@ import { AdminRoleEnum, AnalystTableTabsEnum } from "@/types/enums";
 import TableTabs from "@/components/restaurants/TableTabs";
 import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useCurrentUser } from "@/stores/authStore";
+import { useAnalystOptions } from "@/hooks/useAnalysts";
 import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
 
 /**
@@ -22,6 +24,7 @@ import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
 export default function RestaurantsPage() {
   const currentUser = useCurrentUser();
   const [view, setView] = useState<AdminRoleEnum | null>(null);
+  const { options: analystOptions } = useAnalystOptions();
 
   const initialTab =
     currentUser?.role === AdminRoleEnum.ANALYST
@@ -46,7 +49,7 @@ export default function RestaurantsPage() {
     tabStates,
     updateTabSearchTerm,
     updateTabAnalyst,
-    updateTabTimePeriod,
+    updateTabDateRange,
     updateTabPage,
     updateTabPageSize,
     getTabState,
@@ -57,6 +60,7 @@ export default function RestaurantsPage() {
 
   // Current tab's state
   const currentTabState = getTabState(activeTab);
+  const { startDate, endDate } = rangeToYmd(currentTabState.dateRange);
 
   const handlePreviewModalOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -125,11 +129,14 @@ export default function RestaurantsPage() {
   /**
    * Handles time period filter changes for the active tab
    */
-  const handleTimePeriodChange = useCallback(
-    (period: string) => {
-      updateTabTimePeriod(activeTab, period);
+  // Legacy no-op (kept for old prop signatures if needed)
+  // Removed legacy handler entirely
+
+  const handleDateRangeChange = useCallback(
+    (range: DateRangeValue | undefined) => {
+      updateTabDateRange(activeTab, range);
     },
-    [activeTab, updateTabTimePeriod]
+    [activeTab, updateTabDateRange]
   );
 
   /**
@@ -214,15 +221,19 @@ export default function RestaurantsPage() {
           onAddRestaurant={handleAddRestaurant}
           selectedAnalyst={currentTabState.selectedAnalyst}
           onAnalystChange={handleAnalystChange}
-          selectedTimePeriod={currentTabState.selectedTimePeriod}
-          onTimePeriodChange={handleTimePeriodChange}
+          selectedDateRange={currentTabState.dateRange}
+          onDateRangeChange={handleDateRangeChange}
           showFilters={true}
+          analystOptions={analystOptions}
         />
 
         {/* Table Content */}
         <TableContent
           activeTab={activeTab}
           searchTerm={currentTabState.searchTerm}
+          selectedAnalyst={currentTabState.selectedAnalyst}
+          startDate={startDate}
+          endDate={endDate}
           tablePageNumbers={createPageNumbersObject()}
           tablePageSizes={createPageSizesObject()}
           onPageChange={handlePageChange}

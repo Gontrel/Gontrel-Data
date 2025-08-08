@@ -12,7 +12,7 @@ import {
   WorkingHours,
 } from "@/components/modals/EditWorkingHoursModal";
 import { useIsAdmin, useIsAnalyst } from "@/stores/authStore";
-import Button from "../ui/Button";
+import { Button } from "@/components/ui/Button";
 
 interface ConfirmResubmitRestaurantProps {
   restaurant: RestaurantData;
@@ -203,7 +203,7 @@ export const ConfirmResubmitRestaurant = ({
       <div className="flex-shrink-0 mb-10">
         <Button
           type="submit"
-          clickFunc={handleOnContinue}
+          onClick={handleOnContinue}
           className="w-full bg-[#0070F3] text-white py-[20px] px-[22px] rounded-[20px] font-semibold hover:bg-blue-600 transition-colors"
         >
           Continue

@@ -18,10 +18,13 @@ import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 
 interface ActiveRestaurantsProps {
   searchTerm: string;
+  selectedAnalyst?: string;
   currentPage: number;
   handleCurrentPage: (page: number) => void;
   pageSize: number;
   handlePageSize: (pageSize: number) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 // =============================================================================
@@ -33,10 +36,13 @@ interface ActiveRestaurantsProps {
  */
 const ActiveRestaurants = ({
   searchTerm,
+  selectedAnalyst,
   currentPage,
   handleCurrentPage,
   pageSize,
   handlePageSize,
+  startDate,
+  endDate,
 }: ActiveRestaurantsProps) => {
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
@@ -51,6 +57,9 @@ const ActiveRestaurants = ({
     currentPage,
     pageSize,
     searchTerm,
+    startDate,
+    endDate,
+    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined,
   });
 
   // ---------------------------------------------------------------------------
@@ -85,11 +94,6 @@ const ActiveRestaurants = ({
     createActiveRestaurantsColumns(handleOnRowClick),
     [handleOnRowClick]
   );
-
-  // ---------------------------------------------------------------------------
-  // ERROR HANDLING
-  // ---------------------------------------------------------------------------
-
 
   // ---------------------------------------------------------------------------
   // RENDER

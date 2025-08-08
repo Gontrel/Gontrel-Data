@@ -12,12 +12,15 @@ interface UsePendingRestaurantsProps {
   currentPage: number;
   pageSize: number;
   searchTerm?: string;
+  startDate?: string;
+  endDate?: string;
+  adminId?: string;
 }
 
 /**
  * Custom hook for managing pending restaurants state and actions
  */
-export const usePendingRestaurants = ({ currentPage, pageSize, searchTerm }: UsePendingRestaurantsProps) => {
+export const usePendingRestaurants = ({ currentPage, pageSize, searchTerm, startDate, endDate, adminId }: UsePendingRestaurantsProps) => {
   const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
 
    const {
@@ -30,6 +33,9 @@ export const usePendingRestaurants = ({ currentPage, pageSize, searchTerm }: Use
     quantity: pageSize,
     status: ApprovalStatusEnum.PENDING,
     query: searchTerm,
+    startDate,
+    endDate,
+    adminId,
   });
 
   const handleApprove = useCallback((restaurantId: string, type?: PendingRestaurantStatusKey) => {

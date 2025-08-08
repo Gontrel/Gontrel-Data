@@ -39,6 +39,7 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
           <button
             onClick={() => navigator.clipboard.writeText(video.url)}
             className="text-gray-400 hover:text-gray-600"
+            title="Copy link"
           >
             <Copy size={16} />
           </button>
@@ -58,12 +59,14 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
           <button
             onClick={() => onEdit(video.id)}
             className="px-4 py-1.5 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-50"
+            title="Edit video"
           >
             Edit
           </button>
           <button
             onClick={() => removeVideo(video.id)}
             className="px-4 py-1.5 border border-red-500 text-red-500 rounded-md font-semibold hover:bg-red-50"
+            title="Remove video"
           >
             Remove
           </button>

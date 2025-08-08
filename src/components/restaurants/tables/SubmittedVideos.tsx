@@ -27,6 +27,8 @@ interface SubmittedVideosProps {
   pageSize: number;
   handleCurrentPage: (page: number) => void;
   handlePageSize: (pageSize: number) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 // interface ResubmitModalState {
@@ -44,6 +46,8 @@ const SubmittedVideos = ({
   pageSize,
   handleCurrentPage,
   handlePageSize,
+  startDate,
+  endDate,
 }: SubmittedVideosProps) => {
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
@@ -71,6 +75,8 @@ const SubmittedVideos = ({
     currentPage,
     pageSize,
     searchTerm,
+    startDate,
+    endDate,
   });
 
   // ---------------------------------------------------------------------------
@@ -140,11 +146,6 @@ const SubmittedVideos = ({
   );
 
   // ---------------------------------------------------------------------------
-  // ERROR HANDLING
-  // ---------------------------------------------------------------------------
-
-
-  // ---------------------------------------------------------------------------
   // RENDER
   // ---------------------------------------------------------------------------
 
@@ -189,7 +190,7 @@ const SubmittedVideos = ({
               open={resubmitModal}
               onOpenChange={setResubmitModal}
             />
-          
+
     </>
   );
 };

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import logo from "../../../assets/images/logo.png";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { errorToast, successToast } from "@/utils/toast";
 import { trpc } from "@/lib/trpc-client";

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
-import Button from "../components/ui/Button";
+import { Button } from "../components/ui/Button";
 import { useRouter } from "next/navigation";
 import { errorToast, successToast } from "@/utils/toast";
 import { trpc } from "@/lib/trpc-client";
