@@ -2,7 +2,9 @@
 
 import { DropdownFilter } from '../ui/DropdownFilter';
 import DateRangeFilter from '@/components/filters/DateRangeFilter';
+import { AdminRoleEnum } from '@/types/enums';
 import { type DateRangeValue } from '@/utils/dateRange';
+import { useCurrentUser } from '@/stores/authStore';
 
 /**
  * Props for FilterDropdowns component
@@ -25,7 +27,8 @@ export function FilterDropdowns({
   onDateRangeChange,
   analystOptions
 }: FilterDropdownsProps) {
-
+  const currentUser = useCurrentUser();
+  const isAnalyst = currentUser?.role === AdminRoleEnum.ANALYST;
 
   // Person icon for analyst filter
   const personIcon = (
@@ -42,7 +45,7 @@ export function FilterDropdowns({
   return (
     <div className="flex items-center gap-4.5">
       {/* Analyst Filter */}
-      {optionsWithAll && optionsWithAll.length > 0 && <DropdownFilter
+      {optionsWithAll && optionsWithAll.length > 0 && !isAnalyst && <DropdownFilter
         options={optionsWithAll}
         value={selectedAnalyst}
         onChange={onAnalystChange}

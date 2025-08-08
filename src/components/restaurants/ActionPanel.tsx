@@ -2,8 +2,6 @@ import { SearchBar } from '../admin/SearchBar';
 import { AddRestaurantButton } from './AddRestaurantButton';
 import { FilterDropdowns } from '../admin/FilterDropdowns';
 import { type DateRangeValue } from '@/utils/dateRange';
-import { useCurrentUser } from '@/stores/authStore';
-import { AdminRoleEnum } from '@/types/enums';
 import { useAnalystOptions } from '@/hooks/useAnalysts';
 import { useMemo } from 'react';
 
@@ -40,8 +38,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   showFilters = true,
   analystOptions = [],
 }) => {
-  const currentUser = useCurrentUser();
-  const isAnalyst = currentUser?.role === AdminRoleEnum.ANALYST;
+
   const { options: fetchedAnalystOptions } = useAnalystOptions();
 
   const mergedAnalystOptions = useMemo(() => {
@@ -60,7 +57,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
           onChange={onSearchChange}
           placeholder={searchPlaceholder}
         />
-        {showFilters && !isAnalyst && (
+        {showFilters && (
           <FilterDropdowns
             selectedAnalyst={selectedAnalyst}
             onAnalystChange={onAnalystChange}
@@ -75,8 +72,6 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
       <div className="flex items-center w-full sm:w-auto">
         <AddRestaurantButton onClick={onAddRestaurant} />
       </div>
-
-      {/* suggestion modal removed as requested */}
     </div>
   );
 };
