@@ -28,6 +28,7 @@ export interface VideoState {
   unregisterVideoPlayer: (id: string) => void;
   playVideo: (id: string) => void;
   pauseAllVideosExcept: (playingVideoId: string) => void;
+  getCurrentVideos: () => VideoData[];
 }
 
 const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
@@ -59,6 +60,8 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
       };
     });
   },
+
+  getCurrentVideos: () => get().videos,
 
   removeVideo: (id: string) =>
     set((state: VideoState) => ({
@@ -104,7 +107,7 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
     state.pauseAllVideosExcept(id);
     set({ currentlyPlayingVideoId: id });
   },
-  
+
   pauseAllVideosExcept: (playingVideoId: string) => {
     const state = get();
     state.videoPlayerInstances.forEach((instance, id) => {

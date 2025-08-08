@@ -10,11 +10,12 @@ import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
 import Button from "../ui/Button";
 import { cleanTiktokUrl } from "@/lib/utils";
+import { VideoData } from "@/interfaces";
 
 interface VideoStepProps {
   onNext: () => void;
   onPrevious: () => void;
-  onSubmit?: () => void;
+  onSubmit?: (data: VideoData[]) => void;
   postOnly?: boolean | null;
   isLoading?: boolean;
 }
@@ -151,16 +152,16 @@ export const VideoStep = ({
   const handleInputError = () => {
     if (!currentVideo.url) {
       errorToast("Please add a video URL.");
-      return;
+      return false;
     }
 
     if (currentVideo.tags.length === 0) {
       errorToast("Each video must have at least one tags.");
-      return;
+      return false;
     }
   };
 
-  const handleAddOrUpdateVideo = () => {
+  const handleAddOrUpdateVideo = (): boolean => {
     handleInputError();
     const videoData = {
       url: currentVideo.url,
@@ -180,6 +181,7 @@ export const VideoStep = ({
     }
 
     resetVideo();
+    return true;
   };
 
   const handleEdit = (id: string) => {
@@ -219,6 +221,33 @@ export const VideoStep = ({
 
     setActiveVideoUrl(null);
     setTiktokUsername(null);
+  };
+
+  const handleOnSubmit = async () => {
+    handleInputError();
+    const videoData = {
+      url: currentVideo.url,
+      tags: currentVideo.tags,
+      thumbUrl: currentVideo.thumbUrl,
+      videoUrl: currentVideo.videoUrl,
+      author: currentVideo.author,
+      locationName: currentVideo.locationName,
+      rating: currentVideo.rating || 0,
+      isUpdated: true,
+    };
+
+    const store = useVideoStore.getState();
+    if (editingVideoId) {
+      updateVideo(editingVideoId, videoData);
+    } else {
+      addVideo(videoData);
+    }
+
+    const currentVideos = store.getCurrentVideos();
+
+    resetVideo();
+
+    onSubmit?.(currentVideos);
   };
 
   const shouldDisable =
@@ -352,7 +381,7 @@ export const VideoStep = ({
         </div>
       ) : (
         <Button
-          clickFunc={onSubmit}
+          clickFunc={handleOnSubmit}
           type="submit"
           disabled={shouldDisable}
           loading={isLoading}

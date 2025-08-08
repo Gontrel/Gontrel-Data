@@ -8,7 +8,7 @@ import {
   WorkingHours,
 } from "../modals/EditWorkingHoursModal";
 import Icon from "../svgs/Icons";
-import logo from "@/assets/images/logo.png";
+import location from "@/assets/images/location.jpeg";
 import { transformToModalHours } from "@/lib/utils";
 import { RestaurantData } from "@/types/restaurant";
 
@@ -51,7 +51,7 @@ export const RestaurantConfirmation = ({
           <div className="flex items-center flex-row justify-between">
             <div className="flex items-center gap-4">
               <Image
-                src={logo}
+                src={location}
                 alt={restaurant?.name}
                 width={100}
                 height={100}
@@ -98,9 +98,7 @@ export const RestaurantConfirmation = ({
               )}
             </a>
             <a
-              href={
-                 restaurant?.mapLink 
-              }
+              href={restaurant?.url}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 font-medium text-sm p-2 rounded-lg bg-[#FFFFFF] hover:bg-gray-100"

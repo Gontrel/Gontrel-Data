@@ -7,7 +7,7 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
 import { useVideoStore } from "@/stores/videoStore";
 import { CreateBulkPostRequest } from "@/interfaces/requests";
-import { Restaurant } from "@/interfaces/restaurants";
+import { Restaurant, VideoData } from "@/interfaces/restaurants";
 
 interface NewPostsSheetProps {
   open: boolean;
@@ -20,24 +20,9 @@ export const NewPostSheet = ({
   restaurant,
   onOpenChange,
 }: NewPostsSheetProps) => {
-  const { videos, resetVideos, setActiveVideoUrl } = useVideoStore();
+  const videos = useVideoStore((state) => state.videos);
+  const { resetVideos, setActiveVideoUrl } = useVideoStore();
   const locationId = restaurant?.id;
-
-  const videosData = videos.map((video) => ({
-    tiktokLink: video.url ?? "",
-    videoUrl: video.videoUrl || "",
-    hlsUrl: video.videoUrl,
-    firstFrameUrl: video.videoUrl,
-    thumbUrl: video.thumbUrl || "",
-    locationName: video.locationName || "",
-    rating: video.rating || 0,
-    tags: video.tags ?? [],
-  }));
-
-  const createBulkPostData: CreateBulkPostRequest = {
-    locationId: locationId,
-    posts: videosData,
-  };
 
   const { mutate: createBulkPost, isPending: isLoading } =
     trpc.post.createBulkPost.useMutation({
@@ -50,7 +35,25 @@ export const NewPostSheet = ({
       },
     });
 
-  const onSubmit = () => {
+  const onSubmit = (currentVideos?: VideoData[]) => {
+    const videosToUse = currentVideos || videos;
+
+    const videosData = videosToUse.map((video) => ({
+      tiktokLink: video.url ?? "",
+      videoUrl: video.videoUrl || "",
+      hlsUrl: video.videoUrl,
+      firstFrameUrl: video.videoUrl,
+      thumbUrl: video.thumbUrl || "",
+      locationName: video.locationName || "",
+      rating: video.rating || 0,
+      tags: video.tags ?? [],
+    }));
+
+    const createBulkPostData: CreateBulkPostRequest = {
+      locationId: locationId,
+      posts: videosData,
+    };
+
     createBulkPost(createBulkPostData);
   };
 
@@ -84,7 +87,7 @@ export const NewPostSheet = ({
         <VideoStep
           onNext={onSubmit}
           onPrevious={onSubmit}
-          onSubmit={onSubmit}
+          onSubmit={(vids) => onSubmit(vids)}
           isLoading={isLoading}
           postOnly={true}
         />

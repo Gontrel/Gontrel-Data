@@ -60,6 +60,8 @@ export const externalRouter = router({
           placeId,
           sessionToken: sessionToken ?? "",
         });
+
+        console.log(response, "response,response")
         
 
         return response;
