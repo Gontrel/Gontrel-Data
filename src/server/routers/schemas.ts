@@ -24,8 +24,8 @@ export const paginationSchema = z.object({
  */
 export const baseQuerySchema = paginationSchema.extend({
   query: z.string().optional(),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   timeFrame: z.string().optional(),
 });
 
@@ -105,6 +105,7 @@ export const fetchPostByIdSchema = z.object({
  */
 export const fetchGroupedPostsSchema = baseQuerySchema.extend({
   status: z.enum(ApprovalStatusEnum).optional(),
+  adminId: z.string().uuid().optional(),
 });
 
 /**

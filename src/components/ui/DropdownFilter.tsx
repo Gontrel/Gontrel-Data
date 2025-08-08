@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { mergeClasses } from '../../lib/utils';
 
 /**
@@ -35,6 +35,7 @@ export function DropdownFilter({
   className = ''
 }: DropdownFilterProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -62,12 +63,21 @@ export function DropdownFilter({
   }, []);
 
   const selectedOption = options.find(option => option.value === value);
+  const filteredOptions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter((opt) => opt.label.toLowerCase().includes(q));
+  }, [options, query]);
   const displayText = selectedOption ? selectedOption.label : placeholder;
 
   const handleOptionClick = (optionValue: string) => {
     onChange(optionValue);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (!isOpen) setQuery('');
+  }, [isOpen]);
 
   return (
     <div ref={dropdownRef} className={`relative ${className}`}>
@@ -83,7 +93,7 @@ export function DropdownFilter({
         )}
         aria-haspopup="listbox"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center gap-1">
           {icon && <span className="text-gray-400">{icon}</span>}
           <span className={selectedOption ? 'text-gray-900' : 'text-gray-500'}>
             {displayText}
@@ -103,20 +113,34 @@ export function DropdownFilter({
 
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => handleOptionClick(option.value)}
-              className={mergeClasses(
-                'w-full px-4 py-3 text-left hover:bg-gray-50',
-                'transition-colors duration-150',
-                option.value === value ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
+          <div className="p-2 sticky top-0 bg-white border-b border-gray-100">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search..."
+              aria-label="Filter options"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleOptionClick(option.value)}
+                className={mergeClasses(
+                  'w-full px-4 py-3 text-left hover:bg-gray-50',
+                  'transition-colors duration-150',
+                  option.value === value ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                )}
+              >
+                {option.label}
+              </button>
+            ))
+          ) : (
+            <div className="px-4 py-3 text-sm text-gray-500">No results</div>
+          )}
         </div>
       )}
     </div>

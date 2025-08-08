@@ -12,6 +12,9 @@ import SubmittedVideos from "./tables/SubmittedVideos";
 interface TableContentProps {
   activeTab: ManagerTableTabsEnum | AnalystTableTabsEnum;
   searchTerm: string;
+  selectedAnalyst?: string;
+  startDate?: string;
+  endDate?: string;
   tablePageNumbers: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, number>;
   tablePageSizes: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, number>;
   onPageChange: (
@@ -30,6 +33,9 @@ interface TableContentProps {
 export const TableContent: React.FC<TableContentProps> = ({
   activeTab,
   searchTerm,
+  selectedAnalyst,
+  startDate,
+  endDate,
   tablePageNumbers,
   tablePageSizes,
   onPageChange,
@@ -42,6 +48,9 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <ActiveRestaurants
             searchTerm={searchTerm}
+            selectedAnalyst={selectedAnalyst}
+            startDate={startDate}
+            endDate={endDate}
             currentPage={
               tablePageNumbers[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]
             }
@@ -61,6 +70,9 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <PendingRestaurants
             searchTerm={searchTerm}
+            selectedAnalyst={selectedAnalyst}
+            startDate={startDate}
+            endDate={endDate}
             currentPage={
               tablePageNumbers[ManagerTableTabsEnum.PENDING_RESTAURANTS]
             }
@@ -80,6 +92,9 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <PendingVideos
             searchTerm={searchTerm}
+            selectedAnalyst={selectedAnalyst}
+            startDate={startDate}
+            endDate={endDate}
             currentPage={tablePageNumbers[ManagerTableTabsEnum.PENDING_VIDEOS]}
             pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_VIDEOS]}
             handleCurrentPage={(page: number) =>
@@ -94,6 +109,8 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <SubmittedRestaurants
             searchTerm={searchTerm}
+            startDate={startDate}
+            endDate={endDate}
             currentPage={
               tablePageNumbers[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]
             }
@@ -115,6 +132,8 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <SubmittedVideos
             searchTerm={searchTerm}
+            startDate={startDate}
+            endDate={endDate}
             currentPage={
               tablePageNumbers[AnalystTableTabsEnum.SUBMITTED_VIDEOS]
             }

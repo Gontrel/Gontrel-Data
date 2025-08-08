@@ -31,6 +31,8 @@ interface SubmittedRestaurantsProps {
   handleCurrentPage: (page: number) => void;
   pageSize: number;
   handlePageSize: (pageSize: number) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 interface ResubmitModalState {
@@ -51,6 +53,8 @@ const SubmittedRestaurants = ({
   handleCurrentPage,
   pageSize,
   handlePageSize,
+  startDate,
+  endDate,
 }: SubmittedRestaurantsProps) => {
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
@@ -60,6 +64,8 @@ const SubmittedRestaurants = ({
     currentPage,
     pageSize,
     searchTerm,
+    startDate,
+    endDate,
   });
 
   const { setSelectedRows, pendingChanges } =
@@ -228,10 +234,6 @@ const SubmittedRestaurants = ({
       ),
     [handleOpenVideoPreview, handleOpenResubmitModal]
   );
-
-  // ---------------------------------------------------------------------------
-  // ERROR HANDLING
-  // ---------------------------------------------------------------------------
 
   // ---------------------------------------------------------------------------
   // RENDER

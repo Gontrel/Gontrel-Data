@@ -25,10 +25,13 @@ import { usePendingVideos } from "@/hooks/usePendingVideos";
 
 interface PendingVideosProps {
   searchTerm: string;
+  selectedAnalyst?: string;
   currentPage: number;
   pageSize: number;
   handleCurrentPage: (page: number) => void;
   handlePageSize: (pageSize: number) => void;
+  startDate?: string;
+  endDate?: string;
 }
 
 // =============================================================================
@@ -37,10 +40,13 @@ interface PendingVideosProps {
 
 const PendingVideos = ({
   searchTerm,
+  selectedAnalyst,
   currentPage,
   pageSize,
   handleCurrentPage,
   handlePageSize,
+  startDate,
+  endDate,
 }: PendingVideosProps) => {
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
@@ -63,6 +69,9 @@ const PendingVideos = ({
     currentPage,
     pageSize,
     searchTerm,
+    startDate,
+    endDate,
+    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined,
   });
 
   // ---------------------------------------------------------------------------
@@ -167,10 +176,6 @@ const PendingVideos = ({
     createPendingVideosColumns(handleOpenVideoPreview, handleOnRowClick),
     [handleOpenVideoPreview, handleOnRowClick]
   );
-
-  // ---------------------------------------------------------------------------
-  // ERROR HANDLING
-  // ---------------------------------------------------------------------------
 
   // ---------------------------------------------------------------------------
   // RENDER

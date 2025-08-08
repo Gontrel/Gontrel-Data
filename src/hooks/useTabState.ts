@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { type DateRangeValue } from '@/utils/dateRange';
 import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
 
 /**
@@ -8,6 +9,7 @@ interface TabState {
   searchTerm: string;
   selectedAnalyst: string;
   selectedTimePeriod: string;
+  dateRange?: DateRangeValue;
   currentPage: number;
   pageSize: number;
 }
@@ -21,6 +23,7 @@ export const useTabState = () => {
       searchTerm: '',
       selectedAnalyst: 'all',
       selectedTimePeriod: 'all',
+      dateRange: undefined,
       currentPage: 1,
       pageSize: 10
     },
@@ -28,6 +31,7 @@ export const useTabState = () => {
       searchTerm: '',
       selectedAnalyst: 'all',
       selectedTimePeriod: 'all',
+      dateRange: undefined,
       currentPage: 1,
       pageSize: 10
     },
@@ -35,6 +39,7 @@ export const useTabState = () => {
       searchTerm: '',
       selectedAnalyst: 'all',
       selectedTimePeriod: 'all',
+      dateRange: undefined,
       currentPage: 1,
       pageSize: 10
     },
@@ -42,6 +47,7 @@ export const useTabState = () => {
       searchTerm: '',
       selectedAnalyst: 'all',
       selectedTimePeriod: 'all',
+      dateRange: undefined,
       currentPage: 1,
       pageSize: 10
     },
@@ -49,6 +55,7 @@ export const useTabState = () => {
       searchTerm: '',
       selectedAnalyst: 'all',
       selectedTimePeriod: 'all',
+      dateRange: undefined,
       currentPage: 1,
       pageSize: 10
     }
@@ -85,16 +92,47 @@ export const useTabState = () => {
   /**
    * Update time period filter for a specific tab
    */
-  const updateTabTimePeriod = useCallback((tab: ManagerTableTabsEnum | AnalystTableTabsEnum, timePeriod: string) => {
-    setTabStates(prev => ({
-      ...prev,
-      [tab]: {
-        ...prev[tab],
-        selectedTimePeriod: timePeriod,
-        currentPage: 1
-      }
-    }));
-  }, []);
+  const updateTabTimePeriod = useCallback(
+    (
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum,
+      timePeriod: string | DateRangeValue | undefined
+    ) => {
+      setTabStates((prev) => {
+        const next = { ...prev[tab] } as TabState;
+        if (typeof timePeriod === 'string') {
+          next.selectedTimePeriod = timePeriod;
+          if (timePeriod !== 'custom') next.dateRange = undefined;
+        } else if (timePeriod && 'startDate' in timePeriod && 'endDate' in timePeriod) {
+          next.selectedTimePeriod = 'custom';
+          next.dateRange = timePeriod;
+        } else {
+          next.selectedTimePeriod = 'all';
+          next.dateRange = undefined;
+        }
+        next.currentPage = 1;
+        return {
+          ...prev,
+          [tab]: next,
+        };
+      });
+    },
+    []
+  );
+
+  const updateTabDateRange = useCallback(
+    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum, range?: DateRangeValue) => {
+      setTabStates((prev) => ({
+        ...prev,
+        [tab]: {
+          ...prev[tab],
+          selectedTimePeriod: range ? 'custom' : 'all',
+          dateRange: range,
+          currentPage: 1,
+        },
+      }));
+    },
+    []
+  );
 
   /**
    * Update current page for a specific tab
@@ -140,6 +178,7 @@ export const useTabState = () => {
         searchTerm: '',
         selectedAnalyst: 'all',
         selectedTimePeriod: 'all',
+        dateRange: undefined,
         currentPage: 1,
         pageSize: 10
       }
@@ -155,6 +194,7 @@ export const useTabState = () => {
         searchTerm: '',
         selectedAnalyst: 'all',
         selectedTimePeriod: 'all',
+        dateRange: undefined,
         currentPage: 1,
         pageSize: 10
       },
@@ -162,6 +202,7 @@ export const useTabState = () => {
         searchTerm: '',
         selectedAnalyst: 'all',
         selectedTimePeriod: 'all',
+        dateRange: undefined,
         currentPage: 1,
         pageSize: 10
       },
@@ -169,6 +210,7 @@ export const useTabState = () => {
         searchTerm: '',
         selectedAnalyst: 'all',
         selectedTimePeriod: 'all',
+        dateRange: undefined,
         currentPage: 1,
         pageSize: 10
       },
@@ -176,6 +218,7 @@ export const useTabState = () => {
         searchTerm: '',
         selectedAnalyst: 'all',
         selectedTimePeriod: 'all',
+        dateRange: undefined,
         currentPage: 1,
         pageSize: 10
       },
@@ -183,6 +226,7 @@ export const useTabState = () => {
         searchTerm: '',
         selectedAnalyst: 'all',
         selectedTimePeriod: 'all',
+        dateRange: undefined,
         currentPage: 1,
         pageSize: 10
       }
@@ -194,6 +238,7 @@ export const useTabState = () => {
     updateTabSearchTerm,
     updateTabAnalyst,
     updateTabTimePeriod,
+    updateTabDateRange,
     updateTabPage,
     updateTabPageSize,
     getTabState,

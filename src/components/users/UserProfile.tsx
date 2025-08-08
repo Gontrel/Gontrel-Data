@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "../ui/dropdown-menu";
+} from "../ui/DropdownMenu";
 import { useAuthStore } from "@/stores/authStore";
 
 export const UserProfile = () => {

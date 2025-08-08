@@ -5,7 +5,7 @@ import Image from "next/image";
 import logo from "../../../assets/images/reset-logo.png";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { errorToast, successToast } from "@/utils/toast";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -175,7 +175,7 @@ const ResetPasswordContent = () => {
                   Enter code
                 </p>
                 <Button
-                  clickFunc={handleResendCode}
+                  onClick={handleResendCode}
                   disabled={isResending}
                   loading={isResending}
                   loadingText="Resending..."

@@ -10,7 +10,7 @@ import { VideoCard } from "../restaurants/VideoCard";
 import Icon from "@/components/svgs/Icons";
 import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
 import { cleanTiktokUrl, mergeClasses } from "@/lib/utils";
 interface ResubmitVideoStepProps {
@@ -335,7 +335,7 @@ export const ResubmitVideoStepStep = ({
                 <div className="mt-6 pt-4 flex justify-left">
                   <Button
                     disabled={isLoadingUpdate || currentVideo.tags.length === 0 || currentVideo.url === ""}
-                    clickFunc={handleAddOrUpdateVideo}
+                    onClick={handleAddOrUpdateVideo}
                     className={
                       mergeClasses(
                         "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
@@ -356,7 +356,7 @@ export const ResubmitVideoStepStep = ({
       {!postOnly ? (
         <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
           <Button
-            clickFunc={() => {
+            onClick={() => {
               resetVideos();
               setActiveVideoUrl(null);
               setTiktokUsername(null);
@@ -367,7 +367,7 @@ export const ResubmitVideoStepStep = ({
             Previous
           </Button>
           <Button
-            clickFunc={handleOnNext}
+            onClick={handleOnNext}
             disabled={shouldDisable}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
@@ -379,7 +379,7 @@ export const ResubmitVideoStepStep = ({
         </div>
       ) : (
         <Button
-          clickFunc={onSubmit}
+            onClick={onSubmit}
           type="submit"
           disabled={shouldDisable}
             className={mergeClasses(
