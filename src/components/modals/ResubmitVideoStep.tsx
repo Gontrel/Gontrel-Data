@@ -344,7 +344,7 @@ export const ResubmitVideoStepStep = ({
                   <Button
                     disabled={shouldDisable}
                     loading={isLoadingUpdate}
-                    clickFunc={handleAddOrUpdateVideo}
+                    // clickFunc={handleAddOrUpdateVideo}
                     className={mergeClasses(
                       "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
                       "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
@@ -394,21 +394,10 @@ export const ResubmitVideoStepStep = ({
             Next
           </Button>
         )}
-        {/* {isRestaurantFlow && (
-          <Button
-            onClick={handleResubmit}
-            disabled={shouldDisable}
-            className={mergeClasses(
-              "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
-              "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-            )}
-          >
-            Next
-          </Button>
-        )} */}
+
         {!isRestaurantFlow && (
           <Button
-            clickFunc={handleResubmit}
+            onClick={handleResubmit}
             disabled={shouldResubmitModal}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
