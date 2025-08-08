@@ -5,12 +5,17 @@ import { ResubmitPage } from "@/components/modals/ResubmitPage";
 import { RestaurantData, TimeSlot } from "@/types/restaurant";
 import { RestaurantConfirmationSkeleton } from "@/components/Loader/restaurants/RestaurantConfirmationSkeleton";
 import { trpc } from "@/lib/trpc-client";
-import { convertTimeTo24Hour, formatOpeningHours, formatTime } from "@/lib/utils";
+import {
+  convertTimeTo24Hour,
+  formatOpeningHours,
+  formatTime,
+} from "@/lib/utils";
 import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
 import { DayOfTheWeek } from "@/types";
 import { UpdateLocationRequest } from "@/interfaces";
 import { successToast, errorToast } from "@/utils/toast";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 
 interface ResubmitVideoSheetProps {
   open: boolean;
@@ -32,7 +37,8 @@ export const ResubmitVideo = ({
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
-  const { setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
+  const [isOpenFeedback, setIsOpenFeedBack] = useState(false);
+  const { setActiveVideoUrl, resetVideos } = useVideoStore();
 
   const { data: restaurant, isLoading } =
     trpc.restaurant.getRestaurantById.useQuery(
@@ -40,7 +46,7 @@ export const ResubmitVideo = ({
       { enabled: !!restaurantId && open }
     );
 
-  const { mutate: updateAdminLocation, } =
+  const { mutate: updateAdminLocation } =
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
@@ -64,17 +70,14 @@ export const ResubmitVideo = ({
           };
 
           setSelectedRestaurant(updatedRestaurant);
-          addRestaurantData(updatedRestaurant);
-        } catch {
-        
-        }
+        } catch {}
       } else {
         setSelectedRestaurant(null);
       }
     };
 
     processRestaurant();
-  }, [restaurant, addRestaurantData]);
+  }, [restaurant, open]);
 
   const handleClose = useCallback(() => {
     onOpenChange(false);
@@ -105,7 +108,7 @@ export const ResubmitVideo = ({
           } else {
             newWorkingHours[dayName] = dayData.slots?.map(
               (slot: TimeSlot) =>
-                `${formatTime(slot.start)} - ${formatTime(slot.end)}`
+                `${formatTime(slot.start)} – ${formatTime(slot.end)}`
             );
           }
         }
@@ -119,57 +122,65 @@ export const ResubmitVideo = ({
     [selectedRestaurant]
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCreateRestaurant = (data: any) => {
-    console.log(data)
-    // const payload = {};
-    //  updateAdminLocation(payload);
-  };
+  const handleSubmitRestaurant = (data: {
+    menuUrl: string;
+    reservationUrl: string;
+  }) => {
 
-  const handleOnNext = (data: { openingHour: Record<string, string[]> }) => {
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
-      address:
-        typeof selectedRestaurant?.address === "string"
-          ? selectedRestaurant?.address
-          : selectedRestaurant?.address?.content,
-      menu:
-        typeof selectedRestaurant?.menu === "string"
-          ? selectedRestaurant?.menu
-          : selectedRestaurant?.menu?.content,
-      name: selectedRestaurant?.name,
-      reservation:
-        typeof selectedRestaurant?.reservation === "string"
-          ? selectedRestaurant.reservation
-          : selectedRestaurant?.reservation?.content,
-      openingHours: Object.entries(data.openingHour)?.map(([day, hours]) => {
-        if (hours[0].toLowerCase() === "24 hours") {
-          return {
-            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-            opensAt: 0, // Represents 00:00 (midnight)
-            closesAt: 24, // Represents 24:00 (end of day)
-          };
-        }
-
-        if (hours[0].toLowerCase().trim() === "closed") {
-          return {
-            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-            opensAt: 0, // Represents 00:00 (midnight)
-            closesAt: 0, // Represents 00:00 (end of day)
-          };
-        }
-
-        const [startTime, endTime] = hours[0].split(" – ");
-
-        return {
-          dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-          opensAt: convertTimeTo24Hour(startTime),
-          closesAt: convertTimeTo24Hour(endTime),
-        };
+      status: "pending",
+      ...(selectedRestaurant?.address && {
+        address:
+          typeof selectedRestaurant.address === "string"
+            ? selectedRestaurant.address
+            : selectedRestaurant.address?.content,
       }),
+      ...(data.menuUrl && { menu: data.menuUrl }),
+      ...(data.reservationUrl && { reservation: data.reservationUrl }),
+      ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
+      openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
+        ([day, hours]) => {
+          if (hours[0].toLowerCase() === "24 hours") {
+            return {
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+              opensAt: 0,
+              closesAt: 24,
+            };
+          }
+          if (hours[0].toLowerCase().trim() === "closed") {
+            return {
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+              opensAt: 0,
+              closesAt: 0,
+            };
+          }
+          const [startTime, endTime] = hours[0].split(" – ");
+          return {
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+            opensAt: convertTimeTo24Hour(startTime),
+            closesAt: convertTimeTo24Hour(endTime),
+          };
+        }
+      ),
     };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateAdminLocation(payload as any);
+  };
+
+  const handleResubmit = () => {
+    setIsOpenFeedBack(true);
+  };
+
+  const handleSuccessResubmit = () => {
+    setIsOpenFeedBack(false);
+    handleClose()
+    successToast("Videos successfully uploaded");
+  };
+
+  const handleCancleResubmit = () => {
+    setIsOpenFeedBack(false);
   };
 
   if (isLoading) {
@@ -190,14 +201,28 @@ export const ResubmitVideo = ({
         step={step}
         isLoading={isLoading}
         handleClose={handleClose}
-        handleOnSubmitConfirmResubmitRestaurant={handleOnNext}
+        onContinue={() => setStep(2)}
         onNextVideoStep={() => setStep(3)}
+        handleResubmit={handleResubmit}
         isRestaurantFlow={isRestaurantFlow}
         onPreviousVideoStep={() => setStep(1)}
         onGoBackToSearch={handleGoBackToSearch}
         onPreviousRestaurantMenu={() => setStep(2)}
         onWorkingHoursSave={handleWorkingHoursSave}
-        onSubmit={(data) => handleCreateRestaurant(data)}
+        onSubmit={(data) => handleSubmitRestaurant(data)}
+      />
+
+      <ConfirmationModal
+        isOpen={isOpenFeedback && open}
+        onClose={handleCancleResubmit}
+        title="Resubmit video?"
+        description="Are you sure you want to resubmit this video?"
+        comment={""}
+        showCommentField={false}
+        onCommentChange={handleGoBackToSearch}
+        onConfirm={handleSuccessResubmit}
+        confirmLabel="Resubmit video"
+        successButtonClassName="w-full h-18 bg-[#0070F3] text-white rounded-[20px] transition-colors text-[20px] font-semibold"
       />
     </Sheet>
   );

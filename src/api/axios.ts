@@ -33,9 +33,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle network errors and API errors
     if (error.response) {
-      // Handle 401 Unauthorized
       if (error.response.status === 200) {
         if (typeof window !== "undefined") {
           // Redirect to login

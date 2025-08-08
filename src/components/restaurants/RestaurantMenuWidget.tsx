@@ -1,6 +1,5 @@
-import { errorToast } from "@/utils/toast";
-import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
+import Button from "../ui/Button";
 
 interface RestaurantMenuWidgetProps {
   onPrevious: () => void;
@@ -17,10 +16,6 @@ export const RestaurantMenuWidget = ({
   const [reservationUrl, setReservationUrl] = useState("");
 
   const handleSubmit = () => {
-    if (!menuUrl || !reservationUrl) {
-      errorToast("Please provide a menu or reservation URL.");
-      return;
-    }
     onSubmit({ menuUrl, reservationUrl });
   };
 
@@ -62,26 +57,20 @@ export const RestaurantMenuWidget = ({
       </div>
 
       <div className="flex items-center gap-4 mt-6">
-        <button
-          onClick={onPrevious}
+        <Button
+          clickFunc={onPrevious}
           className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold transition-colors hover:bg-gray-100"
         >
           Previous
-        </button>
-        <button
-          onClick={handleSubmit}
+        </Button>
+        <Button
+          clickFunc={handleSubmit}
           disabled={isLoading}
+          loading={isLoading}
           className="w-full bg-[#0070F3] text-white py-3 rounded-lg font-semibold transition-colors hover:bg-blue-600"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              <span>Please wait...</span>
-            </>
-          ) : (
-              <p className="font-semibold text-lg"> Submit</p>
-          )}
-        </button>
+          <span className="font-semibold text-lg"> Submit</span>
+        </Button>
       </div>
     </div>
   );

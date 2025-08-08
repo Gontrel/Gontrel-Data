@@ -44,8 +44,7 @@ export const ResubmitRestaurant = ({
       { enabled: !!restaurantId && open }
     );
 
-
-  const { mutate: updateAdminLocation, } =
+  const { mutate: updateAdminLocation } =
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
@@ -59,7 +58,6 @@ export const ResubmitRestaurant = ({
   useEffect(() => {
     const processRestaurant = async () => {
       if (restaurant) {
-
         try {
           const formattedHours = await formatOpeningHours(
             restaurant.openingHours || []
@@ -70,8 +68,7 @@ export const ResubmitRestaurant = ({
           };
 
           setSelectedRestaurant(updatedRestaurant);
-        } catch  {
-        }
+        } catch {}
       } else {
         setSelectedRestaurant(null);
       }
@@ -123,57 +120,50 @@ export const ResubmitRestaurant = ({
     [selectedRestaurant]
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCreateRestaurant = (data: any) => {
-    console.log(data)
-    // const payload = {};
-    //  updateAdminLocation(payload);
-  };
-
-  const handleOnNext = (data: { openingHour: Record<string, string[]> }) => {
+  const handleSubmitRestaurant = (data: {
+    menuUrl: string;
+    reservationUrl: string;
+  }) => {
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
-      address:
-        typeof selectedRestaurant?.address === "string"
-          ? selectedRestaurant?.address
-          : selectedRestaurant?.address?.content,
-      menu:
-        typeof selectedRestaurant?.menu === "string"
-          ? selectedRestaurant?.menu
-          : selectedRestaurant?.menu?.content,
-      name: selectedRestaurant?.name,
-      reservation:
-        typeof selectedRestaurant?.reservation === "string"
-          ? selectedRestaurant.reservation
-          : selectedRestaurant?.reservation?.content,
-      openingHours: Object.entries(data.openingHour)?.map(([day, hours]) => {
-        if (hours[0].toLowerCase() === "24 hours") {
-          return {
-            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-            opensAt: 0, // Represents 00:00 (midnight)
-            closesAt: 24, // Represents 24:00 (end of day)
-          };
-        }
-
-        if (hours[0].toLowerCase().trim() === "closed") {
-          return {
-            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-            opensAt: 0, // Represents 00:00 (midnight)
-            closesAt: 0, // Represents 00:00 (end of day)
-          };
-        }
-
-        const [startTime, endTime] = hours[0].split(" – ");
-
-        return {
-          dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-          opensAt: convertTimeTo24Hour(startTime),
-          closesAt: convertTimeTo24Hour(endTime),
-        };
+      status: "pending",
+      ...(selectedRestaurant?.address && {
+        address:
+          typeof selectedRestaurant.address === "string"
+            ? selectedRestaurant.address
+            : selectedRestaurant.address?.content,
       }),
+      ...(data.menuUrl && { menu: data.menuUrl }),
+      ...(data.reservationUrl && { reservation: data.reservationUrl }),
+      ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
+      openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
+        ([day, hours]) => {
+          if (hours[0].toLowerCase() === "24 hours") {
+            return {
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+              opensAt: 0,
+              closesAt: 24,
+            };
+          }
+          if (hours[0].toLowerCase().trim() === "closed") {
+            return {
+              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+              opensAt: 0,
+              closesAt: 0,
+            };
+          }
+          const [startTime, endTime] = hours[0].split(" – ");
+          return {
+            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
+            opensAt: convertTimeTo24Hour(startTime),
+            closesAt: convertTimeTo24Hour(endTime),
+          };
+        }
+      ),
     };
 
-    updateAdminLocation(payload);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    updateAdminLocation(payload as any);
   };
 
   if (isLoading) {
@@ -194,14 +184,14 @@ export const ResubmitRestaurant = ({
         step={step}
         isLoading={isLoading}
         handleClose={handleClose}
-        handleOnSubmitConfirmResubmitRestaurant={(data) => handleOnNext(data)}
+        onContinue={() => setStep(2)}
         onNextVideoStep={() => setStep(3)}
         isRestaurantFlow={isRestaurantFlow}
         onPreviousVideoStep={() => setStep(1)}
         onGoBackToSearch={handleGoBackToSearch}
         onPreviousRestaurantMenu={() => setStep(2)}
         onWorkingHoursSave={handleWorkingHoursSave}
-        onSubmit={(data) => handleCreateRestaurant(data)}
+        onSubmit={(data) => handleSubmitRestaurant(data)}
       />
     </Sheet>
   );
