@@ -8,7 +8,7 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast } from "@/utils/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
-import Button from "../ui/Button";
+import { Button } from "../ui/Button";
 import { cleanTiktokUrl } from "@/lib/utils";
 
 interface VideoStepProps {
@@ -303,7 +303,7 @@ export const VideoStep = ({
             {editingVideoId && videos?.length >= 0 ? (
               <div className="mt-6 pt-4 flex justify-left">
                 <Button
-                  clickFunc={handleAddOrUpdateVideo}
+                  onClick={handleAddOrUpdateVideo}
                   className="flex items-center gap-2 text-white bg-[#0070F3] rounded-lg p-4 font-semibold"
                 >
                   Update video
@@ -328,7 +328,7 @@ export const VideoStep = ({
       {!postOnly ? (
         <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
           <Button
-            clickFunc={() => {
+            onClick={() => {
               resetVideos();
               setActiveVideoUrl(null);
               setTiktokUsername(null);
@@ -339,7 +339,7 @@ export const VideoStep = ({
             Previous
           </Button>
           <Button
-            clickFunc={handleOnNext}
+            onClick={handleOnNext}
             disabled={shouldDisable}
             className={`w-full py-3 rounded-lg font-semibold transition-colors ${
               shouldDisable
@@ -352,7 +352,7 @@ export const VideoStep = ({
         </div>
       ) : (
         <Button
-          clickFunc={onSubmit}
+          onClick={onSubmit}
           type="submit"
           disabled={shouldDisable}
           loading={isLoading}
