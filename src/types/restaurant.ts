@@ -1,6 +1,5 @@
 import {
   GetRestaurantsResponse,
-  GetGroupedPostsResponse,
   OpeningHoursDay,
   Reservation,
   Summary,
@@ -8,6 +7,7 @@ import {
   Post,
   Address,
   Menu,
+  GetGroupedPostsSubmissionsResponse,
 } from "@/interfaces";
 
 /**
@@ -18,12 +18,12 @@ export type ActiveRestaurantTableTypes = GetRestaurantsResponse["data"][number];
 export type PendingRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type PendingVideoTableTypes = GetGroupedPostsResponse["data"][number];
+export type PendingVideoTableTypes = GetGroupedPostsSubmissionsResponse["data"][number];
 
 export type SubmittedRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type SubmittedVideoTableTypes = GetGroupedPostsResponse["data"][number];
+export type SubmittedVideoTableTypes = GetGroupedPostsSubmissionsResponse["data"][number];
 
 /**
  * API response types
@@ -108,7 +108,7 @@ export interface RestaurantFormData {
 
 export type RestaurantData = {
   id?: string;
-  placeId: string;
+  placeId?: string;
   name: string;
   image: string;
   address: string | Address;

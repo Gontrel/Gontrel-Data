@@ -59,19 +59,19 @@ const PendingVideos = ({
     declineVideo,
   } = usePendingVideosStore();
 
+  const [currentSubmissionId, setCurrentSubmissionId] = useState<string>("");
   const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
     isOpen: false,
     posts: [],
     currentRestaurantId: null,
   });
-
   const { queryData, isLoading, refetch } = usePendingVideos({
     currentPage,
     pageSize,
     searchTerm,
     startDate,
     endDate,
-    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined,
+    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined
   });
 
   // ---------------------------------------------------------------------------
@@ -98,9 +98,10 @@ const PendingVideos = ({
     router.push(`/restaurants/${restaurantId}`);
   }, [router]);
 
-  const handleOpenVideoPreview = useCallback((locationId: string): void => {
+  const handleOpenVideoPreview = useCallback((locationId: string, submissionId: string): void => {
     setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
-  }, [setVideoPreview]);
+    setCurrentSubmissionId(submissionId);
+  }, [setVideoPreview, setCurrentSubmissionId]);
 
   const handleCloseVideoPreview = useCallback((isOpen: boolean) => {
     if (!isOpen) {
@@ -158,9 +159,10 @@ const PendingVideos = ({
       name: currentRestaurant.location?.name ?? "",
       menu: currentRestaurant.location?.menu?.content || "",
       reservation: currentRestaurant.location?.reservation?.content || "",
-      rating: currentRestaurant.location?.rating ?? 0,
+      rating: currentRestaurant.location?.rating,
       adminName: currentRestaurant.admin.name,
-      adminId: currentRestaurant.admin.id
+      adminId: currentRestaurant.admin.id,
+      submissionId: currentRestaurant.submission.id
     } : {
       id: "",
       name: "",
@@ -168,7 +170,8 @@ const PendingVideos = ({
       reservation: "",
       rating: 0,
       adminName: "",
-      adminId: ""
+        adminId: "",
+        submissionId: ""
     };
   }, [videos, videoPreview.currentRestaurantId]);
 
@@ -191,6 +194,7 @@ const PendingVideos = ({
         restaurant={restaurant}
         onApprove={handleApprovePost}
         onDecline={handleDeclinePost}
+        submissionId={currentSubmissionId}
       />
 
       <RestaurantTable<PendingVideoTableTypes>

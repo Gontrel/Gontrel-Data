@@ -94,13 +94,9 @@ export const createActiveRestaurantsColumns = (
       cell: ({ row }) => {
         const url = row.original.website ?? "";
         return (
-          url.length > 0 ? (
           <ExternalLink href={url} title={url}>
             <span className="text-black">View website</span>
           </ExternalLink>
-          ) : (
-            <span className="text-black">N/A</span>
-          )
         );
       },
       minSize: TABLE_COLUMN_SIZES.WEBSITE,

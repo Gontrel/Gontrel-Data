@@ -4,17 +4,7 @@ import { usePendingVideos } from './usePendingVideos';
 import { useActiveRestaurants } from './useActiveRestaurants';
 import { useSubmittedRestaurants } from './useSubmittedRestaurants';
 import { useSubmittedVideos } from './useSubmittedVideos';
-
-/**
- * Interface for tab-specific state
- */
-interface TabState {
-  searchTerm: string;
-  selectedAnalyst: string;
-  selectedTimePeriod: string;
-  currentPage: number;
-  pageSize: number;
-}
+import { TabState } from '@/interfaces';
 
 /**
  * Custom hook to fetch table totals for each tab independently using tRPC
@@ -24,7 +14,10 @@ export const useTableTotals = (tabStates: Record<ManagerTableTabsEnum | AnalystT
   const { queryData: pendingRestaurantsTotal } = usePendingRestaurants({
     currentPage: 1,
     pageSize: 1,
-    searchTerm: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm || ""
+    searchTerm: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.searchTerm || "",
+    startDate: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.dateRange?.startDate?.toISOString().split('T')[0] || undefined,
+    endDate: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.dateRange?.endDate?.toISOString().split('T')[0] || undefined,
+    adminId: tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.selectedAnalyst || undefined,
   });
 
   // Fetch pending videos total with tab-specific search
@@ -32,20 +25,27 @@ export const useTableTotals = (tabStates: Record<ManagerTableTabsEnum | AnalystT
     currentPage: 1,
     pageSize: 1,
     searchTerm: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.searchTerm || "",
+    startDate: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.dateRange?.startDate?.toISOString().split('T')[0] || undefined,
+    endDate: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.dateRange?.endDate?.toISOString().split('T')[0] || undefined,
+    adminId: tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.selectedAnalyst || undefined,
   });
 
   // Fetch active restaurants total with tab-specific search
   const { queryData: activeRestaurantsTotal } = useActiveRestaurants({
     currentPage: 1,
     pageSize: 1,
-    searchTerm: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm || ""
+    searchTerm: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.searchTerm || "",
+    startDate: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.dateRange?.startDate?.toISOString().split('T')[0] || undefined,
+    endDate: tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.dateRange?.endDate?.toISOString().split('T')[0] || undefined,
   });
 
   // Fetch submitted restaurants total with tab-specific search (for analysts)
   const { queryData: submittedRestaurantsTotal } = useSubmittedRestaurants({
     currentPage: 1,
     pageSize: 1,
-    searchTerm: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm || ""
+    searchTerm: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.searchTerm || "",
+    startDate: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.dateRange?.startDate?.toISOString().split('T')[0] || undefined,
+    endDate: tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]?.dateRange?.endDate?.toISOString().split('T')[0] || undefined,
   });
 
   // Fetch submitted videos total with tab-specific search (for analysts)
@@ -53,6 +53,8 @@ export const useTableTotals = (tabStates: Record<ManagerTableTabsEnum | AnalystT
     currentPage: 1,
     pageSize: 1,
     searchTerm: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.searchTerm || "",
+    startDate: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.dateRange?.startDate?.toISOString().split('T')[0] || undefined,
+    endDate: tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS]?.dateRange?.endDate?.toISOString().split('T')[0] || undefined,
   });
 
   // Extract totals from tRPC responses

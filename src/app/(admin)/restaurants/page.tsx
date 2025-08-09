@@ -129,9 +129,6 @@ export default function RestaurantsPage() {
   /**
    * Handles time period filter changes for the active tab
    */
-  // Legacy no-op (kept for old prop signatures if needed)
-  // Removed legacy handler entirely
-
   const handleDateRangeChange = useCallback(
     (range: DateRangeValue | undefined) => {
       updateTabDateRange(activeTab, range);

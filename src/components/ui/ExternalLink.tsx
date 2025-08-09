@@ -2,7 +2,7 @@
 import Icon from '../svgs/Icons';
 
 interface ExternalLinkProps {
-  href: string;
+  href: string | null
   children: React.ReactNode;
   className?: string;
   title?: string;
@@ -18,6 +18,7 @@ export function ExternalLink({
   title
 }: ExternalLinkProps) {
   return (
+    href && href.length > 0 ? (
     <a
       href={href}
       target="_blank"
@@ -28,5 +29,8 @@ export function ExternalLink({
       {children}
       <Icon name="externalLinkIcon" />
     </a>
+    ) : (
+      <span className="text-black">N/A</span>
+    )
   );
 }
