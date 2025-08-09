@@ -272,7 +272,7 @@ export default class APIRequest {
 
   toggleLocation = async (data: ToggleLocation) => {
     const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(
+    const response = await this.authenticatedClient.patch(
       `/admin-toggle-location-active?${params.toString()}`
     );
     return this.handleResponse(response);
