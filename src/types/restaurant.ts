@@ -1,6 +1,5 @@
 import {
   GetRestaurantsResponse,
-  GetGroupedPostsResponse,
   OpeningHoursDay,
   Reservation,
   Summary,

@@ -158,9 +158,9 @@ const PendingVideos = ({
     return currentRestaurant ? {
       id: currentRestaurant.location?.id ?? "",
       name: currentRestaurant.location?.name ?? "",
-      menu: "",
-      reservation: "",
-      rating: 0,
+      menu: currentRestaurant.location?.menu?.content || "",
+      reservation: currentRestaurant.location?.reservation?.content || "",
+      rating: currentRestaurant.location?.rating,
       adminName: currentRestaurant.admin.name,
       adminId: currentRestaurant.admin.id,
       submissionId: currentRestaurant.submission.id

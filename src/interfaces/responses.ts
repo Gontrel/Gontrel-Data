@@ -109,6 +109,9 @@ export type GetGroupedPostsSubmissionsResponse = IPaginatedRes<{
     id: string,
     name: string,
     address: Address,
+    menu: Menu,
+    reservation: Reservation,
+    rating: number,
     createdAt: string,
   },
   submission: {
