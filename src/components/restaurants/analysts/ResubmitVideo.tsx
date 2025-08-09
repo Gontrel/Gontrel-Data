@@ -33,7 +33,6 @@ export const ResubmitVideo = ({
   title,
   description,
 }: ResubmitVideoSheetProps) => {
-  console.log(submissionId, 'submissionId');
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
@@ -60,7 +59,6 @@ export const ResubmitVideo = ({
 
   useEffect(() => {
     const processRestaurant = async () => {
-      console.log(posts);
       if (posts) {
         try {
           const locationFromPost = posts?.data?.[0]?.location;
@@ -69,7 +67,6 @@ export const ResubmitVideo = ({
           );
           const updatedRestaurant: RestaurantData = {
             id: locationFromPost?.id ?? "",
-            placeId: locationFromPost?.id ?? "",
             name: locationFromPost?.name ?? "",
             image: locationFromPost?.photos?.[0] ?? "",
             address: locationFromPost?.address ?? "",
