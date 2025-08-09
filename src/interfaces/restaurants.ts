@@ -1,6 +1,7 @@
 import { ApprovalStatusEnum } from "@/types";
 import { Post, Tag } from "./posts";
 import { Admin } from "./user";
+import { DateRangeValue } from "@/utils/dateRange";
 
 export interface Meta {
   totalLocations: number;
@@ -119,7 +120,7 @@ export interface Location {
   reservation: Reservation;
   toilets: boolean;
   type: string;
-  website: string;
+  website: string | null;
   status: ApprovalStatusEnum;
   comment: string | null;
   mapLink: string;
@@ -149,4 +150,13 @@ export interface VideoPreviewModalProps {
 export interface ConverTedWorkingHours {
   [day: string]: string[];
 
+}
+
+export interface TabState {
+  searchTerm: string;
+  selectedAnalyst: string;
+  selectedTimePeriod: string;
+  dateRange: DateRangeValue | undefined;
+  currentPage: number;
+  pageSize: number;
 }

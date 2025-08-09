@@ -16,14 +16,15 @@ export const usePendingVideos = ({ currentPage, pageSize, searchTerm, startDate,
     isLoading,
     error,
     refetch
-  } = trpc.post.getGroupedPosts.useQuery({
+  } = trpc.post.getGroupedPostsSubmissions.useQuery({
+    status: ApprovalStatusEnum.PENDING,
+    includeRejected: true,
     pageNumber: currentPage,
     quantity: pageSize,
-    status: ApprovalStatusEnum.PENDING,
     query: searchTerm,
     startDate,
     endDate,
-    adminId,
+    adminId
   });
   return { queryData, isLoading, error, refetch };
 }

@@ -1,27 +1,18 @@
 import { useState, useCallback } from 'react';
 import { type DateRangeValue } from '@/utils/dateRange';
 import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
-
-/**
- * Interface for tab-specific state
- */
-interface TabState {
-  searchTerm: string;
-  selectedAnalyst: string;
-  selectedTimePeriod: string;
-  dateRange?: DateRangeValue;
-  currentPage: number;
-  pageSize: number;
-}
+import { useIsAnalyst } from '@/stores/authStore';
+import { TabState } from '@/interfaces';
 
 /**
  * Custom hook to manage tab-specific state
  */
 export const useTabState = () => {
+  const  isAnalyst  = useIsAnalyst();
   const [tabStates, setTabStates] = useState<Record<ManagerTableTabsEnum | AnalystTableTabsEnum, TabState>>({
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: {
       searchTerm: '',
-      selectedAnalyst: 'all',
+      selectedAnalyst: isAnalyst ? 'all' : '',
       selectedTimePeriod: 'all',
       dateRange: undefined,
       currentPage: 1,
@@ -29,7 +20,7 @@ export const useTabState = () => {
     },
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: {
       searchTerm: '',
-      selectedAnalyst: 'all',
+      selectedAnalyst: isAnalyst ? 'all' : '',
       selectedTimePeriod: 'all',
       dateRange: undefined,
       currentPage: 1,
@@ -37,7 +28,7 @@ export const useTabState = () => {
     },
     [ManagerTableTabsEnum.PENDING_VIDEOS]: {
       searchTerm: '',
-      selectedAnalyst: 'all',
+      selectedAnalyst: isAnalyst ? 'all' : '',
       selectedTimePeriod: 'all',
       dateRange: undefined,
       currentPage: 1,

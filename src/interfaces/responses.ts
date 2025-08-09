@@ -98,6 +98,26 @@ export type GetGroupedPostsResponse = IPaginatedRes<{
   postCount: number;
 }  & Location>;
 
+export type GetGroupedPostsSubmissionsResponse = IPaginatedRes<{
+  admin: {
+    id: string,
+    name: string,
+    profileImage: string,
+    email: string
+  },
+  location: {
+    id: string,
+    name: string,
+    address: Address,
+    createdAt: string,
+  },
+  submission: {
+    id: string,
+    date: string,
+  },
+  postCount: number,
+}>;
+
 export interface GetPostByIdResponse {
   post: Post;
 }

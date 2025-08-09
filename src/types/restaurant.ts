@@ -8,6 +8,7 @@ import {
   Post,
   Address,
   Menu,
+  GetGroupedPostsSubmissionsResponse,
 } from "@/interfaces";
 
 /**
@@ -18,12 +19,12 @@ export type ActiveRestaurantTableTypes = GetRestaurantsResponse["data"][number];
 export type PendingRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type PendingVideoTableTypes = GetGroupedPostsResponse["data"][number];
+export type PendingVideoTableTypes = GetGroupedPostsSubmissionsResponse["data"][number];
 
 export type SubmittedRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
-export type SubmittedVideoTableTypes = GetGroupedPostsResponse["data"][number];
+export type SubmittedVideoTableTypes = GetGroupedPostsSubmissionsResponse["data"][number];
 
 /**
  * API response types

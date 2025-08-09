@@ -2,6 +2,7 @@ import { Admin } from "./user";
 
 export interface Post {
   id: string;
+  submissionId: string;
   createdAt: string;
   modifiedAt: string;
   deletedAt?: string;

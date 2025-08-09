@@ -14,7 +14,7 @@ import { ActionButtons } from "@/components/ui/ActionButtons";
  * Creates column definitions for submitted videos table
  */
 export const createSubmittedVideosColumns = (
-  handleOpenVideoPreview: (locationId: string, adminId: string) => void,
+  handleOpenVideoPreview: (locationId: string, submissionId: string) => void,
   handleOpenResubmitModal: (restaurantId: string) => void,
   onRowClick?: (row: SubmittedVideoTableTypes) => void
 ): ColumnDef<SubmittedVideoTableTypes>[] => [
@@ -84,7 +84,7 @@ export const createSubmittedVideosColumns = (
               textColor={getTextColor([{ status: ApprovalStatusEnum.PENDING }])}
               bgColor={getBgColor([{ status: ApprovalStatusEnum.PENDING }])}
             />
-            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.admin.id ?? "")}>View</span>
+            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.submission.id ?? "")}>View</span>
           </div>
         );
       },
@@ -117,7 +117,7 @@ export const createSubmittedVideosColumns = (
       accessorKey: "dateAdded",
       header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
       cell: ({ row }) => {
-        const dateAdded = new Date(row.original.location?.createdAt ?? row.original.admin.createdAt);
+        const dateAdded = new Date(row.original.submission.date);
 
         return (
           <div className="relative">

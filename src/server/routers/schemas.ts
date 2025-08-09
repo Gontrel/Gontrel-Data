@@ -90,6 +90,8 @@ export const fetchAdminPostsSchema = baseQuerySchema.extend({
   status: z.enum(ApprovalStatusEnum).optional(),
   locationId: z.string().uuid().optional(),
   adminId: z.string().uuid().optional(),
+  submissionId: z.string().uuid().optional(),
+  includeRejected: z.boolean().optional(),
 });
 
 /**
@@ -98,6 +100,15 @@ export const fetchAdminPostsSchema = baseQuerySchema.extend({
 export const fetchPostByIdSchema = z.object({
   userId: z.string().optional(),
   postId: z.string(),
+});
+
+/**
+ * GET /admin-grouped-posts-submissions - FetchGroupedPostsSubmissionsRequest
+ */
+export const fetchGroupedPostsSubmissionsSchema = baseQuerySchema.extend({
+  adminId: z.string().uuid().optional(),
+  status: z.enum(ApprovalStatusEnum).optional(),
+  includeRejected: z.boolean().optional(),
 });
 
 /**

@@ -25,6 +25,8 @@ import {
   FetchGroupedPostsRequest,
   GetGroupedPostsResponse,
   FetchUserGroupedPostsRequest,
+  FetchGroupedPostsSubmissionsRequest,
+  GetGroupedPostsSubmissionsResponse,
   FetchStaffsRequest,
   GetStaffsResponse,
 } from "@/interfaces";
@@ -246,7 +248,14 @@ export default class APIRequest {
     );
     return this.handleResponse(response);
   };
-
+  // getGroupedPostsSubmissions
+  getGroupedPostsSubmissions = async (data: FetchGroupedPostsSubmissionsRequest): Promise<GetGroupedPostsSubmissionsResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-grouped-posts-submissions?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
   // getGroupedPosts
   getGroupedPosts = async (
     data: FetchGroupedPostsRequest

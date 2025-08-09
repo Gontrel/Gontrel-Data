@@ -1,4 +1,4 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
 import { Check, X } from "lucide-react";
 import { ActionButtons } from "../../ui/ActionButtons";
@@ -18,7 +18,8 @@ import { Post } from "@/interfaces";
  */
 export const createSubmittedRestaurantsColumns = (
   handleOpenVideoPreview: (posts: Post[], restaurantId: string) => void,
-  handleOpenResubmitModal: (restaurantId: string) => void
+  handleOpenResubmitModal: (restaurantId: string) => void,
+  onRowClick?: (row: SubmittedRestaurantTableTypes) => void
 ): ColumnDef<SubmittedRestaurantTableTypes>[] => [
   {
     accessorKey: "id",
@@ -37,34 +38,46 @@ export const createSubmittedRestaurantsColumns = (
     minSize: TABLE_COLUMN_SIZES.ID,
     meta: { sticky: true },
   },
-  {
-    accessorKey: "name",
-    header: () => <TableHeader title="Restaurant name" />,
-    cell: ({ row }) => (
-      <div className="font-medium text-[#181D1F] max-w-60 truncate">
-        {row.getValue("name")}
-      </div>
-    ),
-    minSize: TABLE_COLUMN_SIZES.NAME,
-    meta: { sticky: true },
-  },
+    {
+      accessorKey: 'name',
+      header: () => (
+        <TableHeader title="Restaurant name" />
+      ),
+      cell: ({ row }) => {
+        const handleClick = (e: React.MouseEvent, row: Row<SubmittedRestaurantTableTypes>) => {
+          onRowClick?.(row.original);
+        };
+        const handleKeyDown = (
+          e: React.KeyboardEvent,
+          row: Row<SubmittedRestaurantTableTypes>,
+          onRowClick?: (row: SubmittedRestaurantTableTypes) => void
+        ) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onRowClick?.(row.original);
+          }
+        };
+        return (
+          <div
+            onClick={(e) => handleClick(e, row)}
+            onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
+            role="button"
+            tabIndex={0}
+            aria-label="View restaurant details"
+            className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] hover:text-blue-500 max-w-60 w-full h-full hover:bg-gray-50 overflow-hidden"
+          >
+            <span className="truncate w-full">{row.original.name ?? ""}</span>
+          </div>
+        );
+      },
+      minSize: TABLE_COLUMN_SIZES.NAME,
+      meta: { sticky: true }
+    },
   {
     accessorKey: "video",
     header: () => <TableHeader iconName="videoIcon" title="Video" />,
     cell: ({ row }) => {
-      // const videos = row.original.videos;
       const posts = row.original.posts;
-      // const isPending = videos.pending > 0;
-      // let text = `${videos.pending}/${videos.total} video${
-      //   videos.total > 1 ? "s" : ""
-      // }`;
-
-      // if (isPending) {
-      //   text =
-      //     videos.pending > 1
-      //       ? `${videos.pending} videos`
-      //       : `${videos.pending} video`;
-      // }
 
       return (
         <div className="flex flex-col gap-y-2 w-fit">
@@ -94,7 +107,7 @@ export const createSubmittedRestaurantsColumns = (
     accessorKey: "website",
     header: () => <TableHeader iconName="linkIcon" title="Website" />,
     cell: ({ row }) => {
-      const url = row.getValue("website") as string;
+      const url = row.original.website ?? "";
       return (
         <ExternalLink href={url} title={url}>
           <span className="text-black">View website</span>

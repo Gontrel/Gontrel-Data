@@ -113,9 +113,9 @@ export const createPendingRestaurantsColumns = (
       accessorKey: "website",
       header: () => <TableHeader iconName="linkIcon" title="Website" />,
       cell: ({ row }) => {
-        const website = row.original.website;
+        const website = row.original.website ?? "";
         return (
-          <ExternalLink href={website} title={website}>
+          <ExternalLink href={website} title="Website">
             <span className="text-black">View website</span>
           </ExternalLink>
         );
