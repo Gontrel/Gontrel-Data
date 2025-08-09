@@ -30,5 +30,6 @@ export type TIconNames =
   | "restaurantTiktokIcon"
   | "postCalendarIcon"
   | "globeIcon"
+  | "deactivateIcon"
   | "saveIcon"
   | "warningIcon";

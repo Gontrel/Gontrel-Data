@@ -27,6 +27,7 @@ import {
   FetchUserGroupedPostsRequest,
   FetchStaffsRequest,
   GetStaffsResponse,
+  ToggleLocation,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -265,6 +266,14 @@ export default class APIRequest {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-user-grouped-posts?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  toggleLocation = async (data: ToggleLocation) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-toggle-location-active?${params.toString()}`
     );
     return this.handleResponse(response);
   };

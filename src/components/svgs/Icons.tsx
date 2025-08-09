@@ -629,11 +629,28 @@ const icons: Record<TIconNames, TRenderSvg> = {
       />
     </svg>
   ),
+  deactivateIcon: ({ width = 32, height = 32, stroke = "#ED0000" }) => (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M9.33203 9.33301L22.6654 22.6663M9.33203 22.6663L22.6654 9.33301"
+        stroke={stroke}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ),
 };
 
 const Icon = (props: TIcon & { name: TIconNames }) =>
   icons[props.name]?.(props) ?? null;
 export default Icon;
 
-//Usage >>>> <Icon name="saveIcon" stroke="#24B314" />
+//Usage >>>> <Icon name="deactivateIcon" stroke="#24B314" />
 //Usage >>>> <Icon name="check" fill="#24B314" />

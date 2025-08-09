@@ -389,6 +389,9 @@ export interface LocationAvailabilityRequest {
   opensAt?: number;
   closesAt?: number;
 }
+export interface ToggleLocation {
+  locationId?: string; // required
+}
 
 /**
  * Post creation interface used in bulk operations and location creation

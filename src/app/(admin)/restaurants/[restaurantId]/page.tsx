@@ -19,6 +19,8 @@ import {
 } from "@/types/enums";
 import { errorToast, successToast } from "@/utils/toast";
 import { usePendingRestaurantsStore } from "@/stores/tableStore";
+import { useHeaderStore } from "@/stores/headerStore";
+import ConfirmationModal from "@/components/modals/ConfirmationModal";
 
 const PAGE_SIZE = 10;
 
@@ -39,20 +41,22 @@ const RestaurantDetailsPage = ({
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   const { activeVideoUrl, setActiveVideoUrl, restaurantData, tiktokUsername } =
     useVideoStore();
+  const { isConfirmationModalOpen, setConfirmationModalOpen, isActive } =
+    useHeaderStore();
+  const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
+  const [isFetching, setIsFetching] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [meta, setMetadata] = useState<IPostMeta>({
     pendingCount: 0,
     approvalCount: 0,
   });
-  const [page, setPage] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [comment, setComment] = useState<string>("");
 
+  const { setIsActive, setIsActiveText } = useHeaderStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
   const utils = trpc.useContext();
-
-  const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
 
   const { mutate: approveRestaurantStatus } =
     trpc.restaurant.approveRestaurantStatus.useMutation({
@@ -69,6 +73,7 @@ const RestaurantDetailsPage = ({
     isLoading,
     isError,
     error,
+    refetch: refetchRest,
   } = trpc.restaurant.getRestaurantById.useQuery(
     { locationId: restaurantId },
     { enabled: !!restaurantId }
@@ -156,9 +161,23 @@ const RestaurantDetailsPage = ({
         status: ApprovalStatusEnum.REJECTED,
         comment,
       });
+      refetch();
     },
-    [declineRestaurant, approveRestaurantStatus]
+    [declineRestaurant, approveRestaurantStatus, refetch]
   );
+
+  const { mutate } = trpc.restaurant.getToggleLocation.useMutation({
+    onSuccess: () => {
+      successToast("Restaurant status updated successfully");
+    },
+    onError: (error) => {
+      errorToast(error.message);
+    },
+  });
+
+  const toggleLocation = useCallback(async () => {
+    mutate({ locationId: restaurantId });
+  }, [restaurantId, mutate]);
 
   useEffect(() => {
     if (restaurantId) {
@@ -167,6 +186,12 @@ const RestaurantDetailsPage = ({
       fetchPosts(1, ApprovalStatusEnum.APPROVED);
     }
   }, [restaurantId, fetchPosts]);
+
+  useEffect(() => {
+    if (restaurant) {
+      setIsActive(restaurant.isActive);
+    }
+  }, [restaurant, setIsActive, setIsActiveText]);
 
   const handleTabChange = (tab: "approved" | "pending") => {
     setActiveTab(tab);
@@ -235,6 +260,24 @@ const RestaurantDetailsPage = ({
       setActiveVideoUrl(null);
       setShowNewPostModal(false);
     }
+  };
+
+  const handleConfirmation = () => {
+    //TODO: API call
+    toggleLocation();
+    setConfirmationModalOpen(false);
+    refetch();
+    refetchRest();
+  };
+
+  const handleCloseModal = () => {
+    setConfirmationModalOpen(false);
+  };
+
+  const handleCommentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setComment(event.target.value);
   };
 
   const gontrelRestaurantData: GontrelRestaurantData = {
@@ -437,7 +480,7 @@ const RestaurantDetailsPage = ({
             className="flex-grow overflow-y-auto"
             style={{ maxHeight: "calc(100vh - 300px)" }}
           >
-            {activeTab === "approved" ? (
+            {activeTab === "approved" && !isFetching ? (
               posts?.length > 0 ? (
                 posts?.map((post: Post) => (
                   <LivePostCard
@@ -453,7 +496,7 @@ const RestaurantDetailsPage = ({
                   </p>
                 </div>
               )
-            ) : posts?.length > 0 ? (
+            ) : posts?.length > 0 && !isFetching ? (
               posts?.map((post: Post) => (
                 <LivePostCard
                   key={post.id}
@@ -488,6 +531,29 @@ const RestaurantDetailsPage = ({
         open={showNewPostModal}
         restaurant={restaurant}
         onOpenChange={handleNewPostModalOpenChange}
+      />
+
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={handleCloseModal}
+        title={`${
+          isActive ? "Deactivate restaurant?" : "Deactivate restaurant?"
+        }`}
+        description={`${
+          isActive
+            ? "Are you sure you want to deactivate this restaurant?"
+            : "Are you sure you want to re-activate this restaurant?"
+        }`}
+        comment={isActive ? comment : ""}
+        showCommentField={isActive ? true : false}
+        onCommentChange={handleCommentChange}
+        onConfirm={handleConfirmation}
+        confirmLabel={`${isActive ? "Deactivate" : "Re-activate?"}`}
+        commentPlaceholder="Add reason here"
+        commentLabel="Reason"
+        successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
+          isActive ? "bg-[#D80000]" : "bg-[#0070F3]"
+        }`}
       />
     </div>
   );
