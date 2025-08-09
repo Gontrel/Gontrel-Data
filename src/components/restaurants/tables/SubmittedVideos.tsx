@@ -66,7 +66,6 @@ const SubmittedVideos = ({
   });
 
   const [resubmitModal, setResubmitModal] = useState<boolean>(false);
-  const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [currentSubmissionId, setCurrentSubmissionId] = useState<string | undefined>(undefined);
   // const [confirmationModal, setConfirmationModal] = useState<ResubmitModalState>({
   //   isOpen: false,
@@ -103,10 +102,10 @@ const SubmittedVideos = ({
     }
   }, [setVideoPreview, refetch]);
 
-  const handleResubmitPost = useCallback((locationId: string): void => {
+  const handleResubmitPost = useCallback((locationId: string, submissionId: string): void => {
     setResubmitModal(true);
-    setRestaurantId(locationId);
-  }, [setResubmitModal, setRestaurantId]);
+    setCurrentSubmissionId(submissionId);
+  }, [setResubmitModal]);
 
   const handleRowSelection = useCallback((selectedRows: SubmittedVideoTableTypes[]) => {
     const selectedIds = selectedRows.map(row => row.location?.id ?? "");
@@ -193,7 +192,7 @@ const SubmittedVideos = ({
 
       {/* Resubmit Restaurant Modal */}
       <ResubmitVideo
-        restaurantId={restaurantId ?? ""}
+        submissionId={currentSubmissionId ?? ""}
         title="Resubmit restaurant video"
         description="The video you submitted was rejected"
         isRestaurantFlow={false}

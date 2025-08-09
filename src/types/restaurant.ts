@@ -108,7 +108,7 @@ export interface RestaurantFormData {
 
 export type RestaurantData = {
   id?: string;
-  placeId: string;
+  placeId?: string;
   name: string;
   image: string;
   address: string | Address;

@@ -19,7 +19,7 @@ import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 
 interface ResubmitVideoSheetProps {
   open: boolean;
-  restaurantId: string;
+  submissionId: string;
   isRestaurantFlow: boolean;
   title: string;
   description: string;
@@ -27,23 +27,25 @@ interface ResubmitVideoSheetProps {
 }
 
 export const ResubmitVideo = ({
-  restaurantId,
+  submissionId,
   open,
   onOpenChange,
   title,
   description,
 }: ResubmitVideoSheetProps) => {
+  console.log(submissionId, 'submissionId');
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
   const [isOpenFeedback, setIsOpenFeedBack] = useState(false);
   const { setActiveVideoUrl, resetVideos } = useVideoStore();
 
-  const { data: restaurant, isLoading } =
-    trpc.restaurant.getRestaurantById.useQuery(
-      { locationId: restaurantId },
-      { enabled: !!restaurantId && open }
-    );
+  const { data: posts, isLoading } = trpc.post.getPosts.useQuery(
+    { submissionId: submissionId },
+    { enabled: !!submissionId && open }
+  );
+
+  // location is derived from posts in the effect below
 
   const { mutate: updateAdminLocation } =
     trpc.restaurant.updateRestaurant.useMutation({
@@ -58,14 +60,37 @@ export const ResubmitVideo = ({
 
   useEffect(() => {
     const processRestaurant = async () => {
-      if (restaurant) {
+      console.log(posts);
+      if (posts) {
         try {
+          const locationFromPost = posts?.data?.[0]?.location;
           const formattedHours = await formatOpeningHours(
-            restaurant.openingHours || []
+            locationFromPost?.openingHours || []
           );
-          const updatedRestaurant = {
-            ...restaurant,
+          const updatedRestaurant: RestaurantData = {
+            id: locationFromPost?.id ?? "",
+            placeId: locationFromPost?.id ?? "",
+            name: locationFromPost?.name ?? "",
+            image: locationFromPost?.photos?.[0] ?? "",
+            address: locationFromPost?.address ?? "",
+            website: locationFromPost?.website ?? "",
             workingHours: formattedHours,
+            comment: locationFromPost?.comment ?? "",
+            url: locationFromPost?.website ?? "",
+            lat: locationFromPost?.lat,
+            lng: locationFromPost?.lng,
+            mapLink: locationFromPost?.mapLink ?? "",
+            menu: locationFromPost?.menu?.content ?? "",
+            modifiedAt: locationFromPost?.modifiedAt ?? "",
+            createdAt: locationFromPost?.createdAt ?? "",
+            photos: locationFromPost?.photos ?? [],
+            posts: posts?.data ?? [],
+            priceLevel: locationFromPost?.priceLevel,
+            rating: locationFromPost?.rating,
+            reservation: locationFromPost?.reservation,
+            status: locationFromPost?.status,
+            country: locationFromPost?.country ?? "",
+            toilets: locationFromPost?.toilets,
           };
 
           setSelectedRestaurant(updatedRestaurant);
@@ -76,7 +101,7 @@ export const ResubmitVideo = ({
     };
 
     processRestaurant();
-  }, [restaurant, open]);
+  }, [posts, open]);
 
   const handleClose = useCallback(() => {
     onOpenChange(false);

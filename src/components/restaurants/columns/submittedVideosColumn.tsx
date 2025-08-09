@@ -15,7 +15,7 @@ import { ActionButtons } from "@/components/ui/ActionButtons";
  */
 export const createSubmittedVideosColumns = (
   handleOpenVideoPreview: (locationId: string, submissionId: string) => void,
-  handleOpenResubmitModal: (restaurantId: string) => void,
+  handleOpenResubmitModal: (restaurantId: string, submissionId: string) => void,
   onRowClick?: (row: SubmittedVideoTableTypes) => void
 ): ColumnDef<SubmittedVideoTableTypes>[] => [
     {
@@ -142,7 +142,7 @@ export const createSubmittedVideosColumns = (
             actions={[
               {
                 label: 'Resubmit',
-                onClick: () => handleOpenResubmitModal(row.original.location.id),
+                onClick: () => handleOpenResubmitModal(row.original.location.id, row.original.submission.id),
                 variant: 'primary',
                 disabled: false,
               },
