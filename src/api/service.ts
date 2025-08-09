@@ -29,6 +29,7 @@ import {
   GetGroupedPostsSubmissionsResponse,
   FetchStaffsRequest,
   GetStaffsResponse,
+  GetTiktokDetailsResponse,
 } from "@/interfaces";
 
 export default class APIRequest {
@@ -316,7 +317,7 @@ export default class APIRequest {
   };
 
   // getTiktokDetails
-  getTiktokDetails = async (data: { link: string }) => {
+  getTiktokDetails = async (data: { link: string }): Promise<GetTiktokDetailsResponse> => {
     const response = await this.authenticatedClient.get(
       `/tiktok-link-info?link=${data.link}`
     );

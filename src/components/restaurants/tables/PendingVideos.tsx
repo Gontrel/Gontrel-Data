@@ -65,7 +65,6 @@ const PendingVideos = ({
     posts: [],
     currentRestaurantId: null,
   });
-  console.log(selectedAnalyst, 'selectedAnalyst')
   const { queryData, isLoading, refetch } = usePendingVideos({
     currentPage,
     pageSize,
