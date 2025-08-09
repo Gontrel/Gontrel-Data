@@ -42,8 +42,7 @@ export const NewRestaurantSheet = ({
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
   const [sessionToken, setSessionToken] = useState("");
-  const { videos, setActiveVideoUrl, resetVideos, addRestaurantData } =
-    useVideoStore();
+  const { setActiveVideoUrl, resetVideos, addRestaurantData } = useVideoStore();
 
   const debouncedQuery = useDebounce(inputValue, 500);
 
@@ -110,7 +109,6 @@ export const NewRestaurantSheet = ({
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
-      console.log(apiKey, "apiKeyapiKeyapiKeyapiKey");
       const image =
         photoReference && apiKey
           ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
@@ -183,6 +181,9 @@ export const NewRestaurantSheet = ({
 
     if (!selectedRestaurant) return;
 
+    const store = useVideoStore.getState();
+    const currentVideos = store.getCurrentVideos();
+
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
@@ -199,7 +200,7 @@ export const NewRestaurantSheet = ({
       rating: selectedRestaurant.rating ?? 0,
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
       posts:
-        videos.map((video) => ({
+        currentVideos.map((video) => ({
           tiktokLink: video.url,
           videoUrl: video.videoUrl || "",
           thumbUrl: video.thumbUrl,
@@ -232,6 +233,7 @@ export const NewRestaurantSheet = ({
         }
       ),
     };
+
     createAdminLocation(payload);
   };
 

@@ -1,3 +1,5 @@
+import { Admin } from "./user";
+
 export interface Post {
   id: string;
   createdAt: string;
@@ -12,6 +14,7 @@ export interface Post {
   thumbUrl: string;
   postedAt?: string;
   status: string;
+  admin?: Admin;
   source: string;
   tags: Tag[];
 }

@@ -125,7 +125,9 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
   // getRestaurants
-  getRestaurants = async (data: FetchLocationsRequest): Promise<GetRestaurantsResponse> => {
+  getRestaurants = async (
+    data: FetchLocationsRequest
+  ): Promise<GetRestaurantsResponse> => {
     const params = this.buildSearchParams(data);
 
     try {
@@ -149,7 +151,9 @@ export default class APIRequest {
   };
 
   // getAnalystRestaurants
-  getAnalystRestaurants = async (data: FetchAnalystLocationsRequest): Promise<GetRestaurantsResponse> => {
+  getAnalystRestaurants = async (
+    data: FetchAnalystLocationsRequest
+  ): Promise<GetRestaurantsResponse> => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-analyst-locations?${params.toString()}`
@@ -167,7 +171,9 @@ export default class APIRequest {
   };
 
   // approveRestaurantStatus
-  approveRestaurantStatus = async (data: ApproveRestaurantStatusRequest): Promise<ApproveRestaurantStatusResponse> => {
+  approveRestaurantStatus = async (
+    data: ApproveRestaurantStatusRequest
+  ): Promise<ApproveRestaurantStatusResponse> => {
     const response = await this.authenticatedClient.put(
       `/admin-approve-location`,
       data
@@ -176,7 +182,9 @@ export default class APIRequest {
   };
 
   // bulkApproveRestaurantStatus
-  bulkApproveRestaurantStatus = async (data: BulkApproveRestaurantStatusRequest): Promise<BulkApproveRestaurantStatusResponse> => {
+  bulkApproveRestaurantStatus = async (
+    data: BulkApproveRestaurantStatusRequest
+  ): Promise<BulkApproveRestaurantStatusResponse> => {
     const response = await this.authenticatedClient.put(
       `/admin-bulk-approve-location`,
       data
@@ -217,7 +225,9 @@ export default class APIRequest {
     }
   };
   // getPosts
-  getPosts = async (data: FetchAdminPostsRequest): Promise<GetPostsResponse> => {
+  getPosts = async (
+    data: FetchAdminPostsRequest
+  ): Promise<GetPostsResponse> => {
     const params = this.buildSearchParams(data);
     try {
       const response = await this.authenticatedClient.get(
@@ -238,7 +248,9 @@ export default class APIRequest {
   };
 
   // getGroupedPosts
-  getGroupedPosts = async (data: FetchGroupedPostsRequest): Promise<GetGroupedPostsResponse> => {
+  getGroupedPosts = async (
+    data: FetchGroupedPostsRequest
+  ): Promise<GetGroupedPostsResponse> => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-grouped-posts?${params.toString()}`
@@ -247,7 +259,9 @@ export default class APIRequest {
   };
 
   // getUserGroupedPosts
-  getUserGroupedPosts = async (data: FetchUserGroupedPostsRequest): Promise<GetGroupedPostsResponse> => {
+  getUserGroupedPosts = async (
+    data: FetchUserGroupedPostsRequest
+  ): Promise<GetGroupedPostsResponse> => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-user-grouped-posts?${params.toString()}`

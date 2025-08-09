@@ -4,6 +4,9 @@ import { usePathname, useRouter } from "next/navigation";
 import Icon from "../svgs/Icons";
 import { NotificationBell } from "../notification/NotificationBell";
 import { UserProfile } from "../users/UserProfile";
+import { useHeaderStore } from "@/stores/headerStore";
+import { useEffect } from "react";
+import { Button } from "../ui/Button";
 
 interface HeaderConfig {
   title: string;
@@ -42,7 +45,6 @@ const headerConfigs: Record<string, HeaderConfig> = {
     description: "Manage application settings.",
     showBackButton: false,
   },
-
   // Sub routes
   "/restaurants/**": {
     title: "Back",
@@ -51,30 +53,42 @@ const headerConfigs: Record<string, HeaderConfig> = {
   },
 };
 
-const getConfigForPath = (path: string) => {
-  // Check exact matches first
+const getConfigForPath = (path: string): HeaderConfig => {
   if (headerConfigs[path]) return headerConfigs[path];
 
-  // Then check sub-routes
   if (path.startsWith("/restaurants/")) return headerConfigs["/restaurants/**"];
 
   return {
     title: "Admin",
     description: "Manage your application settings and data.",
+    showBackButton: false,
   };
 };
 
 export function DynamicHeader() {
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = usePathname();
+  const {
+    title: zustandTitle,
+    description: zustandDesc,
+    showBackButton: zustandBackButton,
+    showActiveToggle,
+    reset,
+  } = useHeaderStore();
 
-  const config = getConfigForPath(pathname);
+  const routeConfig = getConfigForPath(pathname);
+
+  const title = zustandTitle ?? routeConfig.title;
+  const description = zustandDesc ?? routeConfig.description;
+  const showBackButton = zustandBackButton ?? routeConfig.showBackButton;
+
+  useEffect(() => reset(), [pathname, reset]);
 
   return (
     <header className="sticky top-0 flex flex-row items-center justify-between w-full py-4 sm:py-8.5 px-4 sm:px-10 bg-[#FAFAFA] border-b border-gray-200 z-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {config.showBackButton && (
+          {showBackButton && (
             <button
               className="bg-[#F0F1F2] py-[10px] px-[30px] rounded-[10px] flex flex-row justify-between items-center gap-4 "
               onClick={() => router.back()}
@@ -82,19 +96,19 @@ export function DynamicHeader() {
             >
               <Icon name="arrowBackIcon" className="w-5 h-5" />
               <span className="text-lg sm:text-2xl font-semibold text-black">
-                {config?.title}
+                {title}
               </span>
             </button>
           )}
 
-          {!config.showBackButton && (
+          {!showBackButton && (
             <div className="flex flex-col gap-y-2.5">
               <h1 className="text-xl sm:text-2xl font-semibold text-black">
-                {config.title}
+                {title}
               </h1>
-              {config.description && (
+              {description && (
                 <p className="text-base sm:text-lg text-[#8A8A8A] font-medium">
-                  {config.description}
+                  {description}
                 </p>
               )}
             </div>
@@ -103,6 +117,12 @@ export function DynamicHeader() {
       </div>
 
       <div className="flex items-center gap-6">
+        {showActiveToggle && (
+          <Button className="flex gap-y-2.5 items-center justify-center">
+            <span></span>
+          </Button>
+        )}
+
         <NotificationBell count={3} />
         <UserProfile />
       </div>

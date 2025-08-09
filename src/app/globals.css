@@ -1,35 +1,11 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"); */
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
-/* Global Font family */
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Figtree";
-  src: url("/assets/fonts/Figtree-VariableFont_wght.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: "Figtree", sans-serif;
 }
 
 :root {
@@ -106,23 +82,11 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-* {
-  /* border-color: hsl(var(--border)); */
-  font-family: "Figtree", sans-serif;
-}
-
-body {
-  color: hsl(var(--foreground));
-  background: hsl(var(--background));
-}
-
 input.no-spinners::-webkit-outer-spin-button,
 input.no-spinners::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-
 
 @keyframes pulse {
   0%,

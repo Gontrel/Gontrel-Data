@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, use, useRef, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { LivePostCard } from "@/components/restaurants/LivePostCard";
 import { NewPostSheet } from "@/components/posts/NewPostsModal";
@@ -12,6 +12,20 @@ import { RestaurantDetailsSkeleton } from "@/components/Loader/restaurants/Resta
 import { Post } from "@/interfaces/posts";
 import Icon from "@/components/svgs/Icons";
 import { GontrelRestaurantData } from "@/interfaces";
+import {
+  ApprovalStatusEnum,
+  ApprovalType,
+  ManagerTableTabsEnum,
+} from "@/types/enums";
+import { errorToast, successToast } from "@/utils/toast";
+import { usePendingRestaurantsStore } from "@/stores/tableStore";
+
+const PAGE_SIZE = 10;
+
+interface IPostMeta {
+  pendingCount: number;
+  approvalCount: number;
+}
 
 const RestaurantDetailsPage = ({
   params,
@@ -19,10 +33,36 @@ const RestaurantDetailsPage = ({
   params: Promise<{ restaurantId: string }>;
 }) => {
   const { restaurantId } = use(params);
-  const [activeTab, setActiveTab] = useState("live");
+  const [activeTab, setActiveTab] = useState<"approved" | "pending">(
+    "approved"
+  );
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   const { activeVideoUrl, setActiveVideoUrl, restaurantData, tiktokUsername } =
     useVideoStore();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [meta, setMetadata] = useState<IPostMeta>({
+    pendingCount: 0,
+    approvalCount: 0,
+  });
+  const [page, setPage] = useState(1);
+  const [isFetching, setIsFetching] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const utils = trpc.useContext();
+
+  const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
+
+  const { mutate: approveRestaurantStatus } =
+    trpc.restaurant.approveRestaurantStatus.useMutation({
+      onSuccess: () => {
+        successToast("Restaurant status updated successfully");
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
 
   const {
     data: restaurant,
@@ -34,23 +74,143 @@ const RestaurantDetailsPage = ({
     { enabled: !!restaurantId }
   );
 
-  const activeRestaurantPosts: Post[] = [];
-  const pendingRestaurantPosts: Post[] = [];
+  const fetchPosts = useCallback(
+    async (pageNumber: number, status: ApprovalStatusEnum) => {
+      setIsFetching(true);
+      try {
+        const res = await utils.post.getPosts.fetch({
+          locationId: restaurantId,
+          status,
+          quantity: PAGE_SIZE,
+          pageNumber,
+        });
 
-  if (restaurant?.posts) {
-    for (let i = 0; i < restaurant.posts.length; i++) {
-      const post = restaurant.posts[i];
+        const posts: Post[] = res.data;
+        const metaRaw = res.meta;
+        const meta: IPostMeta = {
+          pendingCount:
+            typeof metaRaw?.pendingCount === "number"
+              ? metaRaw.pendingCount
+              : 0,
+          approvalCount:
+            typeof metaRaw?.approvalCount === "number"
+              ? metaRaw.approvalCount
+              : 0,
+        };
 
-      if (post?.status === "pending") {
-        pendingRestaurantPosts.push(post);
-      } else if (post?.status === "approved") {
-        activeRestaurantPosts.push(post);
+        setPosts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const filteredNewPosts = posts.filter((p) => !existingIds.has(p.id));
+          return [...prev, ...filteredNewPosts];
+        });
+
+        setMetadata(meta);
+        setIsFetching(false);
+      } finally {
+        setIsFetching(false);
       }
+    },
+    [utils, restaurantId]
+  );
+
+  const refetch = useCallback(() => {
+    setPosts([]);
+    if (activeTab === "pending") {
+      fetchPosts(1, ApprovalStatusEnum.PENDING);
+    } else if (activeTab === "approved") {
+      fetchPosts(1, ApprovalStatusEnum.APPROVED);
     }
-  }
+  }, [activeTab, setPosts, fetchPosts]);
+
+  const handleApprovePost = useCallback(
+    (locationId: string, postId: string) => {
+      approveRestaurant(
+        ManagerTableTabsEnum.PENDING_RESTAURANTS,
+        locationId,
+        "posts",
+        postId
+      );
+      approveRestaurantStatus({
+        resourceId: postId,
+        locationId,
+        type: ApprovalType.POST,
+        status: ApprovalStatusEnum.APPROVED,
+      });
+      refetch();
+    },
+    [approveRestaurant, approveRestaurantStatus, refetch]
+  );
+
+  const handleDeclinePost = useCallback(
+    (locationId: string, postId: string, comment: string) => {
+      declineRestaurant(
+        ManagerTableTabsEnum.PENDING_RESTAURANTS,
+        locationId,
+        "posts",
+        postId
+      );
+      approveRestaurantStatus({
+        resourceId: postId,
+        locationId,
+        type: ApprovalType.POST,
+        status: ApprovalStatusEnum.REJECTED,
+        comment,
+      });
+    },
+    [declineRestaurant, approveRestaurantStatus]
+  );
+
+  useEffect(() => {
+    if (restaurantId) {
+      setPosts([]);
+      setPage(1);
+      fetchPosts(1, ApprovalStatusEnum.APPROVED);
+    }
+  }, [restaurantId, fetchPosts]);
+
+  const handleTabChange = (tab: "approved" | "pending") => {
+    setActiveTab(tab);
+    setPage(1);
+    setHasMore(true);
+
+    if (tab === "pending") {
+      setPosts([]);
+      fetchPosts(1, ApprovalStatusEnum.PENDING);
+    }
+
+    if (tab === "approved") {
+      setPosts([]);
+      fetchPosts(1, ApprovalStatusEnum.APPROVED);
+    }
+  };
+  // Infinite scroll logic
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current || isFetching || !hasMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } =
+      scrollContainerRef.current;
+    if (scrollHeight - (scrollTop + clientHeight) < 100) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchPosts(
+        nextPage,
+        activeTab === "approved"
+          ? ApprovalStatusEnum.APPROVED
+          : ApprovalStatusEnum.PENDING
+      );
+    }
+  }, [page, activeTab, isFetching, hasMore, fetchPosts]);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   // Handle loading and error states
-  if (isLoading) {
+  if (isLoading && isFetching) {
     return <RestaurantDetailsSkeleton />;
   }
 
@@ -62,7 +222,6 @@ const RestaurantDetailsPage = ({
     );
   }
 
-  // Fallback for when data is not yet available
   if (!restaurant) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -71,6 +230,13 @@ const RestaurantDetailsPage = ({
     );
   }
 
+  const handleNewPostModalOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setActiveVideoUrl(null);
+      setShowNewPostModal(false);
+    }
+  };
+
   const gontrelRestaurantData: GontrelRestaurantData = {
     name: restaurant.name,
     menu: restaurant.menu,
@@ -78,12 +244,6 @@ const RestaurantDetailsPage = ({
     rating: restaurant.rating,
   };
 
-  const handleNewPostModalOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      setActiveVideoUrl(null);
-      setShowNewPostModal(false);
-    }
-  };
   return (
     <div className="bg-[#FAFAFA] p-8 relative">
       <PreviewVideoModal
@@ -139,7 +299,7 @@ const RestaurantDetailsPage = ({
                 <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
-                href={restaurant?.address?.content}
+                href={restaurant?.mapLink}
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
               >
                 <Icon name="restaurantLocationIcon" className="w-5 h-5" />
@@ -210,24 +370,24 @@ const RestaurantDetailsPage = ({
             <div className="flex justify-between items-center mb-6">
               <div className="flex gap-8">
                 <button
-                  onClick={() => setActiveTab("live")}
+                  onClick={() => handleTabChange("approved")}
                   className={`py-[10px] px-[20px] ${
-                    activeTab === "live"
+                    activeTab === "approved"
                       ? "border-2 border-[#F0F1F2] font-semibold rounded-[10px]"
                       : "text-[#9DA1A5]"
                   }`}
                 >
-                  Live posts ({activeRestaurantPosts?.length})
+                  Live posts ({meta?.approvalCount ?? 0})
                 </button>
                 <button
-                  onClick={() => setActiveTab("pending")}
+                  onClick={() => handleTabChange("pending")}
                   className={`py-[10px] px-[20px] ${
                     activeTab === "pending"
                       ? "border-2 border-[#F0F1F2] font-semibold rounded-[10px]"
                       : "text-gray-500"
                   }`}
                 >
-                  Pending videos ({pendingRestaurantPosts?.length})
+                  Pending videos ({meta?.pendingCount ?? 0})
                 </button>
               </div>
               <button
@@ -273,12 +433,13 @@ const RestaurantDetailsPage = ({
 
           {/* Scrollable Content Area */}
           <div
+            ref={scrollContainerRef}
             className="flex-grow overflow-y-auto"
             style={{ maxHeight: "calc(100vh - 300px)" }}
           >
-            {activeTab === "live" &&
-              (activeRestaurantPosts.length > 0 ? (
-                activeRestaurantPosts.map((post: Post) => (
+            {activeTab === "approved" ? (
+              posts?.length > 0 ? (
+                posts?.map((post: Post) => (
                   <LivePostCard
                     key={post.id}
                     post={post}
@@ -291,28 +452,37 @@ const RestaurantDetailsPage = ({
                     No active posts found.
                   </p>
                 </div>
-              ))}
+              )
+            ) : posts?.length > 0 ? (
+              posts?.map((post: Post) => (
+                <LivePostCard
+                  key={post.id}
+                  handleApprove={handleApprovePost ?? undefined}
+                  handleDecline={
+                    handleDeclinePost
+                      ? () => handleDeclinePost(restaurant.id, post.id, "")
+                      : undefined
+                  }
+                  post={post}
+                  restaurant={restaurant}
+                />
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-64">
+                <p className="text-center text-gray-500">
+                  No pending posts found.
+                </p>
+              </div>
+            )}
 
-            {activeTab === "pending" &&
-              (pendingRestaurantPosts.length > 0 ? (
-                pendingRestaurantPosts.map((post: Post) => (
-                  <LivePostCard
-                    key={post.id}
-                    post={post}
-                    restaurant={restaurant}
-                  />
-                ))
-              ) : (
-                <div className="flex items-center justify-center h-64">
-                  <p className="text-center text-gray-500">
-                    No pending posts found.
-                  </p>
-                </div>
-              ))}
+            {isFetching && (
+              <div className="flex justify-center p-4">
+                <p className="text-gray-500">Loading more posts...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
       {/* New Restaurant Modal */}
       <NewPostSheet
         open={showNewPostModal}
