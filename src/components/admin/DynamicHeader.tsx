@@ -121,44 +121,27 @@ export function DynamicHeader() {
         {isActive && showBackButton && (
           <Button
             onClick={() => setConfirmationModalOpen(true)}
-            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${
-              isActive
-                ? "bg-[#FDE6E6] border-[#F35454]"
-                : "bg-[#E6F1FE] border-[#549FF7]"
-            } `}
+            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${"bg-[#FDE6E6] border-[#F35454]"} `}
           >
-            <Icon
-              name={`${isActive ? "deactivateIcon" : "saveIcon"}`}
-              stroke={`${isActive ? "#ED0000" : "#0070F3"}`}
-            />
+            <Icon name={`${"deactivateIcon"}`} stroke={`${"#ED0000"}`} />
 
             <span
-              className={`text-lg font-semibold leading-[100%] ${
-                isActive ? "text-[#ED0000]" : "text-[#0070F3]"
-              }`}
+              className={`text-lg font-semibold leading-[100%] ${"text-[#ED0000]"}`}
             >
               {isActive && "Deactivate"}
             </span>
           </Button>
         )}
+
         {!isActive && showBackButton && (
           <Button
             onClick={() => setConfirmationModalOpen(true)}
-            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${
-              !isActive
-                ? "bg-[#FDE6E6] border-[#F35454]"
-                : "bg-[#E6F1FE] border-[#549FF7]"
-            } `}
+            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${"bg-[#E6F1FE] border-[#549FF7]"} `}
           >
-            <Icon
-              name={`${!isActive ? "deactivateIcon" : "saveIcon"}`}
-              stroke={`${!isActive ? "#ED0000" : "#0070F3"}`}
-            />
+            <Icon name={`${"saveIcon"}`} stroke={`${"#0070F3"}`} />
 
             <span
-              className={`text-lg font-semibold leading-[100%] ${
-                !isActive ? "text-[#ED0000]" : "text-[#0070F3]"
-              }`}
+              className={`text-lg font-semibold leading-[100%] ${"text-[#0070F3]"}`}
             >
               {!isActive && "Activate"}
             </span>
