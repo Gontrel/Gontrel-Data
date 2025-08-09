@@ -301,7 +301,6 @@ export function cleanTiktokUrl(url: string): string {
 
   if (match && match[3]) {
     const cleanedUrl = `https://www.tiktok.com/${match[3]}`;
-    console.log("cleanedUrl", cleanedUrl);
     return cleanedUrl;
   }
 

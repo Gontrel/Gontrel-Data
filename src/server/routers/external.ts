@@ -59,10 +59,7 @@ export const externalRouter = router({
         const response = await apiRequest.placeDetails({
           placeId,
           sessionToken: sessionToken ?? "",
-        });
-
-        console.log(response, "response,response")
-        
+        });        
 
         return response;
       } catch (error) {

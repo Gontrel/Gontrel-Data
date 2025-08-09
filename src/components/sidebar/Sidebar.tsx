@@ -12,6 +12,7 @@ interface NavLink {
   href: string;
   label: string;
   icon: TIconNames;
+  matchSubPaths?: boolean;
 }
 
 interface NavSection {
@@ -27,21 +28,38 @@ const navSections: NavSection[] = [
         href: "/dashboard",
         label: "Dashboard",
         icon: "dashboardIcon",
+        matchSubPaths: true,
       },
       {
         href: "/restaurants",
         label: "Restaurants",
         icon: "restaurantIcon",
+        matchSubPaths: true,
       },
-      { href: "/users", label: "Users", icon: "userIcon" },
-      { href: "/reports", label: "Reports", icon: "reportIcon" },
+      { href: "/users", label: "Users", icon: "userIcon", matchSubPaths: true },
+      {
+        href: "/reports",
+        label: "Reports",
+        icon: "reportIcon",
+        matchSubPaths: true,
+      },
     ],
   },
   {
     title: "MANAGEMENT",
     links: [
-      { href: "/staffs", label: "Staffs", icon: "groupUserIcon" },
-      { href: "/settings", label: "Settings", icon: "settingsIcon" },
+      {
+        href: "/staffs",
+        label: "Staffs",
+        icon: "groupUserIcon",
+        matchSubPaths: true,
+      },
+      {
+        href: "/settings",
+        label: "Settings",
+        icon: "settingsIcon",
+        matchSubPaths: true,
+      },
     ],
   },
 ];
@@ -63,15 +81,18 @@ const Sidebar = () => {
             </h2>
             <ul className="flex flex-col gap-[38px]">
               {section.links.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive = link.matchSubPaths
+                  ? pathname.startsWith(link.href)
+                  : pathname === link.href;
                 return (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4 rounded-lg transition-all duration-200 ${isActive
-                        ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
-                        : "text-[#9DA1A5]  hover:bg-gray-100"
-                        }`}
+                      className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4 rounded-lg transition-all duration-200 ${
+                        isActive
+                          ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
+                          : "text-[#9DA1A5]  hover:bg-gray-100"
+                      }`}
                     >
                       <Icon
                         name={link.icon}
@@ -79,8 +100,9 @@ const Sidebar = () => {
                         stroke={`${isActive ? "#FFFFFF" : "#9DA1A5"}`}
                       />
                       <span
-                        className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${isActive ? "text-white" : "text-[#9DA1A5]"
-                          }  `}
+                        className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${
+                          isActive ? "text-white" : "text-[#9DA1A5]"
+                        }  `}
                       >
                         {link.label}
                       </span>
