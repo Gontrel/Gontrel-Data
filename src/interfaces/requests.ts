@@ -73,7 +73,10 @@ export interface FetchAdminPostsRequest extends BaseQueryRequest {
   // Post-specific filters
   userId?: string; // UUID
   isVerified?: boolean;
-  status?: ApprovalStatusEnum; // enum values from ApprovalStatus
+  status?: ApprovalStatusEnum; // enum values from ApprovalStatus#
+  includeRejected?: boolean;
+  submissionId?: string; //UUID
+  adminId?:string
 }
 
 /**
@@ -101,6 +104,16 @@ export interface FetchGroupedPostsRequest extends BaseQueryRequest {
 export interface FetchUserGroupedPostsRequest extends BaseQueryRequest {
   adminId: string; // UUID
   status?: ApprovalStatusEnum; // enum values from ApprovalStatus
+}
+
+/**
+ * GET /admin-grouped-posts-submissions
+ * Fetches grouped posts submissions for admin dashboard
+ */
+export interface FetchGroupedPostsSubmissionsRequest extends BaseQueryRequest {
+  adminId?: string; // UUID
+  status?: ApprovalStatusEnum; // enum values from ApprovalStatus
+  includeRejected?: boolean;
 }
 
 /**

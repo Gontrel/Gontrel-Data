@@ -8,6 +8,7 @@ interface VideoProps {
   videoRef?: React.RefObject<HTMLVideoElement>;
   onPlay?: () => void;
   onPause?: () => void;
+  onError?: (e: React.SyntheticEvent<HTMLVideoElement, Event>) => Promise<void>;
   src: string;
   poster?: string;
   autoPlay?: boolean;
@@ -20,6 +21,7 @@ export const VideoPlayer = ({
   videoRef: externalRef,
   onPlay,
   onPause,
+  onError,
   src,
   poster,
   autoPlay = false,
@@ -43,7 +45,7 @@ export const VideoPlayer = ({
           videoRef.current.pause();
           setIsPlaying(false);
         } catch {
-      
+
         }
       }
     };
@@ -102,13 +104,13 @@ export const VideoPlayer = ({
     };
   }, [videoRef]);
 
-  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+  const handleVideoError = async (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
     const video = e.currentTarget;
 
     try {
       video.pause();
       video.removeAttribute('src');
-      video.load();
+      await onError?.(e);
     } catch (cleanupError) {
       console.warn('Error during video cleanup after error:', cleanupError);
     }

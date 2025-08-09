@@ -20,6 +20,7 @@ import {
 } from "@/interfaces/restaurants";
 import { Post } from "@/interfaces/posts";
 import { ResubmitRestaurant } from "../analysts/ResubmitRestaurant";
+import { useRouter } from "next/navigation";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -60,6 +61,7 @@ const SubmittedRestaurants = ({
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
 
+  const router = useRouter();
   const { queryData, isLoading, refetch } = useSubmittedRestaurants({
     currentPage,
     pageSize,
@@ -97,6 +99,11 @@ const SubmittedRestaurants = ({
   //   },
   //   [resubmitRestaurant]
   // );
+
+  const handleOnRowClick = useCallback((selectedRows: SubmittedRestaurantTableTypes): void => {
+    const restaurantId = selectedRows.id;
+    router.push(`/restaurants/${restaurantId}`);
+  }, [router]);
 
   const handleRowSelection = useCallback(
     (selectedRows: SubmittedRestaurantTableTypes[]) => {
@@ -230,9 +237,10 @@ const SubmittedRestaurants = ({
     () =>
       createSubmittedRestaurantsColumns(
         handleOpenVideoPreview,
-        handleOpenResubmitModal
+        handleOpenResubmitModal,
+        handleOnRowClick
       ),
-    [handleOpenVideoPreview, handleOpenResubmitModal]
+    [handleOpenVideoPreview, handleOpenResubmitModal, handleOnRowClick]
   );
 
   // ---------------------------------------------------------------------------

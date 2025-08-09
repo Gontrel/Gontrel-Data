@@ -5,7 +5,7 @@ import { LivePostCard } from '../restaurants/LivePostCard';
 import { Post } from '@/interfaces/posts';
 import { GontrelRestaurantData, GontrelRestaurantDetailedData } from '@/interfaces/restaurants';
 import ConfirmationModal from './ConfirmationModal';
-import { AnalystTableTabsEnum, ApprovalStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
+import { AnalystTableTabsEnum, ManagerTableTabsEnum } from '@/types/enums';
 import { trpc } from '@/lib/trpc-client';
 import { LivePostCardSkeleton } from '../Loader/restaurants/LivePostCardSkeleton';
 
@@ -18,9 +18,10 @@ interface TableVideoPreviewSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   posts: Post[];
+  restaurant: GontrelRestaurantDetailedData;
   onApprove?: TableVideoPreviewSheetOnApprove;
   onDecline?: TableVideoPreviewSheetOnDecline;
-  restaurant: GontrelRestaurantDetailedData;
+  submissionId?: string;
 }
 
 interface TableVideoPreviewSheetContentProps {
@@ -67,7 +68,7 @@ const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant
   </section>
 )
 
-export const TableVideoPreviewSheet = ({ table, open, onOpenChange, posts = [], onApprove, onDecline, restaurant }: TableVideoPreviewSheetProps) => {
+export const TableVideoPreviewSheet = ({ table, open, onOpenChange, posts = [], onApprove, onDecline, restaurant, submissionId }: TableVideoPreviewSheetProps) => {
   const [feedbackModal, setFeedbackModal] = useState<{ isOpen: boolean, comment: string, postId: string, restaurantId: string }>({
     isOpen: false,
     comment: "",
@@ -91,24 +92,9 @@ export const TableVideoPreviewSheet = ({ table, open, onOpenChange, posts = [], 
     });
   }
 
-  if (table === ManagerTableTabsEnum.PENDING_VIDEOS) {
+  if (table === ManagerTableTabsEnum.PENDING_VIDEOS || table === AnalystTableTabsEnum.SUBMITTED_VIDEOS) {
     const { data: queryData } = trpc.post.getPosts.useQuery({
-      pageNumber: 1,
-      quantity: 50,
-      status: ApprovalStatusEnum.PENDING,
-      locationId: restaurant.id,
-      adminId: restaurant.adminId,
-    });
-    posts = queryData?.data ?? [];
-  }
-
-  if (table === AnalystTableTabsEnum.SUBMITTED_VIDEOS) {
-    const { data: queryData } = trpc.post.getPosts.useQuery({
-      pageNumber: 1,
-      quantity: 50,
-      status: ApprovalStatusEnum.REJECTED,
-      locationId: restaurant.id,
-      adminId: restaurant.adminId,
+      submissionId: submissionId ?? ""
     });
     posts = queryData?.data ?? [];
   }

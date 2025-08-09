@@ -13,7 +13,7 @@ import { ApprovalStatusEnum } from "@/types";
  * Creates column definitions for pending videos table
  */
 export const createPendingVideosColumns = (
-  handleOpenVideoPreview: (locationId: string, adminId: string) => void,
+  handleOpenVideoPreview: (locationId: string, submissionId: string) => void,
   onRowClick?: (row: PendingVideoTableTypes) => void
 ): ColumnDef<PendingVideoTableTypes>[] => [
     {
@@ -80,7 +80,7 @@ export const createPendingVideosColumns = (
               textColor={getTextColor([{ status: ApprovalStatusEnum.PENDING }])}
               bgColor={getBgColor([{ status: ApprovalStatusEnum.PENDING }])}
             />
-            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.admin.id ?? "")}>View</span>
+            <span className="text-left text-blue-500 hover:underline hover:cursor-pointer" onClick={() => handleOpenVideoPreview(row.original.location?.id ?? "", row.original.submission.id ?? "")}>View</span>
           </div>
         );
       },
@@ -113,7 +113,7 @@ export const createPendingVideosColumns = (
       accessorKey: "dateAdded",
       header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
       cell: ({ row }) => {
-        const dateAdded = new Date(row.original.location?.createdAt ?? row.original.admin.createdAt);
+        const dateAdded = new Date(row.original.submission.date);
 
         return (
           <div className="relative">

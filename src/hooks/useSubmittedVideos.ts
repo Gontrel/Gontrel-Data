@@ -1,5 +1,6 @@
 import { trpc } from "@/lib/trpc-client";
 import { ApprovalStatusEnum } from "@/types/enums";
+import { useCurrentUser } from "@/stores/authStore";
 
 interface UseSubmittedVideosProps {
   currentPage: number;
@@ -10,15 +11,18 @@ interface UseSubmittedVideosProps {
 }
 
 export const useSubmittedVideos = ({ currentPage, pageSize, searchTerm, startDate, endDate }: UseSubmittedVideosProps) => {
+  const currentUser = useCurrentUser();
   const {
     data: queryData,
     isLoading,
     error,
     refetch
-  } = trpc.post.getGroupedPosts.useQuery({
+  } = trpc.post.getGroupedPostsSubmissions.useQuery({
+    adminId: currentUser?.id,
     pageNumber: currentPage,
     quantity: pageSize,
-    status: ApprovalStatusEnum.REJECTED, // Submitted videos are typically rejected/processed videos
+    status: ApprovalStatusEnum.PENDING,
+    includeRejected: true,
     query: searchTerm,
     startDate,
     endDate,

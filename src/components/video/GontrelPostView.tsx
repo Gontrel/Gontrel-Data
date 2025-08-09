@@ -67,6 +67,10 @@ export const GontrelPostView = ({
     onPause?.();
   };
 
+  const handleVideoError = async (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    console.error(e);
+  };
+
   // Clean up video when URL changes
   useEffect(() => {
     if (videoUrl && videoRef.current) {
@@ -99,6 +103,7 @@ export const GontrelPostView = ({
         loop={loop}
         onPlay={handlePlay}
         onPause={handlePause}
+        onError={handleVideoError}
       />
       <VideoOverlay
         onTogglePlay={togglePlay}
