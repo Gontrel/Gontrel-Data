@@ -72,7 +72,8 @@ export function DynamicHeader() {
     title: zustandTitle,
     description: zustandDesc,
     showBackButton: zustandBackButton,
-    showActiveToggle,
+    setConfirmationModalOpen,
+    isActive,
     reset,
   } = useHeaderStore();
 
@@ -117,9 +118,50 @@ export function DynamicHeader() {
       </div>
 
       <div className="flex items-center gap-6">
-        {showActiveToggle && (
-          <Button className="flex gap-y-2.5 items-center justify-center">
-            <span></span>
+        {isActive && showBackButton && (
+          <Button
+            onClick={() => setConfirmationModalOpen(true)}
+            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${
+              isActive
+                ? "bg-[#FDE6E6] border-[#F35454]"
+                : "bg-[#E6F1FE] border-[#549FF7]"
+            } `}
+          >
+            <Icon
+              name={`${isActive ? "deactivateIcon" : "saveIcon"}`}
+              stroke={`${isActive ? "#ED0000" : "#0070F3"}`}
+            />
+
+            <span
+              className={`text-lg font-semibold leading-[100%] ${
+                isActive ? "text-[#ED0000]" : "text-[#0070F3]"
+              }`}
+            >
+              {isActive && "Deactivate"}
+            </span>
+          </Button>
+        )}
+        {!isActive && showBackButton && (
+          <Button
+            onClick={() => setConfirmationModalOpen(true)}
+            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${
+              !isActive
+                ? "bg-[#FDE6E6] border-[#F35454]"
+                : "bg-[#E6F1FE] border-[#549FF7]"
+            } `}
+          >
+            <Icon
+              name={`${!isActive ? "deactivateIcon" : "saveIcon"}`}
+              stroke={`${!isActive ? "#ED0000" : "#0070F3"}`}
+            />
+
+            <span
+              className={`text-lg font-semibold leading-[100%] ${
+                !isActive ? "text-[#ED0000]" : "text-[#0070F3]"
+              }`}
+            >
+              {!isActive && "Activate"}
+            </span>
           </Button>
         )}
 

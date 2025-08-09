@@ -253,6 +253,10 @@ export const fetchLocationByIdSchema = z.object({
   userId: z.string().uuid().optional(),
 });
 
+export const locationIdSchema = z.object({
+  locationId: z.string(),
+});
+
 /**
  * POST /admin-location - CreateLocationRequest
  */

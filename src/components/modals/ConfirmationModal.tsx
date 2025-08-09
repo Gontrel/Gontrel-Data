@@ -2,6 +2,7 @@ import React from "react";
 import { ActionButtons } from "../ui/ActionButtons";
 import { CenterModal } from "../ui/CenterModal";
 import Icon from "../svgs/Icons";
+import { TIconNames } from "../svgs/IconNames";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface ConfirmationModalProps {
   title: string;
   description: string;
   comment?: string;
+  icon?: TIconNames;
   onCommentChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onConfirm: () => void;
   confirmLabel?: string;
@@ -27,6 +29,7 @@ export const ConfirmationModal = ({
   onClose,
   title,
   description,
+  icon = "warningIcon",
   comment = "",
   onCommentChange = () => {},
   onConfirm,
@@ -48,7 +51,7 @@ export const ConfirmationModal = ({
       <div className="flex flex-col justify-center items-center">
         <div className="z-100 rounded-full w-25 h-25 flex items-center justify-center border-7 border-white">
           <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-r from-[#C7B206] to-[#C50000]">
-            <Icon name="warningIcon" width={40} height={40} />
+            <Icon name={icon} width={40} height={40} />
           </div>
         </div>
         <div className="flex flex-col gap-6 justify-center items-center p-15 w-full bg-white rounded-[20px] mt-[-50px]">
