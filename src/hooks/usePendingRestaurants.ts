@@ -1,12 +1,16 @@
-import { useCallback } from 'react';
-import { ApprovalStatusEnum, ManagerTableTabsEnum } from '@/types/enums';
-import { usePendingRestaurantsStore } from '@/stores/tableStore';
-import { trpc } from '@/lib/trpc-client';
+import { useCallback } from "react";
+import { ApprovalStatusEnum, ManagerTableTabsEnum } from "@/types/enums";
+import { usePendingRestaurantsStore } from "@/stores/tableStore";
+import { trpc } from "@/lib/trpc-client";
 
 /**
  * Type for keys of PendingRestaurantType that have a status property
  */
-export type PendingRestaurantStatusKey = "address" | "menu" | "reservation" | "posts";
+export type PendingRestaurantStatusKey =
+  | "address"
+  | "menu"
+  | "reservation"
+  | "posts";
 
 interface UsePendingRestaurantsProps {
   currentPage: number;
@@ -20,10 +24,17 @@ interface UsePendingRestaurantsProps {
 /**
  * Custom hook for managing pending restaurants state and actions
  */
-export const usePendingRestaurants = ({ currentPage, pageSize, searchTerm, startDate, endDate, adminId }: UsePendingRestaurantsProps) => {
+export const usePendingRestaurants = ({
+  currentPage,
+  pageSize,
+  searchTerm,
+  startDate,
+  endDate,
+  adminId,
+}: UsePendingRestaurantsProps) => {
   const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
 
-   const {
+  const {
     data: queryData,
     isLoading,
     error,
@@ -33,18 +44,34 @@ export const usePendingRestaurants = ({ currentPage, pageSize, searchTerm, start
     quantity: pageSize,
     status: ApprovalStatusEnum.PENDING,
     query: searchTerm,
+    sortBy: "modifiedAt",
+    sortOrder: "DESC",
     startDate,
     endDate,
     adminId,
   });
 
-  const handleApprove = useCallback((restaurantId: string, type?: PendingRestaurantStatusKey) => {
-    approveRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId, type);
-  }, [approveRestaurant]);
+  const handleApprove = useCallback(
+    (restaurantId: string, type?: PendingRestaurantStatusKey) => {
+      approveRestaurant(
+        ManagerTableTabsEnum.PENDING_RESTAURANTS,
+        restaurantId,
+        type
+      );
+    },
+    [approveRestaurant]
+  );
 
-  const handleDecline = useCallback((restaurantId: string, type?: PendingRestaurantStatusKey) => {
-    declineRestaurant(ManagerTableTabsEnum.PENDING_RESTAURANTS, restaurantId,  type);
-  }, [declineRestaurant]);
+  const handleDecline = useCallback(
+    (restaurantId: string, type?: PendingRestaurantStatusKey) => {
+      declineRestaurant(
+        ManagerTableTabsEnum.PENDING_RESTAURANTS,
+        restaurantId,
+        type
+      );
+    },
+    [declineRestaurant]
+  );
 
   return {
     queryData,

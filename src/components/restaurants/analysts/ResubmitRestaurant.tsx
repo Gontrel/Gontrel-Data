@@ -20,6 +20,7 @@ interface ResubmitRestaurantSheetProps {
   open: boolean;
   restaurantId: string;
   isRestaurantFlow: boolean;
+  onPostSubmitted: () => void;
   title: string;
   description: string;
   onOpenChange: (open: boolean) => void;
@@ -29,6 +30,7 @@ export const ResubmitRestaurant = ({
   restaurantId,
   open,
   onOpenChange,
+  onPostSubmitted,
   title,
   description,
 }: ResubmitRestaurantSheetProps) => {
@@ -47,6 +49,7 @@ export const ResubmitRestaurant = ({
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
+        onPostSubmitted();
         handleClose();
       },
       onError: (error) => {

@@ -11,9 +11,7 @@ import { useSubmittedRestaurantsStore } from "@/stores/tableStore";
 
 // Types and enums
 import { ApprovalStatusEnum, AnalystTableTabsEnum } from "@/types";
-import {
-  SubmittedRestaurantTableTypes,
-} from "@/types/restaurant";
+import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
 import {
   GontrelRestaurantDetailedData,
   VideoPreviewModalProps,
@@ -21,6 +19,7 @@ import {
 import { Post } from "@/interfaces/posts";
 import { ResubmitRestaurant } from "../analysts/ResubmitRestaurant";
 import { useRouter } from "next/navigation";
+import { successToast } from "@/utils/toast";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -70,8 +69,7 @@ const SubmittedRestaurants = ({
     endDate,
   });
 
-  const { setSelectedRows, pendingChanges } =
-    useSubmittedRestaurantsStore();
+  const { setSelectedRows, pendingChanges } = useSubmittedRestaurantsStore();
 
   const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
     isOpen: false,
@@ -100,10 +98,13 @@ const SubmittedRestaurants = ({
   //   [resubmitRestaurant]
   // );
 
-  const handleOnRowClick = useCallback((selectedRows: SubmittedRestaurantTableTypes): void => {
-    const restaurantId = selectedRows.id;
-    router.push(`/restaurants/${restaurantId}`);
-  }, [router]);
+  const handleOnRowClick = useCallback(
+    (selectedRows: SubmittedRestaurantTableTypes): void => {
+      const restaurantId = selectedRows.id;
+      router.push(`/restaurants/${restaurantId}`);
+    },
+    [router]
+  );
 
   const handleRowSelection = useCallback(
     (selectedRows: SubmittedRestaurantTableTypes[]) => {
@@ -243,6 +244,11 @@ const SubmittedRestaurants = ({
     [handleOpenVideoPreview, handleOpenResubmitModal, handleOnRowClick]
   );
 
+  const handleOnsubmitted = useCallback(async () => {
+    await refetch();
+    successToast("Posts list updated");
+  }, [refetch]);
+
   // ---------------------------------------------------------------------------
   // RENDER
   // ---------------------------------------------------------------------------
@@ -286,6 +292,7 @@ const SubmittedRestaurants = ({
         title="Resubmit restaurant details"
         description="Some of the details you submitted were rejected"
         isRestaurantFlow={true}
+        onPostSubmitted={handleOnsubmitted}
         open={confirmationModal}
         onOpenChange={setConfirmationModal}
       />
