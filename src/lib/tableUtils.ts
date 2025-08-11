@@ -2,7 +2,7 @@
  * Utility functions for table operations
  */
 
-  import { ApprovalStatusEnum } from "@/types/enums";
+import { ApprovalStatusEnum } from "@/types/enums";
 
 /**
  * Toggles a value in a Set and returns a new Set
@@ -27,7 +27,11 @@ export const toggleSetValue = <T>(set: Set<T>, value: T): Set<T> => {
  * @param shouldAdd - Whether to add (true) or remove (false) the value
  * @returns A new Set with the value updated
  */
-export const updateSetValue = <T>(set: Set<T>, value: T, shouldAdd: boolean): Set<T> => {
+export const updateSetValue = <T>(
+  set: Set<T>,
+  value: T,
+  shouldAdd: boolean
+): Set<T> => {
   const newSet = new Set(set);
   if (shouldAdd) {
     newSet.add(value);
@@ -61,24 +65,40 @@ export const removeFromSet = <T>(set: Set<T>, value: T): Set<T> => {
   return newSet;
 };
 
-export const getBgColor = (videos: {status: string}[]) => {
-  if(videos.some(video => video.status === ApprovalStatusEnum.PENDING)) {
-    return 'bg-gray-50';
-  } else if (videos.some(video => video.status === ApprovalStatusEnum.APPROVED)) {
-    return 'bg-green-50';
-  } else if (videos.every(video => video.status === ApprovalStatusEnum.REJECTED)) {
-    return 'bg-red-50';
+export const getBgColor = (videos: { status: string }[]) => {
+  if (videos.some((video) => video.status === ApprovalStatusEnum.PENDING)) {
+    return "bg-gray-50";
+  } else if (
+    videos.every((video) => video.status === ApprovalStatusEnum.APPROVED)
+  ) {
+    return "bg-green-50";
+  } else if (
+    videos.every((video) => video.status === ApprovalStatusEnum.REJECTED)
+  ) {
+    return "bg-red-50";
+  } else if (
+    videos.some((video) => video.status === ApprovalStatusEnum.APPROVED)
+  ) {
+    return "bg-[#FFF0D4]";
   }
-  return 'bg-gray-100';
+  return "bg-gray-100";
 };
 
-export const getTextColor = (videos: {status: string}[]) => {
-  if(videos.some(video => video.status === ApprovalStatusEnum.PENDING)) {
-    return 'text-gray-900';
-  } else if (videos.some(video => video.status === ApprovalStatusEnum.APPROVED)) {
-    return 'text-green-800';
-  } else if (videos.every(video => video.status === ApprovalStatusEnum.REJECTED)) {
-    return 'text-red-500';
+export const getTextColor = (videos: { status: string }[]) => {
+  if (videos.some((video) => video.status === ApprovalStatusEnum.PENDING)) {
+    return "text-gray-900";
+  } else if (
+    videos.every((video) => video.status === ApprovalStatusEnum.APPROVED)
+  ) {
+    return "text-green-800";
+  } else if (
+    videos.every((video) => video.status === ApprovalStatusEnum.REJECTED)
+  ) {
+    return "text-red-500";
+  } else if (
+    videos.some((video) => video.status === ApprovalStatusEnum.APPROVED)
+  ) {
+    return "text-[#E89900]";
   }
-  return 'text-gray-900';
+  return "text-gray-900";
 };

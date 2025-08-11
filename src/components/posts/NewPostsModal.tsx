@@ -11,6 +11,7 @@ import { Restaurant, VideoData } from "@/interfaces/restaurants";
 
 interface NewPostsSheetProps {
   open: boolean;
+  onPostCreated: () => void;
   restaurant: Restaurant;
   onOpenChange: (open: boolean) => void;
 }
@@ -19,6 +20,7 @@ export const NewPostSheet = ({
   open,
   restaurant,
   onOpenChange,
+  onPostCreated,
 }: NewPostsSheetProps) => {
   const videos = useVideoStore((state) => state.videos);
   const { resetVideos, setActiveVideoUrl } = useVideoStore();
@@ -28,6 +30,7 @@ export const NewPostSheet = ({
     trpc.post.createBulkPost.useMutation({
       onSuccess: () => {
         successToast("Post created successfully!");
+        onPostCreated();
         handleClose();
       },
       onError: (error) => {
