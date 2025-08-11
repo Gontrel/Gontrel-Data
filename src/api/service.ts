@@ -251,7 +251,9 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
   // getGroupedPostsSubmissions
-  getGroupedPostsSubmissions = async (data: FetchGroupedPostsSubmissionsRequest): Promise<GetGroupedPostsSubmissionsResponse> => {
+  getGroupedPostsSubmissions = async (
+    data: FetchGroupedPostsSubmissionsRequest
+  ): Promise<GetGroupedPostsSubmissionsResponse> => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-grouped-posts-submissions?${params.toString()}`
@@ -326,7 +328,9 @@ export default class APIRequest {
   };
 
   // getTiktokDetails
-  getTiktokDetails = async (data: { link: string }): Promise<GetTiktokDetailsResponse> => {
+  getTiktokDetails = async (data: {
+    link: string;
+  }): Promise<GetTiktokDetailsResponse> => {
     const response = await this.authenticatedClient.get(
       `/tiktok-link-info?link=${data.link}`
     );

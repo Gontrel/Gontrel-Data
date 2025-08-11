@@ -90,6 +90,7 @@ export const ResubmitPage = ({
               )}
               {step === 3 && isRestaurantFlow ? (
                 <ResubmitRestaurantMenu
+                  restaurant={restaurant ?? []}
                   isLoading={isLoading}
                   onPrevious={onPreviousRestaurantMenu}
                   onSubmit={onSubmit}

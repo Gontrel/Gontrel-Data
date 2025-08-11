@@ -12,10 +12,14 @@ interface VideoCardProps {
 export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
   const { removeVideo } = useVideoStore();
 
+  const isApproved = video.status === "approved";
+  const isPending = video.status === "pending";
+  const isRejected = video.status === "rejected";
+
   return (
     <div
       className={`flex flex-row ${
-        !video.isUpdated ? "bg-[#FDE6E6]" : "bg-[#F0F1F2]"
+        isRejected ? "bg-[#FDE6E6]" : "bg-[#F0F1F2]"
       } p-4 pe-11 rounded-lg gap-4 items-start`}
     >
       <Image
@@ -26,6 +30,7 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
         height={80}
       />
       <div className="flex flex-col gap-y-3 justify-between w-full">
+        {/* Link + copy */}
         <div className="flex flex-row gap-2 text-blue-500">
           <Icon name="linkIcon" className="max-w-4 max-h-4" fill="#9DA1A5" />
           <a
@@ -44,6 +49,8 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
             <Copy size={16} />
           </button>
         </div>
+
+        {/* Tags */}
         <div className="flex flex-wrap gap-2">
           {video.tags.map((tag) => (
             <span
@@ -54,22 +61,39 @@ export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
             </span>
           ))}
         </div>
+
         <hr className="border-gray-200" />
-        <div className="mt-4 flex gap-2">
-          <button
-            onClick={() => onEdit(video.id)}
-            className="px-4 py-1.5 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-50"
-            title="Edit video"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => removeVideo(video.id)}
-            className="px-4 py-1.5 border border-red-500 text-red-500 rounded-md font-semibold hover:bg-red-50"
-            title="Remove video"
-          >
-            Remove
-          </button>
+
+        {/* Buttons OR Status */}
+        <div className="mt-4 flex gap-2 items-center">
+          {isApproved || isPending ? (
+            <span
+              className={`px-3 py-1 rounded-md text-sm font-semibold ${
+                isApproved
+                  ? "bg-green-100 text-green-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
+            >
+              {isApproved ? "Approved" : "Pending"}
+            </span>
+          ) : (
+            <>
+              <button
+                onClick={() => onEdit(video.id)}
+                className="px-4 py-1.5 border border-blue-500 text-blue-500 rounded-md font-semibold hover:bg-blue-50"
+                title="Edit video"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => removeVideo(video.id)}
+                className="px-4 py-1.5 border border-red-500 text-red-500 rounded-md font-semibold hover:bg-red-50"
+                title="Remove video"
+              >
+                Remove
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

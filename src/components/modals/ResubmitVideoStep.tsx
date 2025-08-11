@@ -125,6 +125,7 @@ export const ResubmitVideoStepStep = ({
       thumbUrl: post.thumbUrl,
       videoUrl: post.videoUrl,
       author: post.updatedBy,
+      status: post?.status,
       isUpdated: false,
     }));
   };
@@ -183,7 +184,9 @@ export const ResubmitVideoStepStep = ({
     });
   };
 
-  const handleInputError = () => {
+  let shouldResubmit = 0;
+
+  const handleAddOrUpdateVideo = () => {
     if (!currentVideo.url) {
       errorToast("Please add a video URL.");
       return;
@@ -193,12 +196,6 @@ export const ResubmitVideoStepStep = ({
       errorToast("Each video must have at least one tags.");
       return;
     }
-  };
-
-  let shouldResubmit = 0;
-
-  const handleAddOrUpdateVideo = () => {
-    handleInputError();
     const videoData = {
       url: currentVideo.url,
       tags: currentVideo.tags,
@@ -222,6 +219,7 @@ export const ResubmitVideoStepStep = ({
         thumbUrl: videoData.thumbUrl,
         tags: videoData.tags,
       };
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       updatePost(payload as any);
       shouldResubmit++;
@@ -257,6 +255,11 @@ export const ResubmitVideoStepStep = ({
 
   const shouldDisable =
     currentVideo.tags.length <= 1 && currentVideo.url === "";
+
+  const shouldDisableNext =
+    videos.every((video) => video.status === "approved") &&
+    currentVideo.tags.length > 1 &&
+    currentVideo.url !== "";
 
   const shouldResubmitModal = shouldResubmit > 0 ? true : false;
 
@@ -385,7 +388,7 @@ export const ResubmitVideoStepStep = ({
         {isRestaurantFlow && (
           <Button
             onClick={handleOnNext}
-            disabled={shouldDisable}
+            disabled={shouldDisableNext}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
               "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"

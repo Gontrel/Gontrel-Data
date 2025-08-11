@@ -3,11 +3,16 @@ import { useSubmittedRestaurantsStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
 import { useCurrentUser } from "@/stores/authStore";
 import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
+import { ApprovalStatusEnum } from "@/types";
 
 /**
  * Type for keys of SubmittedRestaurantType that have a status property
  */
-export type SubmittedRestaurantStatusKey = "address" | "menu" | "reservation" | "posts";
+export type SubmittedRestaurantStatusKey =
+  | "address"
+  | "menu"
+  | "reservation"
+  | "posts";
 
 interface UseSubmittedRestaurantsProps {
   currentPage: number;
@@ -20,7 +25,13 @@ interface UseSubmittedRestaurantsProps {
 /**
  * Custom hook for managing submitted restaurants state and actions
  */
-export const useSubmittedRestaurants = ({ currentPage, pageSize, searchTerm, startDate, endDate }: UseSubmittedRestaurantsProps) => {
+export const useSubmittedRestaurants = ({
+  currentPage,
+  pageSize,
+  searchTerm,
+  startDate,
+  endDate,
+}: UseSubmittedRestaurantsProps) => {
   const currentUser = useCurrentUser();
   const { resubmitRestaurant } = useSubmittedRestaurantsStore();
 
@@ -32,15 +43,20 @@ export const useSubmittedRestaurants = ({ currentPage, pageSize, searchTerm, sta
   } = trpc.restaurant.getAnalystRestaurants.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
+    // status: ApprovalStatusEnum.PENDING,
+    // includeRejected: true,
     query: searchTerm,
     adminId: currentUser?.id,
     startDate,
     endDate,
   });
 
-  const handleResubmit = useCallback((restaurant: SubmittedRestaurantTableTypes) => {
-    resubmitRestaurant(restaurant);
-  }, [resubmitRestaurant]);
+  const handleResubmit = useCallback(
+    (restaurant: SubmittedRestaurantTableTypes) => {
+      resubmitRestaurant(restaurant);
+    },
+    [resubmitRestaurant]
+  );
 
   return {
     handleResubmit,

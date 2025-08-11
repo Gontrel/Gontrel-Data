@@ -19,7 +19,7 @@ export const ActionCell = ({
   const { posts, address, menu, reservation, id } = row.original;
 
   const hasRejected =
-    posts.some((post) => post.status === ApprovalStatusEnum.REJECTED) ||
+    // posts.some((post) => post.status === ApprovalStatusEnum.REJECTED) ||
     address.status === ApprovalStatusEnum.REJECTED ||
     menu.status === ApprovalStatusEnum.REJECTED ||
     reservation.status === ApprovalStatusEnum.REJECTED;
@@ -44,7 +44,8 @@ export const ActionCell = ({
 
   if (hasRejected) {
     if (isFeedbackSent) {
-      label = "Sent";
+      label = "Sent Feedback";
+      variant = "danger";
       disabled = true;
     } else {
       label = "Send Feedback";
@@ -52,8 +53,7 @@ export const ActionCell = ({
       disabled = false;
     }
   } else if (hasPending) {
-    label = "Send Feedback";
-    variant = "danger";
+    label = "Save";
     disabled = true;
   } else if (hasApproved) {
     label = "Save";
