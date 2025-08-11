@@ -24,8 +24,14 @@ export const paginationSchema = z.object({
  */
 export const baseQuerySchema = paginationSchema.extend({
   query: z.string().optional(),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  startDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  endDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   timeFrame: z.string().optional(),
 });
 
@@ -234,6 +240,7 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   adminId: z.string().optional(),
   tagId: z.string().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
+
   isVerified: z.boolean().optional(),
 });
 
@@ -243,6 +250,7 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
 export const fetchAnalystLocationsSchema = baseQuerySchema.extend({
   adminId: z.string().uuid().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
+  includeRejected: z.boolean().optional(),
 });
 
 /**
@@ -290,7 +298,10 @@ export const updateLocationSchema = z.object({
   lng: z.number().optional(),
   menu: z.string().optional(),
   name: z.string().optional(),
-  openingHours: z.array(locationAvailabilitySchema).optional().or(z.array(z.string()).optional()),
+  openingHours: z
+    .array(locationAvailabilitySchema)
+    .optional()
+    .or(z.array(z.string()).optional()),
   photos: z.array(z.string()).optional(),
   phoneNumber: z.string().optional(),
   priceLevel: z.number().optional(),

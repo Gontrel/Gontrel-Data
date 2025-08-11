@@ -18,3 +18,18 @@ export const DEFAULT_RESTAURANT_STATS: StatsData[] = [
     value: 52
   }
 ];
+
+export const DEFAULT_USER_STATS: StatsData[] = [
+  {
+    label: "Total active users",
+    value: 855
+  },
+  {
+    label: "Total blocked users",
+    value: 251
+  },
+  {
+    label: "Total new users",
+    value: 1717
+  },
+];

@@ -59,30 +59,30 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "name",
     header: () => <TableHeader title="Restaurant name" />,
     cell: ({ row }) => {
-      const handleClick = (
-        e: React.MouseEvent,
-        row: Row<PendingRestaurantTableTypes>
-      ) => {
-        onRowClick?.(row.original);
-      };
-      const handleKeyDown = (
-        e: React.KeyboardEvent,
-        row: Row<PendingRestaurantTableTypes>,
-        onRowClick?: (row: PendingRestaurantTableTypes) => void
-      ) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onRowClick?.(row.original);
-        }
-      };
+      // const handleClick = (
+      //   e: React.MouseEvent,
+      //   row: Row<PendingRestaurantTableTypes>
+      // ) => {
+      //   onRowClick?.(row.original);
+      // };
+      // const handleKeyDown = (
+      //   e: React.KeyboardEvent,
+      //   row: Row<PendingRestaurantTableTypes>,
+      //   onRowClick?: (row: PendingRestaurantTableTypes) => void
+      // ) => {
+      //   if (e.key === "Enter" || e.key === " ") {
+      //     e.preventDefault();
+      //     onRowClick?.(row.original);
+      //   }
+      // };
       return (
         <div
-          onClick={(e) => handleClick(e, row)}
-          onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
+          // onClick={(e) => handleClick(e, row)}
+          // onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
           role="button"
           tabIndex={0}
           aria-label="View restaurant details"
-          className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] hover:text-blue-500 max-w-60 w-full h-full hover:bg-gray-50 overflow-hidden"
+          className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] max-w-60 w-full h-full overflow-hidden"
         >
           <span className="truncate w-full">{row.original.name ?? ""}</span>
         </div>

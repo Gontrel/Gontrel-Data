@@ -23,7 +23,8 @@ export interface VideoData {
   author?: string;
   locationName?: string;
   rating?: number;
-  isUpdated?: boolean
+  status?: string;
+  isUpdated?: boolean;
 }
 
 export interface openingHours {
@@ -149,7 +150,6 @@ export interface VideoPreviewModalProps {
 
 export interface ConverTedWorkingHours {
   [day: string]: string[];
-
 }
 
 export interface TabState {
