@@ -43,13 +43,16 @@ export const useSubmittedRestaurants = ({
   } = trpc.restaurant.getAnalystRestaurants.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
-    // status: ApprovalStatusEnum.PENDING,
-    // includeRejected: true,
+    status: ApprovalStatusEnum.PENDING,
+    includeRejected: true,
+    sortBy: "modifiedAt",
+    sortOrder: "DESC",
     query: searchTerm,
     adminId: currentUser?.id,
     startDate,
     endDate,
   });
+
 
   const handleResubmit = useCallback(
     (restaurant: SubmittedRestaurantTableTypes) => {

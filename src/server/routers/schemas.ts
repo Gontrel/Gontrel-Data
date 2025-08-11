@@ -33,6 +33,8 @@ export const baseQuerySchema = paginationSchema.extend({
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
   timeFrame: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortOrder: z.string().optional(),
 });
 
 // ============================================================================
@@ -239,6 +241,8 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   userId: z.string().optional(),
   adminId: z.string().optional(),
   tagId: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortOrder: z.string().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
 
   isVerified: z.boolean().optional(),
