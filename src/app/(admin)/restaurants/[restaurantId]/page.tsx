@@ -21,6 +21,7 @@ import { errorToast, successToast } from "@/utils/toast";
 import { usePendingRestaurantsStore } from "@/stores/tableStore";
 import { useHeaderStore } from "@/stores/headerStore";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import DateRangeFilter from "@/components/filters/DateRangeFilter";
 
 const PAGE_SIZE = 10;
 
@@ -46,7 +47,9 @@ const RestaurantDetailsPage = ({
   const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
+  const [showDate, setShowDate] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [meta, setMetadata] = useState<IPostMeta>({
     pendingCount: 0,
@@ -79,6 +82,15 @@ const RestaurantDetailsPage = ({
     { enabled: !!restaurantId }
   );
 
+  const { mutate } = trpc.restaurant.getToggleLocation.useMutation({
+    onSuccess: () => {
+      successToast("Restaurant status updated successfully");
+    },
+    onError: (error) => {
+      errorToast(error.message);
+    },
+  });
+
   const fetchPosts = useCallback(
     async (pageNumber: number, status: ApprovalStatusEnum) => {
       setIsFetching(true);
@@ -90,7 +102,7 @@ const RestaurantDetailsPage = ({
           pageNumber,
         });
 
-        const posts: Post[] = res.data;
+        const newPosts: Post[] = res.data;
         const metaRaw = res.meta;
         const meta: IPostMeta = {
           pendingCount:
@@ -103,14 +115,29 @@ const RestaurantDetailsPage = ({
               : 0,
         };
 
-        setPosts((prev) => {
-          const existingIds = new Set(prev.map((p) => p.id));
-          const filteredNewPosts = posts.filter((p) => !existingIds.has(p.id));
-          return [...prev, ...filteredNewPosts];
-        });
-
         setMetadata(meta);
-        setIsFetching(false);
+
+        if (newPosts.length === 0) {
+          setHasMore(false);
+          if (pageNumber === 1) {
+            setPosts([]); // No posts at all
+          }
+        } else {
+          setPosts((prev) => {
+            // For first page, replace all posts
+            if (pageNumber === 1) {
+              return newPosts;
+            }
+            // For subsequent pages, append new posts
+            const existingIds = new Set(prev.map((p) => p.id));
+            const filteredNewPosts = newPosts.filter(
+              (p) => !existingIds.has(p.id)
+            );
+            return [...prev, ...filteredNewPosts];
+          });
+        }
+
+        setInitialLoadComplete(true);
       } finally {
         setIsFetching(false);
       }
@@ -119,13 +146,16 @@ const RestaurantDetailsPage = ({
   );
 
   const refetch = useCallback(() => {
+    setPage(1);
+    setHasMore(true);
     setPosts([]);
-    if (activeTab === "pending") {
-      fetchPosts(1, ApprovalStatusEnum.PENDING);
-    } else if (activeTab === "approved") {
-      fetchPosts(1, ApprovalStatusEnum.APPROVED);
-    }
-  }, [activeTab, setPosts, fetchPosts]);
+    fetchPosts(
+      1,
+      activeTab === "pending"
+        ? ApprovalStatusEnum.PENDING
+        : ApprovalStatusEnum.APPROVED
+    );
+  }, [activeTab, fetchPosts]);
 
   const handleApprovePost = useCallback(
     (locationId: string, postId: string) => {
@@ -166,15 +196,6 @@ const RestaurantDetailsPage = ({
     [declineRestaurant, approveRestaurantStatus, refetch]
   );
 
-  const { mutate } = trpc.restaurant.getToggleLocation.useMutation({
-    onSuccess: () => {
-      successToast("Restaurant status updated successfully");
-    },
-    onError: (error) => {
-      errorToast(error.message);
-    },
-  });
-
   const toggleLocation = useCallback(async () => {
     mutate({ locationId: restaurantId });
   }, [restaurantId, mutate]);
@@ -214,7 +235,8 @@ const RestaurantDetailsPage = ({
 
     const { scrollTop, scrollHeight, clientHeight } =
       scrollContainerRef.current;
-    if (scrollHeight - (scrollTop + clientHeight) < 100) {
+    // Trigger load when user scrolls to 80% of the container
+    if (scrollTop + clientHeight >= scrollHeight * 0.8) {
       const nextPage = page + 1;
       setPage(nextPage);
       fetchPosts(
@@ -225,6 +247,11 @@ const RestaurantDetailsPage = ({
       );
     }
   }, [page, activeTab, isFetching, hasMore, fetchPosts]);
+
+  const handlePostCreated = useCallback(async () => {
+    await refetch();
+    successToast("Posts list updated");
+  }, [refetch]);
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -274,6 +301,13 @@ const RestaurantDetailsPage = ({
     setConfirmationModalOpen(false);
   };
 
+  const handleDateRange = () => {
+    setShowDate(true);
+  };
+
+  const onDateRangeChange = () => {
+  };
+
   const handleCommentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -309,11 +343,11 @@ const RestaurantDetailsPage = ({
           <div className="bg-white p-6 rounded-2xl shadow-sm">
             <div className="flex items-center gap-4 mb-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* <img
                 src={restaurant?.imageUrl}
                 alt={restaurant?.name}
                 className="w-20 h-20 rounded-lg object-cover"
-              />
+              /> */}
               <div>
                 <p className="text-sm text-gray-500">#{restaurant?.id}</p>
                 <h1 className="text-2xl font-bold">{restaurant?.name}</h1>
@@ -321,7 +355,19 @@ const RestaurantDetailsPage = ({
                   Created by: {restaurant?.admin?.name}
                 </p>
               </div>
+              {!isActive && (
+                <div
+                  className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${"bg-[#FDE6E6] border-[#F35454]"} `}
+                >
+                  <span
+                    className={`text-lg font-semibold leading-[100%] ${"text-[#ED0000]"}`}
+                  >
+                    Deactivated
+                  </span>
+                </div>
+              )}
             </div>
+
             <div className="grid grid-cols-2 gap-4 text-sm">
               <a
                 href={restaurant?.tiktokUrl}
@@ -369,7 +415,7 @@ const RestaurantDetailsPage = ({
                 <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
-                href={""} //restaurant.opening_hours[0]
+                href={"#"} //restaurant.opening_hours[0]
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg hover:bg-gray-200"
               >
                 <Icon name="restaurantTimeIcon" className="w-5 h-5" /> View
@@ -441,36 +487,24 @@ const RestaurantDetailsPage = ({
               </button>
             </div>
             <div className="flex flex-row justify-between mb-6">
-              <div
-                className="w-48 p-2 border flex flex-row items-center justify-between
-               rounded-lg text-gray-500"
-              >
+              <div className="w-48 p-2 border-[#D9D9D9] flex flex-row items-center justify-between rounded-lg text-gray-500">
                 <span> All post types</span>
                 <Icon
                   name="arrowdownIcon"
                   stroke="#0070F3"
-                  width={24}
-                  height={24}
+                  width={15}
+                  height={15}
                 />
               </div>
 
-              <div className="w-48 border rounded-lg flex flex-row items-center justify-between gap-2 text-gray-500 p-[14px]">
-                <div className="flex flex-row items-center justify-between gap-2">
-                  <Icon
-                    name="postCalendarIcon"
-                    stroke="#0070F3"
-                    width={24}
-                    height={24}
-                  />
-                  <span>All time</span>
-                </div>
-                <Icon
-                  name="arrowdownIcon"
-                  stroke="#0070F3"
-                  width={24}
-                  height={24}
-                />
-              </div>
+              <DateRangeFilter
+                value={{ startDate: new Date(), endDate: new Date() }}
+                onChange={(range) => {
+                  onDateRangeChange();
+                }}
+                placeholder="All Time"
+                className="w-[280px]"
+              />
             </div>
           </div>
 
@@ -480,59 +514,72 @@ const RestaurantDetailsPage = ({
             className="flex-grow overflow-y-auto"
             style={{ maxHeight: "calc(100vh - 300px)" }}
           >
-            {activeTab === "approved" && !isFetching ? (
-              posts?.length > 0 ? (
-                posts?.map((post: Post) => (
-                  <LivePostCard
-                    key={post.id}
-                    post={post}
-                    restaurant={restaurant}
-                  />
-                ))
-              ) : (
-                <div className="flex items-center justify-center h-64">
-                  <p className="text-center text-gray-500">
-                    No active posts found.
-                  </p>
-                </div>
-              )
-            ) : posts?.length > 0 && !isFetching ? (
-              posts?.map((post: Post) => (
-                <LivePostCard
-                  key={post.id}
-                  handleApprove={handleApprovePost ?? undefined}
-                  handleDecline={
-                    handleDeclinePost
-                      ? () => handleDeclinePost(restaurant.id, post.id, "")
-                      : undefined
-                  }
-                  post={post}
-                  restaurant={restaurant}
-                />
-              ))
-            ) : (
+            {/* Initial loading state */}
+            {!initialLoadComplete && isFetching && (
+              <div className="flex justify-center p-4">
+                <p className="text-gray-500">Loading posts...</p>
+              </div>
+            )}
+
+            {/* No posts found (after initial load) */}
+            {initialLoadComplete && posts.length === 0 && (
               <div className="flex items-center justify-center h-64">
                 <p className="text-center text-gray-500">
-                  No pending posts found.
+                  No {activeTab === "approved" ? "active" : "pending"} posts
+                  found.
                 </p>
               </div>
             )}
 
-            {isFetching && (
-              <div className="flex justify-center p-4">
-                <p className="text-gray-500">Loading more posts...</p>
-              </div>
+            {/* Render posts */}
+            {posts.length > 0 && (
+              <>
+                {posts.map((post: Post) => (
+                  <LivePostCard
+                    key={post.id}
+                    post={post}
+                    restaurant={restaurant}
+                    handleApprove={
+                      activeTab === "pending"
+                        ? () => handleApprovePost(restaurant.id, post.id)
+                        : undefined
+                    }
+                    handleDecline={
+                      activeTab === "pending"
+                        ? () => handleDeclinePost(restaurant.id, post.id, "")
+                        : undefined
+                    }
+                  />
+                ))}
+
+                {/* Loading more indicator */}
+                {isFetching && (
+                  <div className="flex justify-center p-4">
+                    <p className="text-gray-500">Loading more posts...</p>
+                  </div>
+                )}
+
+                {/* No more posts indicator */}
+                {!hasMore && !isFetching && posts.length > 0 && (
+                  <div className="flex justify-center p-4 mb-8">
+                    <p className="text-gray-500">No more videos</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
       </div>
+
       {/* New Restaurant Modal */}
       <NewPostSheet
         open={showNewPostModal}
         restaurant={restaurant}
         onOpenChange={handleNewPostModalOpenChange}
+        onPostCreated={handlePostCreated}
       />
 
+      {/** Confirmation Modal */}
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={handleCloseModal}
