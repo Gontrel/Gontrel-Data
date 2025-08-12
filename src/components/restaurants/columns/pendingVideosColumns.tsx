@@ -1,4 +1,4 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
@@ -14,7 +14,6 @@ import { ApprovalStatusEnum } from "@/types";
  */
 export const createPendingVideosColumns = (
   handleOpenVideoPreview: (locationId: string, submissionId: string) => void,
-  onRowClick?: (row: PendingVideoTableTypes) => void
 ): ColumnDef<PendingVideoTableTypes>[] => [
     {
       accessorKey: "id",

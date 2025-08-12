@@ -1,4 +1,4 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef, } from "@tanstack/react-table";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
@@ -16,7 +16,6 @@ import { ActionButtons } from "@/components/ui/ActionButtons";
 export const createSubmittedVideosColumns = (
   handleOpenVideoPreview: (locationId: string, submissionId: string) => void,
   handleOpenResubmitModal: (restaurantId: string, submissionId: string) => void,
-  onRowClick?: (row: SubmittedVideoTableTypes) => void
 ): ColumnDef<SubmittedVideoTableTypes>[] => [
   {
     accessorKey: "id",
@@ -39,23 +38,8 @@ export const createSubmittedVideosColumns = (
     accessorKey: "name",
     header: () => <TableHeader title="Restaurant name" />,
     cell: ({ row }) => {
-      // const handleClick = (e: React.MouseEvent, row: Row<SubmittedVideoTableTypes>) => {
-      //   onRowClick?.(row.original);
-      // };
-      // const handleKeyDown = (
-      //   e: React.KeyboardEvent,
-      //   row: Row<SubmittedVideoTableTypes>,
-      //   onRowClick?: (row: SubmittedVideoTableTypes) => void
-      // ) => {
-      //   if (e.key === "Enter" || e.key === " ") {
-      //     e.preventDefault();
-      //     onRowClick?.(row.original);
-      //   }
-      // };
       return (
         <div
-          // onClick={(e) => handleClick(e, row)}
-          // onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
           role="button"
           tabIndex={0}
           aria-label="View restaurant details"

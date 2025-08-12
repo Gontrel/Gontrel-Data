@@ -121,6 +121,7 @@ export interface Location {
   reservation: Reservation;
   toilets: boolean;
   type: string;
+  isActive?: boolean;
   website: string | null;
   status: ApprovalStatusEnum;
   comment: string | null;
