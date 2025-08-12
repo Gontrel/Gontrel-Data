@@ -342,7 +342,6 @@ const RestaurantDetailsPage = ({
           {/* Restaurant Info Card */}
           <div className="bg-white p-6 rounded-2xl shadow-sm">
             <div className="flex items-center gap-4 mb-6">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               {/* <img
                 src={restaurant?.imageUrl}
                 alt={restaurant?.name}

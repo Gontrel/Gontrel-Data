@@ -32,4 +32,6 @@ export type TIconNames =
   | "globeIcon"
   | "deactivateIcon"
   | "saveIcon"
-  | "warningIcon";
+  | "statusIcon"
+  | "warningIcon"
+  | "personIcon";

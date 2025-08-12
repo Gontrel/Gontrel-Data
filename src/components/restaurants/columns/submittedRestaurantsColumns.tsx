@@ -1,4 +1,4 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef, } from "@tanstack/react-table";
 import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
 import { Check, X } from "lucide-react";
 import { ActionButtons } from "../../ui/ActionButtons";
@@ -19,7 +19,6 @@ import { Post } from "@/interfaces";
 export const createSubmittedRestaurantsColumns = (
   handleOpenVideoPreview: (posts: Post[], restaurantId: string) => void,
   handleOpenResubmitModal: (restaurantId: string) => void,
-  onRowClick?: (row: SubmittedRestaurantTableTypes) => void
 ): ColumnDef<SubmittedRestaurantTableTypes>[] => [
   {
     accessorKey: "id",

@@ -26,7 +26,6 @@ import {
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
 import { Post } from "@/interfaces/posts";
-import { useRouter } from "next/navigation";
 import { useFeedbackStore } from "@/stores/feedbackStore";
 
 // =============================================================================
@@ -71,7 +70,6 @@ const PendingRestaurants = ({
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
 
-  const router = useRouter();
   const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
     isOpen: false,
     posts: [],
@@ -98,14 +96,10 @@ const PendingRestaurants = ({
     declineRestaurant,
   } = usePendingRestaurantsStore();
 
-  const { initializeFromData } = useFeedbackStore();
-
-  // Initialize store with rejected items from API data
   useEffect(() => {
-    if (queryData?.data) {
-      initializeFromData(queryData.data);
-    }
-  }, [queryData?.data, initializeFromData]);
+    useFeedbackStore.getState().clearFeedback();
+  }, []);
+
 
   const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
     isOpen: false,
@@ -147,13 +141,6 @@ const PendingRestaurants = ({
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
-  const handleOnRowClick = useCallback(
-    (selectedRows: PendingRestaurantTableTypes): void => {
-      const restaurantId = selectedRows.id ?? "";
-      router.push(`/restaurants/${restaurantId}`);
-    },
-    [router]
-  );
 
   const handleOpenVideoPreview = useCallback(
     (posts: Post[], restaurantId: string) => {
@@ -395,7 +382,7 @@ const PendingRestaurants = ({
         handleDecline,
         handleSendFeedback,
         handleSaveRestaurant,
-        handleOnRowClick
+      
       ),
     [
       handleApprove,
@@ -403,7 +390,7 @@ const PendingRestaurants = ({
       handleSaveRestaurant,
       handleSendFeedback,
       handleOpenVideoPreview,
-      handleOnRowClick,
+      
     ]
   );
 

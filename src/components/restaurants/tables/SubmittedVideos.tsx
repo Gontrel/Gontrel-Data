@@ -16,7 +16,6 @@ import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfa
 // Utils
 import { useSubmittedVideos } from "@/hooks/useSubmittedVideos";
 import { ResubmitVideo } from "../analysts/ResubmitVideo";
-import { useRouter } from "next/navigation";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -54,7 +53,6 @@ const SubmittedVideos = ({
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
 
-  const router = useRouter();
   const {
     setSelectedRows,
   } = useSubmittedVideosStore();
@@ -84,10 +82,6 @@ const SubmittedVideos = ({
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
-  const handleOnRowClick = useCallback((selectedRows: SubmittedVideoTableTypes): void => {
-    const restaurantId = selectedRows.location?.id;
-    router.push(`/restaurants/${restaurantId}`);
-  }, [router]);
 
   const handleOpenVideoPreview = useCallback((locationId: string, submissionId: string): void => {
     setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
@@ -149,8 +143,8 @@ const SubmittedVideos = ({
   }, [videos, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(() =>
-    createSubmittedVideosColumns(handleOpenVideoPreview, handleResubmitPost, handleOnRowClick),
-    [handleOpenVideoPreview, handleResubmitPost, handleOnRowClick]
+    createSubmittedVideosColumns(handleOpenVideoPreview, handleResubmitPost),
+    [handleOpenVideoPreview, handleResubmitPost]
   );
 
   // ---------------------------------------------------------------------------

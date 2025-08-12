@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 
 // External dependencies
 import { RestaurantTable } from "../RestaurantTable";
@@ -52,7 +51,6 @@ const PendingVideos = ({
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
 
-  const router = useRouter();
   const {
     setSelectedRows,
     approveVideo,
@@ -93,10 +91,6 @@ const PendingVideos = ({
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
-  const handleOnRowClick = useCallback((selectedRows: PendingVideoTableTypes): void => {
-    const restaurantId = selectedRows.location?.id ?? "";
-    router.push(`/restaurants/${restaurantId}`);
-  }, [router]);
 
   const handleOpenVideoPreview = useCallback((locationId: string, submissionId: string): void => {
     setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
@@ -176,8 +170,8 @@ const PendingVideos = ({
   }, [videos, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(() =>
-    createPendingVideosColumns(handleOpenVideoPreview, handleOnRowClick),
-    [handleOpenVideoPreview, handleOnRowClick]
+    createPendingVideosColumns(handleOpenVideoPreview),
+    [handleOpenVideoPreview,]
   );
 
   // ---------------------------------------------------------------------------

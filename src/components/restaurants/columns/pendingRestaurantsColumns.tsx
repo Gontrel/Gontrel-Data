@@ -1,4 +1,4 @@
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { PendingRestaurantTableTypes } from "@/types/restaurant";
 import { PendingRestaurantStatusKey } from "@/hooks/usePendingRestaurants";
 import { Check, X } from "lucide-react";
@@ -36,7 +36,6 @@ export const createPendingRestaurantsColumns = (
   ) => void,
   handleSendFeedback: (restaurant: PendingRestaurantTableTypes) => void,
   handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void,
-  onRowClick?: (row: PendingRestaurantTableTypes) => void
 ): ColumnDef<PendingRestaurantTableTypes>[] => [
   {
     accessorKey: "id",
@@ -59,26 +58,9 @@ export const createPendingRestaurantsColumns = (
     accessorKey: "name",
     header: () => <TableHeader title="Restaurant name" />,
     cell: ({ row }) => {
-      // const handleClick = (
-      //   e: React.MouseEvent,
-      //   row: Row<PendingRestaurantTableTypes>
-      // ) => {
-      //   onRowClick?.(row.original);
-      // };
-      // const handleKeyDown = (
-      //   e: React.KeyboardEvent,
-      //   row: Row<PendingRestaurantTableTypes>,
-      //   onRowClick?: (row: PendingRestaurantTableTypes) => void
-      // ) => {
-      //   if (e.key === "Enter" || e.key === " ") {
-      //     e.preventDefault();
-      //     onRowClick?.(row.original);
-      //   }
-      // };
       return (
         <div
-          // onClick={(e) => handleClick(e, row)}
-          // onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
+
           role="button"
           tabIndex={0}
           aria-label="View restaurant details"

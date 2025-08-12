@@ -1,4 +1,3 @@
-// components/ActionCell.tsx
 import { useFeedbackStore } from "@/stores/feedbackStore";
 import { ActionButtons } from "@/components/ui/ActionButtons";
 import { ApprovalStatusEnum } from "@/types/enums";
@@ -15,11 +14,11 @@ export const ActionCell = ({
   handleSendFeedback,
   handleSaveRestaurant,
 }: ActionCellProps) => {
-  const { sentFeedbackIds, markAsSent } = useFeedbackStore();
+  const { manuallySentFeedback, markAsSent } = useFeedbackStore();
   const { posts, address, menu, reservation, id } = row.original;
 
   const hasRejected =
-    // posts.some((post) => post.status === ApprovalStatusEnum.REJECTED) ||
+    posts.some((post) => post.status === ApprovalStatusEnum.REJECTED) ||
     address.status === ApprovalStatusEnum.REJECTED ||
     menu.status === ApprovalStatusEnum.REJECTED ||
     reservation.status === ApprovalStatusEnum.REJECTED;
@@ -36,7 +35,7 @@ export const ActionCell = ({
     menu.status === ApprovalStatusEnum.APPROVED ||
     reservation.status === ApprovalStatusEnum.APPROVED;
 
-  const isFeedbackSent = sentFeedbackIds.has(id);
+   const isFeedbackSent = manuallySentFeedback.has(id);
 
   let label = "";
   let variant: "danger" | "primary" = "primary";
