@@ -5,7 +5,7 @@ import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ExternalLink } from "@/components/ui/ExternalLink";
-import Logo from "@/assets/images/logo.png";
+import User from "@/assets/images/user.png";
 
 export const createActiveRestaurantsColumns = (
   onRowClick?: (row: ActiveRestaurantTableTypes) => void
@@ -124,7 +124,7 @@ export const createActiveRestaurantsColumns = (
         <div
           className={`${
             isActive ? "bg-[#E6F9E6]" : "bg-[#FDE6E6]"
-          } flex items-center gap-2 rounded-[10px] items-center justify-center p-1`}
+          } flex items-center gap-2 rounded-[10px] justify-center p-1`}
         >
           <div
             className={`h-2 w-2 rounded-full ${
@@ -148,13 +148,13 @@ export const createActiveRestaurantsColumns = (
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={profileImage?.length > 0 ? profileImage : Logo.src}
+            src={profileImage?.length > 0 ? profileImage : User.src}
             alt={name}
             width={40}
             height={40}
             className="rounded-full object-cover"
             onError={(e) => {
-              e.currentTarget.src = Logo.src;
+              e.currentTarget.src = User.src;
             }}
           />
           <span className="text-black font-medium">{name}</span>
