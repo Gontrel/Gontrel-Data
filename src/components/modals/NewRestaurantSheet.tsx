@@ -196,6 +196,9 @@ export const NewRestaurantSheet = ({
       }),
       ...(data.menuUrl && { menu: data.menuUrl }),
       ...(selectedRestaurant.name && { name: selectedRestaurant.name }),
+      ...(selectedRestaurant.website && {
+        website: selectedRestaurant.website,
+      }),
       ...(selectedRestaurant.image && { photos: [selectedRestaurant.image] }),
       rating: selectedRestaurant.rating ?? 0,
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
