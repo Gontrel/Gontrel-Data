@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../RestaurantTable";
+import { RestaurantTable } from "../../tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { createSubmittedRestaurantsColumns } from "../columns/submittedRestaurantsColumns";
 
@@ -88,7 +88,6 @@ const SubmittedRestaurants = ({
   // ---------------------------------------------------------------------------
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
-
 
   const handleRowSelection = useCallback(
     (selectedRows: SubmittedRestaurantTableTypes[]) => {
@@ -222,8 +221,7 @@ const SubmittedRestaurants = ({
     () =>
       createSubmittedRestaurantsColumns(
         handleOpenVideoPreview,
-        handleOpenResubmitModal,
-      
+        handleOpenResubmitModal
       ),
     [handleOpenVideoPreview, handleOpenResubmitModal]
   );

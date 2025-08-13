@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../RestaurantTable";
+import { RestaurantTable } from "../../tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
 
@@ -11,8 +11,15 @@ import { trpc } from "@/lib/trpc-client";
 
 // Types and enums
 import { PendingVideoTableTypes } from "@/types/restaurant";
-import { ApprovalStatusEnum, ApprovalType, ManagerTableTabsEnum } from "@/types";
-import { GontrelRestaurantDetailedData, VideoPreviewModalProps } from "@/interfaces";
+import {
+  ApprovalStatusEnum,
+  ApprovalType,
+  ManagerTableTabsEnum,
+} from "@/types";
+import {
+  GontrelRestaurantDetailedData,
+  VideoPreviewModalProps,
+} from "@/interfaces";
 
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
@@ -51,11 +58,8 @@ const PendingVideos = ({
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
 
-  const {
-    setSelectedRows,
-    approveVideo,
-    declineVideo,
-  } = usePendingVideosStore();
+  const { setSelectedRows, approveVideo, declineVideo } =
+    usePendingVideosStore();
 
   const [currentSubmissionId, setCurrentSubmissionId] = useState<string>("");
   const [videoPreview, setVideoPreview] = useState<VideoPreviewModalProps>({
@@ -69,71 +73,89 @@ const PendingVideos = ({
     searchTerm,
     startDate,
     endDate,
-    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined
+    adminId:
+      selectedAnalyst && selectedAnalyst !== "all"
+        ? selectedAnalyst
+        : undefined,
   });
 
   // ---------------------------------------------------------------------------
   // MUTATIONS
   // ---------------------------------------------------------------------------
 
-  const {
-    mutate: approveRestaurantStatus,
-  } = trpc.restaurant.approveRestaurantStatus.useMutation({
-    onSuccess: () => {
-      successToast("Restaurant status updated successfully");
-    },
-    onError: (error) => {
-      errorToast(error.message);
-    }
-  });
+  const { mutate: approveRestaurantStatus } =
+    trpc.restaurant.approveRestaurantStatus.useMutation({
+      onSuccess: () => {
+        successToast("Restaurant status updated successfully");
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
 
   // ---------------------------------------------------------------------------
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
+  const handleOpenVideoPreview = useCallback(
+    (locationId: string, submissionId: string): void => {
+      setVideoPreview({
+        isOpen: true,
+        posts: [],
+        currentRestaurantId: locationId,
+      });
+      setCurrentSubmissionId(submissionId);
+    },
+    [setVideoPreview, setCurrentSubmissionId]
+  );
 
-  const handleOpenVideoPreview = useCallback((locationId: string, submissionId: string): void => {
-    setVideoPreview({ isOpen: true, posts: [], currentRestaurantId: locationId });
-    setCurrentSubmissionId(submissionId);
-  }, [setVideoPreview, setCurrentSubmissionId]);
+  const handleCloseVideoPreview = useCallback(
+    (isOpen: boolean) => {
+      if (!isOpen) {
+        setVideoPreview({
+          isOpen: false,
+          posts: [],
+          currentRestaurantId: null,
+        });
+        refetch();
+      }
+    },
+    [setVideoPreview, refetch]
+  );
 
-  const handleCloseVideoPreview = useCallback((isOpen: boolean) => {
-    if (!isOpen) {
-      setVideoPreview({ isOpen: false, posts: [], currentRestaurantId: null });
-      refetch();
-    }
-  }, [setVideoPreview, refetch]);
+  const handleApprovePost = useCallback(
+    (locationId: string, postId: string) => {
+      approveVideo(postId);
+      approveRestaurantStatus({
+        resourceId: postId,
+        locationId,
+        type: ApprovalType.POST,
+        status: ApprovalStatusEnum.APPROVED,
+      });
+    },
+    [approveVideo, approveRestaurantStatus]
+  );
 
-  const handleApprovePost = useCallback((
-    locationId: string,
-    postId: string,
-  ) => {
-    approveVideo(postId);
-    approveRestaurantStatus({
-      resourceId: postId,
-      locationId,
-      type: ApprovalType.POST,
-      status: ApprovalStatusEnum.APPROVED
-    });
-  }, [approveVideo, approveRestaurantStatus]);
+  const handleDeclinePost = useCallback(
+    (locationId: string, postId: string) => {
+      declineVideo(postId);
+      approveRestaurantStatus({
+        resourceId: postId,
+        locationId,
+        type: ApprovalType.POST,
+        status: ApprovalStatusEnum.REJECTED,
+      });
+    },
+    [declineVideo, approveRestaurantStatus]
+  );
 
-  const handleDeclinePost = useCallback((
-    locationId: string,
-    postId: string,
-  ) => {
-    declineVideo(postId);
-    approveRestaurantStatus({
-      resourceId: postId,
-      locationId,
-      type: ApprovalType.POST,
-      status: ApprovalStatusEnum.REJECTED
-    });
-  }, [declineVideo, approveRestaurantStatus]);
-
-  const handleRowSelection = useCallback((selectedRows: PendingVideoTableTypes[]) => {
-    const selectedIds = selectedRows.map(row => row.location?.id ?? "");
-    setSelectedRows(selectedIds);
-  }, [setSelectedRows]);
+  const handleRowSelection = useCallback(
+    (selectedRows: PendingVideoTableTypes[]) => {
+      const selectedIds = selectedRows.map((row) => row.location?.id ?? "");
+      setSelectedRows(selectedIds);
+    },
+    [setSelectedRows]
+  );
 
   // ---------------------------------------------------------------------------
   // COMPUTED VALUES
@@ -144,34 +166,36 @@ const PendingVideos = ({
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
   const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
-    const currentRestaurant = videos.find(({ location }) =>
-      location?.id === videoPreview.currentRestaurantId
+    const currentRestaurant = videos.find(
+      ({ location }) => location?.id === videoPreview.currentRestaurantId
     );
 
-    return currentRestaurant ? {
-      id: currentRestaurant.location?.id ?? "",
-      name: currentRestaurant.location?.name ?? "",
-      menu: currentRestaurant.location?.menu?.content || "",
-      reservation: currentRestaurant.location?.reservation?.content || "",
-      rating: currentRestaurant.location?.rating,
-      adminName: currentRestaurant.admin.name,
-      adminId: currentRestaurant.admin.id,
-      submissionId: currentRestaurant.submission.id
-    } : {
-      id: "",
-      name: "",
-      menu: "",
-      reservation: "",
-      rating: 0,
-      adminName: "",
-        adminId: "",
-        submissionId: ""
-    };
+    return currentRestaurant
+      ? {
+          id: currentRestaurant.location?.id ?? "",
+          name: currentRestaurant.location?.name ?? "",
+          menu: currentRestaurant.location?.menu?.content || "",
+          reservation: currentRestaurant.location?.reservation?.content || "",
+          rating: currentRestaurant.location?.rating,
+          adminName: currentRestaurant.admin.name,
+          adminId: currentRestaurant.admin.id,
+          submissionId: currentRestaurant.submission.id,
+        }
+      : {
+          id: "",
+          name: "",
+          menu: "",
+          reservation: "",
+          rating: 0,
+          adminName: "",
+          adminId: "",
+          submissionId: "",
+        };
   }, [videos, videoPreview.currentRestaurantId]);
 
-  const columns = useMemo(() =>
-    createPendingVideosColumns(handleOpenVideoPreview),
-    [handleOpenVideoPreview,]
+  const columns = useMemo(
+    () => createPendingVideosColumns(handleOpenVideoPreview),
+    [handleOpenVideoPreview]
   );
 
   // ---------------------------------------------------------------------------

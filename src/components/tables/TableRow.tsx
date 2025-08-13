@@ -4,14 +4,14 @@ import { mergeClasses } from "@/lib/utils";
 import { flexRender, Row } from "@tanstack/react-table";
 import React from "react";
 
-interface RestaurantRowProps<T> {
+interface TableRowProps<T> {
   row: Row<T>;
 }
 
 /**
- * Individual restaurant table row component
+ * Individual table row component
  */
-export function RestaurantRow<T>({ row }: RestaurantRowProps<T>) {
+export function TableRow<T>({ row }: TableRowProps<T>) {
   return (
     <tr>
       {row.getVisibleCells().map((cell, index) => {

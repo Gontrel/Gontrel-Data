@@ -9,13 +9,13 @@ import {
   ColumnDef,
   RowSelectionState,
 } from "@tanstack/react-table";
-import { RestaurantRow } from "./RestaurantRow";
-import { RestaurantTableHeader } from "./RestaurantTableHeader";
+import { RestaurantRow } from "../restaurants/RestaurantRow";
+import { RestaurantTableHeader } from "../restaurants/RestaurantTableHeader";
 import { TablePagination } from "../ui/TablePagination";
 import { TableSkeleton } from "../ui/TableSkeleton";
 
-interface RestaurantTableProps<T> {
-  restaurants: T[];
+interface TableProps<T> {
+  data: T[];
   loading?: boolean;
   onRowSelect?: (selectedRows: T[]) => void;
   showSelection?: boolean;
@@ -30,8 +30,8 @@ interface RestaurantTableProps<T> {
 /**
  * Main restaurant table component with sorting, filtering, and pagination
  */
-export function RestaurantTable<T>({
-  restaurants,
+export function GenericTable<T>({
+  data,
   loading = false,
   onRowSelect,
   showSelection = false,
@@ -41,12 +41,12 @@ export function RestaurantTable<T>({
   totalPages = 1,
   onPageSizeChange,
   onPageChange,
-}: RestaurantTableProps<T>) {
+}: TableProps<T>) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   // Create table instance
   const table = useReactTable({
-    data: restaurants,
+    data: data,
     columns: showSelection
       ? columns
       : columns.filter((col) => col.id !== "select"),
@@ -98,10 +98,7 @@ export function RestaurantTable<T>({
             <RestaurantTableHeader<T> table={table} />
             <tbody className="divide-y divide-[#EBEBEB]">
               {table.getRowModel().rows.map((row) => (
-                <RestaurantRow<T>
-                  key={row.id}
-                  row={row}
-                />
+                <RestaurantRow<T> key={row.id} row={row} />
               ))}
             </tbody>
           </table>

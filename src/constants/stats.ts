@@ -28,8 +28,4 @@ export const DEFAULT_USER_STATS: StatsData[] = [
     label: "Total blocked users",
     value: 251
   },
-  {
-    label: "Total new users",
-    value: 1717
-  },
 ];

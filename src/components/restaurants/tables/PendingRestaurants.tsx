@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../RestaurantTable";
+import { RestaurantTable } from "../../tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
@@ -100,7 +100,6 @@ const PendingRestaurants = ({
     useFeedbackStore.getState().clearFeedback();
   }, []);
 
-
   const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
     isOpen: false,
     restaurant: null,
@@ -140,7 +139,6 @@ const PendingRestaurants = ({
   // ---------------------------------------------------------------------------
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
-
 
   const handleOpenVideoPreview = useCallback(
     (posts: Post[], restaurantId: string) => {
@@ -381,8 +379,7 @@ const PendingRestaurants = ({
         handleApprove,
         handleDecline,
         handleSendFeedback,
-        handleSaveRestaurant,
-      
+        handleSaveRestaurant
       ),
     [
       handleApprove,
@@ -390,7 +387,6 @@ const PendingRestaurants = ({
       handleSaveRestaurant,
       handleSendFeedback,
       handleOpenVideoPreview,
-      
     ]
   );
 

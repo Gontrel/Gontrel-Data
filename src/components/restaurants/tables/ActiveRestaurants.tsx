@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 // External dependencies
-import { RestaurantTable } from "../RestaurantTable";
+import { RestaurantTable } from "../../tables/GenericTable";
 import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
 
 // Store and API
@@ -49,9 +49,7 @@ const ActiveRestaurants = ({
   // ---------------------------------------------------------------------------
 
   const router = useRouter();
-  const {
-    setSelectedRows,
-  } = useActiveRestaurantsStore();
+  const { setSelectedRows } = useActiveRestaurantsStore();
 
   const { queryData, isLoading } = useActiveRestaurants({
     currentPage,
@@ -59,28 +57,35 @@ const ActiveRestaurants = ({
     searchTerm,
     startDate,
     endDate,
-    adminId: selectedAnalyst && selectedAnalyst !== 'all' ? selectedAnalyst : undefined,
+    adminId:
+      selectedAnalyst && selectedAnalyst !== "all"
+        ? selectedAnalyst
+        : undefined,
   });
 
   // ---------------------------------------------------------------------------
   // MUTATIONS
   // ---------------------------------------------------------------------------
 
-
-
   // ---------------------------------------------------------------------------
   // EVENT HANDLERS
   // ---------------------------------------------------------------------------
 
-  const handleOnRowClick = useCallback((selectedRows: ActiveRestaurantTableTypes): void => {
-    const restaurantId = selectedRows.id;
-    router.push(`/restaurants/${restaurantId}`);
-  }, [router]);
+  const handleOnRowClick = useCallback(
+    (selectedRows: ActiveRestaurantTableTypes): void => {
+      const restaurantId = selectedRows.id;
+      router.push(`/restaurants/${restaurantId}`);
+    },
+    [router]
+  );
 
-  const handleRowSelection = useCallback((selectedRows: ActiveRestaurantTableTypes[]) => {
-    const selectedIds = selectedRows.map(row => row.id);
-    setSelectedRows(selectedIds);
-  }, [setSelectedRows]);
+  const handleRowSelection = useCallback(
+    (selectedRows: ActiveRestaurantTableTypes[]) => {
+      const selectedIds = selectedRows.map((row) => row.id);
+      setSelectedRows(selectedIds);
+    },
+    [setSelectedRows]
+  );
 
   // ---------------------------------------------------------------------------
   // COMPUTED VALUES
@@ -90,8 +95,8 @@ const ActiveRestaurants = ({
   const paginationData = queryData?.pagination;
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
-  const columns = useMemo(() =>
-    createActiveRestaurantsColumns(handleOnRowClick),
+  const columns = useMemo(
+    () => createActiveRestaurantsColumns(handleOnRowClick),
     [handleOnRowClick]
   );
 
