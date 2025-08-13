@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY src /app/src
 COPY public /app/public
-COPY package.json package-lock.json tailwind.config.ts next.config.ts postcss.config.mjs tsconfig.json next-env.d.ts /app/
+COPY package.json package-lock.json tailwind.config.ts next.config.ts postcss.config.mjs tsconfig.json /app/
 
 RUN npm ci --ignore-scripts
 RUN npm run build
