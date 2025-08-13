@@ -47,7 +47,6 @@ const RestaurantDetailsPage = ({
   const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
-  const [showDate, setShowDate] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -301,12 +300,7 @@ const RestaurantDetailsPage = ({
     setConfirmationModalOpen(false);
   };
 
-  const handleDateRange = () => {
-    setShowDate(true);
-  };
-
-  const onDateRangeChange = () => {
-  };
+  const onDateRangeChange = () => {};
 
   const handleCommentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
@@ -316,9 +310,9 @@ const RestaurantDetailsPage = ({
 
   const gontrelRestaurantData: GontrelRestaurantData = {
     name: restaurant.name,
-    menu: restaurant.menu,
-    reservation: restaurant.reservation,
-    rating: restaurant.rating,
+    menu: restaurant.menu?.content,
+    reservation: restaurant.reservation?.content,
+    rating: restaurant?.rating,
   };
 
   return (
@@ -498,7 +492,7 @@ const RestaurantDetailsPage = ({
 
               <DateRangeFilter
                 value={{ startDate: new Date(), endDate: new Date() }}
-                onChange={(range) => {
+                onChange={() => {
                   onDateRangeChange();
                 }}
                 placeholder="All Time"

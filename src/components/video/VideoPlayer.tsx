@@ -1,8 +1,8 @@
 "use client";
 
-import { Play } from 'lucide-react';
-import React, { useRef, useEffect, useState, useId } from 'react';
-import { useVideoStore } from '@/stores/videoStore';
+import { Play } from "lucide-react";
+import React, { useRef, useEffect, useState, useId } from "react";
+import { useVideoStore } from "@/stores/videoStore";
 
 interface VideoProps {
   videoRef?: React.RefObject<HTMLVideoElement>;
@@ -35,7 +35,8 @@ export const VideoPlayer = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
 
-  const { registerVideoPlayer, unregisterVideoPlayer, playVideo } = useVideoStore();
+  const { registerVideoPlayer, unregisterVideoPlayer, playVideo } =
+    useVideoStore();
 
   // Register/unregister video player with store
   useEffect(() => {
@@ -44,9 +45,7 @@ export const VideoPlayer = ({
         try {
           videoRef.current.pause();
           setIsPlaying(false);
-        } catch {
-
-        }
+        } catch {}
       }
     };
 
@@ -67,8 +66,8 @@ export const VideoPlayer = ({
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
-      video.setAttribute('playsinline', '');
-      video.setAttribute('preload', 'metadata');
+      video.setAttribute("playsinline", "");
+      video.setAttribute("preload", "metadata");
     }
   }, [videoRef]);
 
@@ -77,7 +76,7 @@ export const VideoPlayer = ({
     const video = videoRef.current;
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting && video) {
             video.load();
             observer.disconnect();
@@ -98,23 +97,23 @@ export const VideoPlayer = ({
     return () => {
       if (video) {
         video.pause();
-        video.removeAttribute('src');
+        video.removeAttribute("src");
         video.load();
       }
     };
   }, [videoRef]);
 
-  const handleVideoError = async (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+  const handleVideoError = async (
+    e: React.SyntheticEvent<HTMLVideoElement, Event>
+  ) => {
     const video = e.currentTarget;
 
     try {
       video.pause();
-      video.removeAttribute('src');
+      video.removeAttribute("src");
       await onError?.(e);
-    } catch (cleanupError) {
-      console.warn('Error during video cleanup after error:', cleanupError);
-    }
-  }
+    } catch {}
+  };
 
   return (
     <div className={`relative aspect-video bg-transparent $`}>
@@ -129,9 +128,7 @@ export const VideoPlayer = ({
         onCanPlay={() => {
           setIsLoading(false);
           if (autoPlay && videoRef.current) {
-            videoRef.current.play().catch(error => {
-              console.warn('Autoplay failed:', error);
-            });
+            videoRef.current.play().catch(() => {});
           }
         }}
         onPlay={() => {
@@ -170,7 +167,6 @@ export const VideoPlayer = ({
           </button>
         )}
       </div>
-
     </div>
   );
 };

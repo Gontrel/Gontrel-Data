@@ -196,6 +196,7 @@ export const ResubmitVideoStepStep = ({
       errorToast("Each video must have at least one tags.");
       return;
     }
+
     const videoData = {
       url: currentVideo.url,
       tags: currentVideo.tags,
@@ -217,7 +218,7 @@ export const ResubmitVideoStepStep = ({
         tiktokLink: videoData.url,
         videoUrl: videoData.videoUrl,
         thumbUrl: videoData.thumbUrl,
-        tags: videoData.tags,
+        tags: [videoData.tags],
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

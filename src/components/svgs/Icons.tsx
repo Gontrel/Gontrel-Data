@@ -668,12 +668,8 @@ const icons: Record<TIconNames, TRenderSvg> = {
       />
     </svg>
   ),
-  personIcon: ({
-    width = 24,
-    height = 24,
-    fill = "none",
-    stroke = "#9DA1A5",
-  }) => (
+
+  personIcon: ({ width = 24, height = 24, stroke = "#9DA1A5" }) => (
     <svg
       width={width}
       height={height}

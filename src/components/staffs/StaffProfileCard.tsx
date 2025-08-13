@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "../svgs/Icons";
+import Image from "next/image";
 
 interface StaffProfileCardProps {
   id: string;
@@ -23,7 +24,7 @@ const StaffProfileCard: React.FC<StaffProfileCardProps> = ({
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center gap-4">
-        <img
+        <Image
           src={profileImage}
           alt="Profile"
           className="w-20 h-20 rounded-full object-cover"
