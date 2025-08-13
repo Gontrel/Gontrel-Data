@@ -1,4 +1,4 @@
-import { mergeClasses } from '../../lib/utils';
+import { mergeClasses } from '@/lib/utils';
 import { InputHTMLAttributes, forwardRef } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {

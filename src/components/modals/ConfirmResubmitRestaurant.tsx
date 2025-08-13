@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
-import logo from "@/assets/images/logo.png";
 import { formatDateTime, transformToModalHours } from "@/lib/utils";
 import { RestaurantData } from "@/types/restaurant";
 import Icon from "@/components/svgs/Icons";
@@ -80,7 +79,7 @@ export const ConfirmResubmitRestaurant = ({
           <div className="flex items-center flex-row justify-between">
             <div className="flex items-center gap-4">
               <Image
-                src={logo}
+                src={"/images/logo.png"}
                 alt={restaurant?.name}
                 width={100}
                 height={100}

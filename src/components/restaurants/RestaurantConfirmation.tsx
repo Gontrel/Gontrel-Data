@@ -8,7 +8,6 @@ import {
   WorkingHours,
 } from "../modals/EditWorkingHoursModal";
 import Icon from "../svgs/Icons";
-import location from "@/assets/images/location.jpeg";
 import { transformToModalHours } from "@/lib/utils";
 import { RestaurantData } from "@/types/restaurant";
 
@@ -51,7 +50,7 @@ export const RestaurantConfirmation = ({
           <div className="flex items-center flex-row justify-between">
             <div className="flex items-center gap-4">
               <Image
-                src={location}
+                src={"/images/location.jpeg"}
                 alt={restaurant?.name}
                 width={100}
                 height={100}

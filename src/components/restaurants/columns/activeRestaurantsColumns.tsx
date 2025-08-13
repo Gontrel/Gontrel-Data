@@ -5,7 +5,6 @@ import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ExternalLink } from "@/components/ui/ExternalLink";
-import User from "@/assets/images/user.png";
 
 export const createActiveRestaurantsColumns = (
   onRowClick?: (row: ActiveRestaurantTableTypes) => void
@@ -148,14 +147,11 @@ export const createActiveRestaurantsColumns = (
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={profileImage?.length > 0 ? profileImage : User.src}
+            src={profileImage?.length > 0 ? profileImage : "/images/user.png"}
             alt={name}
             width={40}
             height={40}
             className="rounded-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = User.src;
-            }}
           />
           <span className="text-black font-medium">{name}</span>
         </div>

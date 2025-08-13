@@ -5,7 +5,6 @@ import { TABLE_COLUMN_SIZES } from "@/constants";
 import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
-import Logo from "@/assets/images/logo.png";
 import { PendingVideoTableTypes } from "@/types/restaurant";
 import { ApprovalStatusEnum } from "@/types";
 
@@ -93,14 +92,11 @@ export const createPendingVideosColumns = (
         return (
           <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
             <Image
-              src={Logo.src}
+              src={"/images/user.png"}
               alt={addedBy ?? "Gontrel"}
               width={40}
               height={40}
               className="object-cover rounded-full"
-              onError={(e) => {
-                e.currentTarget.src = Logo.src;
-              }}
             />
             <span className="font-medium text-black">{addedBy ?? "James"}</span>
           </div>

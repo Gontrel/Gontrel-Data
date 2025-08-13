@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
-import { mergeClasses } from '../../lib/utils';
+import { mergeClasses } from '@/lib/utils';
 
 /**
  * Props for the CenterModal component

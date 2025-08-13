@@ -1,8 +1,8 @@
 import { ColumnDef, } from "@tanstack/react-table";
 import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
 import { Check, X } from "lucide-react";
-import { ActionButtons } from "../../ui/ActionButtons";
-import { ExternalLink } from "../../ui/ExternalLink";
+import { ActionButtons } from "@/components/ui/ActionButtons";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ApprovalStatusEnum } from "@/types/enums";

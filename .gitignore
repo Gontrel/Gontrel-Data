@@ -54,3 +54,7 @@ src/components/staffs/ActivityItem.tsx
 src/components/staffs/StaffActivities.tsx
 src/components/staffs/StaffProfileCard.tsx
 src/app/(admin)/staffs/[staffId]/page.tsx
+
+
+.idea
+build
