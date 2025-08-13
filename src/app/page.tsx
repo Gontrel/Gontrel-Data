@@ -1,6 +1,5 @@
 "use client";
 
-import logo from "../assets/images/logo.png";
 import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
@@ -42,14 +41,15 @@ export default function Login() {
     <main className=" flex min-h-screen items-center justify-center ">
       <section className="flex flex-col items-center min-w-[559px] min-h-[697px]">
         {/* Header section */}
-        <div className="flex flex-col  items-center bg-white">
+        <div className="flex flex-col items-center bg-white">
           <Image
-            src={logo}
+            src={"/images/logo.png"}
             width={100}
             height={100}
             alt="Gontrel Logo"
-            className="mx-auto"
+            // className="mx-auto block"
           />
+
           <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold">
             Welcome back
           </h1>

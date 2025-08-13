@@ -2,7 +2,6 @@
 
 import React, { Suspense } from "react";
 import Image from "next/image";
-import logo from "../../../assets/images/reset-logo.png";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
@@ -94,7 +93,7 @@ const ResetPasswordContent = () => {
         {/* Header section */}
         <div className="flex flex-col flex-wrap items-center w-[413px] bg-white">
           <Image
-            src={logo}
+            src={"/images/reset-logo.png"}
             width={100}
             height={100}
             alt="Reset Logo"

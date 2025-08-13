@@ -2,8 +2,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { PendingRestaurantTableTypes } from "@/types/restaurant";
 import { PendingRestaurantStatusKey } from "@/hooks/usePendingRestaurants";
 import { Check, X } from "lucide-react";
-import { ActionButtons } from "../../ui/ActionButtons";
-import { ExternalLink } from "../../ui/ExternalLink";
+import { ActionButtons } from "@/components/ui/ActionButtons";
+import { ExternalLink } from "@/components/ui/ExternalLink";
 import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
@@ -11,7 +11,6 @@ import { ApprovalStatusEnum } from "@/types/enums";
 import { getBgColor, getTextColor } from "@/lib/tableUtils";
 import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
-import Logo from "@/assets/images/logo.png";
 import { Post } from "@/interfaces";
 import { ActionCell } from "./ActionCell";
 
@@ -35,7 +34,7 @@ export const createPendingRestaurantsColumns = (
     statusKey?: PendingRestaurantStatusKey
   ) => void,
   handleSendFeedback: (restaurant: PendingRestaurantTableTypes) => void,
-  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void,
+  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void
 ): ColumnDef<PendingRestaurantTableTypes>[] => [
   {
     accessorKey: "id",
@@ -60,7 +59,6 @@ export const createPendingRestaurantsColumns = (
     cell: ({ row }) => {
       return (
         <div
-
           role="button"
           tabIndex={0}
           aria-label="View restaurant details"
@@ -231,13 +229,10 @@ export const createPendingRestaurantsColumns = (
       return (
         <div className="flex items-center gap-2 px-2 py-1 w-full text-left">
           <Image
-            src={profileImage?.length > 0 ? profileImage : Logo.src}
+            src={profileImage?.length > 0 ? profileImage : "/images/user.png"}
             alt={name}
             width={40}
             height={40}
-            onError={(e) => {
-              e.currentTarget.src = Logo.src;
-            }}
             className="rounded-full object-cover"
           />
           <span className="text-black font-medium">{name}</span>

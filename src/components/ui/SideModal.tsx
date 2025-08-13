@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
-import { mergeClasses } from '../../lib/utils';
+import React, { useEffect, useRef } from "react";
+import { X } from "lucide-react";
+import { mergeClasses } from "@/lib/utils";
 
 /**
  * Props for the SideModal component
@@ -19,7 +19,7 @@ interface SideModalProps {
   /** Additional class names */
   className?: string;
   /** Modal width */
-  width?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  width?: "sm" | "md" | "lg" | "xl" | "full";
   /** Whether to show close button */
   showCloseButton?: boolean;
 }
@@ -33,28 +33,28 @@ export function SideModal({
   title,
   children,
   className,
-  width = 'md',
-  showCloseButton = true
+  width = "md",
+  showCloseButton = true,
 }: SideModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Handle escape key press
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
       // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
     };
   }, [isOpen, onClose]);
 
@@ -66,11 +66,11 @@ export function SideModal({
   };
 
   const widthClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
-    full: 'max-w-full'
+    sm: "max-w-sm",
+    md: "max-w-md",
+    lg: "max-w-lg",
+    xl: "max-w-xl",
+    full: "max-w-full",
   };
 
   if (!isOpen) return null;
@@ -88,22 +88,25 @@ export function SideModal({
       <div
         ref={modalRef}
         className={mergeClasses(
-          'fixed right-0 top-0 h-full bg-white shadow-xl z-50',
-          'transform transition-transform duration-300 ease-out',
-          isOpen ? 'translate-x-0' : 'translate-x-full',
+          "fixed right-0 top-0 h-full bg-white shadow-xl z-50",
+          "transform transition-transform duration-300 ease-out",
+          isOpen ? "translate-x-0" : "translate-x-full",
           widthClasses[width],
-          'w-full',
+          "w-full",
           className
         )}
         role="dialog"
         aria-modal="true"
-        aria-labelledby={title ? 'modal-title' : undefined}
+        aria-labelledby={title ? "modal-title" : undefined}
       >
         {/* Header */}
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             {title && (
-              <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+              <h2
+                id="modal-title"
+                className="text-xl font-semibold text-gray-900"
+              >
                 {title}
               </h2>
             )}
@@ -120,9 +123,7 @@ export function SideModal({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto">{children}</div>
       </div>
     </>
   );

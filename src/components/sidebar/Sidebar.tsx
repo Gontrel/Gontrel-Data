@@ -4,7 +4,6 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import logo from "@/assets/images/logo.png";
 import Icon from "@/components/svgs/Icons";
 import { TIconNames } from "@/components/svgs/IconNames";
 
@@ -70,7 +69,12 @@ const Sidebar = () => {
   return (
     <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
       <div className="flex items-center gap-2 mb-12">
-        <Image src={logo} alt="Gontrel Logo" width={40} height={40} />
+        <Image
+          src={"/images/logo.png"}
+          alt="Gontrel Logo"
+          width={40}
+          height={40}
+        />
       </div>
 
       <nav className="flex flex-col gap-8 mt-[41px]">

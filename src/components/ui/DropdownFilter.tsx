@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { mergeClasses } from '../../lib/utils';
+import { mergeClasses } from '@/lib/utils';
 
 /**
  * Option interface for dropdown items

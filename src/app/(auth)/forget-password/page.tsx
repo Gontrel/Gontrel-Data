@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import logo from "../../../assets/images/logo.png";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
@@ -38,7 +37,7 @@ const ForgetPassword = () => {
         {/* Header section */}
         <div className="flex flex-col  items-center bg-white">
           <Image
-            src={logo}
+            src={"/images/logo.png"}
             width={100}
             height={100}
             alt="Gontrel Logo"
