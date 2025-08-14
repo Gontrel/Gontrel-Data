@@ -85,6 +85,14 @@ export const fetchAdminsSchema = baseQuerySchema.extend({
   isActive: z.boolean().optional(),
 });
 
+export const fetchStaffsSchema = baseQuerySchema.extend({
+  status: z.enum(["active", "deactivated"]).optional(),
+});
+
+export const staffIdSchema = z.object({
+  staffId: z.string().uuid(),
+});
+
 // ============================================================================
 // POST MANAGEMENT SCHEMAS
 // ============================================================================

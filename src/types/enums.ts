@@ -27,7 +27,7 @@ export enum ManagerTableTabsEnum {
 
 export enum StaffTableTabsEnum {
   ACTIVE_STAFF = "activeStaff",
-  BLOCKED_STAFF = "blockedStaff",
+  DEACTIVATED_STAFF = "deactivatedStaff",
 }
 
 export enum AnalystTableTabsEnum {

@@ -9,10 +9,11 @@ import {
   ColumnDef,
   RowSelectionState,
 } from "@tanstack/react-table";
-import { RestaurantRow } from "../restaurants/RestaurantRow";
-import { RestaurantTableHeader } from "../restaurants/RestaurantTableHeader";
 import { TablePagination } from "../ui/TablePagination";
 import { TableSkeleton } from "../ui/TableSkeleton";
+import { TableHeader } from "./TableHeader";
+import { TableRow } from "./TableRow";
+
 
 interface TableProps<T> {
   data: T[];
@@ -95,10 +96,10 @@ export function GenericTable<T>({
         {/* Responsive scroll container */}
         <div className="w-full overflow-x-auto">
           <table className="w-full min-w-max">
-            <RestaurantTableHeader<T> table={table} />
+            <TableHeader<T> table={table} />
             <tbody className="divide-y divide-[#EBEBEB]">
               {table.getRowModel().rows.map((row) => (
-                <RestaurantRow<T> key={row.id} row={row} />
+                <TableRow<T> key={row.id} row={row} />
               ))}
             </tbody>
           </table>

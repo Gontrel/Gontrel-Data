@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../../tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { createSubmittedVideosColumns } from "../columns/submittedVideosColumn";
 
@@ -19,6 +18,7 @@ import {
 // Utils
 import { useSubmittedVideos } from "@/hooks/useSubmittedVideos";
 import { ResubmitVideo } from "../analysts/ResubmitVideo";
+import { GenericTable } from "@/components/tables/GenericTable";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -196,8 +196,8 @@ const SubmittedVideos = ({
         submissionId={currentSubmissionId}
       />
 
-      <RestaurantTable<SubmittedVideoTableTypes>
-        restaurants={videos}
+      <GenericTable<SubmittedVideoTableTypes>
+        data={videos}
         loading={isLoading}
         onRowSelect={handleRowSelection}
         showSelection={true}

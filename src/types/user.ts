@@ -9,3 +9,9 @@ export type User = {
   email: string;
   role: AdminRoleEnum;
 };
+
+export type StaffTableTypes = User & {
+  phone: string;
+  address: string;
+  status: "active" | "deactivated"; // Add status for table filtering
+};

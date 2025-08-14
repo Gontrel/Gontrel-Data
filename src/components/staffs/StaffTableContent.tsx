@@ -1,16 +1,10 @@
-import ActiveRestaurants from "@/components/restaurants/tables/ActiveRestaurants";
-import PendingRestaurants from "@/components/restaurants/tables/PendingRestaurants";
-import PendingVideos from "@/components/restaurants/tables/PendingVideos";
-import SubmittedRestaurants from "@/components/restaurants/tables/SubmittedRestaurants";
-import SubmittedVideos from "@/components/restaurants/tables/SubmittedVideos";
-import {
-  ManagerTableTabsEnum,
-  AnalystTableTabsEnum,
-  StaffTableTabsEnum,
-} from "@/types";
+import React from "react";
+import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page";
+import ActiveStaff from "./tables/ActiveStaff";
+import DeactivatedStaff from "./tables/DeactivatedStaff";
 
 /**
- * Props for TableContent component
+ * Props for StaffTableContent component
  */
 interface StaffTableContentProps {
   activeTab: StaffTableTabsEnum;
@@ -25,7 +19,7 @@ interface StaffTableContentProps {
 }
 
 /**
- * Table Content Component
+ * Staff Table Content Component
  */
 export const StaffTableContent: React.FC<StaffTableContentProps> = ({
   activeTab,
@@ -42,7 +36,7 @@ export const StaffTableContent: React.FC<StaffTableContentProps> = ({
     switch (activeTab) {
       case StaffTableTabsEnum.ACTIVE_STAFF:
         return (
-          <ActiveRestaurants
+          <ActiveStaff
             searchTerm={searchTerm}
             selectedAnalyst={selectedAnalyst}
             startDate={startDate}
@@ -57,30 +51,24 @@ export const StaffTableContent: React.FC<StaffTableContentProps> = ({
             }
           />
         );
-      case StaffTableTabsEnum.BLOCKED_STAFF:
+      case StaffTableTabsEnum.DEACTIVATED_STAFF:
         return (
-          <PendingRestaurants
+          <DeactivatedStaff
             searchTerm={searchTerm}
             selectedAnalyst={selectedAnalyst}
             startDate={startDate}
             endDate={endDate}
-            currentPage={
-              tablePageNumbers[ManagerTableTabsEnum.PENDING_RESTAURANTS]
-            }
-            pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_RESTAURANTS]}
+            currentPage={tablePageNumbers[StaffTableTabsEnum.DEACTIVATED_STAFF]}
+            pageSize={tablePageSizes[StaffTableTabsEnum.DEACTIVATED_STAFF]}
             handleCurrentPage={(page: number) =>
-              onPageChange(ManagerTableTabsEnum.PENDING_RESTAURANTS, page)
+              onPageChange(StaffTableTabsEnum.DEACTIVATED_STAFF, page)
             }
             handlePageSize={(pageSize: number) =>
-              onPageSizeChange(
-                ManagerTableTabsEnum.PENDING_RESTAURANTS,
-                pageSize
-              )
+              onPageSizeChange(StaffTableTabsEnum.DEACTIVATED_STAFF, pageSize)
             }
           />
         );
       default:
-        // Fallback for unknown tab
         return (
           <div className="flex items-center justify-center h-32 text-gray-500">
             Unknown table tab selected.

@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../../tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { createSubmittedRestaurantsColumns } from "../columns/submittedRestaurantsColumns";
 
@@ -19,6 +18,7 @@ import {
 import { Post } from "@/interfaces/posts";
 import { ResubmitRestaurant } from "../analysts/ResubmitRestaurant";
 import { successToast } from "@/utils/toast";
+import { GenericTable } from "@/components/tables/GenericTable";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -255,8 +255,8 @@ const SubmittedRestaurants = ({
         restaurant={restaurant}
       />
 
-      <RestaurantTable<SubmittedRestaurantTableTypes>
-        restaurants={restaurants}
+      <GenericTable<SubmittedRestaurantTableTypes>
+        data={restaurants}
         loading={isLoading}
         onRowSelect={handleRowSelection}
         showSelection={true}

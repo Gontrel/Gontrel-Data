@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../../tables/GenericTable";
+import { GenericTable } from "@/components/tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
@@ -418,8 +418,8 @@ const PendingRestaurants = ({
         onDecline={handleDeclinePost}
       />
 
-      <RestaurantTable<PendingRestaurantTableTypes>
-        restaurants={restaurants}
+      <GenericTable<PendingRestaurantTableTypes>
+        data={restaurants}
         loading={isLoading}
         onRowSelect={handleRowSelection}
         showSelection={true}
