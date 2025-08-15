@@ -19,6 +19,7 @@ interface ResubmitVideoStepProps {
   onPrevious: () => void;
   restaurant: RestaurantData;
   isLoading?: boolean;
+  editFlow?: boolean;
   isRestaurantFlow?: boolean;
 }
 
@@ -28,7 +29,9 @@ export const ResubmitVideoStepStep = ({
   handleResubmit,
   isRestaurantFlow,
   restaurant,
+  editFlow = false,
 }: ResubmitVideoStepProps) => {
+  console.log(restaurant, "restaurantrestaurantrestaurant");
   const videos = useVideoStore((state) => state.videos);
   const {
     addVideos,
@@ -133,7 +136,9 @@ export const ResubmitVideoStepStep = ({
   useEffect(() => {
     const loadAndAddVideos = async () => {
       try {
+        console.log(restaurant?.posts, "restaurant?.postsrestaurant?.posts");
         const convertedPosts = await convertPosts(restaurant?.posts ?? []);
+
         addVideos(convertedPosts);
       } catch {}
     };
@@ -277,7 +282,12 @@ export const ResubmitVideoStepStep = ({
 
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
-          <VideoCard key={video.id} video={video} onEdit={handleEdit} />
+          <VideoCard
+            key={video.id}
+            video={video}
+            onEdit={handleEdit}
+            editFlow={editFlow}
+          />
         ))}
       </div>
       {editingVideoId && (

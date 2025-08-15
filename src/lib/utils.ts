@@ -46,7 +46,6 @@ export function formatDateTime(date: Date): string {
   }).format(date);
 }
 
-
 /**
  * Format relative time (e.g., "2 hours ago")
  */
@@ -306,3 +305,34 @@ export function cleanTiktokUrl(url: string): string {
 
   return url.trim();
 }
+
+export const formatPostTime = (isoDateString: string): string => {
+  const postDate = new Date(isoDateString);
+  const now = new Date();
+
+  // Check if the date is today
+  const isToday =
+    postDate.getDate() === now.getDate() &&
+    postDate.getMonth() === now.getMonth() &&
+    postDate.getFullYear() === now.getFullYear();
+
+  // Format the time (e.g., "3pm")
+  const timeFormatter = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    hour12: true,
+  });
+  const formattedTime = timeFormatter.format(postDate).toLowerCase();
+
+  if (isToday) {
+    return `Today at ${formattedTime}`;
+  }
+
+  // Format for non-today dates with proper month capitalization
+  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+  const dayFormatter = new Intl.DateTimeFormat("en-US", { day: "numeric" });
+
+  const month = monthFormatter.format(postDate);
+  const day = dayFormatter.format(postDate);
+
+  return `${month} ${day} at ${formattedTime}`;
+};

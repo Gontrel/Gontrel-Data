@@ -12,7 +12,10 @@ import {
   fetchUserGroupedPostsSchema,
   fetchGroupedPostsSubmissionsSchema,
 } from "./schemas";
-import { GetGroupedPostsSubmissionsResponse, GetPostsResponse } from "@/interfaces/responses";
+import {
+  GetGroupedPostsSubmissionsResponse,
+  GetPostsResponse,
+} from "@/interfaces/responses";
 
 export const postRouter = router({
   createPost: publicProcedure
@@ -54,7 +57,9 @@ export const postRouter = router({
     .query<GetPostsResponse>(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
+        console.log(input, "input input input");
         const response = await apiRequest.getPosts(input);
+        console.log(response, "response response response");
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -113,7 +118,7 @@ export const postRouter = router({
       }
     }),
 
-    getUserGroupedPosts: protectedProcedure
+  getUserGroupedPosts: protectedProcedure
     .input(fetchUserGroupedPostsSchema)
     .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);

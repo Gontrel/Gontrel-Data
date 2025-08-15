@@ -132,8 +132,8 @@ export interface Location {
 
 export interface GontrelRestaurantData {
   name: string;
-  menu: string;
-  reservation: string;
+  menu: string | Menu;
+  reservation: string | Reservation;
   rating: number;
 }
 

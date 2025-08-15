@@ -1,11 +1,12 @@
 import { RestaurantData } from "@/types";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface ResubmitRestaurantMenuProps {
   onPrevious: () => void;
   onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
   restaurant?: RestaurantData;
   isLoading: boolean;
+  editFlow?: boolean;
 }
 
 export const ResubmitRestaurantMenu = ({
@@ -13,26 +14,42 @@ export const ResubmitRestaurantMenu = ({
   onSubmit,
   restaurant,
   isLoading,
+  editFlow = false,
 }: ResubmitRestaurantMenuProps) => {
+  // Initialize with existing URLs or empty strings
   const [menuUrl, setMenuUrl] = useState("");
   const [reservationUrl, setReservationUrl] = useState("");
+
+  // Set initial values when restaurant data is available
+  useEffect(() => {
+    if (restaurant) {
+      // Set menu URL (check both string and object formats)
+      if (typeof restaurant.menu === "string") {
+        setMenuUrl(restaurant.menu);
+      } else if (restaurant.menu?.content) {
+        setMenuUrl(restaurant.menu.content);
+      }
+
+      // Set reservation URL
+      if (restaurant.reservation?.content) {
+        setReservationUrl(restaurant.reservation.content);
+      }
+    }
+  }, [restaurant]);
 
   const handleSubmit = () => {
     onSubmit({ menuUrl, reservationUrl });
   };
 
-  const hasMenuApproved =
-    typeof restaurant?.menu === "string"
-      ? !!restaurant.menu
-      : restaurant?.menu?.status === "approved";
-
-  const hasReservationApproved = restaurant?.reservation?.status === "approved";
+  // Determine if we should show the inputs
+  const showMenuInput = !editFlow || !restaurant?.menu;
+  const showReservationInput = !editFlow || !restaurant?.reservation;
 
   return (
     <div className="flex flex-col h-full justify-between">
       <div>
-        {/* Menu input - show only if not approved */}
-        {!hasMenuApproved && (
+        {/* Menu input - show if not in edit flow or if menu doesn't exist */}
+        {showMenuInput && (
           <div className="mb-6">
             <label
               htmlFor="menu-url"
@@ -51,8 +68,8 @@ export const ResubmitRestaurantMenu = ({
           </div>
         )}
 
-        {/* Reservation input - show only if not approved */}
-        {!hasReservationApproved && (
+        {/* Reservation input - show if not in edit flow or if reservation doesn't exist */}
+        {showReservationInput && (
           <div>
             <label
               htmlFor="reservation-url"
