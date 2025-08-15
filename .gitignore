@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+*.history
+*settings.json
+*.cursor
 
 # debug
 npm-debug.log*
@@ -39,3 +42,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+src/app/(admin)/staffs/[staffId]/**/*
+src/components/staffs/columns/
+src/components/staffs/deactivatedStaff.tsx
+src/app/(admin)/staffs/[staffId]/
+
+src/components/staffs/AccountSummaryCard.tsx
+src/components/staffs/ActivityItem.tsx
+src/components/staffs/StaffActivities.tsx
+src/components/staffs/StaffProfileCard.tsx
+src/app/(admin)/staffs/[staffId]/page.tsx
+
+
+.idea
+build
