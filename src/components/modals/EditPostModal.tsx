@@ -1,46 +1,40 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ResubmitPage } from "@/components/modals/ResubmitPage";
-import { RestaurantData, TimeSlot } from "@/types/restaurant";
-import { RestaurantConfirmationSkeleton } from "@/components/Loader/restaurants/RestaurantConfirmationSkeleton";
+import { RestaurantData } from "@/types/restaurant";
 import { trpc } from "@/lib/trpc-client";
-import {
-  convertTimeTo24Hour,
-  formatOpeningHours,
-  formatTime,
-} from "@/lib/utils";
+import { convertTimeTo24Hour, formatOpeningHours } from "@/lib/utils";
 import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
 import { DayOfTheWeek } from "@/types";
 import { UpdateLocationRequest } from "@/interfaces";
 import { successToast, errorToast } from "@/utils/toast";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+import { EditPostContainer } from "./EditVideoContent";
 
-interface ResubmitVideoSheetProps {
+interface EditVideoSheetProps {
   open: boolean;
   submissionId: string;
-  isRestaurantFlow: boolean;
   title: string;
   description: string;
   onOpenChange: (open: boolean) => void;
 }
 
-export const ResubmitVideo = ({
+export const EditVideo = ({
   submissionId,
   open,
   onOpenChange,
   title,
   description,
-}: ResubmitVideoSheetProps) => {
+}: EditVideoSheetProps) => {
   const [step, setStep] = useState(1);
   const [selectedRestaurant, setSelectedRestaurant] =
     useState<RestaurantData | null>(null);
   const [isOpenFeedback, setIsOpenFeedBack] = useState(false);
   const { setActiveVideoUrl, resetVideos } = useVideoStore();
 
-  const { data: posts, isLoading } = trpc.post.getPosts.useQuery(
-    { submissionId: submissionId },
+  const { data: posts, isLoading } = trpc.post.getPostById.useQuery(
+    { postId: submissionId },
     { enabled: !!submissionId && open }
   );
 
@@ -48,7 +42,7 @@ export const ResubmitVideo = ({
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
-        setStep(2);
+        handleClose();
       },
       onError: (error) => {
         errorToast(error.message);
@@ -59,10 +53,31 @@ export const ResubmitVideo = ({
     const processRestaurant = async () => {
       if (posts) {
         try {
-          const locationFromPost = posts?.data?.[0]?.location;
+          const locationFromPost = posts?.location;
           const formattedHours = await formatOpeningHours(
             locationFromPost?.openingHours || []
           );
+
+          const postData = {
+            id: posts?.id ?? "",
+            submissionId: posts?.submissionId ?? "",
+            createdAt: posts?.createdAt ?? "",
+            modifiedAt: posts?.modifiedAt ?? "",
+            deletedAt: posts?.deletedAt ?? "",
+            deletedBy: posts?.deletedBy ?? "",
+            updatedBy: posts?.updatedBy ?? "",
+            firebaseId: posts?.firebaseId ?? "",
+            analytics: posts?.analytics,
+            tiktokLink: posts?.tiktokLink || "",
+            videoUrl: posts?.videoUrl || "",
+            thumbUrl: posts?.thumbUrl || "",
+            postedAt: posts?.postedAt || "",
+            status: posts?.status || "pending",
+            admin: posts?.admin,
+            source: posts?.source || "gontrel",
+            tags: posts?.tags || [],
+          };
+
           const updatedRestaurant: RestaurantData = {
             id: locationFromPost?.id ?? "",
             name: locationFromPost?.name ?? "",
@@ -79,7 +94,7 @@ export const ResubmitVideo = ({
             modifiedAt: locationFromPost?.modifiedAt ?? "",
             createdAt: locationFromPost?.createdAt ?? "",
             photos: locationFromPost?.photos ?? [],
-            posts: posts?.data ?? [],
+            posts: postData ? [postData] : [],
             priceLevel: locationFromPost?.priceLevel,
             rating: locationFromPost?.rating,
             reservation: locationFromPost?.reservation,
@@ -111,37 +126,7 @@ export const ResubmitVideo = ({
     setStep(1);
   }, []);
 
-  const handleWorkingHoursSave = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (updatedHours: any) => {
-      if (!selectedRestaurant) return;
-
-      const newWorkingHours: Record<string, string[]> = {};
-      for (const day in updatedHours) {
-        const dayData = updatedHours[day];
-        const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-
-        if (dayData.isOpen) {
-          if (dayData.isAllDay) {
-            newWorkingHours[dayName] = ["24 hours"];
-          } else {
-            newWorkingHours[dayName] = dayData.slots?.map(
-              (slot: TimeSlot) =>
-                `${formatTime(slot.start)} – ${formatTime(slot.end)}`
-            );
-          }
-        }
-      }
-
-      setSelectedRestaurant((prev) => ({
-        ...prev!,
-        workingHours: newWorkingHours,
-      }));
-    },
-    [selectedRestaurant]
-  );
-
-  const handleSubmitRestaurant = (data: {
+  const handleEditPost = (data: {
     menuUrl: string;
     reservationUrl: string;
   }) => {
@@ -202,7 +187,7 @@ export const ResubmitVideo = ({
   };
 
   if (isLoading) {
-    return <RestaurantConfirmationSkeleton />;
+    // return <RestaurantConfirmationSkeleton />;
   }
 
   return (
@@ -212,7 +197,7 @@ export const ResubmitVideo = ({
       width="w-[638px]"
       className="flex flex-row justify-center z-30"
     >
-      <ResubmitPage
+      <EditPostContainer
         title={title}
         description={description}
         restaurant={selectedRestaurant}
@@ -222,12 +207,10 @@ export const ResubmitVideo = ({
         onContinue={() => setStep(2)}
         onNextVideoStep={() => setStep(3)}
         handleResubmit={handleResubmit}
-        isRestaurantFlow={false}
-        onPreviousVideoStep={() => setStep(1)}
-        onGoBackToSearch={handleGoBackToSearch}
+        isRestaurantFlow={true}
+        onPreviousVideoStep={() => setStep(2)}
         onPreviousRestaurantMenu={() => setStep(2)}
-        onWorkingHoursSave={handleWorkingHoursSave}
-        onSubmit={(data) => handleSubmitRestaurant(data)}
+        onSubmit={(data) => handleEditPost(data)}
       />
 
       <ConfirmationModal

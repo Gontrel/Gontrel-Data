@@ -2,13 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Icon from "../svgs/Icons";
-import { NotificationBell } from "../notification/NotificationBell";
 import { UserProfile } from "../users/UserProfile";
 import { useHeaderStore } from "@/stores/headerStore";
 import { useEffect } from "react";
 import { Button } from "../ui/Button";
 import { useIsAdmin } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/notification/NotificationBell";
 
 interface HeaderConfig {
   title: string;
@@ -137,24 +137,10 @@ export function DynamicHeader() {
               stroke={isActive ? "#ED0000" : "#0070F3"}
             />
             <span className="text-lg font-semibold leading-[100%]">
-              {isActive ? "Deactivate" : "Activate"}
+              {isActive ? "Deactivate" : "Reactivate"}
             </span>
           </Button>
         )}
-        {/* {!isActive && showBackButton && (
-          <Button
-            onClick={() => setConfirmationModalOpen(true)}
-            className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${"bg-[#E6F1FE] border-[#549FF7]"} `}
-          >
-            <Icon name={`${"saveIcon"}`} stroke={`${"#0070F3"}`} />
-
-            <span
-              className={`text-lg font-semibold leading-[100%] ${"text-[#0070F3]"}`}
-            >
-              {!isActive && "Activate"}
-            </span>
-          </Button>
-        )} */}
 
         <NotificationBell count={0} />
         <UserProfile />

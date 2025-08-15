@@ -2,14 +2,14 @@ import { Admin } from "./user";
 
 export interface Post {
   id: string;
-  submissionId: string;
+  submissionId?: string;
   createdAt: string;
-  modifiedAt: string;
+  modifiedAt?: string;
   deletedAt?: string;
   deletedBy?: string;
   updatedBy?: string;
   firebaseId?: string;
-  analytics: Analytics;
+  analytics?: Analytics;
   tiktokLink: string;
   videoUrl: string;
   thumbUrl: string;
