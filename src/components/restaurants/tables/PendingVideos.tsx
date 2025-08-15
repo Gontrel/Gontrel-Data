@@ -25,7 +25,6 @@ import {
 import { errorToast, successToast } from "@/utils/toast";
 import { usePendingVideos } from "@/hooks/usePendingVideos";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
-import { GontrelPostView } from "@/components/video/GontrelPostView";
 import RestaurantCard from "@/components/cards/RestaurantCard";
 
 // =============================================================================

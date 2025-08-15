@@ -51,7 +51,7 @@ const TableVideoPreviewSheetHeader = ({ onOpenChange, posts }: TableVideoPreview
 }
 
 const TableVideoPreviewSheetContent = ({ posts, onApprove, onDecline, restaurant }: TableVideoPreviewSheetContentProps) => (
-  <section className="flex flex-col gap-y-4.5 py-5 px-6">
+  <section className="flex flex-col gap-y-4.5 py-5">
     {posts.length > 0 ? posts.map((post, index) => (
       <LivePostCard
         key={index}

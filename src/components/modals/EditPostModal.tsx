@@ -11,8 +11,6 @@ import { UpdateLocationRequest } from "@/interfaces";
 import { successToast, errorToast } from "@/utils/toast";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 import { EditPostContainer } from "./EditVideoContent";
-import { id } from "date-fns/locale";
-import { create } from "domain";
 
 interface EditVideoSheetProps {
   open: boolean;
@@ -210,7 +208,7 @@ export const EditVideo = ({
         onNextVideoStep={() => setStep(3)}
         handleResubmit={handleResubmit}
         isRestaurantFlow={true}
-        onPreviousVideoStep={() => setStep(1)}
+        onPreviousVideoStep={() => setStep(2)}
         onPreviousRestaurantMenu={() => setStep(2)}
         onSubmit={(data) => handleEditPost(data)}
       />

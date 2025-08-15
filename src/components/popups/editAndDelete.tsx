@@ -69,8 +69,8 @@ const EditDeletePopup: React.FC<EditDeletePopupProps> = ({
       placement="topLeft"
       className="edit-delete-popover"
       arrow={false}
-      visible={popoverVisible}
-      onVisibleChange={(visible) => setPopoverVisible(visible)}
+      open={popoverVisible}
+      onOpenChange={(visible) => setPopoverVisible(visible)}
     >
       {triggerElement}
     </Popover>

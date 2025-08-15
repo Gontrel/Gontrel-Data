@@ -142,13 +142,13 @@ export const ResubmitVideoStepStep = ({
     const loadAndAddVideos = async () => {
       try {
         const convertedPosts = await convertPosts(restaurant?.posts ?? []);
-
+        resetVideos();
         addVideos(convertedPosts);
       } catch {}
     };
 
     loadAndAddVideos();
-  }, [restaurant?.posts, addVideos]);
+  }, [restaurant?.posts, resetVideos, addVideos]);
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -389,17 +389,19 @@ export const ResubmitVideoStepStep = ({
       )}
 
       <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
-        <Button
-          onClick={() => {
-            resetVideos();
-            setActiveVideoUrl(null);
-            setTiktokUsername(null);
-            onPrevious();
-          }}
-          className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-        >
-          Previous
-        </Button>
+        {!editFlow && (
+          <Button
+            onClick={() => {
+              resetVideos();
+              setActiveVideoUrl(null);
+              setTiktokUsername(null);
+              onPrevious();
+            }}
+            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+          >
+            Previous
+          </Button>
+        )}
         {isRestaurantFlow && (
           <Button
             onClick={handleOnNext}

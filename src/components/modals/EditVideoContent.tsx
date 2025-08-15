@@ -67,6 +67,7 @@ export const EditPostContainer = ({
                   isRestaurantFlow={isRestaurantFlow}
                   restaurant={restaurant ?? []}
                   onPrevious={onPreviousVideoStep}
+                  
                   onNext={onNextVideoStep}
                   handleResubmit={handleResubmit}
                 />
