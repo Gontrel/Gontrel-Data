@@ -266,10 +266,6 @@ export const ResubmitVideoStepStep = ({
   const shouldDisable =
     currentVideo.tags.length <= 1 && currentVideo.url === "";
 
-  const shouldDisableNext =
-    videos.every((video) => video.status === "approved") &&
-    currentVideo.tags.length > 1 &&
-    currentVideo.url !== "";
 
   const shouldResubmitModal = shouldResubmit > 0 ? true : false;
 
