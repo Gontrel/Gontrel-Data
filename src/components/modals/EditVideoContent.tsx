@@ -1,7 +1,10 @@
 "use client";
 
 import { ResubmitVideoStepStep } from "./ResubmitVideoStep";
-import ResubmitRestaurantMenu from "./ResubmitRestaurantMenu";
+import
+ {
+  EditRestaurantMenu,
+} from "./ResubmitRestaurantMenu";
 import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";
@@ -69,7 +72,7 @@ export const EditPostContainer = ({
                 />
               )}
               {step === 3 && isRestaurantFlow ? (
-                <ResubmitRestaurantMenu
+                <EditRestaurantMenu
                   restaurant={restaurant ?? []}
                   isLoading={isLoading}
                   editFlow={true}

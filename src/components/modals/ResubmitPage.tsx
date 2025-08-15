@@ -2,7 +2,7 @@
 
 import { ConfirmResubmitRestaurant } from "./ConfirmResubmitRestaurant";
 import { ResubmitVideoStepStep } from "./ResubmitVideoStep";
-import ResubmitRestaurantMenu from "./ResubmitRestaurantMenu";
+import {ResubmitRestaurantMenu} from "./ResubmitRestaurantMenu";
 import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";

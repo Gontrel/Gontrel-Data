@@ -94,6 +94,15 @@ const RestaurantDetailsPage = ({
     },
   });
 
+  const { mutate: deleteVideoMutation } = trpc.post.deletePost.useMutation({
+    onSuccess: () => {
+      setIsDeleteModalOpen(false);
+      setCurrentPostId(null);
+      successToast("Post successfully deleted");
+      refetch();
+    },
+  });
+
   const fetchPosts = useCallback(
     async (pageNumber: number, status: ApprovalStatusEnum) => {
       setIsFetching(true);
@@ -227,14 +236,8 @@ const RestaurantDetailsPage = ({
   const handleDeleteVideo = useCallback(() => {
     if (!currentPostId) return;
 
-    // Call your delete API here
-    console.log("Deleting video with ID:", currentPostId);
-    // Example: deleteVideoMutation({ postId: currentPostId });
-
-    setIsDeleteModalOpen(false);
-    setCurrentPostId(null);
-    refetch(); // Refresh the posts list
-  }, [currentPostId, refetch]);
+    deleteVideoMutation({ postId: currentPostId });
+  }, [currentPostId, deleteVideoMutation]);
 
   useEffect(() => {
     if (restaurantId) {

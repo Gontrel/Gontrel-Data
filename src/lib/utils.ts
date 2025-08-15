@@ -293,6 +293,12 @@ export function formatOpeningHours(
   return result;
 }
 
+export const isValidTikTokUrl = (url: string) => {
+  const tiktokRegex =
+    /^(https?:\/\/)?(www\.)?tiktok\.com\/@[\w-]+\/video\/\d+/i;
+  return url && tiktokRegex.test(url);
+};
+
 export function cleanTiktokUrl(url: string): string {
   const match = url.match(
     /(https?:\/\/)?(www\.)?tiktok\.com\/(@[\w.-]+\/video\/\d+)/

@@ -250,6 +250,15 @@ export default class APIRequest {
     );
     return this.handleResponse(response);
   };
+
+  // getPostById
+  deletePostById = async (data: FetchPostByIdRequest) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.delete(
+      `/admin-delete-post?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
   // getGroupedPostsSubmissions
   getGroupedPostsSubmissions = async (
     data: FetchGroupedPostsSubmissionsRequest

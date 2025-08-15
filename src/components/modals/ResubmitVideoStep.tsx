@@ -12,7 +12,7 @@ import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
 import { Button } from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
-import { cleanTiktokUrl, mergeClasses } from "@/lib/utils";
+import { cleanTiktokUrl, isValidTikTokUrl, mergeClasses } from "@/lib/utils";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   handleResubmit?: () => void;
@@ -31,7 +31,6 @@ export const ResubmitVideoStepStep = ({
   restaurant,
   editFlow = false,
 }: ResubmitVideoStepProps) => {
-  console.log(restaurant, "restaurantrestaurantrestaurant");
   const videos = useVideoStore((state) => state.videos);
   const {
     addVideos,
@@ -110,13 +109,19 @@ export const ResubmitVideoStepStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let cleanedUrl = "";
+    let url = "";
     if ("clipboardData" in e) {
-      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
+      url = e.clipboardData.getData("text");
     } else {
-      cleanedUrl = cleanTiktokUrl(e.target.value);
+      url = e.target.value;
     }
-    // Update both the input state and current video URL immediately for UI responsiveness
+
+    const isValidTiktokurl = isValidTikTokUrl(url);
+    if (!isValidTiktokurl) {
+      errorToast("Invalid TikTok URL");
+    }
+
+    const cleanedUrl = cleanTiktokUrl(url);
     setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
@@ -136,7 +141,6 @@ export const ResubmitVideoStepStep = ({
   useEffect(() => {
     const loadAndAddVideos = async () => {
       try {
-        console.log(restaurant?.posts, "restaurant?.postsrestaurant?.posts");
         const convertedPosts = await convertPosts(restaurant?.posts ?? []);
 
         addVideos(convertedPosts);
@@ -223,7 +227,7 @@ export const ResubmitVideoStepStep = ({
         tiktokLink: videoData.url,
         videoUrl: videoData.videoUrl,
         thumbUrl: videoData.thumbUrl,
-        tags: [videoData.tags],
+        tags: [...videoData.tags],
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -399,7 +403,7 @@ export const ResubmitVideoStepStep = ({
         {isRestaurantFlow && (
           <Button
             onClick={handleOnNext}
-            disabled={shouldDisableNext}
+            // disabled={shouldDisableNext}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
               "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"

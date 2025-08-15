@@ -44,7 +44,7 @@ export const EditVideo = ({
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
-        setStep(2);
+        handleClose();
       },
       onError: (error) => {
         errorToast(error.message);
@@ -59,7 +59,6 @@ export const EditVideo = ({
           const formattedHours = await formatOpeningHours(
             locationFromPost?.openingHours || []
           );
-          console.log("start-----------------------------------");
 
           const postData = {
             id: posts?.id ?? "",
@@ -79,9 +78,7 @@ export const EditVideo = ({
             admin: posts?.admin,
             source: posts?.source || "gontrel",
             tags: posts?.tags || [],
-          }
-
-          console.log(posts, "posts-----------------------------------");
+          };
 
           const updatedRestaurant: RestaurantData = {
             id: locationFromPost?.id ?? "",
@@ -108,13 +105,7 @@ export const EditVideo = ({
             toilets: locationFromPost?.toilets,
           };
 
-          console.log(
-            updatedRestaurant,
-            "updatedRestaurantupdatedRestaurantupdatedRestaurant"
-          );
-
           setSelectedRestaurant(updatedRestaurant);
-          console.log("end-----------------------------------");
         } catch {}
       } else {
         setSelectedRestaurant(null);
@@ -200,8 +191,6 @@ export const EditVideo = ({
   if (isLoading) {
     // return <RestaurantConfirmationSkeleton />;
   }
-
-  console.log(selectedRestaurant, "selectedRestaurantselectedRestaurant");
 
   return (
     <Sheet

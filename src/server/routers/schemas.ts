@@ -196,8 +196,8 @@ export const updatePostSchema = z.object({
  * DELETE /admin-delete-post - DeletePostRequest
  */
 export const deletePostSchema = z.object({
-  userId: z.string().uuid(),
-  postId: z.string().uuid(),
+  userId: z.string().optional(),
+  postId: z.string(),
 });
 
 // ============================================================================
