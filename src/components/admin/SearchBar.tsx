@@ -16,7 +16,7 @@ interface SearchBarProps {
 export function SearchBar({
   value,
   onChange,
-  placeholder = 'Search...',
+  placeholder = 'Search...', 
   debounceMs = 300
 }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(value);
