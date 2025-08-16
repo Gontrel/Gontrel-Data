@@ -34,4 +34,7 @@ export type TIconNames =
   | "saveIcon"
   | "statusIcon"
   | "warningIcon"
+  | "googleIcon"
+  | "binIcon"
+  | "pencilIcon"
   | "personIcon";

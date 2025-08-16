@@ -2,7 +2,8 @@ export enum AdminRoleEnum {
   ADMIN = 'admin',
   SUPER_ADMIN = 'super_admin',
   ANALYST = 'analyst',
-  MANAGER = 'manager'
+  MANAGER = 'manager',
+  USER = 'user',
 }
 
 export enum ApprovalStatusEnum {

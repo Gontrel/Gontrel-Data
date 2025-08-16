@@ -92,33 +92,37 @@ export type GetPostsResponse = IPaginatedRes<
   } & Post
 >;
 
-export type GetGroupedPostsResponse = IPaginatedRes<{
-  admin: Admin;
-  location: Location;
-  postCount: number;
-}  & Location>;
+export type GetGroupedPostsResponse = IPaginatedRes<
+  {
+    admin: Admin;
+    location: Location;
+    postCount: number;
+  } & Location
+>;
 
 export type GetGroupedPostsSubmissionsResponse = IPaginatedRes<{
   admin: {
-    id: string,
-    name: string,
-    profileImage: string,
-    email: string
-  },
+    id: string;
+    name: string;
+    profileImage: string;
+    email: string;
+  };
   location: {
-    id: string,
-    name: string,
-    address: Address,
-    menu: Menu,
-    reservation: Reservation,
-    rating: number,
-    createdAt: string,
-  },
+    id: string;
+    name: string;
+    address: Address;
+    menu: Menu;
+    reservation: Reservation;
+    mapLink: string;
+    rating: number;
+    createdAt: string;
+    website?: string;
+  };
   submission: {
-    id: string,
-    date: string,
-  },
-  postCount: number,
+    id: string;
+    date: string;
+  };
+  postCount: number;
 }>;
 
 export interface GetPostByIdResponse {

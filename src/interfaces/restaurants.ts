@@ -24,6 +24,7 @@ export interface VideoData {
   locationName?: string;
   rating?: number;
   status?: string;
+  foodVisible?: boolean;
   isUpdated?: boolean;
 }
 
@@ -132,8 +133,11 @@ export interface Location {
 
 export interface GontrelRestaurantData {
   name: string;
-  menu: string;
-  reservation: string;
+  menu: string | Menu;
+  reservation: string | Reservation;
+  website?: string;
+  address?: string;
+  mapLink?: string;
   rating: number;
 }
 

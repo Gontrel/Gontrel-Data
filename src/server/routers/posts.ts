@@ -11,8 +11,12 @@ import {
   fetchGroupedPostsSchema,
   fetchUserGroupedPostsSchema,
   fetchGroupedPostsSubmissionsSchema,
+  deletePostSchema,
 } from "./schemas";
-import { GetGroupedPostsSubmissionsResponse, GetPostsResponse } from "@/interfaces/responses";
+import {
+  GetGroupedPostsSubmissionsResponse,
+  GetPostsResponse,
+} from "@/interfaces/responses";
 
 export const postRouter = router({
   createPost: publicProcedure
@@ -113,7 +117,7 @@ export const postRouter = router({
       }
     }),
 
-    getUserGroupedPosts: protectedProcedure
+  getUserGroupedPosts: protectedProcedure
     .input(fetchUserGroupedPostsSchema)
     .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
@@ -145,19 +149,19 @@ export const postRouter = router({
       }
     }),
 
-  // deletePost: protectedProcedure
-  //   .input(z.object({ id: z.string() }))
-  //   .mutation(async ({ input }) => {
-  //     const apiRequest = new APIRequest();
-  //     try {
-  //       const response = await apiRequest.deletePost(input.id);
-  //       return response;
-  //     } catch (error) {
-  //       const message = getErrorMessage(error);
-  //       throw new TRPCError({
-  //         code: "INTERNAL_SERVER_ERROR",
-  //         message,
-  //       });
-  //     }
-  //   }),
+  deletePost: protectedProcedure
+    .input(deletePostSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.deletePostById(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
 });
