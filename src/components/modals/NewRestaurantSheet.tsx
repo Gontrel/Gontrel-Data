@@ -209,7 +209,7 @@ export const NewRestaurantSheet = ({
           thumbUrl: video.thumbUrl,
           locationName: selectedRestaurant.name,
           rating: 0,
-          ...(video.foodVisible && { foodVisible: video.foodVisible }),
+          ...(video.isFoodVisible && { isFoodVisible: video.isFoodVisible }),
           ...(video.tags && { tags: video.tags }),
         })) ?? [],
       openingHours: Object.entries(selectedRestaurant.workingHours ?? {}).map(

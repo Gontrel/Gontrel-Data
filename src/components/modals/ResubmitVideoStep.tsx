@@ -46,6 +46,7 @@ export const ResubmitVideoStepStep = ({
     author: "",
     videoUrl: "",
     locationName: "",
+    isFoodVisible: false,
     rating: 0,
   });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
@@ -134,6 +135,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: post.videoUrl,
       author: post.updatedBy,
       status: post?.status,
+      isFoodVisible: post?.isFoodVisible,
       isUpdated: false,
     }));
   };
@@ -213,6 +215,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
       locationName: currentVideo.locationName,
+      isFoodVisible: currentVideo.isFoodVisible,
       rating: currentVideo.rating || 0,
       isUpdated: true,
     };
@@ -227,13 +230,23 @@ export const ResubmitVideoStepStep = ({
         tiktokLink: videoData.url,
         videoUrl: videoData.videoUrl,
         thumbUrl: videoData.thumbUrl,
+        isFoodVisible: videoData.isFoodVisible,
         tags: [...videoData.tags],
       };
+
+      console.log(payload, "payloadpayloadpayloadpayloadpayload");
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       updatePost(payload as any);
       shouldResubmit++;
     }
+  };
+
+  const handleSetFoodVisibility = (checked: boolean) => {
+    setCurrentVideo((prev) => ({
+      ...prev,
+      isFoodVisible: checked,
+    }));
   };
 
   const handleEdit = (id: string) => {
@@ -247,6 +260,7 @@ export const ResubmitVideoStepStep = ({
         videoUrl: videoToEdit.videoUrl || "",
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
+        isFoodVisible: videoToEdit?.isFoodVisible ?? false,
         rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
@@ -265,7 +279,6 @@ export const ResubmitVideoStepStep = ({
 
   const shouldDisable =
     currentVideo.tags.length <= 1 && currentVideo.url === "";
-
 
   const shouldResubmitModal = shouldResubmit > 0 ? true : false;
 
@@ -352,6 +365,21 @@ export const ResubmitVideoStepStep = ({
                   </div>
                 ))}
               </div>
+
+              {
+                <div className="flex items-center gap-2 mb-4 mt-4">
+                  <input
+                    type="checkbox"
+                    id="food-visible"
+                    checked={currentVideo.isFoodVisible} // Use currentVideo state
+                    onChange={(e) => handleSetFoodVisibility(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="food-visible">
+                    Food is visible in the next 3 seconds
+                  </label>
+                </div>
+              }
 
               {editingVideoId && videos?.length >= 0 && (
                 <div className="mt-6 pt-4 flex justify-left">
