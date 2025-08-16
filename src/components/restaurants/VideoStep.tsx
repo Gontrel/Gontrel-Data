@@ -42,7 +42,7 @@ export const VideoStep = ({
     author: "",
     videoUrl: "",
     locationName: "",
-    foodVisible: false,
+    isFoodVisible: false,
     rating: 0,
   });
 
@@ -171,7 +171,7 @@ export const VideoStep = ({
   const handleSetFoodVisibility = (checked: boolean) => {
     setCurrentVideo((prev) => ({
       ...prev,
-      foodVisible: checked,
+      isFoodVisible: checked,
     }));
   };
 
@@ -183,7 +183,7 @@ export const VideoStep = ({
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
-      foodVisible: currentVideo?.foodVisible,
+      isFoodVisible: currentVideo?.isFoodVisible,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
       isUpdated: true,
@@ -210,7 +210,7 @@ export const VideoStep = ({
         videoUrl: videoToEdit.videoUrl || "",
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
-        foodVisible: videoToEdit.foodVisible || false, // Proper initialization
+        isFoodVisible: videoToEdit.isFoodVisible || false, // Proper initialization
         rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
@@ -233,7 +233,7 @@ export const VideoStep = ({
       author: "",
       locationName: "",
       rating: 0,
-      foodVisible: false,
+      isFoodVisible: false,
     });
 
     setActiveVideoUrl(null);
@@ -250,7 +250,7 @@ export const VideoStep = ({
       author: currentVideo.author,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
-      foodVisible: currentVideo.foodVisible,
+      isFoodVisible: currentVideo.isFoodVisible,
       isUpdated: true,
     };
 
@@ -264,7 +264,6 @@ export const VideoStep = ({
     const currentVideos = store.getCurrentVideos();
 
     resetVideo();
-
     onSubmit?.(currentVideos);
   };
 
@@ -358,7 +357,7 @@ export const VideoStep = ({
                 <input
                   type="checkbox"
                   id="food-visible"
-                  checked={currentVideo.foodVisible} // Use currentVideo state
+                  checked={currentVideo.isFoodVisible} // Use currentVideo state
                   onChange={(e) => handleSetFoodVisibility(e.target.checked)}
                   className="w-4 h-4"
                 />

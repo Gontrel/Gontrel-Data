@@ -24,7 +24,7 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-2 gap-4 text-sm"> 
         <a
           href={restaurant?.website || "#"}
           target="_blank"

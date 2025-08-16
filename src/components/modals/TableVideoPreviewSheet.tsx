@@ -158,6 +158,7 @@ export const TableVideoPreviewSheet = ({
     );
     closeFeedbackModal();
   };
+
   return (
     <Sheet
       open={open}
