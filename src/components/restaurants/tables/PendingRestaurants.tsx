@@ -398,6 +398,7 @@ const PendingRestaurants = ({
   // RENDER
   // ---------------------------------------------------------------------------
 
+  
   return (
     <div>
       <ConfirmationModal
