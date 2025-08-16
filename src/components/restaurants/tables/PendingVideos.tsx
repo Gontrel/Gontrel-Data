@@ -173,7 +173,6 @@ const PendingVideos = ({
       ({ location }) => location?.id === videoPreview.currentRestaurantId
     );
 
-
     return currentRestaurant
       ? {
           id: currentRestaurant.location?.id ?? "",
@@ -185,6 +184,7 @@ const PendingVideos = ({
           adminId: currentRestaurant.admin.id,
           address: currentRestaurant.location.address.content,
           website: currentRestaurant.location.website,
+          mapLink: currentRestaurant.location.mapLink,
           submissionId: currentRestaurant.submission.id,
         }
       : {
