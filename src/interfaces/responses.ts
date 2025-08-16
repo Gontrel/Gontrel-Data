@@ -113,6 +113,7 @@ export type GetGroupedPostsSubmissionsResponse = IPaginatedRes<{
     address: Address;
     menu: Menu;
     reservation: Reservation;
+    mapLink: string;
     rating: number;
     createdAt: string;
     website?: string;
