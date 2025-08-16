@@ -23,6 +23,7 @@ import { useHeaderStore } from "@/stores/headerStore";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { EditVideo } from "@/components/modals/EditPostModal";
+import { formatRestaurantTime } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
 
@@ -375,6 +376,9 @@ const RestaurantDetailsPage = ({
                 <p className="text-sm text-gray-500">
                   Created by: {restaurant?.admin?.name}
                 </p>
+                <p className="text-sm text-gray-500">
+                  Created on: {formatRestaurantTime(restaurant?.createdAt)}
+                </p>
               </div>
               {!isActive && (
                 <div
@@ -536,14 +540,14 @@ const RestaurantDetailsPage = ({
             style={{ maxHeight: "calc(100vh - 300px)" }}
           >
             {/* Initial loading state */}
-            {!initialLoadComplete && isFetching && (
+            {initialLoadComplete && isFetching && (
               <div className="flex justify-center p-4">
                 <p className="text-gray-500">Loading posts...</p>
               </div>
             )}
 
             {/* No posts found (after initial load) */}
-            {initialLoadComplete && posts.length === 0 && (
+            {!initialLoadComplete && posts.length === 0 && (
               <div className="flex items-center justify-center h-64">
                 <p className="text-center text-gray-500">
                   No {activeTab === "approved" ? "active" : "pending"} posts

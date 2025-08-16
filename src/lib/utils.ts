@@ -334,7 +334,7 @@ export const formatPostTime = (isoDateString: string): string => {
   }
 
   // Format for non-today dates with proper month capitalization
-  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
   const dayFormatter = new Intl.DateTimeFormat("en-US", { day: "numeric" });
 
   const month = monthFormatter.format(postDate);
@@ -342,3 +342,226 @@ export const formatPostTime = (isoDateString: string): string => {
 
   return `${month} ${day} at ${formattedTime}`;
 };
+
+export const formatRestaurantTime = (isoDateString: string): string => {
+  const postDate = new Date(isoDateString);
+  const now = new Date();
+
+  // Check if the date is today
+  const isToday =
+    postDate.getDate() === now.getDate() &&
+    postDate.getMonth() === now.getMonth() &&
+    postDate.getFullYear() === now.getFullYear();
+
+  // Format options
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  };
+
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+
+  // Format the time (e.g., "3:30pm")
+  const formattedTime = new Intl.DateTimeFormat("en-US", timeOptions)
+    .format(postDate)
+    .toLowerCase();
+
+  if (isToday) {
+    return `Today at ${formattedTime}`;
+  }
+
+  // Format for non-today dates (e.g., "January 1, 2025 at 3:30pm")
+  const formattedDate = new Intl.DateTimeFormat("en-US", dateOptions).format(
+    postDate
+  );
+  return `${formattedDate} at ${formattedTime}`;
+};
+
+// const convertToTime = (timeStr: string, assumePM = false): string => {
+//   // Handle special cases
+//   if (timeStr.includes("24 hours")) return "23:59:59";
+//   if (timeStr === "Noon") return "12:00:00";
+//   if (timeStr === "Midnight") return "00:00:00";
+
+//   // Normalize string
+//   const normalized = timeStr
+//     // eslint-disable-next-line no-irregular-whitespace
+//     .replace(/[  ]/g, " ")
+//     .replace(/^Op\s+/i, "")
+//     .replace(/\s+/g, " ")
+//     .trim();
+
+//   try {
+//     // Format 1: Explicit AM/PM
+//     if (normalized.includes("AM") || normalized.includes("PM")) {
+//       return convertAmPmTime(normalized);
+//     }
+
+//     // Format 2: Assume PM for opening times, AM for closing times unless obvious PM
+//     return convertUnspecifiedTime(normalized, assumePM);
+//   } catch (error) {
+//     throw new Error(`Invalid time format: "${timeStr}" (${error})`);
+//   }
+// };
+
+
+//  public async migrateLocationAvailability(): Promise<void> {
+//     try {
+//       const locations = []
+
+//       const availabilityData: Array<LocationAvailability> = [];
+
+//       const weekDay = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+//       for (const location of locations) {
+
+
+//         const { openingHours } = location;
+
+//         if (!openingHours || openingHours.length !== 7) {
+//           continue;
+//         }
+
+//         // eslint-disable-next-line no-plusplus
+//         for (let day = 0; day < 7; day++) {
+//           const dayHours = openingHours[day];
+
+//           if (dayHours === 'Closed') {
+//             continue;
+//           }
+
+//           // Handle 24-hour cases
+//           if (dayHours.includes('Open 24 hours')) {
+//             availabilityData.push({
+//               location,
+//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
+//               opensAt: '00:00:00',
+//               closesAt: '23:59:59',
+//             });
+//             continue;
+//           }
+
+//           // Split multiple ranges
+//           const timeRanges = dayHours.split(',').map((s) => s.trim());
+
+//           for (const range of timeRanges) {
+//             const [opensAtStr, closesAtStr] = range.split('–').map(
+//               // eslint-disable-next-line no-irregular-whitespace
+//               (s) => s.replace(/[  ]/g, ' ').trim(), // Normalize whitespace
+//             );
+
+//             if (!opensAtStr || !closesAtStr) {
+//               // eslint-disable-next-line no-continue
+//               continue;
+//             }
+
+//             let opensAt = this.convertToTime(opensAtStr, true); // Assume PM for opening times
+//             let closesAt = this.convertToTime(closesAtStr, false);
+
+//             // Special case: If closesAt is earlier than opensAt, it's next day
+//             if (closesAt < opensAt && !closesAt.startsWith('00:')) {
+//               closesAt = this.add12Hours(closesAt);
+//             }
+
+//             if (opensAt < '07:00:00') {
+//               this.logger.warn(`Opening time before 6 AM for location ${location.id} on ${weekDay[day]}: ${opensAt}`);
+
+//               opensAt = this.add12Hours(opensAt); // Adjust to PM
+//             }
+
+//             availabilityData.push({
+//               opensAt,
+//               closesAt,
+//               location,
+//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
+//             });
+//           }
+//         }
+
+
+
+//       }
+
+//     } catch (error) {
+//       this.logger.error(`Migration failed: ${error.message}`, { error });
+//       throw new Error('Failed to migrate location availability');
+//     }
+//   }
+
+
+//   const changeOpeningHour = () => {
+
+
+//           const locations = []
+
+//       const availabilityData: Array<LocationAvailability> = [];
+
+//       const weekDay = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+//           const { openingHours } = location;
+
+//         if (!openingHours || openingHours.length !== 7) {
+//           continue;
+//         }
+
+//         // eslint-disable-next-line no-plusplus
+//         for (let day = 0; day < 7; day++) {
+//           const dayHours = openingHours[day];
+
+//           if (dayHours === 'Closed') {
+//             continue;
+//           }
+
+//           // Handle 24-hour cases
+//           if (dayHours.includes('Open 24 hours')) {
+//             availabilityData.push({
+//               location,
+//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
+//               opensAt: '00:00:00',
+//               closesAt: '23:59:59',
+//             });
+//             continue;
+//           }
+
+//           // Split multiple ranges
+//           const timeRanges = dayHours.split(',').map((s) => s.trim());
+
+//           for (const range of timeRanges) {
+//             const [opensAtStr, closesAtStr] = range.split('–').map(
+//               // eslint-disable-next-line no-irregular-whitespace
+//               (s) => s.replace(/[  ]/g, ' ').trim(), // Normalize whitespace
+//             );
+
+//             if (!opensAtStr || !closesAtStr) {
+//               // eslint-disable-next-line no-continue
+//               continue;
+//             }
+
+//             let opensAt = this.convertToTime(opensAtStr, true); // Assume PM for opening times
+//             let closesAt = this.convertToTime(closesAtStr, false);
+
+//             // Special case: If closesAt is earlier than opensAt, it's next day
+//             if (closesAt < opensAt && !closesAt.startsWith('00:')) {
+//               closesAt = this.add12Hours(closesAt);
+//             }
+
+//             if (opensAt < '07:00:00') {
+//               this.logger.warn(`Opening time before 6 AM for location ${location.id} on ${weekDay[day]}: ${opensAt}`);
+
+//               opensAt = this.add12Hours(opensAt); // Adjust to PM
+//             }
+
+//             availabilityData.push({
+//               opensAt,
+//               closesAt,
+//               location,
+//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
+//             });
+//           }
+//         }
+
+//   }

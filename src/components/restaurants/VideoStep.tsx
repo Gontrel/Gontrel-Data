@@ -264,7 +264,6 @@ export const VideoStep = ({
     const currentVideos = store.getCurrentVideos();
 
     resetVideo();
-
     onSubmit?.(currentVideos);
   };
 

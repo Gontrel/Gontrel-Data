@@ -48,6 +48,7 @@ export const NewPostSheet = ({
       firstFrameUrl: video.videoUrl,
       thumbUrl: video.thumbUrl || "",
       locationName: video.locationName || "",
+      isFoodVisible: video.isFoodVisible || false,
       rating: video.rating || 0,
       tags: video.tags ?? [],
     }));

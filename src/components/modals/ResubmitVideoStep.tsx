@@ -234,8 +234,6 @@ export const ResubmitVideoStepStep = ({
         tags: [...videoData.tags],
       };
 
-      console.log(payload, "payloadpayloadpayloadpayloadpayload");
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       updatePost(payload as any);
       shouldResubmit++;

@@ -46,6 +46,8 @@ export const LivePostCard = ({
     rating: restaurant?.rating ?? 0,
   };
 
+  const isFoodVisible = post?.isFoodVisible;
+
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden border border-[#D2D4D5] bg-white max-w-[556px] mx-auto py-6 px-8 gap-y-4.5 mt-4 relative">
       <div className="w-full overflow-hidden">
@@ -72,7 +74,13 @@ export const LivePostCard = ({
         ))}
       </div>
 
-      {/* Rest of your component remains the same */}
+      {isFoodVisible && (
+        <p className="text-base font-medium leading-[100%] text-[#9DA1A5]">
+          Food is shown in this video in the first 3 seconds
+        </p>
+      )}
+
+      {/** Uploader Info */}
       <div className="flex items-center flex-row text-sm text-gray-500">
         <p className="bg-[#2E3032] rounded-full gap-2 mr-2">
           {" "}

@@ -163,7 +163,7 @@ export const NewRestaurantSheet = ({
         } else {
           newWorkingHours[dayName] = dayData.slots?.map(
             (slot: TimeSlot) =>
-              `${formatTime(slot.start)} - ${formatTime(slot.end)}`
+              `${formatTime(slot.start)} – ${formatTime(slot.end)}`
           );
         }
       }
