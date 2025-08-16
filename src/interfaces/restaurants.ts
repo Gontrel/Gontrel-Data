@@ -24,7 +24,7 @@ export interface VideoData {
   locationName?: string;
   rating?: number;
   status?: string;
-  foodVisible?: boolean;
+  isFoodVisible?: boolean;
   isUpdated?: boolean;
 }
 

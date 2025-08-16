@@ -12,6 +12,7 @@ export interface Post {
   analytics?: Analytics;
   tiktokLink: string;
   videoUrl: string;
+  isFoodVisible?: boolean;
   thumbUrl: string;
   postedAt?: string;
   status: string;

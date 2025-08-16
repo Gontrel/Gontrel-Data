@@ -1,10 +1,7 @@
 "use client";
 
 import { ResubmitVideoStepStep } from "./ResubmitVideoStep";
-import
- {
-  EditRestaurantMenu,
-} from "./ResubmitRestaurantMenu";
+import { EditRestaurantMenu } from "./ResubmitRestaurantMenu";
 import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";
@@ -39,6 +36,7 @@ export const EditPostContainer = ({
   onPreviousRestaurantMenu,
   onSubmit,
 }: EditPostContainerProps) => {
+
   return (
     <div className="py-6 w-[518px] flex flex-col justify-between">
       <section className="">
@@ -67,7 +65,6 @@ export const EditPostContainer = ({
                   isRestaurantFlow={isRestaurantFlow}
                   restaurant={restaurant ?? []}
                   onPrevious={onPreviousVideoStep}
-                  
                   onNext={onNextVideoStep}
                   handleResubmit={handleResubmit}
                 />

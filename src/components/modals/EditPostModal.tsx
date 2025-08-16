@@ -74,6 +74,7 @@ export const EditVideo = ({
             postedAt: posts?.postedAt || "",
             status: posts?.status || "pending",
             admin: posts?.admin,
+            isFoodVisible: posts?.isFoodVisible,
             source: posts?.source || "gontrel",
             tags: posts?.tags || [],
           };
