@@ -76,7 +76,7 @@ export interface FetchAdminPostsRequest extends BaseQueryRequest {
   status?: ApprovalStatusEnum; // enum values from ApprovalStatus#
   includeRejected?: boolean;
   submissionId?: string; //UUID
-  adminId?:string
+  adminId?: string;
 }
 
 /**
@@ -147,6 +147,7 @@ export interface CreateBulkPostRequest {
     hlsUrl?: string;
     videoUrl: string; // required
     thumbUrl?: string;
+    isFoodVisible?: boolean;
     postedAt?: string;
     rating?: number;
     tags?: string[]; // minimum 1 item if provided
@@ -164,6 +165,7 @@ export interface UpdatePostRequest {
   tiktokLink?: string;
   firstFrameUrl?: string;
   hlsUrl?: string;
+  isFoodVisible?: boolean;
   videoUrl?: string;
   thumbUrl?: string;
   postId: string; // UUID, required
@@ -274,11 +276,13 @@ export interface UpdateLocationRequest {
   menu?: string;
   name?: string;
   status?: string;
-  openingHours?: Array<{
-    dayOfTheWeek: DayOfTheWeek;
-    opensAt?: number;
-    closesAt?: number;
-  }> | string[];
+  openingHours?:
+    | Array<{
+        dayOfTheWeek: DayOfTheWeek;
+        opensAt?: number;
+        closesAt?: number;
+      }>
+    | string[];
   photos?: string[];
   phoneNumber?: string;
   priceLevel?: number;
