@@ -67,7 +67,7 @@ export const createActiveRestaurantsColumns = (
     header: () => <TableHeader iconName="mapPinIcon" title="Address" />,
     cell: ({ row }) => {
       const name = row.original.address.content;
-      const maplink = `https://maps.google.com/?q=${encodeURIComponent(name)}`;
+      const maplink = row.original.mapLink;
 
       return (
         <div className="flex flex-col gap-y-2">

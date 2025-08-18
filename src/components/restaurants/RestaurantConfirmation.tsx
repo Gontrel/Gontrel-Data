@@ -132,8 +132,8 @@ export const RestaurantConfirmation = ({
                     {day}
                   </span>
                   <div className="text-right font-medium text-gray-800">
-                    {hours && hours.length > 0 ? (
-                      hours.map((range, index) => (
+                    {hours && hours?.length > 0 ? (
+                      hours?.map((range, index) => (
                         <div key={index}>
                           {range}
                           <br />

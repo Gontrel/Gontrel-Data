@@ -105,15 +105,14 @@ export const GontrelPostView = ({
         restaurantName={restaurantData?.name || ""}
         menuLink={
           typeof restaurantData?.menu === "string"
-            ? restaurantData.menu
-            : restaurantData?.menu.content || ""
+            ? restaurantData?.menu
+            : restaurantData?.menu?.content || ""
         }
         bookLink={
           typeof restaurantData?.reservation === "string"
-            ? restaurantData.reservation
-            : restaurantData?.reservation.content || ""
+            ? restaurantData?.reservation
+            : restaurantData?.reservation?.content || ""
         }
-
         deliveryTime={"0 min"}
         openingHours="12:00pm - 2:00pm"
         rating={restaurantData?.rating || 0}

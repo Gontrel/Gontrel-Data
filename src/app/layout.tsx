@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
+import ClientLayout from "./clientLayout";
 import "./globals.css";
-import { QueryProvider } from "../providers/QueryProvider";
-import ToasterProvider from "@/providers/ToasterProvider";
 
 export const metadata: Metadata = {
   title: "Gontrel Admin",
@@ -10,16 +9,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body>
-        <QueryProvider>
-          <ToasterProvider />
-          {children}
-        </QueryProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
