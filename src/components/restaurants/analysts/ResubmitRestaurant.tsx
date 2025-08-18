@@ -9,6 +9,7 @@ import {
   convertTimeTo24Hour,
   formatOpeningHours,
   formatTime,
+  processGoogleHours,
 } from "@/lib/utils";
 import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
@@ -126,6 +127,10 @@ export const ResubmitRestaurant = ({
     menuUrl: string;
     reservationUrl: string;
   }) => {
+    const availability = processGoogleHours(
+      selectedRestaurant?.workingHours ?? {}
+    );
+
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
       status: "pending",
@@ -138,30 +143,7 @@ export const ResubmitRestaurant = ({
       ...(data.menuUrl && { menu: data.menuUrl }),
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
-      openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
-        ([day, hours]) => {
-          if (hours[0].toLowerCase() === "24 hours") {
-            return {
-              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-              opensAt: 0,
-              closesAt: 24,
-            };
-          }
-          if (hours[0].toLowerCase().trim() === "closed") {
-            return {
-              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-              opensAt: 0,
-              closesAt: 0,
-            };
-          }
-          const [startTime, endTime] = hours[0].split(" – ");
-          return {
-            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-            opensAt: convertTimeTo24Hour(startTime),
-            closesAt: convertTimeTo24Hour(endTime),
-          };
-        }
-      ),
+      openingHours: availability,
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
