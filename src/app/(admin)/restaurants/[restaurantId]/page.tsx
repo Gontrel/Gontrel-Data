@@ -24,6 +24,8 @@ import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { EditVideo } from "@/components/modals/EditPostModal";
 import { formatRestaurantTime } from "@/lib/utils";
+import { RestaurantInfoCard } from "@/components/restaurants/details/RestaurantInfoCard";
+import { AccountSummary } from "@/components/restaurants/details/AccountSummary";
 
 const PAGE_SIZE = 10;
 
@@ -359,144 +361,17 @@ const RestaurantDetailsPage = ({
           />
         )}
       </PreviewVideoModal>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 fixed">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
-        <div className="lg:col-span-1 space-y-8 w-[512px]">
+        <div className="lg:col-span-1 space-y-8 w-min-[512px]">
           {/* Restaurant Info Card */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm">
-            <div className="flex items-center gap-4 mb-6">
-              {/* <img
-                src={restaurant?.imageUrl}
-                alt={restaurant?.name}
-                className="w-20 h-20 rounded-lg object-cover"
-              /> */}
-              <div>
-                <p className="text-sm text-gray-500">#{restaurant?.id}</p>
-                <h1 className="text-2xl font-bold">{restaurant?.name}</h1>
-                <p className="text-sm text-gray-500">
-                  Created by: {restaurant?.admin?.name}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Created on: {formatRestaurantTime(restaurant?.createdAt)}
-                </p>
-              </div>
-              {!isActive && (
-                <div
-                  className={`flex items-center justify-center py-[10px] px-[30px] rounded-[10px]  gap-x-4 ${"bg-[#FDE6E6] border-[#F35454]"} `}
-                >
-                  <span
-                    className={`text-lg font-semibold leading-[100%] ${"text-[#ED0000]"}`}
-                  >
-                    Deactivated
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <a
-                href={restaurant?.tiktokUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
-                onClick={(e) => {
-                  if (!restaurant?.tiktokUrl) e.preventDefault();
-                }}
-              >
-                <Icon name="restaurantTiktokIcon" className="w-5 h-5" />
-                {restaurant?.tikokUrl ? "View tiktok" : "N/A"}{" "}
-                <Icon name="externalLinkIcon" className="w-5 h-5" />
-              </a>
-              <a
-                href={restaurant?.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg hover:bg-gray-200"
-                onClick={(e) => {
-                  if (!restaurant?.website) e.preventDefault();
-                }}
-              >
-                <Icon name="worldIcon" className="w-5 h-5" />{" "}
-                {restaurant?.website ? "View website" : "N/A"}{" "}
-                <Icon name="externalLinkIcon" className="w-5 h-5" />
-              </a>
-              <a
-                href={restaurant?.mapLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
-                onClick={(e) => {
-                  if (!restaurant?.mapLink) e.preventDefault();
-                }}
-              >
-                <Icon name="restaurantLocationIcon" className="w-5 h-5" />
-                {restaurant?.mapLink ? "View Address" : "N/A"}{" "}
-                <Icon name="externalLinkIcon" className="w-5 h-5" />
-              </a>
-              <a
-                href={restaurant?.menu?.content}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
-                onClick={(e) => {
-                  if (!restaurant?.menu) e.preventDefault();
-                }}
-              >
-                <Icon name="menuIcon" className="w-5 h-5" />{" "}
-                {restaurant?.menu ? "View menu" : "N/A"}{" "}
-                <Icon name="externalLinkIcon" className="w-5 h-5" />
-              </a>
-              <a
-                href={restaurant?.reservation?.content}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
-                onClick={(e) => {
-                  if (!restaurant?.reservation?.content) e.preventDefault();
-                }}
-              >
-                <Icon name="restaurantReversationIcon" className="w-5 h-5" />
-                {restaurant?.reservation?.content
-                  ? "View reservation"
-                  : "N/A"}{" "}
-                <Icon name="externalLinkIcon" className="w-5 h-5" />
-              </a>
-              <a
-                href={"#"} //restaurant.opening_hours[0]
-                className="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg hover:bg-gray-200"
-              >
-                <Icon name="restaurantTimeIcon" className="w-5 h-5" />{" "}
-                {restaurant?.opening_hours ? "View working hours" : "N/A"}
-              </a>
-            </div>
-          </div>
-
+          <RestaurantInfoCard restaurant={restaurant} isActive={isActive} />
           {/* Account Summary Card */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm">
-            <h2 className="font-semibold mb-[42px] text-[#9DA1A5] text-base">
-              Account summary
-            </h2>
-            <div className="flex justify-between text-center">
-              <div>
-                <p className="text-2xl text-[#2E3032] font-bold">
-                  {restaurant?.summary?.totalPosts ?? 0}
-                </p>
-                <p className="text-base text-[#9DA1A5]">Total posts</p>
-              </div>
-              <div>
-                <p className="text-2xl text-[#2E3032] font-bold">
-                  {restaurant?.summary?.tiktokPosts ?? 0}
-                </p>
-                <p className="text-base  text-[#9DA1A5]">From TikTok</p>
-              </div>
-              <div>
-                <p className="text-2xl text-[#2E3032] font-bold">
-                  {restaurant?.summary?.userPosts ?? 0}
-                </p>
-                <p className="text-base text-[#9DA1A5]">UGC created</p>
-              </div>
-            </div>
-          </div>
+          <AccountSummary
+            totalPosts={restaurant?.summary?.totalPosts}
+            tiktokPosts={restaurant?.summary?.tiktokPosts}
+            userPosts={restaurant?.summary?.userPosts}
+          />
         </div>
 
         {/* Right Column */}
