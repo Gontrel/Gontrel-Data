@@ -345,6 +345,9 @@ export const formatPostTime = (isoDateString: string): string => {
 };
 
 export const formatRestaurantTime = (isoDateString: string): string => {
+  if (isoDateString.length === 0) {
+    return "";
+  }
   const postDate = new Date(isoDateString);
   const now = new Date();
 
@@ -471,5 +474,3 @@ export const processGoogleHours = (
     };
   });
 };
-
-
