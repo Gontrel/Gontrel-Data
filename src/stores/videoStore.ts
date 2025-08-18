@@ -43,7 +43,7 @@ const videoStateCreator: StateCreator<VideoState> = (set, get) => ({
       ...video,
       id: Date.now().toString(),
     };
-    set({ videos: [...get().videos, newVideo] });
+    set({ videos: [...get().videos, newVideo] }); 
     return newVideo;
   },
 

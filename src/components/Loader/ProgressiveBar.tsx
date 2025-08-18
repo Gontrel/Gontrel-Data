@@ -5,9 +5,9 @@ export const ProgressBar = ({
   subTitle3 = "",
 }: {
   step: number;
-  subTitle1: string;
-  subTitle2: string;
-  subTitle3: string;
+  subTitle1?: string;
+  subTitle2?: string;
+  subTitle3?: string;
 }) => {
   return (
     <div className="flex items-center space-x-2 my-6">

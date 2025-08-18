@@ -22,6 +22,8 @@ import { usePendingRestaurantsStore } from "@/stores/tableStore";
 import { useHeaderStore } from "@/stores/headerStore";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
+import { EditVideo } from "@/components/modals/EditPostModal";
+import { formatRestaurantTime } from "@/lib/utils";
 
 const PAGE_SIZE = 10;
 
@@ -49,12 +51,15 @@ const RestaurantDetailsPage = ({
   const [page, setPage] = useState(1);
   const [isFetching, setIsFetching] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentPostId, setCurrentPostId] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [meta, setMetadata] = useState<IPostMeta>({
     pendingCount: 0,
     approvalCount: 0,
   });
   const [comment, setComment] = useState<string>("");
+  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
 
   const { setIsActive, setIsActiveText } = useHeaderStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -87,6 +92,15 @@ const RestaurantDetailsPage = ({
     },
     onError: (error) => {
       errorToast(error.message);
+    },
+  });
+
+  const { mutate: deleteVideoMutation } = trpc.post.deletePost.useMutation({
+    onSuccess: () => {
+      setIsDeleteModalOpen(false);
+      setCurrentPostId(null);
+      successToast("Post successfully deleted");
+      refetch();
     },
   });
 
@@ -199,6 +213,33 @@ const RestaurantDetailsPage = ({
     mutate({ locationId: restaurantId });
   }, [restaurantId, mutate]);
 
+  const handleConfirmation = () => {
+    toggleLocation();
+    setConfirmationModalOpen(false);
+    refetch();
+    refetchRest();
+  };
+
+  const handleCloseModal = () => {
+    setConfirmationModalOpen(false);
+  };
+
+  const handleOpenEditModal = useCallback((postId: string) => {
+    setCurrentPostId(postId);
+    setEditModalOpen(true);
+  }, []);
+
+  const handleOpenDeleteModal = useCallback((postId: string) => {
+    setCurrentPostId(postId);
+    setIsDeleteModalOpen(true);
+  }, []);
+
+  const handleDeleteVideo = useCallback(() => {
+    if (!currentPostId) return;
+
+    deleteVideoMutation({ postId: currentPostId });
+  }, [currentPostId, deleteVideoMutation]);
+
   useEffect(() => {
     if (restaurantId) {
       setPosts([]);
@@ -288,18 +329,6 @@ const RestaurantDetailsPage = ({
     }
   };
 
-  const handleConfirmation = () => {
-    //TODO: API call
-    toggleLocation();
-    setConfirmationModalOpen(false);
-    refetch();
-    refetchRest();
-  };
-
-  const handleCloseModal = () => {
-    setConfirmationModalOpen(false);
-  };
-
   const onDateRangeChange = () => {};
 
   const handleCommentChange = (
@@ -346,6 +375,9 @@ const RestaurantDetailsPage = ({
                 <h1 className="text-2xl font-bold">{restaurant?.name}</h1>
                 <p className="text-sm text-gray-500">
                   Created by: {restaurant?.admin?.name}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Created on: {formatRestaurantTime(restaurant?.createdAt)}
                 </p>
               </div>
               {!isActive && (
@@ -508,14 +540,14 @@ const RestaurantDetailsPage = ({
             style={{ maxHeight: "calc(100vh - 300px)" }}
           >
             {/* Initial loading state */}
-            {!initialLoadComplete && isFetching && (
+            {initialLoadComplete && isFetching && (
               <div className="flex justify-center p-4">
                 <p className="text-gray-500">Loading posts...</p>
               </div>
             )}
 
             {/* No posts found (after initial load) */}
-            {initialLoadComplete && posts.length === 0 && (
+            {!initialLoadComplete && posts.length === 0 && (
               <div className="flex items-center justify-center h-64">
                 <p className="text-center text-gray-500">
                   No {activeTab === "approved" ? "active" : "pending"} posts
@@ -532,6 +564,9 @@ const RestaurantDetailsPage = ({
                     key={post.id}
                     post={post}
                     restaurant={restaurant}
+                    RestaurantDetailsFlow={true}
+                    handleOpenEditModal={() => handleOpenEditModal(post.id)}
+                    handleOpenDeleteModal={() => handleOpenDeleteModal(post.id)}
                     handleApprove={
                       activeTab === "pending"
                         ? () => handleApprovePost(restaurant.id, post.id)
@@ -572,7 +607,7 @@ const RestaurantDetailsPage = ({
         onPostCreated={handlePostCreated}
       />
 
-      {/** Confirmation Modal */}
+      {/* Restaurant Deactivation Modal */}
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={handleCloseModal}
@@ -594,6 +629,27 @@ const RestaurantDetailsPage = ({
         successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
           isActive ? "bg-[#D80000]" : "bg-[#0070F3]"
         }`}
+      />
+
+      {/* Edit Restaurant Modal */}
+      <EditVideo
+        submissionId={currentPostId ?? ""}
+        title="Edit restaurant video"
+        description="The Edit video modal allows you to modify the details of the restaurant video"
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+      />
+
+      {/* Video Deletion Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete video?"
+        description="Are you sure you want to delete this video? This action cannot be undone"
+        showCommentField={false}
+        onConfirm={handleDeleteVideo}
+        confirmLabel="Delete"
+        successButtonClassName="w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold bg-[#D80000]"
       />
     </div>
   );

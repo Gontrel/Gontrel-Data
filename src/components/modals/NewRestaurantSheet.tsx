@@ -163,7 +163,7 @@ export const NewRestaurantSheet = ({
         } else {
           newWorkingHours[dayName] = dayData.slots?.map(
             (slot: TimeSlot) =>
-              `${formatTime(slot.start)} - ${formatTime(slot.end)}`
+              `${formatTime(slot.start)} – ${formatTime(slot.end)}`
           );
         }
       }
@@ -209,6 +209,7 @@ export const NewRestaurantSheet = ({
           thumbUrl: video.thumbUrl,
           locationName: selectedRestaurant.name,
           rating: 0,
+          ...(video.isFoodVisible && { isFoodVisible: video.isFoodVisible }),
           ...(video.tags && { tags: video.tags }),
         })) ?? [],
       openingHours: Object.entries(selectedRestaurant.workingHours ?? {}).map(

@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "../svgs/Icons";
+import Image from "next/image";
 
 type ActivityType = "restaurant" | "video" | "password_change";
 
@@ -37,11 +38,11 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
       </div>
       {(type === "restaurant" || type === "video") && details && (
         <div className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg">
-          <img
+          {/* <Image
             src={details.imageUrl}
             alt={type === "restaurant" ? "Restaurant" : "Video"}
             className="w-16 h-16 rounded object-cover"
-          />
+          /> */}
           <div>
             <p className="text-sm text-gray-500">{details.id}</p>
             {type === "restaurant" && (

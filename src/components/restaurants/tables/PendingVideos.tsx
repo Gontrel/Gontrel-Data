@@ -24,6 +24,8 @@ import {
 import { errorToast, successToast } from "@/utils/toast";
 import { usePendingVideos } from "@/hooks/usePendingVideos";
 import { GenericTable } from "@/components/tables/GenericTable";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
+import RestaurantCard from "@/components/cards/RestaurantCard";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -162,6 +164,7 @@ const PendingVideos = ({
   // ---------------------------------------------------------------------------
 
   const videos = useMemo(() => queryData?.data || [], [queryData]);
+
   const paginationData = queryData?.pagination;
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
@@ -179,6 +182,9 @@ const PendingVideos = ({
           rating: currentRestaurant.location?.rating,
           adminName: currentRestaurant.admin.name,
           adminId: currentRestaurant.admin.id,
+          address: currentRestaurant.location.address.content,
+          website: currentRestaurant.location.website,
+          mapLink: currentRestaurant.location.mapLink,
           submissionId: currentRestaurant.submission.id,
         }
       : {
@@ -204,6 +210,13 @@ const PendingVideos = ({
 
   return (
     <>
+      <PreviewVideoModal
+        open={videoPreview.isOpen}
+        onOpenChange={handleCloseVideoPreview}
+        showCloseButton={false}
+      >
+        {restaurant && <RestaurantCard restaurant={restaurant} />}
+      </PreviewVideoModal>
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_VIDEOS}
         open={videoPreview.isOpen}

@@ -12,13 +12,14 @@ import { Post } from "@/interfaces/posts";
 import { VideoData } from "@/interfaces/restaurants";
 import { Button } from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
-import { cleanTiktokUrl, mergeClasses } from "@/lib/utils";
+import { cleanTiktokUrl, isValidTikTokUrl, mergeClasses } from "@/lib/utils";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   handleResubmit?: () => void;
   onPrevious: () => void;
   restaurant: RestaurantData;
   isLoading?: boolean;
+  editFlow?: boolean;
   isRestaurantFlow?: boolean;
 }
 
@@ -28,6 +29,7 @@ export const ResubmitVideoStepStep = ({
   handleResubmit,
   isRestaurantFlow,
   restaurant,
+  editFlow = false,
 }: ResubmitVideoStepProps) => {
   const videos = useVideoStore((state) => state.videos);
   const {
@@ -44,6 +46,7 @@ export const ResubmitVideoStepStep = ({
     author: "",
     videoUrl: "",
     locationName: "",
+    isFoodVisible: false,
     rating: 0,
   });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
@@ -107,13 +110,19 @@ export const ResubmitVideoStepStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let cleanedUrl = "";
+    let url = "";
     if ("clipboardData" in e) {
-      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
+      url = e.clipboardData.getData("text");
     } else {
-      cleanedUrl = cleanTiktokUrl(e.target.value);
+      url = e.target.value;
     }
-    // Update both the input state and current video URL immediately for UI responsiveness
+
+    const isValidTiktokurl = isValidTikTokUrl(url);
+    if (!isValidTiktokurl) {
+      errorToast("Invalid TikTok URL");
+    }
+
+    const cleanedUrl = cleanTiktokUrl(url);
     setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
@@ -126,6 +135,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: post.videoUrl,
       author: post.updatedBy,
       status: post?.status,
+      isFoodVisible: post?.isFoodVisible,
       isUpdated: false,
     }));
   };
@@ -134,12 +144,13 @@ export const ResubmitVideoStepStep = ({
     const loadAndAddVideos = async () => {
       try {
         const convertedPosts = await convertPosts(restaurant?.posts ?? []);
+        resetVideos();
         addVideos(convertedPosts);
       } catch {}
     };
 
     loadAndAddVideos();
-  }, [restaurant?.posts, addVideos]);
+  }, [restaurant?.posts, resetVideos, addVideos]);
 
   const handleTagKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -204,6 +215,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
       locationName: currentVideo.locationName,
+      isFoodVisible: currentVideo.isFoodVisible,
       rating: currentVideo.rating || 0,
       isUpdated: true,
     };
@@ -218,13 +230,21 @@ export const ResubmitVideoStepStep = ({
         tiktokLink: videoData.url,
         videoUrl: videoData.videoUrl,
         thumbUrl: videoData.thumbUrl,
-        tags: [videoData.tags],
+        isFoodVisible: videoData.isFoodVisible,
+        tags: [...videoData.tags],
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       updatePost(payload as any);
       shouldResubmit++;
     }
+  };
+
+  const handleSetFoodVisibility = (checked: boolean) => {
+    setCurrentVideo((prev) => ({
+      ...prev,
+      isFoodVisible: checked,
+    }));
   };
 
   const handleEdit = (id: string) => {
@@ -238,6 +258,7 @@ export const ResubmitVideoStepStep = ({
         videoUrl: videoToEdit.videoUrl || "",
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
+        isFoodVisible: videoToEdit?.isFoodVisible ?? false,
         rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
@@ -257,11 +278,6 @@ export const ResubmitVideoStepStep = ({
   const shouldDisable =
     currentVideo.tags.length <= 1 && currentVideo.url === "";
 
-  const shouldDisableNext =
-    videos.every((video) => video.status === "approved") &&
-    currentVideo.tags.length > 1 &&
-    currentVideo.url !== "";
-
   const shouldResubmitModal = shouldResubmit > 0 ? true : false;
 
   return (
@@ -277,7 +293,12 @@ export const ResubmitVideoStepStep = ({
 
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
-          <VideoCard key={video.id} video={video} onEdit={handleEdit} />
+          <VideoCard
+            key={video.id}
+            video={video}
+            onEdit={handleEdit}
+            editFlow={editFlow}
+          />
         ))}
       </div>
       {editingVideoId && (
@@ -343,6 +364,21 @@ export const ResubmitVideoStepStep = ({
                 ))}
               </div>
 
+              {
+                <div className="flex items-center gap-2 mb-4 mt-4">
+                  <input
+                    type="checkbox"
+                    id="food-visible"
+                    checked={currentVideo.isFoodVisible} // Use currentVideo state
+                    onChange={(e) => handleSetFoodVisibility(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="food-visible">
+                    Food is visible in the next 3 seconds
+                  </label>
+                </div>
+              }
+
               {editingVideoId && videos?.length >= 0 && (
                 <div className="mt-6 pt-4 flex justify-left">
                   <Button
@@ -375,21 +411,23 @@ export const ResubmitVideoStepStep = ({
       )}
 
       <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
-        <Button
-          onClick={() => {
-            resetVideos();
-            setActiveVideoUrl(null);
-            setTiktokUsername(null);
-            onPrevious();
-          }}
-          className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-        >
-          Previous
-        </Button>
+        {!editFlow && (
+          <Button
+            onClick={() => {
+              resetVideos();
+              setActiveVideoUrl(null);
+              setTiktokUsername(null);
+              onPrevious();
+            }}
+            className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+          >
+            Previous
+          </Button>
+        )}
         {isRestaurantFlow && (
           <Button
             onClick={handleOnNext}
-            disabled={shouldDisableNext}
+            // disabled={shouldDisableNext}
             className={mergeClasses(
               "w-full py-3 rounded-lg font-semibold transition-colors bg-[#0070F3] text-white hover:bg-blue-600",
               "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"

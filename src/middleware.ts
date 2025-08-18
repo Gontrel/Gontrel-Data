@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
     "/",
     "/forget-password",
     "/reset-password",
+    "/health",
   ]?.includes(path);
 
   const token = request.cookies.get("user_token")?.value || "";

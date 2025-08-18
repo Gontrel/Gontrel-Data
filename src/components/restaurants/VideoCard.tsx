@@ -6,13 +6,14 @@ import { VideoData } from "@/interfaces/restaurants";
 
 interface VideoCardProps {
   video: VideoData;
+  editFlow?: boolean;
   onEdit: (id: string) => void;
 }
 
-export const VideoCard = ({ video, onEdit }: VideoCardProps) => {
+export const VideoCard = ({ video, onEdit, editFlow }: VideoCardProps) => {
   const { removeVideo } = useVideoStore();
 
-  const isApproved = video.status === "approved";
+  const isApproved = video.status === "approved" && !editFlow;
   const isPending = video.status === "pending";
   const isRejected = video.status === "rejected";
 

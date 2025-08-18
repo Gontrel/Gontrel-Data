@@ -85,7 +85,7 @@ export const createPendingRestaurantsColumns = (
               ).length
             }/${posts.length} video${posts.length > 1 ? "s" : ""}`}
             textColor={getTextColor(
-              posts.map((post) => ({ status: post.status }))
+              posts.map((post) => ({ status: post?.status }))
             )}
             bgColor={getBgColor(posts.map((post) => ({ status: post.status })))}
           />

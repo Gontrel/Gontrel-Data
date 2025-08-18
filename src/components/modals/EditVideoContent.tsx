@@ -1,14 +1,12 @@
 "use client";
 
-import { ConfirmResubmitRestaurant } from "./ConfirmResubmitRestaurant";
 import { ResubmitVideoStepStep } from "./ResubmitVideoStep";
-import {ResubmitRestaurantMenu} from "./ResubmitRestaurantMenu";
+import { EditRestaurantMenu } from "./ResubmitRestaurantMenu";
 import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";
-import { WorkingHours } from "./EditWorkingHoursModal";
 
-interface ResubmitRestaurantSheetProps {
+interface EditPostContainerProps {
   restaurant: RestaurantData | null;
   isRestaurantFlow: boolean;
   title: string;
@@ -20,12 +18,11 @@ interface ResubmitRestaurantSheetProps {
   onContinue: () => void;
   onNextVideoStep: () => void;
   onPreviousVideoStep: () => void;
-  onGoBackToSearch: () => void;
   onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
   onPreviousRestaurantMenu: () => void;
 }
 
-export const ResubmitPage = ({
+export const EditPostContainer = ({
   title,
   description,
   isRestaurantFlow,
@@ -34,16 +31,12 @@ export const ResubmitPage = ({
   isLoading,
   handleClose,
   handleResubmit,
-  onContinue,
   onNextVideoStep,
   onPreviousVideoStep,
-  onGoBackToSearch,
   onPreviousRestaurantMenu,
   onSubmit,
-  onWorkingHoursSave,
-}: ResubmitRestaurantSheetProps & {
-  onWorkingHoursSave: (updatedHours: WorkingHours) => void;
-}) => {
+}: EditPostContainerProps) => {
+
   return (
     <div className="py-6 w-[518px] flex flex-col justify-between">
       <section className="">
@@ -62,25 +55,13 @@ export const ResubmitPage = ({
             <Icon name="cancelModalIcon" className="w-6 h-6" />
           </button>
         </div>
-        <ProgressBar
-          step={step}
-          subTitle1={"Details"}
-          subTitle2={"Video"}
-          subTitle3={"Links"}
-        />
+        <ProgressBar step={step} subTitle1={"Video"} subTitle2={"Links"} />
         <div className="w-full mt-[30px]">
           {restaurant ? (
             <>
               {step === 1 && (
-                <ConfirmResubmitRestaurant
-                  restaurant={restaurant}
-                  onGoBackToSearch={onGoBackToSearch}
-                  onContinue={onContinue}
-                  onWorkingHoursSave={onWorkingHoursSave}
-                />
-              )}
-              {step === 2 && (
                 <ResubmitVideoStepStep
+                  editFlow={true}
                   isRestaurantFlow={isRestaurantFlow}
                   restaurant={restaurant ?? []}
                   onPrevious={onPreviousVideoStep}
@@ -89,9 +70,10 @@ export const ResubmitPage = ({
                 />
               )}
               {step === 3 && isRestaurantFlow ? (
-                <ResubmitRestaurantMenu
+                <EditRestaurantMenu
                   restaurant={restaurant ?? []}
                   isLoading={isLoading}
+                  editFlow={true}
                   onPrevious={onPreviousRestaurantMenu}
                   onSubmit={onSubmit}
                 />

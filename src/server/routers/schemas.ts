@@ -174,6 +174,7 @@ export const createBulkPostSchema = z.object({
         hlsUrl: z.string().optional(),
         videoUrl: z.string().min(1),
         thumbUrl: z.string().optional(),
+        isFoodVisible: z.boolean().optional(),
         postedAt: z.string().optional(),
         rating: z.number().optional(),
         tags: z.array(z.string()).min(1).optional(),
@@ -194,6 +195,7 @@ export const updatePostSchema = z.object({
   firstFrameUrl: z.string().optional(),
   hlsUrl: z.string().optional(),
   videoUrl: z.string().optional(),
+  isFoodVisible: z.boolean().optional(),
   thumbUrl: z.string().optional(),
   postId: z.string().uuid(),
   username: z.string().optional(),
@@ -204,8 +206,8 @@ export const updatePostSchema = z.object({
  * DELETE /admin-delete-post - DeletePostRequest
  */
 export const deletePostSchema = z.object({
-  userId: z.string().uuid(),
-  postId: z.string().uuid(),
+  userId: z.string().optional(),
+  postId: z.string(),
 });
 
 // ============================================================================
@@ -232,6 +234,7 @@ const postCreationSchema = z.object({
   firstFrameUrl: z.string().optional(),
   hlsUrl: z.string().optional(),
   videoUrl: z.string().min(1),
+  isFoodVisible: z.boolean().optional(),
   thumbUrl: z.string().optional(),
   postedAt: z.string().optional(),
   locationName: z.string().optional(),

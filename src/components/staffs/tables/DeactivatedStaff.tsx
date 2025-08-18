@@ -57,10 +57,10 @@ const DeactivatedStaff = ({
     searchTerm,
     startDate,
     endDate,
-    adminId:
-      selectedAnalyst && selectedAnalyst !== "all"
-        ? selectedAnalyst
-        : undefined,
+    // adminId:
+    //   selectedAnalyst && selectedAnalyst !== "all"
+    //     ? selectedAnalyst
+    //     : undefined,
   });
 
   // ---------------------------------------------------------------------------

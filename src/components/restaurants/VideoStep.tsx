@@ -9,7 +9,7 @@ import { errorToast } from "@/utils/toast";
 import { useDebounce } from "@/hooks/useDebounce";
 import Icon from "../svgs/Icons";
 import { Button } from "../ui/Button";
-import { cleanTiktokUrl } from "@/lib/utils";
+import { cleanTiktokUrl, isValidTikTokUrl } from "@/lib/utils";
 import { VideoData } from "@/interfaces";
 
 interface VideoStepProps {
@@ -42,6 +42,7 @@ export const VideoStep = ({
     author: "",
     videoUrl: "",
     locationName: "",
+    isFoodVisible: false,
     rating: 0,
   });
 
@@ -96,13 +97,19 @@ export const VideoStep = ({
       | React.ChangeEvent<HTMLInputElement>
       | React.ClipboardEvent<HTMLInputElement>
   ) => {
-    let cleanedUrl = "";
+    let url = "";
     if ("clipboardData" in e) {
-      cleanedUrl = cleanTiktokUrl(e.clipboardData.getData("text"));
+      url = e.clipboardData.getData("text");
     } else {
-      cleanedUrl = cleanTiktokUrl(e.target.value);
+      url = e.target.value;
     }
-    // Update both the input state and current video URL immediately for UI responsiveness
+
+    const isValidTiktokurl = isValidTikTokUrl(url);
+    if (!isValidTiktokurl) {
+      errorToast("Invalid TikTok URL");
+    }
+
+    const cleanedUrl = cleanTiktokUrl(url);
     setCurrentVideo({ ...currentVideo, url: cleanedUrl });
   };
 
@@ -161,6 +168,13 @@ export const VideoStep = ({
     }
   };
 
+  const handleSetFoodVisibility = (checked: boolean) => {
+    setCurrentVideo((prev) => ({
+      ...prev,
+      isFoodVisible: checked,
+    }));
+  };
+
   const handleAddOrUpdateVideo = (): boolean => {
     handleInputError();
     const videoData = {
@@ -169,6 +183,7 @@ export const VideoStep = ({
       thumbUrl: currentVideo.thumbUrl,
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
+      isFoodVisible: currentVideo?.isFoodVisible,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
       isUpdated: true,
@@ -195,6 +210,7 @@ export const VideoStep = ({
         videoUrl: videoToEdit.videoUrl || "",
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
+        isFoodVisible: videoToEdit.isFoodVisible || false, // Proper initialization
         rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
@@ -217,6 +233,7 @@ export const VideoStep = ({
       author: "",
       locationName: "",
       rating: 0,
+      isFoodVisible: false,
     });
 
     setActiveVideoUrl(null);
@@ -233,6 +250,7 @@ export const VideoStep = ({
       author: currentVideo.author,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
+      isFoodVisible: currentVideo.isFoodVisible,
       isUpdated: true,
     };
 
@@ -246,7 +264,6 @@ export const VideoStep = ({
     const currentVideos = store.getCurrentVideos();
 
     resetVideo();
-
     onSubmit?.(currentVideos);
   };
 
@@ -267,7 +284,12 @@ export const VideoStep = ({
 
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
-          <VideoCard key={video.id} video={video} onEdit={handleEdit} />
+          <VideoCard
+            key={video.id}
+            video={video}
+            onEdit={handleEdit}
+            editFlow={true}
+          />
         ))}
       </div>
       <div className="flex-grow">
@@ -329,6 +351,22 @@ export const VideoStep = ({
                 </div>
               ))}
             </div>
+
+            {
+              <div className="flex items-center gap-2 mb-4 mt-4">
+                <input
+                  type="checkbox"
+                  id="food-visible"
+                  checked={currentVideo.isFoodVisible} // Use currentVideo state
+                  onChange={(e) => handleSetFoodVisibility(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="food-visible">
+                  Food is visible in the next 3 seconds
+                </label>
+              </div>
+            }
+
             {editingVideoId && videos?.length >= 0 ? (
               <div className="mt-6 pt-4 flex justify-left">
                 <Button
@@ -381,7 +419,7 @@ export const VideoStep = ({
         </div>
       ) : (
         <Button
-            onClick={handleOnSubmit}
+          onClick={handleOnSubmit}
           type="submit"
           disabled={shouldDisable}
           loading={isLoading}
