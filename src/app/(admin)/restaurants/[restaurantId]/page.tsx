@@ -399,25 +399,38 @@ const RestaurantDetailsPage = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
+                onClick={(e) => {
+                  if (!restaurant?.tiktokUrl) e.preventDefault();
+                }}
               >
-                <Icon name="restaurantTiktokIcon" className="w-5 h-5" /> View
-                TikTok <Icon name="externalLinkIcon" className="w-5 h-5" />
+                <Icon name="restaurantTiktokIcon" className="w-5 h-5" />
+                {restaurant?.tikokUrl ? "View tiktok" : "N/A"}{" "}
+                <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
                 href={restaurant?.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg hover:bg-gray-200"
+                onClick={(e) => {
+                  if (!restaurant?.website) e.preventDefault();
+                }}
               >
-                <Icon name="worldIcon" className="w-5 h-5" /> View website{" "}
+                <Icon name="worldIcon" className="w-5 h-5" />{" "}
+                {restaurant?.website ? "View website" : "N/A"}{" "}
                 <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
                 href={restaurant?.mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
+                onClick={(e) => {
+                  if (!restaurant?.mapLink) e.preventDefault();
+                }}
               >
                 <Icon name="restaurantLocationIcon" className="w-5 h-5" />
-                View address
+                {restaurant?.mapLink ? "View Address" : "N/A"}{" "}
                 <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
@@ -425,8 +438,12 @@ const RestaurantDetailsPage = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
+                onClick={(e) => {
+                  if (!restaurant?.menu) e.preventDefault();
+                }}
               >
-                <Icon name="menuIcon" className="w-5 h-5" /> <p>View menu</p>{" "}
+                <Icon name="menuIcon" className="w-5 h-5" />{" "}
+                {restaurant?.menu ? "View menu" : "N/A"}{" "}
                 <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
@@ -434,17 +451,22 @@ const RestaurantDetailsPage = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA]  rounded-lg hover:bg-gray-200"
+                onClick={(e) => {
+                  if (!restaurant?.reservation?.content) e.preventDefault();
+                }}
               >
                 <Icon name="restaurantReversationIcon" className="w-5 h-5" />
-                View reservation{" "}
+                {restaurant?.reservation?.content
+                  ? "View reservation"
+                  : "N/A"}{" "}
                 <Icon name="externalLinkIcon" className="w-5 h-5" />
               </a>
               <a
                 href={"#"} //restaurant.opening_hours[0]
                 className="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg hover:bg-gray-200"
               >
-                <Icon name="restaurantTimeIcon" className="w-5 h-5" /> View
-                working hours
+                <Icon name="restaurantTimeIcon" className="w-5 h-5" />{" "}
+                {restaurant?.opening_hours ? "View working hours" : "N/A"}
               </a>
             </div>
           </div>

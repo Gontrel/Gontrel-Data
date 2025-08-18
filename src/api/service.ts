@@ -242,6 +242,7 @@ export default class APIRequest {
       throw error;
     }
   };
+  
   // getPostById
   getPostById = async (data: FetchPostByIdRequest) => {
     const params = this.buildSearchParams(data);

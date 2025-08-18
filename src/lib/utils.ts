@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { WorkingHours } from "@/components/modals/EditWorkingHoursModal";
 import { ConverTedWorkingHours, OpeningHour } from "@/interfaces/restaurants";
+import { DayOfTheWeek } from "@/types/enums";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -382,186 +383,93 @@ export const formatRestaurantTime = (isoDateString: string): string => {
   return `${formattedDate} at ${formattedTime}`;
 };
 
-// const convertToTime = (timeStr: string, assumePM = false): string => {
-//   // Handle special cases
-//   if (timeStr.includes("24 hours")) return "23:59:59";
-//   if (timeStr === "Noon") return "12:00:00";
-//   if (timeStr === "Midnight") return "00:00:00";
+interface Availability {
+  dayOfTheWeek: DayOfTheWeek;
+  opensAt: number;
+  closesAt: number;
+}
 
-//   // Normalize string
-//   const normalized = timeStr
-//     // eslint-disable-next-line no-irregular-whitespace
-//     .replace(/[  ]/g, " ")
-//     .replace(/^Op\s+/i, "")
-//     .replace(/\s+/g, " ")
-//     .trim();
+const normalizeTimeString = (timeStr: string): string => {
+  return timeStr
+    .replace(/[  ]/g, " ") // Replace special spaces with normal spaces
+    .trim()
+    .toUpperCase();
+};
 
-//   try {
-//     // Format 1: Explicit AM/PM
-//     if (normalized.includes("AM") || normalized.includes("PM")) {
-//       return convertAmPmTime(normalized);
-//     }
+const parseTime = (timeStr: string): number => {
+  const normalized = normalizeTimeString(timeStr);
 
-//     // Format 2: Assume PM for opening times, AM for closing times unless obvious PM
-//     return convertUnspecifiedTime(normalized, assumePM);
-//   } catch (error) {
-//     throw new Error(`Invalid time format: "${timeStr}" (${error})`);
-//   }
-// };
+  // Handle special cases
+  if (normalized === "24 HOURS") return 24;
+  if (normalized === "CLOSED") return 0;
+  if (normalized === "NOON") return 12;
+  if (normalized === "MIDNIGHT") return 0;
 
+  // Handle AM/PM format (e.g., "9:30 PM")
+  const ampmMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+  if (ampmMatch) {
+    const [_, hourStr, minuteStr, period] = ampmMatch;
+    let hour = parseInt(hourStr, 10);
+    const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
 
-//  public async migrateLocationAvailability(): Promise<void> {
-//     try {
-//       const locations = []
+    if (period === "PM" && hour < 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
 
-//       const availabilityData: Array<LocationAvailability> = [];
+    return hour + minutes;
+  }
 
-//       const weekDay = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  // Handle 24-hour format (e.g., "13:30")
+  const twentyFourHourMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?$/);
+  if (twentyFourHourMatch) {
+    const [_, hourStr, minuteStr] = twentyFourHourMatch;
+    const hour = parseInt(hourStr, 10);
+    const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
+    return hour + minutes;
+  }
 
-//       for (const location of locations) {
+  return 0;
+};
 
+const parseTimeRanges = (
+  rangeStr: string
+): { opensAt: number; closesAt: number } => {
+  const normalized = normalizeTimeString(rangeStr);
 
-//         const { openingHours } = location;
+  if (normalized === "24 HOURS") return { opensAt: 0, closesAt: 24 };
+  if (normalized === "CLOSED") return { opensAt: 0, closesAt: 0 };
 
-//         if (!openingHours || openingHours.length !== 7) {
-//           continue;
-//         }
+  // Split the range (handles both en-dash "–" and hyphen "-")
+  const [openStr, closeStr] = normalized.split(/[–-]/).map((s) => s.trim());
 
-//         // eslint-disable-next-line no-plusplus
-//         for (let day = 0; day < 7; day++) {
-//           const dayHours = openingHours[day];
+  return {
+    opensAt: parseTime(openStr),
+    closesAt: parseTime(closeStr),
+  };
+};
 
-//           if (dayHours === 'Closed') {
-//             continue;
-//           }
+export const processGoogleHours = (
+  googleHours: Record<string, string[]>
+): Availability[] => {
+  return Object.entries(googleHours).map(([day, hours]) => {
+    const dayOfWeek = day.toUpperCase() as DayOfTheWeek;
 
-//           // Handle 24-hour cases
-//           if (dayHours.includes('Open 24 hours')) {
-//             availabilityData.push({
-//               location,
-//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
-//               opensAt: '00:00:00',
-//               closesAt: '23:59:59',
-//             });
-//             continue;
-//           }
+    if (!hours || !hours[0]) {
+      return { dayOfTheWeek: dayOfWeek, opensAt: 0, closesAt: 0 };
+    }
 
-//           // Split multiple ranges
-//           const timeRanges = dayHours.split(',').map((s) => s.trim());
+    const timeRange = hours[0];
+    const { opensAt, closesAt } = parseTimeRanges(timeRange);
 
-//           for (const range of timeRanges) {
-//             const [opensAtStr, closesAtStr] = range.split('–').map(
-//               // eslint-disable-next-line no-irregular-whitespace
-//               (s) => s.replace(/[  ]/g, ' ').trim(), // Normalize whitespace
-//             );
+    // Handle cases where closing time might be next day (e.g., "11 PM - 1 AM")
+    const adjustedClosesAt =
+      closesAt < opensAt && closesAt > 0 ? closesAt + 24 : closesAt;
 
-//             if (!opensAtStr || !closesAtStr) {
-//               // eslint-disable-next-line no-continue
-//               continue;
-//             }
-
-//             let opensAt = this.convertToTime(opensAtStr, true); // Assume PM for opening times
-//             let closesAt = this.convertToTime(closesAtStr, false);
-
-//             // Special case: If closesAt is earlier than opensAt, it's next day
-//             if (closesAt < opensAt && !closesAt.startsWith('00:')) {
-//               closesAt = this.add12Hours(closesAt);
-//             }
-
-//             if (opensAt < '07:00:00') {
-//               this.logger.warn(`Opening time before 6 AM for location ${location.id} on ${weekDay[day]}: ${opensAt}`);
-
-//               opensAt = this.add12Hours(opensAt); // Adjust to PM
-//             }
-
-//             availabilityData.push({
-//               opensAt,
-//               closesAt,
-//               location,
-//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
-//             });
-//           }
-//         }
+    return {
+      dayOfTheWeek: dayOfWeek,
+      opensAt,
+      closesAt: adjustedClosesAt,
+    };
+  });
+};
 
 
-
-//       }
-
-//     } catch (error) {
-//       this.logger.error(`Migration failed: ${error.message}`, { error });
-//       throw new Error('Failed to migrate location availability');
-//     }
-//   }
-
-
-//   const changeOpeningHour = () => {
-
-
-//           const locations = []
-
-//       const availabilityData: Array<LocationAvailability> = [];
-
-//       const weekDay = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-//           const { openingHours } = location;
-
-//         if (!openingHours || openingHours.length !== 7) {
-//           continue;
-//         }
-
-//         // eslint-disable-next-line no-plusplus
-//         for (let day = 0; day < 7; day++) {
-//           const dayHours = openingHours[day];
-
-//           if (dayHours === 'Closed') {
-//             continue;
-//           }
-
-//           // Handle 24-hour cases
-//           if (dayHours.includes('Open 24 hours')) {
-//             availabilityData.push({
-//               location,
-//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
-//               opensAt: '00:00:00',
-//               closesAt: '23:59:59',
-//             });
-//             continue;
-//           }
-
-//           // Split multiple ranges
-//           const timeRanges = dayHours.split(',').map((s) => s.trim());
-
-//           for (const range of timeRanges) {
-//             const [opensAtStr, closesAtStr] = range.split('–').map(
-//               // eslint-disable-next-line no-irregular-whitespace
-//               (s) => s.replace(/[  ]/g, ' ').trim(), // Normalize whitespace
-//             );
-
-//             if (!opensAtStr || !closesAtStr) {
-//               // eslint-disable-next-line no-continue
-//               continue;
-//             }
-
-//             let opensAt = this.convertToTime(opensAtStr, true); // Assume PM for opening times
-//             let closesAt = this.convertToTime(closesAtStr, false);
-
-//             // Special case: If closesAt is earlier than opensAt, it's next day
-//             if (closesAt < opensAt && !closesAt.startsWith('00:')) {
-//               closesAt = this.add12Hours(closesAt);
-//             }
-
-//             if (opensAt < '07:00:00') {
-//               this.logger.warn(`Opening time before 6 AM for location ${location.id} on ${weekDay[day]}: ${opensAt}`);
-
-//               opensAt = this.add12Hours(opensAt); // Adjust to PM
-//             }
-
-//             availabilityData.push({
-//               opensAt,
-//               closesAt,
-//               location,
-//               dayOfTheWeek: weekDay[day] as DayOfTheWeek,
-//             });
-//           }
-//         }
-
-//   }
