@@ -14,6 +14,7 @@ import {
   convertTimeTo24Hour,
   formatTime,
   generateSessionToken,
+  processGoogleHours,
 } from "@/lib/utils";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { errorToast, successToast } from "@/utils/toast";
@@ -184,6 +185,8 @@ export const NewRestaurantSheet = ({
     const store = useVideoStore.getState();
     const currentVideos = store.getCurrentVideos();
 
+    const availability = processGoogleHours(selectedRestaurant.workingHours);
+
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
@@ -212,30 +215,7 @@ export const NewRestaurantSheet = ({
           ...(video.isFoodVisible && { isFoodVisible: video.isFoodVisible }),
           ...(video.tags && { tags: video.tags }),
         })) ?? [],
-      openingHours: Object.entries(selectedRestaurant.workingHours ?? {}).map(
-        ([day, hours]) => {
-          if (hours[0].toLowerCase() === "24 hours") {
-            return {
-              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-              opensAt: 0,
-              closesAt: 24,
-            };
-          }
-          if (hours[0].toLowerCase().trim() === "closed") {
-            return {
-              dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-              opensAt: 0,
-              closesAt: 0,
-            };
-          }
-          const [startTime, endTime] = hours[0].split(" – ");
-          return {
-            dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
-            opensAt: convertTimeTo24Hour(startTime),
-            closesAt: convertTimeTo24Hour(endTime),
-          };
-        }
-      ),
+      openingHours: availability,
     };
 
     createAdminLocation(payload);
