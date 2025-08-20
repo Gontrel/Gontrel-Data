@@ -1,22 +1,22 @@
 "use client";
 
 import React from "react";
-import { ManagerTableTabsEnum } from "@/types";
+import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page";
 
-interface ManagerTableTabsProps {
-  activeTab: ManagerTableTabsEnum;
-  onTabChange: (tab: ManagerTableTabsEnum) => void;
-  tableTotals: Record<ManagerTableTabsEnum, number>;
+interface StaffTableTabsProps {
+  activeTab: StaffTableTabsEnum;
+  onTabChange: (tab: StaffTableTabsEnum) => void;
+  tableTotals: Record<StaffTableTabsEnum, number>;
 }
 
 /**
- * ManagerTableTabs Component
+ * StaffTableTabs Component
  */
-export function ManagerTableTabs({
+export function StaffTableTabs({
   activeTab,
   onTabChange,
   tableTotals,
-}: ManagerTableTabsProps): React.JSX.Element {
+}: StaffTableTabsProps): React.JSX.Element {
   const activeTabStyles =
     "text-blue-500 border-b-4 border-blue-500 font-semibold";
   const inactiveTabStyles = "text-gray-300 font-medium";
@@ -25,18 +25,17 @@ export function ManagerTableTabs({
     <div className="flex items-center justify-between border-b border-[#D5D5D5] mb-2.5 overflow-x-auto">
       <div className="flex items-center gap-x-7.5 min-w-0">
         {(
-          Object.keys(ManagerTableTabsEnum) as Array<
-            keyof typeof ManagerTableTabsEnum
+          Object.keys(StaffTableTabsEnum) as Array<
+            keyof typeof StaffTableTabsEnum
           >
         ).map((key) => {
-          const tabKey = ManagerTableTabsEnum[key];
+          const tabKey = StaffTableTabsEnum[key];
           const tabLabels: Record<typeof tabKey, string> = {
-            [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: "Active restaurants",
-            [ManagerTableTabsEnum.PENDING_RESTAURANTS]: "Pending restaurants",
-            [ManagerTableTabsEnum.PENDING_VIDEOS]: "Pending videos",
+            [StaffTableTabsEnum.ACTIVE_STAFF]: "Active Staff",
+            [StaffTableTabsEnum.DEACTIVATED_STAFF]: "Deactivated Staff",
           };
           const total = tableTotals[tabKey];
-          const showTotal = typeof total === "number" && total > 0;
+          const showTotal = typeof total === "number" && total >= 0; // Changed to >= 0 as 0 is a valid total
           const label = tabLabels[tabKey] ?? tabKey;
 
           return (

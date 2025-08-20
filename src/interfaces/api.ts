@@ -93,9 +93,9 @@ export interface DashboardStats {
 }
 
 export interface StaffStats {
-  totalAdmins: number;
-  totalManagers: number;
-  totalAnalysts: number;
+  active: number;
+  inactive: number;
+  all: number;
 }
 
 export interface LocationStats {

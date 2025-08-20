@@ -48,6 +48,7 @@ export const LivePostCard = ({
 
   const isFoodVisible = post?.isFoodVisible;
 
+
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden border border-[#D2D4D5] bg-white max-w-[556px] mx-auto py-6 px-8 gap-y-4.5 mt-4 relative">
       <div className="w-full overflow-hidden">

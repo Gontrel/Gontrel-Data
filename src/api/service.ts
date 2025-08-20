@@ -29,9 +29,20 @@ import {
   GetGroupedPostsSubmissionsResponse,
   FetchStaffsRequest,
   GetStaffsResponse,
-  ToggleLocation,
   GetTiktokDetailsResponse,
+  StaffStats,
+  GetAdminProfileResponse,
+  FetchStaffSummary,
+  GetStaffSummaryResponse,
+  FetchStaffActivities,
+  GetStaffActivitiesResponse,
+  FetchStaffProfile,
+  CreateAdminResponse,
 } from "@/interfaces";
+import ToggleStaffActive, {
+  CreateAdminRequest,
+  ToggleLocation,
+} from "@/interfaces/requests";
 
 export default class APIRequest {
   private authenticatedClient: AxiosInstance;
@@ -217,6 +228,13 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  createAdmin = async (
+    data: CreateAdminRequest
+  ): Promise<CreateAdminResponse> => {
+    const response = await this.authenticatedClient.post(`/create-admin`, data);
+    return this.handleResponse(response);
+  };
+
   createBulkPost = async (data: CreateBulkPostRequest) => {
     try {
       const response = await this.authenticatedClient.post(
@@ -242,7 +260,7 @@ export default class APIRequest {
       throw error;
     }
   };
-  
+
   // getPostById
   getPostById = async (data: FetchPostByIdRequest) => {
     const params = this.buildSearchParams(data);
@@ -300,6 +318,15 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  toggleStaffActive = async (data: ToggleStaffActive) => {
+    const params = this.buildSearchParams(data);
+
+    const response = await this.authenticatedClient.patch(
+      `/admin-toggle-admin-active?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
   // updatePost
   updatePost = async (data: UpdatePostRequest) => {
     const response = await this.authenticatedClient.put(`/admin-post`, data);
@@ -312,6 +339,41 @@ export default class APIRequest {
     const response = await this.authenticatedClient.get(
       `/admin-staffs?${params.toString()}`
     );
+    return this.handleResponse(response);
+  };
+
+  getStaffsAccountSummary = async (
+    data: FetchStaffSummary
+  ): Promise<GetStaffSummaryResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-account-summary?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  getStaffsActivities = async (
+    data: FetchStaffActivities
+  ): Promise<GetStaffActivitiesResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-analyst-activities?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  getStaffProfile = async (
+    data: FetchStaffProfile
+  ): Promise<GetAdminProfileResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `admin-fetch-staff?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  getStaffsStats = async (): Promise<StaffStats> => {
+    const response = await this.authenticatedClient.get(`/admin-staffs-stats`);
     return this.handleResponse(response);
   };
 

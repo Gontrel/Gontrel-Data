@@ -4,14 +4,14 @@ import { mergeClasses } from '@/lib/utils';
 import { Table } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 
-interface RestaurantTableHeaderProps<T> {
+interface TableHeaderProps<T> {
   table: Table<T>;
 }
 
 /**
  * Table header component with sortable columns
  */
-export function RestaurantTableHeader<T>({ table }: RestaurantTableHeaderProps<T>) {
+export function TableHeader<T>({ table }: TableHeaderProps<T>) {
   return (
     <thead className='bg-[#F9F9F9] border-b border-[#EBEBEB]'>
       {table.getHeaderGroups().map(headerGroup => {

@@ -11,10 +11,11 @@ export interface Admin {
   name: string;
   phoneNumber?: string;
   profileImage: string;
+  comment: string;
   email: string;
+  postCount?: number;
+  locationCount?: number;
   password?: string;
   isVerified?: boolean;
   role: AdminRoleEnum;
 }
-
-

@@ -2,21 +2,21 @@ import React, { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 // External dependencies
-import { createActiveRestaurantsColumns } from "../columns/activeRestaurantsColumns";
+import { GenericTable } from "@/components/tables/GenericTable";
+import { createActiveStaffColumns } from "../columns/activeStaffColumns";
 
 // Store and API
-import { useActiveRestaurants } from "@/hooks/useActiveRestaurants";
-import { useActiveRestaurantsStore } from "@/stores/tableStore";
+import { useActiveStaffs } from "@/hooks/useActiveStaffs";
+import { useActiveStaffsStore } from "@/stores/tableStore"; // Assuming a new store for staff tables
 
 // Types and enums
-import { ActiveRestaurantTableTypes } from "@/types/restaurant";
-import { GenericTable } from "@/components/tables/GenericTable";
+import { StaffTableTypes } from "@/types/user"; // Assuming StaffTableTypes is defined in user.ts
 
 // =============================================================================
 // TYPES & INTERFACES
 // =============================================================================
 
-interface ActiveRestaurantsProps {
+interface ActiveStaffProps {
   searchTerm: string;
   selectedAnalyst?: string;
   currentPage: number;
@@ -32,35 +32,34 @@ interface ActiveRestaurantsProps {
 // =============================================================================
 
 /**
- * Component for displaying and managing active restaurants
+ * Component for displaying and managing active staff
  */
-const ActiveRestaurants = ({
+const ActiveStaff = ({
   searchTerm,
-  selectedAnalyst,
   currentPage,
   handleCurrentPage,
   pageSize,
   handlePageSize,
   startDate,
   endDate,
-}: ActiveRestaurantsProps) => {
+}: ActiveStaffProps) => {
   // ---------------------------------------------------------------------------
   // HOOKS & STATE
   // ---------------------------------------------------------------------------
 
   const router = useRouter();
-  const { setSelectedRows } = useActiveRestaurantsStore();
+  const { setSelectedRows } = useActiveStaffsStore();
 
-  const { queryData, isLoading } = useActiveRestaurants({
+  const { queryData, isLoading } = useActiveStaffs({
     currentPage,
     pageSize,
     searchTerm,
     startDate,
     endDate,
-    adminId:
-      selectedAnalyst && selectedAnalyst !== "all"
-        ? selectedAnalyst
-        : undefined,
+    // adminId:
+    //   selectedAnalyst && selectedAnalyst !== "all"
+    //     ? selectedAnalyst
+    //     : undefined,
   });
 
   // ---------------------------------------------------------------------------
@@ -72,15 +71,15 @@ const ActiveRestaurants = ({
   // ---------------------------------------------------------------------------
 
   const handleOnRowClick = useCallback(
-    (selectedRows: ActiveRestaurantTableTypes): void => {
-      const restaurantId = selectedRows.id;
-      router.push(`/restaurants/${restaurantId}`);
+    (selectedRows: StaffTableTypes): void => {
+      const staffId = selectedRows.id;
+      router.push(`/staffs/${staffId}`); // Assuming staff details page route
     },
     [router]
   );
 
   const handleRowSelection = useCallback(
-    (selectedRows: ActiveRestaurantTableTypes[]) => {
+    (selectedRows: StaffTableTypes[]) => {
       const selectedIds = selectedRows.map((row) => row.id);
       setSelectedRows(selectedIds);
     },
@@ -91,12 +90,12 @@ const ActiveRestaurants = ({
   // COMPUTED VALUES
   // ---------------------------------------------------------------------------
 
-  const restaurants = useMemo(() => queryData?.data || [], [queryData]);
+  const staff = useMemo(() => queryData?.data || [], [queryData]);
   const paginationData = queryData?.pagination;
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
   const columns = useMemo(
-    () => createActiveRestaurantsColumns(handleOnRowClick),
+    () => createActiveStaffColumns(handleOnRowClick),
     [handleOnRowClick]
   );
 
@@ -105,8 +104,8 @@ const ActiveRestaurants = ({
   // ---------------------------------------------------------------------------
 
   return (
-    <GenericTable<ActiveRestaurantTableTypes>
-      data={restaurants}
+    <GenericTable<StaffTableTypes>
+      data={staff}
       loading={isLoading}
       onRowSelect={handleRowSelection}
       showSelection={true}
@@ -120,4 +119,4 @@ const ActiveRestaurants = ({
   );
 };
 
-export default ActiveRestaurants;
+export default ActiveStaff;

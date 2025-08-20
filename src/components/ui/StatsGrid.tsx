@@ -20,16 +20,20 @@ interface StatsGridProps {
  */
 export function StatsGrid({
   stats,
-  className = '',
-  loading = false
+  className = "lg:grid-cols-4",
+  loading = false,
 }: StatsGridProps) {
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ${className}`}>
+    <div className={`grid grid-cols-1 sm:grid-cols-2  gap-4 ${className}`}>
       {stats.map((stat, index) => (
         <StatsCard
           key={index}
           label={stat.label}
-          value={typeof stat.value === 'number' ? formatNumber(stat.value) : stat.value}
+          value={
+            typeof stat.value === "number"
+              ? formatNumber(stat.value)
+              : stat.value
+          }
           loading={loading || stat.loading}
         />
       ))}

@@ -11,7 +11,6 @@ import { trpc } from "@/lib/trpc-client";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useVideoStore } from "@/stores/videoStore";
 import {
-  convertTimeTo24Hour,
   formatTime,
   generateSessionToken,
   processGoogleHours,
@@ -20,7 +19,6 @@ import { ProgressBar } from "../Loader/ProgressiveBar";
 import { errorToast, successToast } from "@/utils/toast";
 import { TimeSlot } from "./EditWorkingHoursModal";
 import { CreateLocationRequest } from "@/interfaces/requests";
-import { DayOfTheWeek } from "@/types/enums";
 import { RestaurantData } from "@/types/restaurant";
 
 interface NewRestaurantSheetProps {
