@@ -1,5 +1,4 @@
-import { AnalystTableTabsEnum, ManagerTableTabsEnum } from "@/types/enums";
-import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page";
+import { AnalystTableTabsEnum, ManagerTableTabsEnum, StaffTableTabsEnum } from "@/types/enums";
 import { usePendingRestaurants } from "./usePendingRestaurants";
 import { usePendingVideos } from "./usePendingVideos";
 import { useActiveRestaurants } from "./useActiveRestaurants";

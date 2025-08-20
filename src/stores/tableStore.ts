@@ -4,6 +4,7 @@ import {
   ManagerTableTabsEnum,
   AnalystTableTabsEnum,
   ApprovalStatusEnum,
+  StaffTableTabsEnum,
 } from "@/types/enums";
 import {
   ActiveRestaurantTableTypes,
@@ -12,8 +13,8 @@ import {
   SubmittedRestaurantTableTypes,
   SubmittedVideoTableTypes,
 } from "@/types/restaurant";
-import { StaffTableTypes } from "@/types/user"; // Import StaffTableTypes
-import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page"; // Import StaffTableTabsEnum
+import { StaffTableTypes } from "@/types/user"; 
+
 
 export type TableType =
   | ManagerTableTabsEnum
