@@ -24,12 +24,8 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
 }) => {
   const router = useRouter();
 
-  const handlePostClick = useCallback(
-    (restaurantId: string) => {
-      // router.replace(`/restaurants/${restaurantId}`);
-    },
-    [router]
-  );
+  const handlePostClick = useCallback(() => {
+  }, []);
 
   const handleRestaurantClick = useCallback(
     (restaurantId: string) => {
@@ -40,7 +36,6 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
 
   const handleRestaurantClick2 = useCallback((restaurantId: string) => {
     console.log("Restaurant ID:", restaurantId);
-    // router.replace(`/restaurants/${restaurantId}`);
   }, []);
 
   return (
@@ -115,7 +110,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
           <div className="flex gap-4 mt-2">
             <button
               className="text-[#2E3032] text-lg font-medium mt-2 flex items-center gap-1 mr-[10px] hover:cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
-              onClick={() => handlePostClick(restaurant?.id)}
+              onClick={handlePostClick}
             >
               View video <Icon name="externalLinkIcon" width={14} height={14} />
             </button>

@@ -22,6 +22,7 @@ export const useAuthStore = create<AuthStore>()(
             phoneNumber: user.phoneNumber,
             profileImage: user.profileImage,
             email: user.email,
+            comment: user?.comment,
             isVerified: user.isVerified,
             role: user.role,
           },

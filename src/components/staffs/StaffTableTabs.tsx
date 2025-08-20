@@ -1,7 +1,7 @@
 "use client";
 
+import { StaffTableTabsEnum } from "@/types";
 import React from "react";
-import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page";
 
 interface StaffTableTabsProps {
   activeTab: StaffTableTabsEnum;

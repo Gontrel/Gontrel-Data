@@ -1,7 +1,7 @@
 import React from "react";
-import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page";
 import ActiveStaff from "./tables/ActiveStaff";
 import DeactivatedStaff from "./tables/DeactivatedStaff";
+import { StaffTableTabsEnum } from "@/types";
 
 /**
  * Props for StaffTableContent component

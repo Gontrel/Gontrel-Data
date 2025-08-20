@@ -2,27 +2,18 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { type DateRangeValue, rangeToYmd } from "@/utils/dateRange";
-import { AdminRoleEnum } from "@/types/enums";
+import { AdminRoleEnum, StaffTableTabsEnum } from "@/types/enums";
 import { useCurrentUser } from "@/stores/authStore";
 import { useTabState } from "@/hooks/useTabState";
 import { useTableTotals } from "@/hooks/useTableTotals";
 import { StatsGrid } from "@/components/ui/StatsGrid";
-import { StaffTableTabs } from "@/components/staffs/StaffTableTabs"; // Import StaffTableTabs
-import { StaffActionPanel } from "@/components/staffs/StaffActionPanel"; // Import StaffActionPanel
+import { StaffTableTabs } from "@/components/staffs/StaffTableTabs";
+import { StaffActionPanel } from "@/components/staffs/StaffActionPanel";
 import { StaffTableContent } from "@/components/staffs/StaffTableContent";
 import AddStaffModal from "@/components/modals/AddStaffModal";
 import { trpc } from "@/lib/trpc-client";
 import { StatsData } from "@/types";
 
-// Define new enums for staff table tabs
-export enum StaffTableTabsEnum {
-  ACTIVE_STAFF = "activeStaffs",
-  DEACTIVATED_STAFF = "deactivatedStaffs",
-}
-
-/**
- * Staffs Page Component
- */
 export default function StaffsPage() {
   const currentUser = useCurrentUser();
 
@@ -41,7 +32,6 @@ export default function StaffsPage() {
 
   const { data: dataStats } = trpc.staffs.getStaffsStats.useQuery();
 
-  // Use custom hook for tab-specific state management
   const {
     tabStates,
     updateTabSearchTerm,

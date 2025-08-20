@@ -1,9 +1,8 @@
 import { useState, useCallback } from "react";
 import { type DateRangeValue } from "@/utils/dateRange";
-import { AnalystTableTabsEnum, ManagerTableTabsEnum } from "@/types/enums";
+import { AnalystTableTabsEnum, ManagerTableTabsEnum, StaffTableTabsEnum } from "@/types/enums";
 import { useIsAnalyst } from "@/stores/authStore";
 import { TabState } from "@/interfaces";
-import { StaffTableTabsEnum } from "@/app/(admin)/staffs/page";
 
 /**
  * Custom hook to manage tab-specific state

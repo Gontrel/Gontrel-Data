@@ -1,15 +1,20 @@
 export enum AdminRoleEnum {
-  ADMIN = 'admin',
-  SUPER_ADMIN = 'super_admin',
-  ANALYST = 'analyst',
-  MANAGER = 'manager',
-  USER = 'user',
+  ADMIN = "admin",
+  SUPER_ADMIN = "super_admin",
+  ANALYST = "analyst",
+  MANAGER = "manager",
+  USER = "user",
 }
 
 export enum ApprovalStatusEnum {
   PENDING = "pending",
   APPROVED = "approved",
   REJECTED = "rejected",
+}
+
+export enum StaffTableTabsEnum {
+  ACTIVE_STAFF = "activeStaffs",
+  DEACTIVATED_STAFF = "deactivatedStaffs",
 }
 
 export enum ApprovalType {
@@ -24,11 +29,6 @@ export enum ManagerTableTabsEnum {
   ACTIVE_RESTAURANTS = "activeRestaurants",
   PENDING_RESTAURANTS = "pendingRestaurants",
   PENDING_VIDEOS = "pendingVideos",
-}
-
-export enum StaffTableTabsEnum {
-  ACTIVE_STAFF = "activeStaff",
-  DEACTIVATED_STAFF = "deactivatedStaff",
 }
 
 export enum AnalystTableTabsEnum {
