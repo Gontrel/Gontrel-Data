@@ -9,7 +9,6 @@ import { PAGE_SIZE } from "@/constants";
 import { AuditLog } from "@/interfaces";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
-import { is } from "date-fns/locale";
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
 
 const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
@@ -26,7 +25,6 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const {
     data: staffProfileData,
     refetch: refetchStaffProfile,
-    isLoading: isLoadingStaffProfile,
   } = trpc.staffs.getStaffProfile.useQuery({
     adminId: staffId,
   });
@@ -34,7 +32,6 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const {
     data: staffAccountSummaryData,
     refetch: refetchStaffAccountSummary,
-    isLoading: isLoadingStaffAccountSummary,
   } = trpc.staffs.getStaffsAccountSummary.useQuery(
     {
       adminId: staffId,
@@ -43,7 +40,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   );
 
   const { mutate } = trpc.staffs.toggleStaffStatus.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       successToast("Staff status updated successfully");
     },
     onError: (error) => {

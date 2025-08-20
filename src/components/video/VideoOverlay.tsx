@@ -56,7 +56,7 @@ export const VideoOverlay = ({
 
             <div className="flex items-center gap-2">
               <Icon name="tiktokIcon" width={30} height={30} />
-              {/* <span className="text-sm">{tiktokUsername ?? ""}</span> */}
+              <span className="text-sm">{tiktokUsername ?? ""}</span>
             </div>
           </div>
           <CTAButtons

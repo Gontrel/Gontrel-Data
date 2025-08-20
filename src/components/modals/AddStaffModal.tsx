@@ -34,7 +34,7 @@ const AddStaffModal: React.FC<NewStaffSheetProps> = ({
     role: "",
   });
 
-  const { mutate: createAdmin, isPending: isLoading } =
+  const { mutate: createAdmin, } =
     trpc.auth.createAdmin.useMutation({
       onSuccess: () => {
         successToast("Admin created successfully!");

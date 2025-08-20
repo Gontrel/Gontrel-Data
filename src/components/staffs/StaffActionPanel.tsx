@@ -34,8 +34,8 @@ export const StaffActionPanel: React.FC<StaffActionPanelProps> = ({
           selectedDateRange={selectedDateRange}
           onDateRangeChange={onDateRangeChange}
           selectedUser={""}
-          onUserChange={function (user: string): void {
-            throw new Error("Function not implemented.");
+          onUserChange={function (error: string): void {
+            throw new Error(`Function not implemented. ${error}`);
           }}
         />
       </div>

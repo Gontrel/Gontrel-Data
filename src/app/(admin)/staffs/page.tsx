@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { type DateRangeValue, rangeToYmd } from "@/utils/dateRange";
 import { AdminRoleEnum } from "@/types/enums";
 import { useCurrentUser } from "@/stores/authStore";
-import { useAnalystOptions } from "@/hooks/useAnalysts";
 import { useTabState } from "@/hooks/useTabState";
 import { useTableTotals } from "@/hooks/useTableTotals";
 import { StatsGrid } from "@/components/ui/StatsGrid";
@@ -26,10 +25,9 @@ export enum StaffTableTabsEnum {
  */
 export default function StaffsPage() {
   const currentUser = useCurrentUser();
-  
+
   const [view, setView] = useState<AdminRoleEnum | null>(null);
   const [showAddStaffModal, setShowAddStaffModal] = useState(false);
-  const { options: analystOptions } = useAnalystOptions();
 
   const initialTab: StaffTableTabsEnum = StaffTableTabsEnum.ACTIVE_STAFF;
 
@@ -47,7 +45,6 @@ export default function StaffsPage() {
   const {
     tabStates,
     updateTabSearchTerm,
-    updateTabAnalyst,
     updateTabDateRange,
     updateTabPage,
     updateTabPageSize,
@@ -99,12 +96,12 @@ export default function StaffsPage() {
   /**
    * Handles analyst filter changes for the active tab
    */
-  const handleAnalystChange = useCallback(
-    (analyst: string) => {
-      updateTabAnalyst(activeTab, analyst);
-    },
-    [activeTab, updateTabAnalyst]
-  );
+  // const handleAnalystChange = useCallback(
+  //   (analyst: string) => {
+  //     updateTabAnalyst(activeTab, analyst);
+  //   },
+  //   [activeTab, updateTabAnalyst]
+  // );
 
   /**
    * Handles time period filter changes for the active tab

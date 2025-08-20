@@ -8,8 +8,6 @@ import {
   fetchStaffsSchema,
   staffIdSchema,
 } from "./schemas";
-import { StaffTableTypes } from "@/types/user";
-import { AdminRoleEnum } from "@/types/enums"; // Import AdminRoleEnum
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {

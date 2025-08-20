@@ -4,7 +4,6 @@ import {
   IPaginatedRes,
   ApiLocation,
   DashboardStats,
-  StaffStats,
   LocationStats,
   Videos,
 } from "./api";

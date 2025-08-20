@@ -411,6 +411,7 @@ const parseTime = (timeStr: string): number => {
   // Handle AM/PM format (e.g., "9:30 PM")
   const ampmMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
   if (ampmMatch) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, hourStr, minuteStr, period] = ampmMatch;
     let hour = parseInt(hourStr, 10);
     const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
@@ -424,6 +425,7 @@ const parseTime = (timeStr: string): number => {
   // Handle 24-hour format (e.g., "13:30")
   const twentyFourHourMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?$/);
   if (twentyFourHourMatch) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, hourStr, minuteStr] = twentyFourHourMatch;
     const hour = parseInt(hourStr, 10);
     const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;

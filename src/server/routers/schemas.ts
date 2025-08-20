@@ -1,5 +1,4 @@
 import {
-  AdminRoleEnum,
   ApprovalStatusEnum,
   ApprovalType,
   DayOfTheWeek,

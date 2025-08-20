@@ -36,7 +36,6 @@ interface ActiveStaffProps {
  */
 const ActiveStaff = ({
   searchTerm,
-  selectedAnalyst,
   currentPage,
   handleCurrentPage,
   pageSize,
