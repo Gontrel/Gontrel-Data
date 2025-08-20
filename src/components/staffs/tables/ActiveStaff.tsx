@@ -3,14 +3,14 @@ import { useRouter } from "next/navigation";
 
 // External dependencies
 import { GenericTable } from "@/components/tables/GenericTable";
-import { createActiveStaffColumns } from "../columns/activeStaffColumns";
+import { createActiveStaffColumns } from "../column/activeStaffColumns";
 
 // Store and API
 import { useActiveStaffs } from "@/hooks/useActiveStaffs";
-import { useActiveStaffsStore } from "@/stores/tableStore"; // Assuming a new store for staff tables
+import { useActiveStaffsStore } from "@/stores/tableStore";
 
 // Types and enums
-import { StaffTableTypes } from "@/types/user"; // Assuming StaffTableTypes is defined in user.ts
+import { StaffTableTypes } from "@/types/user";
 
 // =============================================================================
 // TYPES & INTERFACES

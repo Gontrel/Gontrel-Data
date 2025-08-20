@@ -3,14 +3,14 @@ import { useRouter } from "next/navigation";
 
 // External dependencies
 import { GenericTable } from "@/components/tables/GenericTable";
-import { createDeactivatedStaffColumns } from "../columns/deactivatedStaffColumns";
+import { createDeactivatedStaffColumns } from "../column/deactivatedStaffColumns";
 
 // Store and API
 import { useDeactivatedStaffs } from "@/hooks/useDeactivatedStaffs";
-import { useDeactivatedStaffsStore } from "@/stores/tableStore"; // Assuming a new store for staff tables
+import { useDeactivatedStaffsStore } from "@/stores/tableStore";
 
 // Types and enums
-import { StaffTableTypes } from "@/types/user"; // Assuming StaffTableTypes is defined in user.ts
+import { StaffTableTypes } from "@/types/user";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -36,7 +36,6 @@ interface DeactivatedStaffProps {
  */
 const DeactivatedStaff = ({
   searchTerm,
-  selectedAnalyst,
   currentPage,
   handleCurrentPage,
   pageSize,
