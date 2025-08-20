@@ -29,7 +29,7 @@ export const useActiveStaffs = ({
     query: searchTerm,
     startDate,
     endDate,
-    status: "active", // Filter for active staff
+    isActive: true,
   });
 
   return {

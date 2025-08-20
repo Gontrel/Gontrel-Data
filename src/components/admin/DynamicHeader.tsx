@@ -53,12 +53,30 @@ const headerConfigs: Record<string, HeaderConfig> = {
     description: "",
     showBackButton: true,
   },
+  "/staffs/**": {
+    title: "Back",
+    description: "",
+    showBackButton: true,
+  },
+  "/users/**": {
+    title: "Back",
+    description: "",
+    showBackButton: true,
+  },
+  "/settings/**": {
+    title: "Back",
+    description: "",
+    showBackButton: true,
+  },
 };
 
 const getConfigForPath = (path: string): HeaderConfig => {
   if (headerConfigs[path]) return headerConfigs[path];
 
   if (path.startsWith("/restaurants/")) return headerConfigs["/restaurants/**"];
+  if (path.startsWith("/staffs/")) return headerConfigs["/staffs/**"];
+  if (path.startsWith("/users/")) return headerConfigs["/users/**"];
+  if (path.startsWith("/settings/")) return headerConfigs["/settings/**"];
 
   return {
     title: "Admin",
@@ -83,9 +101,9 @@ export function DynamicHeader() {
 
   const routeConfig = getConfigForPath(pathname);
 
-  const title = zustandTitle ?? routeConfig.title;
-  const description = zustandDesc ?? routeConfig.description;
-  const showBackButton = zustandBackButton ?? routeConfig.showBackButton;
+  const title = zustandTitle ?? routeConfig?.title;
+  const description = zustandDesc ?? routeConfig?.description;
+  const showBackButton = zustandBackButton ?? routeConfig?.showBackButton;
 
   useEffect(() => reset(), [pathname, reset]);
 
@@ -122,7 +140,7 @@ export function DynamicHeader() {
       </div>
 
       <div className="flex items-center gap-6">
-        {isAdmin && showBackButton && (
+        {isAdmin && showBackButton && title.includes("restaurants") && (
           <Button
             onClick={() => setConfirmationModalOpen(true)}
             className={cn(

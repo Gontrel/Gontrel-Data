@@ -1,9 +1,9 @@
-import { SearchBar } from '../admin/SearchBar';
-import { AddRestaurantButton } from './AddRestaurantButton';
-import { FilterDropdowns } from '../admin/FilterDropdowns';
-import { type DateRangeValue } from '@/utils/dateRange';
-import { useAnalystOptions } from '@/hooks/useAnalysts';
-import { useMemo } from 'react';
+import { SearchBar } from "../admin/SearchBar";
+import { AddRestaurantButton } from "./AddRestaurantButton";
+import { FilterDropdowns } from "../admin/FilterDropdowns";
+import { type DateRangeValue } from "@/utils/dateRange";
+import { useAnalystOptions } from "@/hooks/useAnalysts";
+import { useMemo } from "react";
 
 /**
  * Props for SearchAndActions component
@@ -30,20 +30,21 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   searchTerm,
   onSearchChange,
   onAddRestaurant,
-  searchPlaceholder = 'Search using name or location',
-  selectedAnalyst = 'all',
+  searchPlaceholder = "Search using name or location",
+  selectedAnalyst = "all",
   onAnalystChange = () => {},
   selectedDateRange,
   onDateRangeChange,
   showFilters = true,
   analystOptions = [],
 }) => {
-
   const { options: fetchedAnalystOptions } = useAnalystOptions();
 
   const mergedAnalystOptions = useMemo(() => {
     // prefer server-fetched options; fallback to provided ones
-    return (fetchedAnalystOptions.length > 0 ? fetchedAnalystOptions : analystOptions) as Array<{
+    return (
+      fetchedAnalystOptions.length > 0 ? fetchedAnalystOptions : analystOptions
+    ) as Array<{
       value: string;
       label: string;
     }>;
@@ -59,15 +60,14 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
         />
         {showFilters && (
           <FilterDropdowns
-            selectedAnalyst={selectedAnalyst}
-            onAnalystChange={onAnalystChange}
+            selectedUser={selectedAnalyst}
+            onUserChange={onAnalystChange}
             selectedDateRange={selectedDateRange}
             onDateRangeChange={onDateRangeChange}
-            analystOptions={mergedAnalystOptions}
+            usersOptions={mergedAnalystOptions}
           />
         )}
       </div>
-
 
       <div className="flex items-center w-full sm:w-auto">
         <AddRestaurantButton onClick={onAddRestaurant} />

@@ -8,9 +8,7 @@ interface UseDeactivatedStaffsProps {
   endDate?: string;
 }
 
-/**
- * Custom hook for managing deactivated staffs data fetching
- */
+
 export const useDeactivatedStaffs = ({
   currentPage,
   pageSize,
@@ -29,7 +27,7 @@ export const useDeactivatedStaffs = ({
     query: searchTerm,
     startDate,
     endDate,
-    status: "deactivated", // Filter for deactivated staff
+    isActive: false, 
   });
 
   return {

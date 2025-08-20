@@ -1,7 +1,7 @@
 "use client";
 
 import { Sheet } from "@/components/modals/Sheet";
-import { Input } from "@/components/ui/Input";
+import { InputTag } from "@/components/ui/Input";
 import { Search } from "lucide-react";
 
 interface AddRestaurantSheetProps {
@@ -32,7 +32,7 @@ export const AddRestaurantSheet = ({
             <label className="text-sm font-medium">Restaurant name</label>
             <div className="relative mt-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <Input placeholder="Search for a restaurant" className="pl-10" />
+              <InputTag placeholder="Search for a restaurant" className="pl-10" />
             </div>
           </div>
         </div>

@@ -23,11 +23,9 @@ import { useHeaderStore } from "@/stores/headerStore";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { EditVideo } from "@/components/modals/EditPostModal";
-import { formatRestaurantTime } from "@/lib/utils";
 import { RestaurantInfoCard } from "@/components/restaurants/details/RestaurantInfoCard";
 import { AccountSummary } from "@/components/restaurants/details/AccountSummary";
-
-const PAGE_SIZE = 10;
+import { PAGE_SIZE } from "@/constants";
 
 interface IPostMeta {
   pendingCount: number;
@@ -368,9 +366,9 @@ const RestaurantDetailsPage = ({
           <RestaurantInfoCard restaurant={restaurant} isActive={isActive} />
           {/* Account Summary Card */}
           <AccountSummary
-            totalPosts={restaurant?.summary?.totalPosts}
-            tiktokPosts={restaurant?.summary?.tiktokPosts}
-            userPosts={restaurant?.summary?.userPosts}
+            totalPosts={restaurant?.summary?.totalPosts ?? 0}
+            tiktokPosts={restaurant?.summary?.tiktokPosts ?? 0}
+            userPosts={restaurant?.summary?.userPosts ?? 0}
           />
         </div>
 

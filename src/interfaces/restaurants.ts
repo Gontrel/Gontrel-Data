@@ -110,6 +110,7 @@ export interface Location {
   updatedBy: string | null;
   firebaseId: string | null;
   address: Address;
+  image?: string;
   lat: number;
   lng: number;
   menu: Menu;
@@ -169,4 +170,19 @@ export interface TabState {
   dateRange: DateRangeValue | undefined;
   currentPage: number;
   pageSize: number;
+}
+
+export interface AuditLog {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string;
+  action: string;
+  content: string;
+  type: "POST" | "LOCATION";
+  adminPost: Post;
+  adminLocation: Location;
 }

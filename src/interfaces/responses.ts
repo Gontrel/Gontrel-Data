@@ -1,4 +1,4 @@
-import { ApprovalStatusEnum, ApprovalType } from "@/types";
+import { AdminRoleEnum, ApprovalStatusEnum, ApprovalType } from "@/types";
 import { Admin } from "./user";
 import {
   IPaginatedRes,
@@ -11,6 +11,7 @@ import {
 import { Post, Tag } from "./posts";
 import {
   Address,
+  AuditLog,
   Location,
   Menu,
   OpeningHour,
@@ -146,13 +147,29 @@ export interface DeletePostResponse {
 // Staff management responses
 export type GetStaffsResponse = IPaginatedRes<Admin>;
 
-export interface GetStaffStatsResponse {
-  stats: StaffStats;
-}
-
 // Dashboard responses
 export interface GetDashboardDataResponse {
   stats: DashboardStats;
+}
+
+export interface GetStaffSummaryResponse {
+  totalLocations: number;
+  approvedLocations: number;
+  totalPosts: number;
+  approvedPosts: number;
+}
+
+export interface GetAdminProfileResponse {
+  id: string;
+  email: string;
+  phoneNumber?: string;
+  name: string;
+  address?: string;
+  role: string;
+  isVerified: boolean;
+  isActive: boolean;
+  profileImage: string;
+  createdAt?: string;
 }
 
 // External service responses
@@ -296,4 +313,20 @@ export interface GetRestaurantByIdResponse {
   status: "pending" | "approved" | "rejected" | "draft";
   posts: Post[];
   admin: Admin;
+}
+
+export interface GetStaffActivitiesResponse {
+  data: AuditLog[];
+}
+
+export interface CreateAdminResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  name?: string;
+  address?: string;
+  city?: string;
+  phoneNumber?: string;
+  profileImage?: string;
+  role: AdminRoleEnum;
 }

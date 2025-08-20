@@ -1,5 +1,8 @@
+import { FilterDropdowns } from "../admin/FilterDropdowns";
 import { SearchBar } from "../admin/SearchBar";
 import { type DateRangeValue } from "@/utils/dateRange";
+import { Button } from "../ui/Button";
+import Icon from "../svgs/Icons";
 
 interface StaffActionPanelProps {
   searchTerm: string;
@@ -27,20 +30,25 @@ export const StaffActionPanel: React.FC<StaffActionPanelProps> = ({
           placeholder={searchPlaceholder}
         />
         {/* Date range filter can be added here if needed for staff */}
-        {/* <FilterDropdowns
+        <FilterDropdowns
           selectedDateRange={selectedDateRange}
           onDateRangeChange={onDateRangeChange}
-        /> */}
+          selectedUser={""}
+          onUserChange={function (user: string): void {
+            throw new Error("Function not implemented.");
+          }}
+        />
       </div>
 
       <div className="flex items-center w-full sm:w-auto">
         {/* This will be the Add Staff Button */}
-        <button
+        <Button
           onClick={onAddStaff}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+          className="bg-[#0070F3] text-white px-[12px] py-[16px] rounded-[10px] gap-2"
         >
-          Add Staff
-        </button>
+          <Icon name="plusIcon" className="h-5 w-5 text-gray-500" />
+          <span> Add Staff</span>
+        </Button>
       </div>
     </div>
   );

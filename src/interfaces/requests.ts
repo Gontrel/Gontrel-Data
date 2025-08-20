@@ -2,24 +2,20 @@
 // ADMIN MANAGEMENT ENDPOINTS
 // ============================================================================
 
-import {
-  AdminRoleEnum,
-  ApprovalStatusEnum,
-  ApprovalType,
-  DayOfTheWeek,
-} from "@/types";
+import { ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types";
 
 /**
  * POST /create-admin
  * Creates a new admin user
  */
 export interface CreateAdminRequest {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  password: string;
+  address?: string;
+  city?: string;
   phoneNumber?: string;
-  profileImage?: string;
-  role: AdminRoleEnum; // enum values from AdminRole
+  role: string;
 }
 
 /**
@@ -223,6 +219,18 @@ export interface FetchLocationByIdRequest {
   userId?: string; // UUID
 }
 
+export interface FetchStaffSummary extends BaseQueryRequest {
+  adminId: string;
+}
+
+export interface FetchStaffActivities extends BaseQueryRequest {
+  adminId: string;
+}
+
+export interface FetchStaffProfile extends BaseQueryRequest {
+  adminId: string;
+}
+
 /**
  * POST /admin-location
  * Creates a new location
@@ -408,6 +416,9 @@ export interface LocationAvailabilityRequest {
 }
 export interface ToggleLocation {
   locationId?: string; // required
+}
+export default interface ToggleStaffActive {
+  adminId?: string;
 }
 
 /**

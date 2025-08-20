@@ -1,10 +1,11 @@
-import axios from "axios";
+import { errorToast } from "@/utils/toast";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
 const API_URL = process.env.API_BASE_URL;
 const API_KEY = process.env.API_KEY;
 
 // --- Base Client Configuration ---
-const baseConfig = {
+const baseConfig: AxiosRequestConfig = {
   baseURL: API_URL,
   timeout: 10000,
   headers: {
@@ -17,29 +18,29 @@ const baseConfig = {
 // --- Authenticated Client ---
 const axiosInstance = axios.create({
   ...baseConfig,
-  withCredentials: true,
+  withCredentials: true, 
 });
 
-axiosInstance.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response) {
-      if (error.response.status === 200) {
-        if (typeof window !== "undefined") {
-          // Redirect to login
-          window.location.href = "/";
-        }
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    if (error.response?.status === 401) {
+
+      if (typeof window !== "undefined") {
+
+        errorToast("Session expired. Please login again.");
+
+        localStorage.removeItem("authState");
+        sessionStorage.removeItem("authState");
+
+        window.location.href = "/";
       }
+
+      return Promise.reject({
+        ...error,
+        isUnauthorized: true,
+        message: "Authentication required",
+      });
     }
 
     return Promise.reject(error);

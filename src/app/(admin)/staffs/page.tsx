@@ -11,6 +11,9 @@ import { StatsGrid } from "@/components/ui/StatsGrid";
 import { StaffTableTabs } from "@/components/staffs/StaffTableTabs"; // Import StaffTableTabs
 import { StaffActionPanel } from "@/components/staffs/StaffActionPanel"; // Import StaffActionPanel
 import { StaffTableContent } from "@/components/staffs/StaffTableContent";
+import AddStaffModal from "@/components/modals/AddStaffModal";
+import { trpc } from "@/lib/trpc-client";
+import { StatsData } from "@/types";
 
 // Define new enums for staff table tabs
 export enum StaffTableTabsEnum {
@@ -23,7 +26,9 @@ export enum StaffTableTabsEnum {
  */
 export default function StaffsPage() {
   const currentUser = useCurrentUser();
+  
   const [view, setView] = useState<AdminRoleEnum | null>(null);
+  const [showAddStaffModal, setShowAddStaffModal] = useState(false);
   const { options: analystOptions } = useAnalystOptions();
 
   const initialTab: StaffTableTabsEnum = StaffTableTabsEnum.ACTIVE_STAFF;
@@ -36,6 +41,8 @@ export default function StaffsPage() {
     }
   }, [currentUser?.role, view]);
 
+  const { data: dataStats } = trpc.staffs.getStaffsStats.useQuery();
+
   // Use custom hook for tab-specific state management
   const {
     tabStates,
@@ -47,8 +54,6 @@ export default function StaffsPage() {
     getTabState,
   } = useTabState();
 
-  // Use custom hook for table totals with tab-specific state
-  // This will need to be adapted for staff totals
   const tableTotals = useTableTotals(tabStates);
 
   // Current tab's state
@@ -111,17 +116,10 @@ export default function StaffsPage() {
     [activeTab, updateTabDateRange]
   );
 
-  /**
-   * Handles add staff action
-   */
   const handleAddStaff = useCallback(() => {
-    console.log("Add staff button clicked");
-    // Implement actual add staff modal/sheet logic here
-  }, []);
+    setShowAddStaffModal(true);
+  }, [setShowAddStaffModal]);
 
-  /**
-   * Handles page change for any tab
-   */
   const handlePageChange = useCallback(
     (tab: StaffTableTabsEnum, page: number) => {
       updateTabPage(tab, page);
@@ -146,12 +144,23 @@ export default function StaffsPage() {
     setActiveTab(tab);
   }, []);
 
+  const DEFAULT_USER_STATS: StatsData[] = [
+    {
+      label: "Total active staffs",
+      value: dataStats?.active || 0,
+    },
+    {
+      label: "Total deactivated staffs",
+      value: dataStats?.inactive || 0,
+    },
+  ];
+
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
         {/* Staff Stats - Placeholder for now */}
-        <StatsGrid stats={[]} />
+        <StatsGrid className="lg:grid-cols-2" stats={DEFAULT_USER_STATS} />
 
         {/* Table Tabs */}
         <StaffTableTabs
@@ -182,6 +191,12 @@ export default function StaffsPage() {
           onPageSizeChange={handlePageSizeChange}
         />
       </div>
+
+      {/* Add Staff Modal */}
+      <AddStaffModal
+        open={showAddStaffModal}
+        onOpenChange={setShowAddStaffModal}
+      />
     </div>
   );
 }

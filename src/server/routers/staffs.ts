@@ -2,7 +2,12 @@ import { protectedProcedure, router } from "@/lib/trpc";
 import { TRPCError } from "@trpc/server";
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
-import { fetchStaffsSchema, staffIdSchema } from "./schemas";
+import {
+  fetchAdminSummarySchema,
+  fetchStaffActivitieSchema,
+  fetchStaffsSchema,
+  staffIdSchema,
+} from "./schemas";
 import { StaffTableTypes } from "@/types/user";
 import { AdminRoleEnum } from "@/types/enums"; // Import AdminRoleEnum
 
@@ -28,93 +33,72 @@ export const staffsRouter = router({
     .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        // In a real application, you would fetch staff data from your backend API
-        // based on the `input` (e.g., pagination, search term, status).
-        // For now, we'll return mock data.
+        const response = await apiRequest.getStaffs(input);
 
-        const mockStaffs: StaffTableTypes[] = [
-          {
-            id: "1",
-            name: "Alice Smith",
-            email: "alice.smith@example.com",
-            role: AdminRoleEnum.ANALYST, // Corrected to use enum
-            phone: "+1234567890",
-            address: "123 Main St, Anytown, USA",
-            status: "active",
-          },
-          {
-            id: "2",
-            name: "Bob Johnson",
-            email: "bob.johnson@example.com",
-            role: AdminRoleEnum.MANAGER, // Corrected to use enum
-            phone: "+1987654321",
-            address: "456 Oak Ave, Anytown, USA",
-            status: "deactivated",
-          },
-          {
-            id: "3",
-            name: "Charlie Brown",
-            email: "charlie.brown@example.com",
-            role: AdminRoleEnum.ANALYST, // Corrected to use enum
-            phone: "+1122334455",
-            address: "789 Pine Ln, Anytown, USA",
-            status: "active",
-          },
-          {
-            id: "4",
-            name: "Diana Prince",
-            email: "diana.prince@example.com",
-            role: AdminRoleEnum.MANAGER, // Corrected to use enum
-            phone: "+1555666777",
-            address: "101 Hero St, Anytown, USA",
-            status: "active",
-          },
-          {
-            id: "5",
-            name: "Eve Adams",
-            email: "eve.adams@example.com",
-            role: AdminRoleEnum.ANALYST, // Corrected to use enum
-            phone: "+1222333444",
-            address: "202 Side Rd, Anytown, USA",
-            status: "deactivated",
-          },
-        ];
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
 
-        let filteredStaffs = mockStaffs;
+  getStaffsStats: protectedProcedure.query(async ({ ctx }) => {
+    const apiRequest = new APIRequest(ctx.req.headers);
+    try {
+      const response = await apiRequest.getStaffsStats();
+      return response;
+    } catch (error) {
+      const message = getErrorMessage(error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message,
+      });
+    }
+  }),
 
-        if (input.status) {
-          filteredStaffs = filteredStaffs.filter(
-            (staff) => staff.status === input.status
-          );
-        }
+  getStaffProfile: protectedProcedure
+    .input(staffIdSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.getStaffProfile(input);
 
-        if (input.query) {
-          const searchTerm = input.query.toLowerCase();
-          filteredStaffs = filteredStaffs.filter(
-            (staff) =>
-              staff.name.toLowerCase().includes(searchTerm) ||
-              staff.email.toLowerCase().includes(searchTerm)
-          );
-        }
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
 
-        const pageNumber = input.pageNumber || 1;
-        const quantity = input.quantity || 10;
-        const total = filteredStaffs.length;
-        const totalPages = Math.ceil(total / quantity);
-        const startIndex = (pageNumber - 1) * quantity;
-        const endIndex = startIndex + quantity;
+  getStaffsAccountSummary: protectedProcedure
+    .input(fetchAdminSummarySchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.getStaffsAccountSummary(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
 
-        const paginatedStaffs = filteredStaffs.slice(startIndex, endIndex);
-
-        return {
-          data: paginatedStaffs,
-          pagination: {
-            currentPage: pageNumber,
-            pageSize: quantity,
-            total,
-            totalPages,
-          },
-        };
+  getStaffActivities: protectedProcedure
+    .input(fetchStaffActivitieSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.getStaffsActivities(input);
+        return response;
       } catch (error) {
         const message = getErrorMessage(error);
         throw new TRPCError({
@@ -129,9 +113,11 @@ export const staffsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        // In a real application, you would call your backend API to toggle staff status
-        console.log(`Toggling status for staff ID: ${input.staffId}`);
-        return { success: true };
+        const response = await apiRequest.toggleStaffActive({
+          adminId: input.adminId,
+        });
+
+        return response;
       } catch (error) {
         const message = getErrorMessage(error);
         throw new TRPCError({
