@@ -104,8 +104,8 @@ export type GetUserPostsResponse = IPaginatedRes<{
     name: string;
     address: Address;
     createdAt: string;
-    website: string,
-    mapLink: string ,
+    website: string;
+    mapLink: string;
   };
   postCount: number;
   submission: {
@@ -114,7 +114,6 @@ export type GetUserPostsResponse = IPaginatedRes<{
   };
   videos: Post[];
 }>;
-
 
 export type GetGroupedPostsResponse = IPaginatedRes<
   {
@@ -339,17 +338,16 @@ export interface GetRestaurantByIdResponse {
 }
 
 export enum ActivityType {
-  UNKNOWN = 'UNKNOWN',
-  POST = 'POST',
-  LOCATION = 'LOCATION',
-  APPROVAL = 'APPROVAL',
-  INTENT = 'INTENT',
-  PASSWORD = 'PASSWORD',
+  UNKNOWN = "UNKNOWN",
+  POST = "POST",
+  LOCATION = "LOCATION",
+  APPROVAL = "APPROVAL",
+  INTENT = "INTENT",
+  PASSWORD = "PASSWORD",
 }
 
-export interface ActivityResponse extends IPaginatedRes<AuditLog> {}
 
-export interface GetStaffsResponse extends IPaginatedRes<Admin> {}
+export type GetStaffsResponse = IPaginatedRes<Admin>;
 
 export interface GetStaffActivitiesResponse {
   data: AuditLog[];
