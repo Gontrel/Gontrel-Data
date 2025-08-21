@@ -166,7 +166,7 @@ export const TableVideoPreviewSheet = ({
       onOpenChange={onOpenChange}
       side="right"
       width="w-[604px]"
-      className="bg-white p-0 overflow-y-auto"
+      className="bg-white overflow-y-auto"
     >
       <TableVideoPreviewSheetHeader onOpenChange={onOpenChange} posts={posts} />
       <TableVideoPreviewSheetContent
