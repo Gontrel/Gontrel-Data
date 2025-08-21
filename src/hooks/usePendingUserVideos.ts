@@ -32,7 +32,6 @@ export const usePendingUserVideos = ({
     sortOrder: "DESC",
     startDate,
     endDate,
-    userId,
   });
   return { queryData, isLoading, error, refetch };
 };
