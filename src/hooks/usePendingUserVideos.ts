@@ -7,7 +7,7 @@ interface UsePendingUserVideosProps {
   searchTerm?: string;
   startDate?: string;
   endDate?: string;
-  adminId?: string;
+  userId?: string;
 }
 
 export const usePendingUserVideos = ({
@@ -16,7 +16,7 @@ export const usePendingUserVideos = ({
   searchTerm,
   startDate,
   endDate,
-  adminId,
+  userId,
 }: UsePendingUserVideosProps) => {
   const {
     data: queryData,
@@ -32,7 +32,7 @@ export const usePendingUserVideos = ({
     sortOrder: "DESC",
     startDate,
     endDate,
-    adminId,
+    userId,
   });
   return { queryData, isLoading, error, refetch };
 };

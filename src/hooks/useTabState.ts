@@ -26,6 +26,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: {
       searchTerm: "",
@@ -34,6 +35,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: {
       searchTerm: "",
@@ -42,6 +44,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [ManagerTableTabsEnum.PENDING_VIDEOS]: {
       searchTerm: "",
@@ -50,6 +53,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: {
       searchTerm: "",
@@ -58,6 +62,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: {
       searchTerm: "",
@@ -66,6 +71,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [StaffTableTabsEnum.ACTIVE_STAFF]: {
       searchTerm: "",
@@ -74,6 +80,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: {
       searchTerm: "",
@@ -82,6 +89,7 @@ export const useTabState = () => {
       dateRange: undefined,
       currentPage: 1,
       pageSize: 10,
+      user: "",
     },
   });
 
@@ -118,6 +126,25 @@ export const useTabState = () => {
         [tab]: {
           ...prev[tab],
           selectedAnalyst: analyst,
+          currentPage: 1,
+        },
+      }));
+    },
+    []
+  );
+  /**
+   * Update user filter for a specific tab
+   */
+  const updateTabUser = useCallback(
+    (
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      user: string
+    ) => {
+      setTabStates((prev) => ({
+        ...prev,
+        [tab]: {
+          ...prev[tab],
+          user: user,
           currentPage: 1,
         },
       }));
@@ -242,6 +269,7 @@ export const useTabState = () => {
           dateRange: undefined,
           currentPage: 1,
           pageSize: 10,
+          user: "",
         },
       }));
     },
@@ -260,6 +288,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [ManagerTableTabsEnum.PENDING_RESTAURANTS]: {
         searchTerm: "",
@@ -268,6 +297,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [ManagerTableTabsEnum.PENDING_VIDEOS]: {
         searchTerm: "",
@@ -276,6 +306,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: {
         searchTerm: "",
@@ -284,6 +315,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: {
         searchTerm: "",
@@ -292,6 +324,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: {
         searchTerm: "",
@@ -300,6 +333,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [StaffTableTabsEnum.ACTIVE_STAFF]: {
         searchTerm: "",
@@ -308,6 +342,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
       [StaffTableTabsEnum.DEACTIVATED_STAFF]: {
         searchTerm: "",
@@ -316,6 +351,7 @@ export const useTabState = () => {
         dateRange: undefined,
         currentPage: 1,
         pageSize: 10,
+        user: "",
       },
     });
   }, [isAnalyst]);
@@ -324,6 +360,7 @@ export const useTabState = () => {
     tabStates,
     updateTabSearchTerm,
     updateTabAnalyst,
+    updateTabUser,
     updateTabTimePeriod,
     updateTabDateRange,
     updateTabPage,

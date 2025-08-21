@@ -1,5 +1,5 @@
 import { AdminRoleEnum, ApprovalStatusEnum, ApprovalType } from "@/types";
-import { Admin } from "./user";
+import { Admin, User } from "./user";
 import {
   IPaginatedRes,
   ApiLocation,
@@ -346,8 +346,8 @@ export enum ActivityType {
   PASSWORD = "PASSWORD",
 }
 
-
 export type GetStaffsResponse = IPaginatedRes<Admin>;
+export type GetUserResponse = IPaginatedRes<User>;
 
 export interface GetStaffActivitiesResponse {
   data: AuditLog[];

@@ -29,7 +29,7 @@ export const LivePostCard = ({
   post,
   RestaurantDetailsFlow = false,
 }: LivePostCardProps) => {
-  const isUser = post.admin?.role === AdminRoleEnum.USER;
+  const isUser = post.source === AdminRoleEnum.USER;
   const showEditAndDelete =
     RestaurantDetailsFlow && post.status === ApprovalStatusEnum.APPROVED;
 
@@ -47,7 +47,6 @@ export const LivePostCard = ({
   };
 
   const isFoodVisible = post?.isFoodVisible;
-
 
   return (
     <div className="flex flex-col rounded-2xl overflow-hidden border border-[#D2D4D5] bg-white max-w-[556px] mx-auto py-6 px-8 gap-y-4.5 mt-4 relative">
@@ -67,10 +66,10 @@ export const LivePostCard = ({
       <div className="flex flex-wrap gap-2 w-full">
         {post?.tags?.map((tag) => (
           <span
-            key={tag.id}
+            key={tag?.id}
             className="bg-[#F0F1F2] text-[#2E3032] text-xs font-medium px-3 py-[10px] rounded-[10px] whitespace-nowrap flex-shrink-0"
           >
-            {tag.name}
+            {tag?.name}
           </span>
         ))}
       </div>
@@ -90,9 +89,12 @@ export const LivePostCard = ({
         <p>
           Uploaded by:{" "}
           {isUser ? (
-            <span> {post.admin?.name} (User) </span>
+            <span className="flex flex-wrap mr-2">
+              {" "}
+              {post.user?.displayName} (User){" "}
+            </span>
           ) : (
-            <span> {post.admin?.name}</span>
+            <span className="flex flex-wrap mr-2"> {post.admin?.name}</span>
           )}{" "}
         </p>
         <p className="ml-auto">{}</p>

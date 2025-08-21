@@ -34,6 +34,7 @@ import { createPendingUserVideosColumns } from "../columns/pendingUserVideosColu
 interface PendingUserVideosProps {
   searchTerm: string;
   selectedAnalyst?: string;
+  selectedUser?: string;
   currentPage: number;
   pageSize: number;
   handleCurrentPage: (page: number) => void;
@@ -48,7 +49,7 @@ interface PendingUserVideosProps {
 
 const PendingUserVideos = ({
   searchTerm,
-  selectedAnalyst,
+  selectedUser,
   currentPage,
   pageSize,
   handleCurrentPage,
@@ -75,12 +76,9 @@ const PendingUserVideos = ({
     searchTerm,
     startDate,
     endDate,
-    adminId:
-      selectedAnalyst && selectedAnalyst !== "all"
-        ? selectedAnalyst
-        : undefined,
+    userId: selectedUser !== "all" ? selectedUser : undefined,
   });
-
+  
   // ---------------------------------------------------------------------------
   // MUTATIONS
   // ---------------------------------------------------------------------------

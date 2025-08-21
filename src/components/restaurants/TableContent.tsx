@@ -14,6 +14,7 @@ interface TableContentProps {
   activeTab: ManagerTableTabsEnum | AnalystTableTabsEnum;
   searchTerm: string;
   selectedAnalyst?: string;
+  user?: string;
   startDate?: string;
   endDate?: string;
   tablePageNumbers: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, number>;
@@ -35,6 +36,7 @@ export const TableContent: React.FC<TableContentProps> = ({
   activeTab,
   searchTerm,
   selectedAnalyst,
+  user,
   startDate,
   endDate,
   tablePageNumbers,
@@ -110,7 +112,7 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <PendingUserVideos
             searchTerm={searchTerm}
-            selectedAnalyst={selectedAnalyst}
+            selectedUser={user}
             startDate={startDate}
             endDate={endDate}
             currentPage={

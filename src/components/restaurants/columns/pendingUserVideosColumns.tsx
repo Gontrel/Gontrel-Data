@@ -83,7 +83,7 @@ export const createPendingUserVideosColumns = (
     accessorKey: "addedBy",
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {
-      const addedBy = row.original.user.name;
+      const addedBy = row.original.user?.name;
       return (
         <div className="flex items-center w-full gap-2 px-2 py-1 text-left">
           <Image
@@ -93,7 +93,7 @@ export const createPendingUserVideosColumns = (
             height={40}
             className="object-cover rounded-full"
           />
-          <span className="font-medium text-black">{addedBy ?? "James"}</span>
+          <span className="font-medium text-black">{addedBy ?? ""}</span>
         </div>
       );
     },
@@ -103,7 +103,7 @@ export const createPendingUserVideosColumns = (
     accessorKey: "dateAdded",
     header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
     cell: ({ row }) => {
-      const dateAdded = new Date(row.original.location.createdAt);
+      const dateAdded = new Date(row.original?.submission?.date);
 
       return (
         <div className="relative">

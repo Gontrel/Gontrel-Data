@@ -1,25 +1,31 @@
+// Corrected ActionPanel component
 import { SearchBar } from "../admin/SearchBar";
 import { AddRestaurantButton } from "./AddRestaurantButton";
 import { FilterDropdowns } from "../admin/FilterDropdowns";
-import { type DateRangeValue } from "@/utils/dateRange";
 import { useAnalystOptions } from "@/hooks/useAnalysts";
 import { useMemo } from "react";
+import { useUserOptions } from "@/hooks/useUserHook";
+import { type DateRangeValue } from "@/utils/dateRange";
+import { ManagerTableTabsEnum } from "@/types";
 
 /**
  * Props for SearchAndActions component
  */
 interface ActionPanelProps {
   searchTerm: string;
-  onSearchChange: (term: string) => void;
+  onSearchChange: (value: string) => void;
   onAddRestaurant: () => void;
   searchPlaceholder?: string;
-  // Filter props
   selectedAnalyst?: string;
   onAnalystChange?: (analyst: string) => void;
+  selectedUser?: string;
+  onUserChange?: (user: string) => void;
   selectedDateRange?: DateRangeValue;
   onDateRangeChange: (range: DateRangeValue | undefined) => void;
   showFilters?: boolean;
   analystOptions?: Array<{ value: string; label: string }>;
+  userOptions?: Array<{ value: string; label: string }>;
+  activeTab: string;
 }
 
 /**
@@ -31,24 +37,29 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   onSearchChange,
   onAddRestaurant,
   searchPlaceholder = "Search using name or location",
-  selectedAnalyst = "all",
+  selectedAnalyst = "",
   onAnalystChange = () => {},
+  selectedUser = "",
+  onUserChange = () => {},
   selectedDateRange,
   onDateRangeChange,
   showFilters = true,
   analystOptions = [],
+  userOptions = [],
+  activeTab,
 }) => {
   const { options: fetchedAnalystOptions } = useAnalystOptions();
+  const { options: fetchedUserOptions } = useUserOptions({ quantity: 100 });
 
   const mergedAnalystOptions = useMemo(() => {
-    // prefer server-fetched options; fallback to provided ones
-    return (
-      fetchedAnalystOptions.length > 0 ? fetchedAnalystOptions : analystOptions
-    ) as Array<{
-      value: string;
-      label: string;
-    }>;
+    return fetchedAnalystOptions.length > 0
+      ? fetchedAnalystOptions
+      : analystOptions;
   }, [analystOptions, fetchedAnalystOptions]);
+
+  const mergedUserOptions = useMemo(() => {
+    return fetchedUserOptions.length > 0 ? fetchedUserOptions : userOptions;
+  }, [userOptions, fetchedUserOptions]);
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4.5">
@@ -59,13 +70,27 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
           placeholder={searchPlaceholder}
         />
         {showFilters && (
-          <FilterDropdowns
-            selectedUser={selectedAnalyst}
-            onUserChange={onAnalystChange}
-            selectedDateRange={selectedDateRange}
-            onDateRangeChange={onDateRangeChange}
-            usersOptions={mergedAnalystOptions}
-          />
+          <div>
+            {activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS ? (
+             
+              <FilterDropdowns
+                selectedUser={selectedUser}
+                activeTab = {activeTab}
+                onUserChange={onUserChange}
+                usersOptions={mergedUserOptions}
+                onDateRangeChange={onDateRangeChange}
+              />
+            ) : (
+              <FilterDropdowns
+                selectedUser={selectedAnalyst}
+                  activeTab = {activeTab}
+                onUserChange={onAnalystChange}
+                selectedDateRange={selectedDateRange}
+                onDateRangeChange={onDateRangeChange}
+                usersOptions={mergedAnalystOptions}
+              />
+            )}
+          </div>
         )}
       </div>
 

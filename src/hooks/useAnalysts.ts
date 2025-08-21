@@ -23,4 +23,3 @@ export const useAnalystOptions = () => {
   return { options, isLoading, error };
 };
 
-

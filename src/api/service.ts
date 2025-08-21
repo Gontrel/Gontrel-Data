@@ -39,8 +39,10 @@ import {
   FetchStaffProfile,
   CreateAdminResponse,
   GetUserPostsResponse,
+  GetUserResponse,
 } from "@/interfaces";
 import ToggleStaffActive, {
+  BaseQueryRequest,
   CreateAdminRequest,
   ToggleLocation,
 } from "@/interfaces/requests";
@@ -354,6 +356,15 @@ export default class APIRequest {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-staffs?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  //Users
+  getUsers = async (data: BaseQueryRequest): Promise<GetUserResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-fetch-users?${params.toString()}`
     );
     return this.handleResponse(response);
   };

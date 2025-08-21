@@ -171,6 +171,7 @@ export interface TabState {
   dateRange: DateRangeValue | undefined;
   currentPage: number;
   pageSize: number;
+  user: string;
 }
 
 export interface AuditLog {

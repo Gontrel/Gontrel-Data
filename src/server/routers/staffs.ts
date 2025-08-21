@@ -26,6 +26,7 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 export const staffsRouter = router({
+  
   getStaffs: protectedProcedure
     .input(fetchStaffsSchema)
     .query(async ({ input, ctx }) => {

@@ -2,7 +2,7 @@
 
 import { DropdownFilter } from "../ui/DropdownFilter";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
-import { AdminRoleEnum } from "@/types/enums";
+import { AdminRoleEnum, ManagerTableTabsEnum } from "@/types/enums";
 import { type DateRangeValue } from "@/utils/dateRange";
 import { useCurrentUser } from "@/stores/authStore";
 
@@ -12,6 +12,8 @@ import { useCurrentUser } from "@/stores/authStore";
 interface FilterDropdownsProps {
   selectedUser: string;
   onUserChange: (analyst: string) => void;
+  
+  activeTab: string;  
   selectedDateRange?: DateRangeValue;
   onDateRangeChange: (range: DateRangeValue | undefined) => void;
   usersOptions?: Array<{ value: string; label: string }>;
@@ -25,6 +27,7 @@ export function FilterDropdowns({
   onUserChange,
   selectedDateRange,
   onDateRangeChange,
+  activeTab,
   usersOptions,
 }: FilterDropdownsProps) {
   const currentUser = useCurrentUser();
@@ -48,6 +51,8 @@ export function FilterDropdowns({
   );
 
   const optionsWithAll = [
+      activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS ? 
+    { value: "all", label: "All users" } : 
     { value: "all", label: "All analysts" },
     ...(usersOptions ?? []),
   ];
