@@ -92,6 +92,30 @@ export type GetPostsResponse = IPaginatedRes<
   } & Post
 >;
 
+export type GetUserPostsResponse = IPaginatedRes<{
+  user: {
+    id: string;
+    name: string;
+    profileImage: string;
+    email: string;
+  };
+  location: {
+    id: string;
+    name: string;
+    address: Address;
+    createdAt: string;
+    website: string,
+    mapLink: string ,
+  };
+  postCount: number;
+  submission: {
+    id: string;
+    date: string;
+  };
+  videos: Post[];
+}>;
+
+
 export type GetGroupedPostsResponse = IPaginatedRes<
   {
     admin: Admin;
@@ -144,7 +168,7 @@ export interface DeletePostResponse {
 }
 
 // Staff management responses
-export type GetStaffsResponse = IPaginatedRes<Admin>;
+export type GetStaffssResponse = IPaginatedRes<Admin>;
 
 // Dashboard responses
 export interface GetDashboardDataResponse {
@@ -313,6 +337,19 @@ export interface GetRestaurantByIdResponse {
   posts: Post[];
   admin: Admin;
 }
+
+export enum ActivityType {
+  UNKNOWN = 'UNKNOWN',
+  POST = 'POST',
+  LOCATION = 'LOCATION',
+  APPROVAL = 'APPROVAL',
+  INTENT = 'INTENT',
+  PASSWORD = 'PASSWORD',
+}
+
+export interface ActivityResponse extends IPaginatedRes<AuditLog> {}
+
+export interface GetStaffsResponse extends IPaginatedRes<Admin> {}
 
 export interface GetStaffActivitiesResponse {
   data: AuditLog[];

@@ -79,6 +79,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
@@ -98,6 +100,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:

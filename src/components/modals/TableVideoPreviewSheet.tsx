@@ -139,6 +139,7 @@ export const TableVideoPreviewSheet = ({
 
   if (
     table === ManagerTableTabsEnum.PENDING_VIDEOS ||
+    table === ManagerTableTabsEnum.PENDING_USER_VIDEOS ||
     table === AnalystTableTabsEnum.SUBMITTED_VIDEOS
   ) {
     const { data: queryData } = trpc.post.getPosts.useQuery({

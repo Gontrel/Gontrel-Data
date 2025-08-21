@@ -1,6 +1,10 @@
 import { useState, useCallback } from "react";
 import { type DateRangeValue } from "@/utils/dateRange";
-import { AnalystTableTabsEnum, ManagerTableTabsEnum, StaffTableTabsEnum } from "@/types/enums";
+import {
+  AnalystTableTabsEnum,
+  ManagerTableTabsEnum,
+  StaffTableTabsEnum,
+} from "@/types/enums";
 import { useIsAnalyst } from "@/stores/authStore";
 import { TabState } from "@/interfaces";
 
@@ -24,6 +28,14 @@ export const useTabState = () => {
       pageSize: 10,
     },
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: {
+      searchTerm: "",
+      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedTimePeriod: "all",
+      dateRange: undefined,
+      currentPage: 1,
+      pageSize: 10,
+    },
+    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: {
       searchTerm: "",
       selectedAnalyst: isAnalyst ? "all" : "",
       selectedTimePeriod: "all",
@@ -258,6 +270,14 @@ export const useTabState = () => {
         pageSize: 10,
       },
       [ManagerTableTabsEnum.PENDING_VIDEOS]: {
+        searchTerm: "",
+        selectedAnalyst: "all",
+        selectedTimePeriod: "all",
+        dateRange: undefined,
+        currentPage: 1,
+        pageSize: 10,
+      },
+      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: {
         searchTerm: "",
         selectedAnalyst: "all",
         selectedTimePeriod: "all",

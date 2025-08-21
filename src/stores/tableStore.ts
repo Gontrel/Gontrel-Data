@@ -48,8 +48,9 @@ export interface TableStore {
   activeRestaurants: TableState<ActiveRestaurantTableTypes>;
   submittedRestaurants: TableState<SubmittedRestaurantTableTypes>;
   submittedVideos: TableState<SubmittedVideoTableTypes>;
-  activeStaffs: TableState<StaffTableTypes>; // New: Active Staffs state
-  deactivatedStaffs: TableState<StaffTableTypes>; // New: Deactivated Staffs state
+  activeStaffs: TableState<StaffTableTypes>;
+  deactivatedStaffs: TableState<StaffTableTypes>;
+  pendingUserVideos: TableState<PendingVideoTableTypes>;
 
   // Loading states
   mutationLoading: boolean;
@@ -125,6 +126,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   // Initial states for each table type
   pendingRestaurants: createInitialTableState<PendingRestaurantTableTypes>(),
   pendingVideos: createInitialTableState<PendingVideoTableTypes>(),
+  pendingUserVideos: createInitialTableState<PendingVideoTableTypes>(),
   activeRestaurants: createInitialTableState<ActiveRestaurantTableTypes>(),
   submittedRestaurants:
     createInitialTableState<SubmittedRestaurantTableTypes>(),
@@ -440,11 +442,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       store.setSaveLoading(true);
 
       try {
-        // Process all pending changes
-        // Note: Save changes functionality needs to be implemented with proper API calls
-        // For now, just clear pending changes
-
-        // Clear pending changes - actual API calls should be handled by components
+  
         set(
           (state) =>
             ({
@@ -456,7 +454,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
             } as Partial<TableStore>)
         );
 
-        // Components should refetch data after successful save operations
       } catch (error: unknown) {
         store.setError(
           tableType,

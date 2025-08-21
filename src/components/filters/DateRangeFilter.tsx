@@ -69,6 +69,13 @@ export default function DateRangeFilter({
 
   const [open, setOpen] = useState(false);
   const [activePreset, setActivePreset] = useState<string | null>(null);
+  const [temp, setTemp] = useState<DateRange | undefined>(toDateRange(value));
+
+  useEffect(() => {
+    const r = toDateRange(value as DateRange | DateRangeValue | undefined);
+    setTemp(r);
+  }, [value]);
+
   function toDateRange(v?: DateRange | DateRangeValue): DateRange | undefined {
     if (!v) return undefined;
     if ('startDate' in v && 'endDate' in v) {
@@ -76,13 +83,6 @@ export default function DateRangeFilter({
     }
     return normalizeRange(v);
   }
-
-  const [temp, setTemp] = useState<DateRange | undefined>(toDateRange(value));
-
-  useEffect(() => {
-    const r = toDateRange(value as DateRange | DateRangeValue | undefined);
-    setTemp(r);
-  }, [value]);
 
   function handleSelectRange(r?: DateRange) {
     const n = normalizeRange(r);
@@ -214,5 +214,3 @@ function Chevron({ color }: { color: string }) {
     </svg>
   );
 }
-
-

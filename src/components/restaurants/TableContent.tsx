@@ -5,6 +5,7 @@ import React from "react"; // Added missing import for React
 import ActiveRestaurants from "./tables/ActiveRestaurants";
 import SubmittedRestaurants from "./tables/SubmittedRestaurants";
 import SubmittedVideos from "./tables/SubmittedVideos";
+import PendingUserVideos from "./tables/PendingUserVideos";
 
 /**
  * Props for TableContent component
@@ -102,6 +103,28 @@ export const TableContent: React.FC<TableContentProps> = ({
             }
             handlePageSize={(pageSize: number) =>
               onPageSizeChange(ManagerTableTabsEnum.PENDING_VIDEOS, pageSize)
+            }
+          />
+        );
+      case ManagerTableTabsEnum.PENDING_USER_VIDEOS:
+        return (
+          <PendingUserVideos
+            searchTerm={searchTerm}
+            selectedAnalyst={selectedAnalyst}
+            startDate={startDate}
+            endDate={endDate}
+            currentPage={
+              tablePageNumbers[ManagerTableTabsEnum.PENDING_USER_VIDEOS]
+            }
+            pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_USER_VIDEOS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ManagerTableTabsEnum.PENDING_USER_VIDEOS, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(
+                ManagerTableTabsEnum.PENDING_USER_VIDEOS,
+                pageSize
+              )
             }
           />
         );

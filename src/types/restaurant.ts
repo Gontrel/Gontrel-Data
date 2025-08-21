@@ -8,6 +8,7 @@ import {
   Address,
   Menu,
   GetGroupedPostsSubmissionsResponse,
+  GetUserPostsResponse,
 } from "@/interfaces";
 
 /**
@@ -19,6 +20,8 @@ export type PendingRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];
 
 export type PendingVideoTableTypes = GetGroupedPostsSubmissionsResponse["data"][number];
+
+export type PendingUserVideoTableTypes = GetUserPostsResponse["data"][number];
 
 export type SubmittedRestaurantTableTypes =
   GetRestaurantsResponse["data"][number];

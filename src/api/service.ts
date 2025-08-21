@@ -38,6 +38,7 @@ import {
   GetStaffActivitiesResponse,
   FetchStaffProfile,
   CreateAdminResponse,
+  GetUserPostsResponse,
 } from "@/interfaces";
 import ToggleStaffActive, {
   CreateAdminRequest,
@@ -255,6 +256,21 @@ export default class APIRequest {
       const response = await this.authenticatedClient.get(
         `/admin-posts?${params.toString()}`
       );
+      return this.handleResponse(response);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  getPendingUserVideos = async (
+    data: FetchAdminPostsRequest
+  ): Promise<GetUserPostsResponse> => {
+    const params = this.buildSearchParams(data);
+    try {
+      const response = await this.authenticatedClient.get(
+        `/admin-user-grouped-posts-submissions?${params.toString()}`
+      );
+
       return this.handleResponse(response);
     } catch (error) {
       throw error;

@@ -134,17 +134,18 @@ export interface Location {
 
 export interface GontrelRestaurantData {
   name: string;
-  menu: string | Menu;
+  menu?: string | Menu;
   id?: string;
   admin?: Admin;
+  user?: Admin;
   createdAt?: string;
-  reservation: string | Reservation;
+  reservation?: string | Reservation;
   website?: string;
   address?: string;
   tiktokUrl?: string;
   mapLink?: string;
   opening_hours?: string[];
-  rating: number;
+  rating?: number;
 }
 
 export interface GontrelRestaurantDetailedData extends GontrelRestaurantData {
