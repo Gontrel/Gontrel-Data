@@ -22,22 +22,18 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const [comment, setComment] = useState<string>("");
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
-  const {
-    data: staffProfileData,
-    refetch: refetchStaffProfile,
-  } = trpc.staffs.getStaffProfile.useQuery({
-    adminId: staffId,
-  });
-
-  const {
-    data: staffAccountSummaryData,
-    refetch: refetchStaffAccountSummary,
-  } = trpc.staffs.getStaffsAccountSummary.useQuery(
-    {
+  const { data: staffProfileData, refetch: refetchStaffProfile } =
+    trpc.staffs.getStaffProfile.useQuery({
       adminId: staffId,
-    },
-    { enabled: !!staffId }
-  );
+    });
+
+  const { data: staffAccountSummaryData, refetch: refetchStaffAccountSummary } =
+    trpc.staffs.getStaffsAccountSummary.useQuery(
+      {
+        adminId: staffId,
+      },
+      { enabled: !!staffId }
+    );
 
   const { mutate } = trpc.staffs.toggleStaffStatus.useMutation({
     onSuccess: () => {
@@ -49,8 +45,8 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   });
 
   const fetchActivities = useCallback(
-    async (pageNumber: number) => {
-      if (isFetching || !hasMore) return;
+    async (pageNumber: number, filtersChanged = false) => {
+      if (isFetching || (!hasMore && !filtersChanged)) return;
 
       setIsFetching(true);
       try {
@@ -58,27 +54,42 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           adminId: staffId,
           quantity: PAGE_SIZE,
           pageNumber,
+          // startDate: dateRange?.startDate?.toISOString(),
+          // endDate: dateRange?.endDate?.toISOString(),
+          // type: activityType || undefined,
         });
 
         const activityData: AuditLog[] = response?.data ?? [];
 
-        if (activityData.length === 0) {
+        if (activityData.length < PAGE_SIZE) {
           setHasMore(false);
         }
-        setActivity((prev) => {
-          const existingIds = new Set(prev.map((p) => p.id));
-          const newActivities = activityData.filter(
-            (p) => !existingIds.has(p.id)
-          );
-          return [...prev, ...newActivities];
-        });
+
+        if (filtersChanged) {
+          setActivity(activityData);
+        } else {
+          setActivity((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id));
+            const newActivities = activityData.filter(
+              (p) => !existingIds.has(p.id)
+            );
+            return [...prev, ...newActivities];
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch staff activities:", error);
       } finally {
         setIsFetching(false);
       }
     },
-    [isFetching, hasMore, staffId, utils.staffs.getStaffActivities]
+    [
+      isFetching,
+      hasMore,
+      staffId,
+      utils.staffs.getStaffActivities,
+      // dateRange,
+      // activityType,
+    ]
   );
 
   const handleDeactivateStaff = () => {
@@ -97,8 +108,14 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     }
   }, [isFetching, hasMore]);
 
+  // useEffect(() => {
+  //   fetchActivities(1, true);
+  // }, [dateRange, activityType]);
+
   useEffect(() => {
-    fetchActivities(page);
+    if (page > 1) {
+      fetchActivities(page);
+    }
   }, [page, fetchActivities]);
 
   const handleCloseModal = () => {
@@ -169,6 +186,10 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           onScroll={handleScroll}
           scrollContainerRef={scrollContainerRef}
           isStaffActive={isStaffActive}
+          // dateRange={dateRange}
+          // onDateRangeChange={setDateRange}
+          // activityType={activityType}
+          // onActivityTypeChange={setActivityType}
         />
       </div>
 

@@ -3,6 +3,7 @@ import { SearchBar } from "../admin/SearchBar";
 import { type DateRangeValue } from "@/utils/dateRange";
 import { Button } from "../ui/Button";
 import Icon from "../svgs/Icons";
+import { StaffTableTabsEnum } from "@/types";
 
 interface StaffActionPanelProps {
   searchTerm: string;
@@ -31,6 +32,7 @@ export const StaffActionPanel: React.FC<StaffActionPanelProps> = ({
         />
         {/* Date range filter can be added here if needed for staff */}
         <FilterDropdowns
+        activeTab={StaffTableTabsEnum.ACTIVE_STAFF}
           selectedDateRange={selectedDateRange}
           onDateRangeChange={onDateRangeChange}
           selectedUser={""}

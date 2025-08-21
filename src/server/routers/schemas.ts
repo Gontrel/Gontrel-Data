@@ -414,3 +414,5 @@ export const placeDetailsSchema = z.object({
 
 export const locationAvailabilityRequestSchema = locationAvailabilitySchema;
 export const postCreationRequestSchema = postCreationSchema;
+
+export const fetchPendingUserVideosSchema = fetchAdminPostsSchema.extend({});

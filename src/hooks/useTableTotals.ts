@@ -1,4 +1,8 @@
-import { AnalystTableTabsEnum, ManagerTableTabsEnum, StaffTableTabsEnum } from "@/types/enums";
+import {
+  AnalystTableTabsEnum,
+  ManagerTableTabsEnum,
+  StaffTableTabsEnum,
+} from "@/types/enums";
 import { usePendingRestaurants } from "./usePendingRestaurants";
 import { usePendingVideos } from "./usePendingVideos";
 import { useActiveRestaurants } from "./useActiveRestaurants";
@@ -7,6 +11,7 @@ import { useSubmittedVideos } from "./useSubmittedVideos";
 import { useActiveStaffs } from "./useActiveStaffs";
 import { useDeactivatedStaffs } from "./useDeactivatedStaffs";
 import { TabState } from "@/interfaces";
+import { usePendingUserVideos } from "./usePendingUserVideos";
 
 /**
  * Custom hook to fetch table totals for each tab independently using tRPC
@@ -36,6 +41,24 @@ export const useTableTotals = (
       undefined,
   });
 
+  // Fetch pending videos total with tab-specific search
+  const { queryData: pendingUserVideosTotal } = usePendingUserVideos({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm:
+      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.searchTerm || "",
+    startDate:
+      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    userId:
+      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.selectedAnalyst ||
+      undefined,
+  });
   // Fetch pending videos total with tab-specific search
   const { queryData: pendingVideosTotal } = usePendingVideos({
     currentPage: 1,
@@ -170,6 +193,7 @@ export const useTableTotals = (
   const submittedVideosCount = getTotalFromResponse(submittedVideosTotal);
   const activeStaffsCount = getTotalFromResponse(activeStaffsTotal);
   const deactivatedStaffsCount = getTotalFromResponse(deactivatedStaffsTotal);
+  const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
 
   return {
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
@@ -179,5 +203,6 @@ export const useTableTotals = (
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
     [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: deactivatedStaffsCount,
+    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
   };
 };

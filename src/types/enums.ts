@@ -29,6 +29,7 @@ export enum ManagerTableTabsEnum {
   ACTIVE_RESTAURANTS = "activeRestaurants",
   PENDING_RESTAURANTS = "pendingRestaurants",
   PENDING_VIDEOS = "pendingVideos",
+  PENDING_USER_VIDEOS = "pendingUserVideos",
 }
 
 export enum AnalystTableTabsEnum {

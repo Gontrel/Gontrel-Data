@@ -38,8 +38,11 @@ import {
   GetStaffActivitiesResponse,
   FetchStaffProfile,
   CreateAdminResponse,
+  GetUserPostsResponse,
+  GetUserResponse,
 } from "@/interfaces";
 import ToggleStaffActive, {
+  BaseQueryRequest,
   CreateAdminRequest,
   ToggleLocation,
 } from "@/interfaces/requests";
@@ -261,6 +264,21 @@ export default class APIRequest {
     }
   };
 
+  getPendingUserVideos = async (
+    data: FetchAdminPostsRequest
+  ): Promise<GetUserPostsResponse> => {
+    const params = this.buildSearchParams(data);
+    try {
+      const response = await this.authenticatedClient.get(
+        `/admin-user-grouped-posts-submissions?${params.toString()}`
+      );
+
+      return this.handleResponse(response);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   // getPostById
   getPostById = async (data: FetchPostByIdRequest) => {
     const params = this.buildSearchParams(data);
@@ -338,6 +356,15 @@ export default class APIRequest {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-staffs?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  //Users
+  getUsers = async (data: BaseQueryRequest): Promise<GetUserResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-fetch-users?${params.toString()}`
     );
     return this.handleResponse(response);
   };

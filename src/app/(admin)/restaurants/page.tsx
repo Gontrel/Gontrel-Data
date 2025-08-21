@@ -49,6 +49,7 @@ export default function RestaurantsPage() {
     tabStates,
     updateTabSearchTerm,
     updateTabAnalyst,
+    updateTabUser,
     updateTabDateRange,
     updateTabPage,
     updateTabPageSize,
@@ -79,6 +80,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
@@ -98,6 +101,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
@@ -124,6 +129,13 @@ export default function RestaurantsPage() {
       updateTabAnalyst(activeTab, analyst);
     },
     [activeTab, updateTabAnalyst]
+  );
+
+  const handleUserChange = useCallback(
+    (user: string) => {
+      updateTabUser(activeTab, user);
+    },
+    [activeTab, updateTabUser]
   );
 
   /**
@@ -212,18 +224,21 @@ export default function RestaurantsPage() {
         />
 
         {/* Search and Actions */}
+ 
         <ActionPanel
           searchTerm={currentTabState.searchTerm}
           onSearchChange={handleSearch}
           onAddRestaurant={handleAddRestaurant}
           selectedAnalyst={currentTabState.selectedAnalyst}
           onAnalystChange={handleAnalystChange}
+          selectedUser={currentTabState.user}
+          onUserChange={handleUserChange}
           selectedDateRange={currentTabState.dateRange}
           onDateRangeChange={handleDateRangeChange}
           showFilters={true}
           analystOptions={analystOptions}
+          activeTab={activeTab}
         />
-
         {/* Table Content */}
         <TableContent
           activeTab={activeTab}
@@ -235,6 +250,7 @@ export default function RestaurantsPage() {
           tablePageSizes={createPageSizesObject()}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
+          user={currentTabState.user}
         />
       </div>
 
