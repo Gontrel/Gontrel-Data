@@ -55,7 +55,7 @@ export const useTableTotals = (
       tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.dateRange?.endDate
         ?.toISOString()
         .split("T")[0] || undefined,
-    adminId:
+    userId:
       tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.selectedAnalyst ||
       undefined,
   });
