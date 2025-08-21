@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc-client";
+import { ApprovalStatusEnum } from "@/types";
 
 interface UsePendingUserVideosProps {
   currentPage: number;
@@ -9,19 +10,29 @@ interface UsePendingUserVideosProps {
   adminId?: string;
 }
 
-export const usePendingUserVideos = ({ currentPage, pageSize, searchTerm, startDate, endDate, adminId }: UsePendingUserVideosProps) => {
+export const usePendingUserVideos = ({
+  currentPage,
+  pageSize,
+  searchTerm,
+  startDate,
+  endDate,
+  adminId,
+}: UsePendingUserVideosProps) => {
   const {
     data: queryData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = trpc.post.getPendingUserVideos.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
     query: searchTerm,
+    status: ApprovalStatusEnum.PENDING,
+    sortBy: "modifiedAt",
+    sortOrder: "DESC",
     startDate,
     endDate,
-    adminId
+    adminId,
   });
   return { queryData, isLoading, error, refetch };
-}
+};
