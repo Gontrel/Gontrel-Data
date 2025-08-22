@@ -10,6 +10,7 @@ export interface Post {
   updatedBy?: string;
   firebaseId?: string;
   analytics?: Analytics;
+  submissionDate?: string;
   tiktokLink: string;
   videoUrl: string;
   isFoodVisible?: boolean;

@@ -13,7 +13,14 @@ interface UseActiveRestaurantsProps {
 /**
  * Custom hook for managing active restaurants data fetching
  */
-export const useActiveRestaurants = ({ currentPage, pageSize, searchTerm, startDate, endDate, adminId }: UseActiveRestaurantsProps) => {
+export const useActiveRestaurants = ({
+  currentPage,
+  pageSize,
+  searchTerm,
+  startDate,
+  endDate,
+  adminId,
+}: UseActiveRestaurantsProps) => {
   const {
     data: queryData,
     isLoading,

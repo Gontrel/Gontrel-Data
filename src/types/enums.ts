@@ -58,3 +58,13 @@ export enum DayOfTheWeek {
   SATURDAY = "SATURDAY",
   SUNDAY = "SUNDAY",
 }
+
+
+export enum ActivityType {
+  UNKNOWN = "UNKNOWN",
+  POST = "POST",
+  LOCATION = "LOCATION",
+  APPROVAL = "APPROVAL",
+  INTENT = "INTENT",
+  PASSWORD = "PASSWORD",
+}

@@ -18,7 +18,7 @@ interface LivePostCardProps {
   RestaurantDetailsFlow?: boolean;
   post: Post;
   restaurant?: GontrelRestaurantData & { id: string; adminName: string };
-  className?: string
+  className?: string;
 }
 
 export const LivePostCard = ({
@@ -28,7 +28,7 @@ export const LivePostCard = ({
   handleOpenDeleteModal,
   restaurant,
   post,
-  className = "min-w-[546px]",
+  className = "min-w-[530px]",
   RestaurantDetailsFlow = false,
 }: LivePostCardProps) => {
   const isUser = post.source === AdminRoleEnum.USER;
@@ -51,7 +51,9 @@ export const LivePostCard = ({
   const isFoodVisible = post?.isFoodVisible;
 
   return (
-    <div className={`${className} flex flex-col rounded-2xl overflow-hidden border border-[#D2D4D5] bg-white  mx-auto py-6 px-8 gap-y-4.5 mt-4 relative`}>
+    <div
+      className={`${className} flex flex-col rounded-2xl overflow-hidden border border-[#D2D4D5] bg-white  mx-auto py-6 px-8 gap-y-4.5 mt-4 relative`}
+    >
       <div className="overflow-hidden">
         {" "}
         {/* Added wrapper div */}
@@ -103,7 +105,7 @@ export const LivePostCard = ({
 
         <div className="flex items-center text-sm text-gray-500">
           <span className="text-[#9DA1A5] text-base font-medium mr-6.5">
-            {formatPostTime(post?.createdAt)}
+            {formatPostTime(post?.submissionDate ?? post?.createdAt)}
           </span>
           {showEditAndDelete && (
             <div className="relative">
