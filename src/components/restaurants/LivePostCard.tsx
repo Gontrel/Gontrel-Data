@@ -28,7 +28,7 @@ export const LivePostCard = ({
   handleOpenDeleteModal,
   restaurant,
   post,
-  className = "min-w-[556px]",
+  className = "min-w-[546px]",
   RestaurantDetailsFlow = false,
 }: LivePostCardProps) => {
   const isUser = post.source === AdminRoleEnum.USER;

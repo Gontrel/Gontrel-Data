@@ -76,7 +76,7 @@ const TableVideoPreviewSheetContent = ({
   onDecline,
   restaurant,
 }: TableVideoPreviewSheetContentProps) => (
-  <section className="flex flex-col gap-y-4.5 py-5 px-6">
+  <section className="flex flex-col gap-y-4.5 py-5 items-center">
     {posts.length > 0 ? (
       posts.map((post, index) => (
         <LivePostCard
