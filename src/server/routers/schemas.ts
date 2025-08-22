@@ -1,8 +1,4 @@
-import {
-  ApprovalStatusEnum,
-  ApprovalType,
-  DayOfTheWeek,
-} from "@/types/enums";
+import { ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types/enums";
 import { z } from "zod";
 
 // ============================================================================
@@ -91,6 +87,7 @@ export const fetchStaffsSchema = baseQuerySchema.extend({
 
 export const fetchStaffActivitieSchema = baseQuerySchema.extend({
   adminId: z.string(),
+  type: z.string().optional(),
 });
 
 export const fetchAdminSummarySchema = baseQuerySchema.extend({

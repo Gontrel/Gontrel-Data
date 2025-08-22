@@ -337,14 +337,7 @@ export interface GetRestaurantByIdResponse {
   admin: Admin;
 }
 
-export enum ActivityType {
-  UNKNOWN = "UNKNOWN",
-  POST = "POST",
-  LOCATION = "LOCATION",
-  APPROVAL = "APPROVAL",
-  INTENT = "INTENT",
-  PASSWORD = "PASSWORD",
-}
+
 
 export type GetStaffsResponse = IPaginatedRes<Admin>;
 export type GetUserResponse = IPaginatedRes<User>;

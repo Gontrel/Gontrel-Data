@@ -1,3 +1,4 @@
+
 "use client";
 
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
@@ -10,9 +11,6 @@ import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
 import { DateRangeValue } from "@/utils/dateRange";
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
-import { format } from "date-fns";
-import { ActivityType } from "@/types";
-import StaffDetailsSkeleton from "@/components/Loader/staffs/staffDetails";
 
 const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const { staffId } = use(params);
@@ -24,19 +22,16 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const [hasMore, setHasMore] = useState(true);
   const [comment, setComment] = useState<string>("");
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [activityType, setActivityType] = useState<ActivityType | undefined>(
-    undefined
-  );
   const [dateRange, setDateRange] = useState<DateRangeValue | undefined>(
     undefined
   );
 
-  const { data: staffProfileData, refetch: refetchStaffProfile, isLoading: isLoadingStaffProfile } =
+  const { data: staffProfileData, refetch: refetchStaffProfile } =
     trpc.staffs.getStaffProfile.useQuery({
       adminId: staffId,
     });
 
-  const { data: staffAccountSummaryData, refetch: refetchStaffAccountSummary, isLoading: isLoadingStaffAccountSummary } =
+  const { data: staffAccountSummaryData, refetch: refetchStaffAccountSummary } =
     trpc.staffs.getStaffsAccountSummary.useQuery(
       {
         adminId: staffId,
@@ -59,20 +54,12 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
 
       setIsFetching(true);
       try {
-        const startDateString = dateRange?.startDate
-          ? format(dateRange.startDate, "yyyy-MM-dd")
-          : undefined;
-        const endDateString = dateRange?.endDate
-          ? format(dateRange.endDate, "yyyy-MM-dd")
-          : undefined;
-
         const response = await utils.staffs.getStaffActivities.fetch({
           adminId: staffId,
           quantity: PAGE_SIZE,
           pageNumber,
-          type: activityType,
-          startDate: startDateString,
-          endDate: endDateString,
+          startDate: dateRange?.startDate?.toISOString(),
+          endDate: dateRange?.endDate?.toISOString(),
         });
 
         const activityData: AuditLog[] = response?.data ?? [];
@@ -98,14 +85,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
         setIsFetching(false);
       }
     },
-    [
-      isFetching,
-      hasMore,
-      staffId,
-      utils.staffs.getStaffActivities,
-      dateRange,
-      activityType,
-    ]
+    [isFetching, hasMore, staffId, utils.staffs.getStaffActivities, dateRange]
   );
 
   const handleDeactivateStaff = () => {
@@ -124,14 +104,19 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     }
   }, [isFetching, hasMore]);
 
+  // Use a single useEffect to handle initial fetch and filter changes
   useEffect(() => {
     setPage(1);
     setActivity([]);
     setHasMore(true);
-  }, [dateRange, activityType]);
+    fetchActivities(1, true);
+  }, [dateRange, fetchActivities]);
 
+  // Use a separate useEffect for infinite scrolling
   useEffect(() => {
-    fetchActivities(page);
+    if (page > 1) {
+      fetchActivities(page);
+    }
   }, [page, fetchActivities]);
 
   const handleCloseModal = () => {
@@ -161,26 +146,25 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     fetchActivities,
   ]);
 
-  if (isLoadingStaffProfile && isLoadingStaffAccountSummary && isFetching) {
-    return <StaffDetailsSkeleton />;
-  }
-
   return (
-    <div className="p-6 bg-[#FAFAFA] h-screen">
-      <div className="flex gap-[77px] items-start">
-        <div className="flex-1 max-w-[475px] mt-[35px] space-y-10">
-          <StaffProfileCard
-            id={staffProfileData?.id ?? ""}
-            name={staffProfileData?.name ?? ""}
-            role={staffProfileData?.role ?? ""}
-            email={staffProfileData?.email ?? ""}
-            phone={staffProfileData?.phoneNumber || ""}
-            address={staffProfileData?.address || ""}
-            isStaffActive={isStaffActive || false}
-            profileImage={
-              staffProfileData?.profileImage || "/images/avatar.png"
-            }
-          />
+    <div className="flex flex-col gap-6 p-6 text-base bg-[#FAFAFA] h-screen overflow-hidden">
+      <div className="flex gap-[77px] h-full">
+        {/* Left Column */}
+        <div className="min-w-[475px] flex flex-col gap-6 ml-[40px] mt-[35px]">
+          {staffProfileData && (
+            <StaffProfileCard
+              id={staffProfileData?.id}
+              name={staffProfileData?.name}
+              role={staffProfileData?.role}
+              email={staffProfileData?.email}
+              phone={staffProfileData?.phoneNumber ?? ""}
+              address={staffProfileData?.address ?? ""}
+              isStaffActive={isStaffActive}
+              profileImage={
+                staffProfileData?.profileImage || "/images/avatar.png"
+              }
+            />
+          )}
 
           <AccountSummaryCard
             restaurantsCreated={staffAccountSummaryData?.totalLocations || 0}
@@ -192,22 +176,16 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           />
         </div>
 
-        <div className="flex-1 min-w-0">
-          {/* Staff's Activities */}
-          <StaffActivities
-            onDeactivateStaff={handleDeactivateStaff}
-            activitiesData={activity}
-            onScroll={handleScroll}
-            isFetching={isFetching}
-            scrollContainerRef={scrollContainerRef}
-            isStaffActive={isStaffActive}
-            dateRange={dateRange}
-            hasMore={hasMore}
-            onDateRangeChange={setDateRange}
-            activityType={activityType}
-            onActivityTypeChange={setActivityType}
-          />
-        </div>
+        {/* Staff's Activities */}
+        <StaffActivities
+          onDeactivateStaff={handleDeactivateStaff}
+          activitiesData={activity}
+          onScroll={handleScroll}
+          scrollContainerRef={scrollContainerRef}
+          isStaffActive={isStaffActive}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
       </div>
 
       {/* Staff Deactivation Modal */}
@@ -238,3 +216,8 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
 };
 
 export default StaffDetails;
+
+
+
+
+

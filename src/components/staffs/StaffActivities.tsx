@@ -1,11 +1,15 @@
+
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Icon from "../svgs/Icons";
 import ActivityItem from "./ActivityItem";
 import DateRangeFilter from "../filters/DateRangeFilter";
 import { AuditLog } from "@/interfaces";
 import { cn } from "@/lib/utils";
+import { DateRangeValue } from "@/utils/dateRange";
+import { ActivityType } from "@/types";
+import ActivityTypeFilter from "../filters/activityFilter";
 
 interface StaffActivitiesProps {
   activitiesData: AuditLog[];
@@ -13,6 +17,12 @@ interface StaffActivitiesProps {
   onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
   isStaffActive: boolean;
+  isFetching: boolean;
+  dateRange: DateRangeValue | undefined;
+  onDateRangeChange: (range: DateRangeValue | undefined) => void;
+  hasMore: boolean;
+  onActivityTypeChange: (type: ActivityType | undefined) => void; 
+  activityType: ActivityType | undefined;
 }
 
 const StaffActivities: React.FC<StaffActivitiesProps> = ({
@@ -21,10 +31,27 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
   onScroll,
   scrollContainerRef,
   isStaffActive,
+  dateRange,
+  isFetching,
+  onDateRangeChange,
+  hasMore,
+  onActivityTypeChange,
+  activityType,
 }) => {
+  const [currentMonth, setCurrentMonth] = useState("");
+
+  useEffect(() => {
+    const today = new Date();
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+    setCurrentMonth(formatter.format(today));
+  }, []);
+
   return (
-    <div className="bg-white rounded-lg shadow-l-sm p-6 w-full pl-[34px]">
-      <div className="flex items-center justify-between mb-4 bg-[#FAFAFA] h-[80px] w-full">
+    <div className="bg-white rounded-lg shadow-l-sm p-6">
+      <div className="flex items-center justify-between mb-4 bg-[#FAFAFA] h-[80px]">
         <h2 className="text-lg text-[#2E3032] font-medium">
           Staff&apos;s activities
         </h2>
@@ -45,37 +72,53 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
       </div>
 
       <section className="flex justify-between">
-        <div className="w-48 p-2 border border-[#D9D9D9] flex flex-row items-center justify-between rounded-lg text-gray-500">
-          <span>All activities</span>
-          <Icon name="arrowdownIcon" stroke="#0070F3" width={15} height={15} />
-        </div>
+
+        <ActivityTypeFilter
+          value={activityType}
+          onChange={onActivityTypeChange}
+        />
         <DateRangeFilter
-          value={{ startDate: new Date(), endDate: new Date() }}
-          onChange={() => {}}
+          value={dateRange}
+          onChange={onDateRangeChange}
           placeholder="All Time"
           className="min-w-[280px]"
         />
       </section>
 
-      {/* This is the container for the ActivityItems that will scroll */}
       <div
         ref={scrollContainerRef}
         onScroll={onScroll}
-        className="mt-6 h-[500px] flex-grow overflow-y-auto space-y-6"
+        className="mt-6 flex-grow overflow-y-auto space-y-6"
         style={{ maxHeight: "calc(100vh - 300px)" }}
       >
-        <h3 className="text-[20px] font-semibold text-[#2E3032]">July 2025</h3>
+        <h3 className="text-[20px] font-semibold text-[#2E3032]">
+          {currentMonth}
+        </h3>
+
         {activitiesData.length > 0 ? (
-          activitiesData.map((activity) => (
-            <ActivityItem
-              key={activity.id}
-              type={activity.type}
-              content={activity.content}
-              timestamp={activity.createdAt}
-              restaurant={activity.adminLocation}
-              post={activity.adminPost}
-            />
-          ))
+          <>
+            {activitiesData.map((activity) => (
+              <ActivityItem
+                key={activity.id}
+                type={activity.type}
+                content={activity.content}
+                timestamp={activity.createdAt}
+                restaurant={activity.adminLocation}
+                post={activity.adminPost}
+              />
+            ))}
+            {isFetching ? (
+              <p className="text-center text-gray-500 my-4">Loading more...</p>
+            ) : (
+              !hasMore && (
+                <p className="text-center text-gray-500 my-4">
+                  No more activities
+                </p>
+              )
+            )}
+          </>
+        ) : isFetching ? (
+          <p className="text-center text-gray-500">Loading...</p>
         ) : (
           <p className="text-center text-gray-500">No activities to display.</p>
         )}

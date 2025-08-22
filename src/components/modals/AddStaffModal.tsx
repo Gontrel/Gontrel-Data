@@ -6,6 +6,9 @@ import FormInput from "../inputs/FormInput";
 import FormSelectOption from "../inputs/FormInputOption";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
+import SearchableSelect from "../inputs/SearchableSelect";
+import { AdminRoleEnum } from "@/types";
+import { dublinCities } from "@/constants/city";
 
 interface NewStaffSheetProps {
   open: boolean;
@@ -34,15 +37,15 @@ const AddStaffModal: React.FC<NewStaffSheetProps> = ({
     role: "",
   });
 
-  const { mutate: createAdmin, } =
-    trpc.auth.createAdmin.useMutation({
-      onSuccess: () => {
-        successToast("Admin created successfully!");
-      },
-      onError: (error) => {
-        errorToast(error.message);
-      },
-    });
+  const { mutate: createAdmin } = trpc.auth.createAdmin.useMutation({
+    onSuccess: () => {
+      successToast("Admin created successfully!");
+      handleClose();
+    },
+    onError: (error) => {
+      errorToast(error.message);
+    },
+  });
 
   const handleClose = () => {
     onOpenChange(false);
@@ -92,8 +95,14 @@ const AddStaffModal: React.FC<NewStaffSheetProps> = ({
       return;
     }
 
-    createAdmin(formData);
-    handleClose();
+    const submittedData = {
+      ...formData,
+      ...(formData.city && { city: formData.city }),
+      ...(formData.zipCode && { zipCode: formData.zipCode }),
+      ...(formData.phoneNumber && { phoneNumber: formData.phoneNumber }),
+    };
+
+    createAdmin(submittedData);
   };
 
   const handleChange = (
@@ -103,6 +112,10 @@ const AddStaffModal: React.FC<NewStaffSheetProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     setFormErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleCityChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, city: value }));
   };
 
   return (
@@ -138,7 +151,7 @@ const AddStaffModal: React.FC<NewStaffSheetProps> = ({
                 type="text"
                 name="lastName"
                 placeholder="Name here"
-                value={formData?.lastName}
+                value={formData.lastName}
                 onChange={handleChange}
                 error={formErrors.lastName}
               />
@@ -147,70 +160,70 @@ const AddStaffModal: React.FC<NewStaffSheetProps> = ({
                 type="text"
                 name="firstName"
                 placeholder="Name here"
-                value={formData?.firstName}
+                value={formData.firstName}
                 onChange={handleChange}
                 error={formErrors.firstName}
               />
             </div>
             <FormInput
               label="Staff email address"
-              type="text"
+              type="email"
               name="email"
               placeholder="Email here"
-              value={formData?.email}
+              value={formData.email}
               onChange={handleChange}
               error={formErrors.email}
             />
             <FormSelectOption
               label="Staff role"
               name="role"
-              value={formData?.role}
-              options={["Analyst", "Manager", "Developer"]}
+              value={formData.role}
+              options={Object.values(AdminRoleEnum)}
               onChange={handleChange}
               error={formErrors.role}
+              placeholder="Select a role"
             />
-
             <FormInput
               label="Staff phone number (optional)"
               type="tel"
               name="phoneNumber"
               placeholder="09098887655"
-              value={formData?.phoneNumber}
+              value={formData.phoneNumber}
               onChange={handleChange}
             />
-
             <FormInput
-              label=" Staff address (optional)"
+              label="Staff address (optional)"
               name="address"
               type="text"
-              value={formData?.address}
+              value={formData.address}
               placeholder="12 silver street"
               onChange={handleChange}
             />
-
             <div className="grid grid-cols-2 gap-4">
-              <FormSelectOption
-                label="   City (optional)"
-                name="city"
-                value={formData?.city}
-                options={["Lagos", "Delta", "Kano"]}
-                onChange={handleChange}
+              <SearchableSelect
+                label="City (optional)"
+                value={formData.city}
+                onValueChange={handleCityChange}
+                options={dublinCities}
+                placeholder="Select a city"
+                searchPlaceholder="Search for a city..."
+                emptyMessage="No city found."
               />
-
               <FormInput
                 label="Zip code (optional)"
                 type="text"
                 name="zipCode"
                 placeholder="Zip here"
-                value={formData?.zipCode}
+                value={formData.zipCode}
                 onChange={handleChange}
               />
             </div>
             <Button
               type="submit"
-              className="w-full bg-[#0070F3] text-base font-semibold leading-[100%] text-white py-5 px-5.5 mt-6 hover:bg-blue-700 rounded-3xl"
+              // disabled={isLoading}
+              className="w-full bg-[#0070F3] text-base font-semibold leading-[100%] text-white py-5 mt-6 hover:bg-blue-700 rounded-3xl"
             >
-              Submit
+              {"Submit"}
             </Button>
           </form>
         </section>

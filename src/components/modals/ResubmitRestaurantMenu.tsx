@@ -15,21 +15,20 @@ const ResubmitRestaurantMenu = ({
   isLoading,
   editFlow = false,
 }: ResubmitRestaurantMenuProps) => {
-  // Initialize with existing URLs or empty strings
+
   const [menuUrl, setMenuUrl] = useState("");
   const [reservationUrl, setReservationUrl] = useState("");
 
-  // Set initial values when restaurant data is available
+
   useEffect(() => {
     if (restaurant) {
-      // Set menu URL (check both string and object formats)
+    
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant.menu);
       } else if (restaurant.menu?.content) {
         setMenuUrl(restaurant.menu.content);
       }
 
-      // Set reservation URL
       if (restaurant.reservation?.content) {
         setReservationUrl(restaurant.reservation.content);
       }
@@ -40,7 +39,6 @@ const ResubmitRestaurantMenu = ({
     onSubmit({ menuUrl, reservationUrl });
   };
 
-  // Determine if we should show the inputs
   const showMenuInput = !restaurant?.menu;
   const showReservationInput = restaurant?.reservation && !editFlow;
 
@@ -61,7 +59,7 @@ const ResubmitRestaurantMenu = ({
               id="menu-url"
               value={menuUrl}
               onChange={(e) => setMenuUrl(e.target.value)}
-              placeholder="https://example.com"
+              placeholder="https://menu.com"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             />
           </div>
@@ -81,7 +79,7 @@ const ResubmitRestaurantMenu = ({
               id="reservation-url"
               value={reservationUrl}
               onChange={(e) => setReservationUrl(e.target.value)}
-              placeholder="https://example.com"
+              placeholder="https://reservation.com"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             />
           </div>
@@ -114,23 +112,22 @@ const EditRestaurantMenu = ({
   restaurant,
   isLoading,
 }: ResubmitRestaurantMenuProps) => {
-  // Initialize with existing URLs or empty strings
+
   const [menuUrl, setMenuUrl] = useState("");
   const [reservationUrl, setReservationUrl] = useState("");
 
-  // Set initial values when restaurant data is available
+
   useEffect(() => {
     if (restaurant) {
-      // Set menu URL (check both string and object formats)
+
       if (typeof restaurant.menu === "string") {
-        setMenuUrl(restaurant.menu);
+        setMenuUrl(restaurant?.menu);
       } else if (restaurant.menu?.content) {
-        setMenuUrl(restaurant.menu.content);
+        setMenuUrl(restaurant.menu?.content);
       }
 
-      // Set reservation URL
       if (restaurant.reservation?.content) {
-        setReservationUrl(restaurant.reservation.content);
+        setReservationUrl(restaurant.reservation?.content);
       }
     }
   }, [restaurant]);
@@ -156,7 +153,7 @@ const EditRestaurantMenu = ({
               id="menu-url"
               value={menuUrl}
               onChange={(e) => setMenuUrl(e.target.value)}
-              placeholder="https://example.com"
+              placeholder="https://menu.com"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             />
           </div>
@@ -176,7 +173,7 @@ const EditRestaurantMenu = ({
               id="reservation-url"
               value={reservationUrl}
               onChange={(e) => setReservationUrl(e.target.value)}
-              placeholder="https://example.com"
+              placeholder="https://reservation.com"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             />
           </div>

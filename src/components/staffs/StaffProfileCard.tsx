@@ -56,19 +56,21 @@ const StaffProfileCard: React.FC<StaffProfileCardProps> = ({
         )}
       </div>
 
-      <div className="mt-6 space-y-9">
+      <div className="mt-6 space-y-4">
         <div className="flex items-center gap-2 bg-[#FAFAFA] p-2 rounded border-[#F0F1F2] shadow">
           <Icon name="emailIcon" fill="#2E3032" />
           <p className="text-[#2E3032] text-lg font-semibold leading-[100%]">
             {email ?? "N/A"}
           </p>
         </div>
+
         <div className="flex items-center gap-2 bg-[#FAFAFA] p-2 rounded border-[#F0F1F2] shadow">
           <Icon name="phoneIcon" className="h-5 w-5 text-gray-500" />
           <p className="text-[#2E3032] text-lg font-semibold leading-[100%]">
             {phone ?? "N/A"}
           </p>
         </div>
+
         <div className="flex items-center gap-2 bg-[#FAFAFA] p-2 rounded border-[#F0F1F2] shadow">
           <Icon name="mapIcon" className="h-5 w-5 text-gray-500" />
           <p className="text-[#2E3032] text-lg font-semibold leading-[100%]">

@@ -186,6 +186,7 @@ const PendingVideos = ({
           website: currentRestaurant.location.website,
           mapLink: currentRestaurant.location.mapLink,
           submissionId: currentRestaurant.submission.id,
+          submissionDate: currentRestaurant?.submission?.date,
         }
       : {
           id: "",
@@ -196,6 +197,7 @@ const PendingVideos = ({
           adminName: "",
           adminId: "",
           submissionId: "",
+          submissionDate: "",
         };
   }, [videos, videoPreview.currentRestaurantId]);
 

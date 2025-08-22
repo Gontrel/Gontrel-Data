@@ -225,6 +225,7 @@ export interface FetchStaffSummary extends BaseQueryRequest {
 
 export interface FetchStaffActivities extends BaseQueryRequest {
   adminId: string;
+  type?: string;
 }
 
 export interface FetchStaffProfile extends BaseQueryRequest {
