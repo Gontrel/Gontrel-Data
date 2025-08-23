@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -21,7 +20,7 @@ interface StaffActivitiesProps {
   dateRange: DateRangeValue | undefined;
   onDateRangeChange: (range: DateRangeValue | undefined) => void;
   hasMore: boolean;
-  onActivityTypeChange: (type: ActivityType | undefined) => void; 
+  onActivityTypeChange: (type: ActivityType | undefined) => void;
   activityType: ActivityType | undefined;
 }
 
@@ -72,7 +71,6 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
       </div>
 
       <section className="flex justify-between">
-
         <ActivityTypeFilter
           value={activityType}
           onChange={onActivityTypeChange}
@@ -91,9 +89,14 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
         className="mt-6 flex-grow overflow-y-auto space-y-6"
         style={{ maxHeight: "calc(100vh - 300px)" }}
       >
-        <h3 className="text-[20px] font-semibold text-[#2E3032]">
-          {currentMonth}
-        </h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-[20px] font-semibold text-[#2E3032]">
+            {currentMonth}
+          </h3>
+          <div className="text-[20px] font-semibold text-[#2E3032]">
+            {activitiesData.length} activities
+          </div>
+        </div>
 
         {activitiesData.length > 0 ? (
           <>

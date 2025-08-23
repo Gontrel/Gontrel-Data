@@ -155,19 +155,19 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     mutate({ adminId: staffId, comment: comment });
   }, [staffId, comment, mutate]);
 
-const handleConfirmation = useCallback(() => {
-  toggleStaffActivation();
-  setConfirmationModalOpen(false);
-  refetchStaffProfile();
-  refetchStaffAccountSummary();
+  const handleConfirmation = useCallback(() => {
+    toggleStaffActivation();
+    setConfirmationModalOpen(false);
+    refetchStaffProfile();
+    refetchStaffAccountSummary();
 
-  fetchActivities(1, true);
-}, [
-  refetchStaffProfile,
-  toggleStaffActivation,
-  refetchStaffAccountSummary,
-  fetchActivities,
-]);
+    fetchActivities(1, true);
+  }, [
+    refetchStaffProfile,
+    toggleStaffActivation,
+    refetchStaffAccountSummary,
+    fetchActivities,
+  ]);
 
   if (isLoadingStaffProfile && isLoadingStaffAccountSummary && isFetching) {
     return <StaffDetailsSkeleton />;

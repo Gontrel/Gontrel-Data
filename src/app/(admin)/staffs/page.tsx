@@ -142,8 +142,6 @@ export default function StaffsPage() {
     },
   ];
 
-  console.log(dataStats, "dataStatsdataStatsdataStatsdataStats");
-
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
       {/* Main Content */}
