@@ -98,6 +98,11 @@ export const staffIdSchema = z.object({
   adminId: z.string(),
 });
 
+export const staffToggleSchema = z.object({
+  adminId: z.string(),
+  comment: z.string().optional(),
+});
+
 // ============================================================================
 // POST MANAGEMENT SCHEMAS
 // ============================================================================

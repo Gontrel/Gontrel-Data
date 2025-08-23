@@ -138,9 +138,11 @@ export default function StaffsPage() {
     },
     {
       label: "Total deactivated staffs",
-      value: dataStats?.inactive || 0,
+      value: dataStats?.inActive || 0,
     },
   ];
+
+  console.log(dataStats, "dataStatsdataStatsdataStatsdataStats");
 
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">

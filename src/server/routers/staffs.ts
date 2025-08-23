@@ -7,7 +7,9 @@ import {
   fetchStaffActivitieSchema,
   fetchStaffsSchema,
   staffIdSchema,
+  staffToggleSchema,
 } from "./schemas";
+import { da } from "date-fns/locale";
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -95,7 +97,6 @@ export const staffsRouter = router({
     .query(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-
         const response = await apiRequest.getStaffsActivities(input);
         return response;
       } catch (error) {
@@ -108,13 +109,13 @@ export const staffsRouter = router({
     }),
 
   toggleStaffStatus: protectedProcedure
-    .input(staffIdSchema)
+    .input(staffToggleSchema)
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-        const response = await apiRequest.toggleStaffActive({
-          adminId: input.adminId,
-        });
+
+      
+        const response = await apiRequest.toggleStaffActive(input);
 
         return response;
       } catch (error) {

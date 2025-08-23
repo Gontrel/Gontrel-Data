@@ -31,24 +31,31 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     undefined
   );
 
-  const { data: staffProfileData, refetch: refetchStaffProfile, isLoading: isLoadingStaffProfile } =
-    trpc.staffs.getStaffProfile.useQuery({
-      adminId: staffId,
-    });
+  const {
+    data: staffProfileData,
+    refetch: refetchStaffProfile,
+    isLoading: isLoadingStaffProfile,
+  } = trpc.staffs.getStaffProfile.useQuery({
+    adminId: staffId,
+  });
 
-  const { data: staffAccountSummaryData, refetch: refetchStaffAccountSummary, isLoading: isLoadingStaffAccountSummary } =
-    trpc.staffs.getStaffsAccountSummary.useQuery(
-      {
-        adminId: staffId,
-      },
-      { enabled: !!staffId }
-    );
+  const {
+    data: staffAccountSummaryData,
+    refetch: refetchStaffAccountSummary,
+    isLoading: isLoadingStaffAccountSummary,
+  } = trpc.staffs.getStaffsAccountSummary.useQuery(
+    {
+      adminId: staffId,
+    },
+    { enabled: !!staffId }
+  );
 
   const { mutate } = trpc.staffs.toggleStaffStatus.useMutation({
     onSuccess: () => {
       successToast("Staff status updated successfully");
     },
-    onError: (error) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
       errorToast(error.message);
     },
   });
@@ -145,21 +152,22 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   };
 
   const toggleStaffActivation = useCallback(async () => {
-    mutate({ adminId: staffId });
-  }, [staffId, mutate]);
+    mutate({ adminId: staffId, comment: comment });
+  }, [staffId, comment, mutate]);
 
-  const handleConfirmation = useCallback(() => {
-    toggleStaffActivation();
-    setConfirmationModalOpen(false);
-    refetchStaffProfile();
-    refetchStaffAccountSummary();
-    fetchActivities(1);
-  }, [
-    refetchStaffProfile,
-    toggleStaffActivation,
-    refetchStaffAccountSummary,
-    fetchActivities,
-  ]);
+const handleConfirmation = useCallback(() => {
+  toggleStaffActivation();
+  setConfirmationModalOpen(false);
+  refetchStaffProfile();
+  refetchStaffAccountSummary();
+
+  fetchActivities(1, true);
+}, [
+  refetchStaffProfile,
+  toggleStaffActivation,
+  refetchStaffAccountSummary,
+  fetchActivities,
+]);
 
   if (isLoadingStaffProfile && isLoadingStaffAccountSummary && isFetching) {
     return <StaffDetailsSkeleton />;
