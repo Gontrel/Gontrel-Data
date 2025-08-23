@@ -338,10 +338,10 @@ export default class APIRequest {
 
   toggleStaffActive = async (data: ToggleStaffActive) => {
     const params = this.buildSearchParams(data);
-
     const response = await this.authenticatedClient.patch(
-      `/admin-toggle-admin-active?${params.toString()}`
+      `/admin-toggle-admin-active?${params?.toString()}`
     );
+
     return this.handleResponse(response);
   };
 

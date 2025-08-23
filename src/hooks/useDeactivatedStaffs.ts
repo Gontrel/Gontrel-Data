@@ -8,7 +8,6 @@ interface UseDeactivatedStaffsProps {
   endDate?: string;
 }
 
-
 export const useDeactivatedStaffs = ({
   currentPage,
   pageSize,
@@ -27,7 +26,7 @@ export const useDeactivatedStaffs = ({
     query: searchTerm,
     startDate,
     endDate,
-    isActive: false, 
+    isActive: false,
   });
 
   return {

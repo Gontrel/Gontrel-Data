@@ -418,8 +418,12 @@ export interface LocationAvailabilityRequest {
 export interface ToggleLocation {
   locationId?: string; // required
 }
+export default interface ToggleStaffActiveQuery {
+  adminId: string;
+}
+
 export default interface ToggleStaffActive {
-  adminId?: string;
+  comment?: string;
 }
 
 /**

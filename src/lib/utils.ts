@@ -317,15 +317,14 @@ export const formatPostTime = (isoDateString: string): string => {
   const postDate = new Date(isoDateString);
   const now = new Date();
 
-  // Check if the date is today
   const isToday =
     postDate.getDate() === now.getDate() &&
     postDate.getMonth() === now.getMonth() &&
     postDate.getFullYear() === now.getFullYear();
 
-  // Format the time (e.g., "3pm")
   const timeFormatter = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
+    minute: "numeric", 
     hour12: true,
   });
   const formattedTime = timeFormatter.format(postDate).toLowerCase();
@@ -343,7 +342,6 @@ export const formatPostTime = (isoDateString: string): string => {
 
   return `${month} ${day} at ${formattedTime}`;
 };
-
 export const formatRestaurantTime = (isoDateString: string): string => {
   if (isoDateString.length === 0) {
     return "";

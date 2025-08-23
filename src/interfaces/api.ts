@@ -4,7 +4,7 @@ import { Post } from "./posts";
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
-  pagination: Pagination
+  pagination: Pagination;
   meta: Record<string, unknown> | undefined;
 }
 
@@ -94,7 +94,7 @@ export interface DashboardStats {
 
 export interface StaffStats {
   active: number;
-  inactive: number;
+  inActive: number;
   all: number;
 }
 

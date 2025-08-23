@@ -138,7 +138,7 @@ export default function StaffsPage() {
     },
     {
       label: "Total deactivated staffs",
-      value: dataStats?.inactive || 0,
+      value: dataStats?.inActive || 0,
     },
   ];
 
