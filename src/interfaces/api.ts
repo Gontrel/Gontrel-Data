@@ -4,7 +4,7 @@ import { Post } from "./posts";
 
 export interface IPaginatedRes<T = unknown> {
   data: Array<T>;
-  pagination: Pagination
+  pagination: Pagination;
   meta: Record<string, unknown> | undefined;
 }
 
@@ -93,9 +93,9 @@ export interface DashboardStats {
 }
 
 export interface StaffStats {
-  totalAdmins: number;
-  totalManagers: number;
-  totalAnalysts: number;
+  active: number;
+  inActive: number;
+  all: number;
 }
 
 export interface LocationStats {

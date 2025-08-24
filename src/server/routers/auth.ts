@@ -1,9 +1,10 @@
-import { publicProcedure, router } from "@/lib/trpc";
+import { publicProcedure, protectedProcedure, router } from "@/lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
 import { serialize, parse } from "cookie";
+import { createAdminSchema } from "./schemas";
 
 export const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -69,6 +70,24 @@ export const authRouter = router({
         });
       }
     }),
+
+  createAdmin: protectedProcedure
+    .input(createAdminSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.createAdmin(input);
+
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
   resetPassword: publicProcedure
     .input(
       z.object({

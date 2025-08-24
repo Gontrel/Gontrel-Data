@@ -37,4 +37,12 @@ export type TIconNames =
   | "googleIcon"
   | "binIcon"
   | "pencilIcon"
+  | "phoneIcon"
+  | "emailIcon"
+  | "mapIcon"
+  | "personIcon2"
+  | "plusIcon"
+  | "blockIcon"
+  | "emailIcon2"
+  | "commentIcon"
   | "personIcon";

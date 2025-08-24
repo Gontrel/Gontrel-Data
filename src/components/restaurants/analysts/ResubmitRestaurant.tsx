@@ -6,7 +6,6 @@ import { RestaurantData, TimeSlot } from "@/types/restaurant";
 import { RestaurantConfirmationSkeleton } from "@/components/Loader/restaurants/RestaurantConfirmationSkeleton";
 import { trpc } from "@/lib/trpc-client";
 import {
-  convertTimeTo24Hour,
   formatOpeningHours,
   formatTime,
   processGoogleHours,
@@ -15,7 +14,6 @@ import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
 import { successToast, errorToast } from "@/utils/toast";
 import { UpdateLocationRequest } from "@/interfaces/requests";
-import { DayOfTheWeek } from "@/types/enums";
 
 interface ResubmitRestaurantSheetProps {
   open: boolean;

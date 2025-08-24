@@ -30,11 +30,9 @@ export const VideoOverlay = ({
   openingHours = "12:00pm - 2:00pm",
   menuLink = "",
   bookLink = "",
-  onDeliveryClick = () => { },
-  onHoursClick = () => { },
+  onDeliveryClick = () => {},
+  onHoursClick = () => {},
 }: VideoOverlayProps) => {
-
-
   return (
     <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-t from-black/30 to-transparent rounded-[15px]">
       <div />
@@ -58,7 +56,7 @@ export const VideoOverlay = ({
 
             <div className="flex items-center gap-2">
               <Icon name="tiktokIcon" width={30} height={30} />
-              <span className="text-sm">{tiktokUsername}</span>
+              <span className="text-sm">{tiktokUsername ?? ""}</span>
             </div>
           </div>
           <CTAButtons

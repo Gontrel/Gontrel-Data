@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/svgs/Icons";
 import { TIconNames } from "@/components/svgs/IconNames";
+import { useIsAdmin } from "@/stores/authStore";
 
 interface NavLink {
   href: string;
@@ -65,6 +66,7 @@ const navSections: NavSection[] = [
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const isAdmin = useIsAdmin();
 
   return (
     <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
@@ -72,51 +74,57 @@ const Sidebar = () => {
         <Image
           src={"/images/logo.png"}
           alt="Gontrel Logo"
-          width={40}
-          height={40}
+          width={60}
+          height={60}
         />
       </div>
 
       <nav className="flex flex-col gap-8 mt-[41px]">
-        {navSections.map((section) => (
-          <div key={section.title}>
-            <h2 className="text-[#9DA1A5] leading-[100%] text-[22px] font-semibold mb-[25px] uppercase tracking-wider">
-              {section.title}
-            </h2>
-            <ul className="flex flex-col gap-[38px]">
-              {section.links.map((link) => {
-                const isActive = link.matchSubPaths
-                  ? pathname.startsWith(link.href)
-                  : pathname === link.href;
-                return (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4 rounded-lg transition-all duration-200 ${
-                        isActive
-                          ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
-                          : "text-[#9DA1A5]  hover:bg-gray-100"
-                      }`}
-                    >
-                      <Icon
-                        name={link.icon}
-                        fill={`${isActive ? "#FFFFFF" : "transparent"}`}
-                        stroke={`${isActive ? "#FFFFFF" : "#9DA1A5"}`}
-                      />
-                      <span
-                        className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${
-                          isActive ? "text-white" : "text-[#9DA1A5]"
-                        }  `}
+        {navSections.map((section) => {
+          if (section.title === "MANAGEMENT" && !isAdmin) {
+            return null; 
+          }
+
+          return (
+            <div key={section.title}>
+              <h2 className="text-[#9DA1A5] leading-[100%] text-[22px] font-semibold mb-[25px] uppercase tracking-wider">
+                {section.title}
+              </h2>
+              <ul className="flex flex-col gap-[38px]">
+                {section.links.map((link) => {
+                  const isActive = link.matchSubPaths
+                    ? pathname.startsWith(link.href)
+                    : pathname === link.href;
+                  return (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4 rounded-lg transition-all duration-200 ${
+                          isActive
+                            ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
+                            : "text-[#9DA1A5]  hover:bg-gray-100"
+                        }`}
                       >
-                        {link.label}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+                        <Icon
+                          name={link.icon}
+                          fill={`${isActive ? "#FFFFFF" : "transparent"}`}
+                          stroke={`${isActive ? "#FFFFFF" : "#9DA1A5"}`}
+                        />
+                        <span
+                          className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${
+                            isActive ? "text-white" : "text-[#9DA1A5]"
+                          }  `}
+                        >
+                          {link.label}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
     </aside>
   );

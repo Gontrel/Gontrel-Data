@@ -1,9 +1,4 @@
-import {
-  AdminRoleEnum,
-  ApprovalStatusEnum,
-  ApprovalType,
-  DayOfTheWeek,
-} from "@/types/enums";
+import { ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types/enums";
 import { z } from "zod";
 
 // ============================================================================
@@ -45,12 +40,13 @@ export const baseQuerySchema = paginationSchema.extend({
  * POST /create-admin - CreateAdminRequest
  */
 export const createAdminSchema = z.object({
-  name: z.string().min(1),
   email: z.string().email(),
-  password: z.string().min(1),
+  firstName: z.string().min(2).max(100),
+  lastName: z.string().min(2).max(100),
+  city: z.string().min(2).max(100),
   phoneNumber: z.string().optional(),
-  profileImage: z.string().optional(),
-  role: z.enum(AdminRoleEnum),
+  address: z.string().optional(),
+  role: z.string(),
 });
 
 /**
@@ -83,6 +79,28 @@ export const adminResetPasswordSchema = z.object({
 export const fetchAdminsSchema = baseQuerySchema.extend({
   role: z.string().optional(),
   isActive: z.boolean().optional(),
+});
+
+export const fetchStaffsSchema = baseQuerySchema.extend({
+  isActive: z.boolean().optional(),
+});
+
+export const fetchStaffActivitieSchema = baseQuerySchema.extend({
+  adminId: z.string(),
+  type: z.string().optional(),
+});
+
+export const fetchAdminSummarySchema = baseQuerySchema.extend({
+  adminId: z.string(),
+});
+
+export const staffIdSchema = z.object({
+  adminId: z.string(),
+});
+
+export const staffToggleSchema = z.object({
+  adminId: z.string(),
+  comment: z.string().optional(),
 });
 
 // ============================================================================
@@ -398,3 +416,5 @@ export const placeDetailsSchema = z.object({
 
 export const locationAvailabilityRequestSchema = locationAvailabilitySchema;
 export const postCreationRequestSchema = postCreationSchema;
+
+export const fetchPendingUserVideosSchema = fetchAdminPostsSchema.extend({});

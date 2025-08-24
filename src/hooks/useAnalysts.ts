@@ -13,7 +13,6 @@ export const useAnalystOptions = () => {
   const { data, isLoading, error } = trpc.staffs.getStaffs.useQuery({
     pageNumber: 1,
     quantity: 100,
-    role: 'analyst',
   });
 
   const options: AnalystOption[] = useMemo(() => {
@@ -23,5 +22,4 @@ export const useAnalystOptions = () => {
 
   return { options, isLoading, error };
 };
-
 

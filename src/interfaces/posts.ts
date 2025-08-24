@@ -1,4 +1,4 @@
-import { Admin } from "./user";
+import { Admin, User } from "./user";
 
 export interface Post {
   id: string;
@@ -10,6 +10,7 @@ export interface Post {
   updatedBy?: string;
   firebaseId?: string;
   analytics?: Analytics;
+  submissionDate?: string;
   tiktokLink: string;
   videoUrl: string;
   isFoodVisible?: boolean;
@@ -17,6 +18,7 @@ export interface Post {
   postedAt?: string;
   status: string;
   admin?: Admin;
+  user?: User;
   source: string;
   tags: Tag[];
 }

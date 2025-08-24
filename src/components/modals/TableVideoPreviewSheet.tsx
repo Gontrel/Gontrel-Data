@@ -76,7 +76,7 @@ const TableVideoPreviewSheetContent = ({
   onDecline,
   restaurant,
 }: TableVideoPreviewSheetContentProps) => (
-  <section className="flex flex-col gap-y-4.5 py-5 px-6">
+  <section className="flex flex-col gap-y-4.5 py-5 items-center">
     {posts.length > 0 ? (
       posts.map((post, index) => (
         <LivePostCard
@@ -139,6 +139,7 @@ export const TableVideoPreviewSheet = ({
 
   if (
     table === ManagerTableTabsEnum.PENDING_VIDEOS ||
+    table === ManagerTableTabsEnum.PENDING_USER_VIDEOS ||
     table === AnalystTableTabsEnum.SUBMITTED_VIDEOS
   ) {
     const { data: queryData } = trpc.post.getPosts.useQuery({
@@ -165,7 +166,7 @@ export const TableVideoPreviewSheet = ({
       onOpenChange={onOpenChange}
       side="right"
       width="w-[604px]"
-      className="bg-white p-0 overflow-y-auto"
+      className="bg-white overflow-y-auto"
     >
       <TableVideoPreviewSheetHeader onOpenChange={onOpenChange} posts={posts} />
       <TableVideoPreviewSheetContent

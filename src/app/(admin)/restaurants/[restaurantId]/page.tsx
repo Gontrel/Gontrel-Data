@@ -23,11 +23,9 @@ import { useHeaderStore } from "@/stores/headerStore";
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { EditVideo } from "@/components/modals/EditPostModal";
-import { formatRestaurantTime } from "@/lib/utils";
 import { RestaurantInfoCard } from "@/components/restaurants/details/RestaurantInfoCard";
 import { AccountSummary } from "@/components/restaurants/details/AccountSummary";
-
-const PAGE_SIZE = 10;
+import { PAGE_SIZE } from "@/constants";
 
 interface IPostMeta {
   pendingCount: number;
@@ -340,7 +338,7 @@ const RestaurantDetailsPage = ({
   };
 
   const gontrelRestaurantData: GontrelRestaurantData = {
-    name: restaurant.name,
+    name: restaurant?.name,
     menu: restaurant.menu?.content,
     reservation: restaurant.reservation?.content,
     rating: restaurant?.rating,
@@ -368,9 +366,9 @@ const RestaurantDetailsPage = ({
           <RestaurantInfoCard restaurant={restaurant} isActive={isActive} />
           {/* Account Summary Card */}
           <AccountSummary
-            totalPosts={restaurant?.summary?.totalPosts}
-            tiktokPosts={restaurant?.summary?.tiktokPosts}
-            userPosts={restaurant?.summary?.userPosts}
+            totalPosts={restaurant?.summary?.totalPosts ?? 0}
+            tiktokPosts={restaurant?.summary?.tiktokPosts ?? 0}
+            userPosts={restaurant?.summary?.userPosts ?? 0}
           />
         </div>
 
@@ -454,12 +452,13 @@ const RestaurantDetailsPage = ({
             )}
 
             {/* Render posts */}
-            {posts.length > 0 && (
+            {posts?.length > 0 && (
               <>
-                {posts.map((post: Post) => (
+                {posts?.map((post: Post) => (
                   <LivePostCard
                     key={post.id}
                     post={post}
+                    className="max-w-[556px]"
                     restaurant={restaurant}
                     RestaurantDetailsFlow={true}
                     handleOpenEditModal={() => handleOpenEditModal(post.id)}
@@ -485,7 +484,7 @@ const RestaurantDetailsPage = ({
                 )}
 
                 {/* No more posts indicator */}
-                {!hasMore && !isFetching && posts.length > 0 && (
+                {!hasMore && !isFetching && posts?.length > 0 && (
                   <div className="flex justify-center p-4 mb-8">
                     <p className="text-gray-500">No more videos</p>
                   </div>

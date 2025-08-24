@@ -103,7 +103,7 @@ export const createPendingVideosColumns = (
     accessorKey: "dateAdded",
     header: () => <TableHeader iconName="calendarIcon" title="Date added" />,
     cell: ({ row }) => {
-      const dateAdded = new Date(row.original.submission.date);
+      const dateAdded = new Date(row.original?.submission?.date);
 
       return (
         <div className="relative">

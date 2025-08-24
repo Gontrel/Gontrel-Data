@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
-import { RestaurantTable } from "../RestaurantTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
 
@@ -24,6 +23,7 @@ import {
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
 import { usePendingVideos } from "@/hooks/usePendingVideos";
+import { GenericTable } from "@/components/tables/GenericTable";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import RestaurantCard from "@/components/cards/RestaurantCard";
 
@@ -186,6 +186,7 @@ const PendingVideos = ({
           website: currentRestaurant.location.website,
           mapLink: currentRestaurant.location.mapLink,
           submissionId: currentRestaurant.submission.id,
+          submissionDate: currentRestaurant?.submission?.date,
         }
       : {
           id: "",
@@ -196,6 +197,7 @@ const PendingVideos = ({
           adminName: "",
           adminId: "",
           submissionId: "",
+          submissionDate: "",
         };
   }, [videos, videoPreview.currentRestaurantId]);
 
@@ -228,8 +230,8 @@ const PendingVideos = ({
         submissionId={currentSubmissionId}
       />
 
-      <RestaurantTable<PendingVideoTableTypes>
-        restaurants={videos}
+      <GenericTable<PendingVideoTableTypes>
+        data={videos}
         loading={isLoading}
         onRowSelect={handleRowSelection}
         showSelection={true}
