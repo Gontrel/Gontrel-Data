@@ -81,7 +81,7 @@ const Sidebar = () => {
 
       <nav className="flex flex-col gap-8 mt-[41px]">
         {navSections.map((section) => {
-          if (section.title === "MANAGEMENT" && isAdmin) {
+          if (section.title === "MANAGEMENT" && !isAdmin) {
             return null; 
           }
 
