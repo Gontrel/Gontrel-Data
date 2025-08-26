@@ -30,7 +30,8 @@ export default function StaffsPage() {
     }
   }, [currentUser?.role, view]);
 
-  const { data: dataStats } = trpc.staffs.getStaffsStats.useQuery();
+  const { data: dataStats, isLoading: statsIsLoading } =
+    trpc.staffs.getStaffsStats.useQuery();
 
   const {
     tabStates,
@@ -82,16 +83,6 @@ export default function StaffsPage() {
     },
     [activeTab, updateTabSearchTerm]
   );
-
-  /**
-   * Handles analyst filter changes for the active tab
-   */
-  // const handleAnalystChange = useCallback(
-  //   (analyst: string) => {
-  //     updateTabAnalyst(activeTab, analyst);
-  //   },
-  //   [activeTab, updateTabAnalyst]
-  // );
 
   /**
    * Handles time period filter changes for the active tab
@@ -147,7 +138,12 @@ export default function StaffsPage() {
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
         {/* Staff Stats - Placeholder for now */}
-        <StatsGrid className="lg:grid-cols-2" stats={DEFAULT_USER_STATS} />
+
+        <StatsGrid
+          className="lg:grid-cols-2"
+          stats={DEFAULT_USER_STATS}
+          loading={statsIsLoading}
+        />
 
         {/* Table Tabs */}
         <StaffTableTabs

@@ -1,4 +1,3 @@
-// Corrected ActionPanel component
 import { SearchBar } from "../admin/SearchBar";
 import { AddRestaurantButton } from "./AddRestaurantButton";
 import { FilterDropdowns } from "../admin/FilterDropdowns";
@@ -9,19 +8,29 @@ import { type DateRangeValue } from "@/utils/dateRange";
 import { ManagerTableTabsEnum } from "@/types";
 
 /**
- * Props for SearchAndActions component
+ * Props for ActionPanel component
  */
 interface ActionPanelProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onAddRestaurant: () => void;
   searchPlaceholder?: string;
+
+  // Analyst/User
   selectedAnalyst?: string;
   onAnalystChange?: (analyst: string) => void;
   selectedUser?: string;
   onUserChange?: (user: string) => void;
+
+  // Date
   selectedDateRange?: DateRangeValue;
   onDateRangeChange: (range: DateRangeValue | undefined) => void;
+
+  // Status (NEW)
+  selectedStatus?: string;
+  onStatusChange?: (status: string) => void;
+
+  // Other
   showFilters?: boolean;
   analystOptions?: Array<{ value: string; label: string }>;
   userOptions?: Array<{ value: string; label: string }>;
@@ -30,19 +39,28 @@ interface ActionPanelProps {
 
 /**
  * Search and Actions Component
- * Handles search functionality, filter dropdowns, and action buttons
  */
 export const ActionPanel: React.FC<ActionPanelProps> = ({
   searchTerm,
   onSearchChange,
   onAddRestaurant,
   searchPlaceholder = "Search using name or location",
+
+  // Analyst/User
   selectedAnalyst = "",
   onAnalystChange = () => {},
   selectedUser = "",
   onUserChange = () => {},
+
+  // Date
   selectedDateRange,
   onDateRangeChange,
+
+  // Status
+  selectedStatus = "all",
+  onStatusChange = () => {},
+
+  // Other
   showFilters = true,
   analystOptions = [],
   userOptions = [],
@@ -64,36 +82,52 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4.5">
       <div className="flex-1 gap-4.5 flex flex-row justify-between w-full">
+        {/* Search */}
         <SearchBar
           value={searchTerm}
           onChange={onSearchChange}
           placeholder={searchPlaceholder}
         />
+
+        {/* Filters */}
         {showFilters && (
           <div>
-            {activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS ? (
-             
+            {/* Pending user videos */}
+            {activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS && (
               <FilterDropdowns
                 selectedUser={selectedUser}
-                activeTab = {activeTab}
+                activeTab={activeTab}
                 onUserChange={onUserChange}
                 usersOptions={mergedUserOptions}
                 onDateRangeChange={onDateRangeChange}
               />
-            ) : (
+            )}
+            {activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS && (
               <FilterDropdowns
-                selectedUser={selectedAnalyst}
-                  activeTab = {activeTab}
-                onUserChange={onAnalystChange}
+                activeTab={activeTab}
                 selectedDateRange={selectedDateRange}
                 onDateRangeChange={onDateRangeChange}
-                usersOptions={mergedAnalystOptions}
+                selectedStatus={selectedStatus}
+                onStatusChange={onStatusChange}
               />
             )}
+
+            {activeTab !== ManagerTableTabsEnum.PENDING_USER_VIDEOS &&
+              activeTab !== ManagerTableTabsEnum.ACTIVE_VIDEOS && (
+                <FilterDropdowns
+                  selectedUser={selectedAnalyst}
+                  activeTab={activeTab}
+                  onUserChange={onAnalystChange}
+                  selectedDateRange={selectedDateRange}
+                  onDateRangeChange={onDateRangeChange}
+                  usersOptions={mergedAnalystOptions}
+                />
+              )}
           </div>
         )}
       </div>
 
+      {/* Action button */}
       <div className="flex items-center w-full sm:w-auto">
         <AddRestaurantButton onClick={onAddRestaurant} />
       </div>
