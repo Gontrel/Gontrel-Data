@@ -60,6 +60,7 @@ export const VideoStep = ({
 
   const {
     refetch: validateTikTokRetech,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isLoadingTiktokValidation,
   } = trpc.external.validateTikTokLink.useQuery(
     { link: debouncedUrl },
