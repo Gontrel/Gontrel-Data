@@ -264,6 +264,21 @@ export default class APIRequest {
     }
   };
 
+  getRestaurantStats = async (
+    data: FetchAdminPostsRequest
+  ): Promise<GetPostsResponse> => {
+    const params = this.buildSearchParams(data);
+    try {
+      const response = await this.authenticatedClient.get(
+        `/admin-location-stats?${params.toString()}`
+      );
+    
+      return this.handleResponse(response);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   getPendingUserVideos = async (
     data: FetchAdminPostsRequest
   ): Promise<GetUserPostsResponse> => {

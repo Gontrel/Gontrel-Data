@@ -55,6 +55,16 @@ export const useTabState = () => {
       pageSize: 10,
       user: "",
     },
+    [ManagerTableTabsEnum.ACTIVE_VIDEOS]: {
+      videoStatus: "",
+      searchTerm: "",
+      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedTimePeriod: "all",
+      dateRange: undefined,
+      currentPage: 1,
+      pageSize: 10,
+      user: "",
+    },
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: {
       searchTerm: "",
       selectedAnalyst: "all",
@@ -145,6 +155,26 @@ export const useTabState = () => {
         [tab]: {
           ...prev[tab],
           user: user,
+          currentPage: 1,
+        },
+      }));
+    },
+    []
+  );
+
+  /**
+   * Update user filter for a specific tab
+   */
+  const updateTabVideoStatus = useCallback(
+    (
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      videoStatus: string
+    ) => {
+      setTabStates((prev) => ({
+        ...prev,
+        [tab]: {
+          ...prev[tab],
+          videoStatus: videoStatus,
           currentPage: 1,
         },
       }));
@@ -308,6 +338,15 @@ export const useTabState = () => {
         pageSize: 10,
         user: "",
       },
+      [ManagerTableTabsEnum.ACTIVE_VIDEOS]: {
+        searchTerm: "",
+        selectedAnalyst: "all",
+        selectedTimePeriod: "all",
+        dateRange: undefined,
+        currentPage: 1,
+        pageSize: 10,
+        user: "",
+      },
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: {
         searchTerm: "",
         selectedAnalyst: "all",
@@ -360,6 +399,7 @@ export const useTabState = () => {
     tabStates,
     updateTabSearchTerm,
     updateTabAnalyst,
+    updateTabVideoStatus,
     updateTabUser,
     updateTabTimePeriod,
     updateTabDateRange,

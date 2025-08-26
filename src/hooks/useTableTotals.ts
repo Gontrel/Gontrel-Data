@@ -12,6 +12,7 @@ import { useActiveStaffs } from "./useActiveStaffs";
 import { useDeactivatedStaffs } from "./useDeactivatedStaffs";
 import { TabState } from "@/interfaces";
 import { usePendingUserVideos } from "./usePendingUserVideos";
+import { useActiveVideos } from "./useActiveVideos";
 
 /**
  * Custom hook to fetch table totals for each tab independently using tRPC
@@ -59,6 +60,7 @@ export const useTableTotals = (
       tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.selectedAnalyst ||
       undefined,
   });
+
   // Fetch pending videos total with tab-specific search
   const { queryData: pendingVideosTotal } = usePendingVideos({
     currentPage: 1,
@@ -77,6 +79,25 @@ export const useTableTotals = (
       tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.selectedAnalyst ||
       undefined,
   });
+
+  const { queryData: activeVideosTotal } = useActiveVideos({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm:
+      tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.searchTerm || "",
+    startDate:
+      tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    adminId:
+      tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.selectedAnalyst ||
+      undefined,
+  });
+
 
   // Fetch active restaurants total with tab-specific search
   const { queryData: activeRestaurantsTotal } = useActiveRestaurants({
@@ -186,6 +207,7 @@ export const useTableTotals = (
 
   const pendingRestaurantsCount = getTotalFromResponse(pendingRestaurantsTotal);
   const pendingVideosCount = getTotalFromResponse(pendingVideosTotal);
+  const activeVideosCount = getTotalFromResponse(activeVideosTotal);
   const activeRestaurantsCount = getTotalFromResponse(activeRestaurantsTotal);
   const submittedRestaurantsCount = getTotalFromResponse(
     submittedRestaurantsTotal
@@ -199,6 +221,7 @@ export const useTableTotals = (
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsCount,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
+    [ManagerTableTabsEnum.ACTIVE_VIDEOS]: activeVideosCount,
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsCount,
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
     [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,

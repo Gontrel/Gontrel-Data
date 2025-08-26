@@ -49,6 +49,7 @@ export default function RestaurantsPage() {
     tabStates,
     updateTabSearchTerm,
     updateTabAnalyst,
+    updateTabVideoStatus,
     updateTabUser,
     updateTabDateRange,
     updateTabPage,
@@ -80,6 +81,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+      [ManagerTableTabsEnum.ACTIVE_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage,
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
@@ -101,6 +104,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+      [ManagerTableTabsEnum.ACTIVE_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].pageSize,
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
@@ -129,6 +134,16 @@ export default function RestaurantsPage() {
       updateTabAnalyst(activeTab, analyst);
     },
     [activeTab, updateTabAnalyst]
+  );
+
+  /**
+   * Handles analyst filter changes for the active tab
+   */
+  const handleVideoStatusChange = useCallback(
+    (videoStatus: string) => {
+      updateTabVideoStatus(activeTab, videoStatus);
+    },
+    [activeTab, updateTabVideoStatus]
   );
 
   const handleUserChange = useCallback(
@@ -224,7 +239,7 @@ export default function RestaurantsPage() {
         />
 
         {/* Search and Actions */}
- 
+
         <ActionPanel
           searchTerm={currentTabState.searchTerm}
           onSearchChange={handleSearch}
@@ -232,6 +247,8 @@ export default function RestaurantsPage() {
           selectedAnalyst={currentTabState.selectedAnalyst}
           onAnalystChange={handleAnalystChange}
           selectedUser={currentTabState.user}
+          selectedStatus={currentTabState.videoStatus}
+          onStatusChange={handleVideoStatusChange}
           onUserChange={handleUserChange}
           selectedDateRange={currentTabState.dateRange}
           onDateRangeChange={handleDateRangeChange}
@@ -246,6 +263,7 @@ export default function RestaurantsPage() {
           selectedAnalyst={currentTabState.selectedAnalyst}
           startDate={startDate}
           endDate={endDate}
+          videoStatus={currentTabState.videoStatus}
           tablePageNumbers={createPageNumbersObject()}
           tablePageSizes={createPageSizesObject()}
           onPageChange={handlePageChange}
@@ -262,3 +280,4 @@ export default function RestaurantsPage() {
     </div>
   );
 }
+

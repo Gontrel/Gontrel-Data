@@ -107,7 +107,6 @@ export const createActiveRestaurantsColumns = (
     header: () => <TableHeader iconName="linkIcon" title="Order Link" />,
     cell: () => (
       <div className="text-center text-[17px] font-medium">
-        {/* {row.original.status} */}
         N/A
       </div>
     ),

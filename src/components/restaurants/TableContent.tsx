@@ -1,4 +1,8 @@
-import { AnalystTableTabsEnum, ManagerTableTabsEnum } from "@/types";
+import {
+  AnalystTableTabsEnum,
+  ApprovalStatusEnum,
+  ManagerTableTabsEnum,
+} from "@/types";
 import PendingRestaurants from "./tables/PendingRestaurants";
 import PendingVideos from "./tables/PendingVideos";
 import React from "react"; // Added missing import for React
@@ -6,6 +10,7 @@ import ActiveRestaurants from "./tables/ActiveRestaurants";
 import SubmittedRestaurants from "./tables/SubmittedRestaurants";
 import SubmittedVideos from "./tables/SubmittedVideos";
 import PendingUserVideos from "./tables/PendingUserVideos";
+import ActiveVideos from "./tables/ActiveVideos";
 
 /**
  * Props for TableContent component
@@ -13,6 +18,7 @@ import PendingUserVideos from "./tables/PendingUserVideos";
 interface TableContentProps {
   activeTab: ManagerTableTabsEnum | AnalystTableTabsEnum;
   searchTerm: string;
+  videoStatus?: ApprovalStatusEnum;
   selectedAnalyst?: string;
   user?: string;
   startDate?: string;
@@ -38,6 +44,7 @@ export const TableContent: React.FC<TableContentProps> = ({
   selectedAnalyst,
   user,
   startDate,
+  videoStatus,
   endDate,
   tablePageNumbers,
   tablePageSizes,
@@ -105,6 +112,24 @@ export const TableContent: React.FC<TableContentProps> = ({
             }
             handlePageSize={(pageSize: number) =>
               onPageSizeChange(ManagerTableTabsEnum.PENDING_VIDEOS, pageSize)
+            }
+          />
+        );
+      case ManagerTableTabsEnum.ACTIVE_VIDEOS:
+        return (
+          <ActiveVideos
+            searchTerm={searchTerm}
+            videoStatus={videoStatus}
+            selectedAnalyst={selectedAnalyst}
+            startDate={startDate}
+            endDate={endDate}
+            currentPage={tablePageNumbers[ManagerTableTabsEnum.ACTIVE_VIDEOS]}
+            pageSize={tablePageSizes[ManagerTableTabsEnum.ACTIVE_VIDEOS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ManagerTableTabsEnum.ACTIVE_VIDEOS, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(ManagerTableTabsEnum.ACTIVE_VIDEOS, pageSize)
             }
           />
         );

@@ -86,8 +86,10 @@ export interface GetLocationStatsResponse {
 // Post management responses
 export type GetPostsResponse = IPaginatedRes<
   {
+
     location: Location | null;
-    admin: Admin;
+    admin: Admin | null;
+    user: User | null;
     tags: Tag[];
   } & Post
 >;
@@ -146,6 +148,57 @@ export type GetGroupedPostsSubmissionsResponse = IPaginatedRes<{
     date: string;
   };
   postCount: number;
+}>;
+
+export type PostTypesResponse = IPaginatedRes<{
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  isVerified: boolean;
+  popularityScore: number;
+  randomField: number;
+  analytics: Record<string, unknown>;
+  tiktokLink: string;
+  username: string;
+  views: number;
+  firstFrameUrl: string;
+  hlsUrl: string;
+  videoUrl: string;
+  thumbUrl: string;
+  postedAt: string | null;
+  location: {
+    id: string;
+    createdAt: string;
+    modifiedAt: string;
+    deletedAt: string | null;
+    deletedBy: string | null;
+    updatedBy: string | null;
+    firebaseId: string | null;
+    address: string;
+    lat: number;
+    lng: number;
+    geohash: string;
+    menu: string;
+    name: string;
+    openingHours: string[];
+    photos: unknown[];
+    phoneNumber: string;
+    priceLevel: number;
+    rating: number;
+    reservation: string;
+    toilets: boolean;
+    type: string;
+    website: string;
+    isVerified: boolean;
+    randomField: number;
+  };
+  saveCount: number;
+  isNewlyAddedLocation: boolean;
+  gontrelCount: number;
 }>;
 
 export interface GetPostByIdResponse {
@@ -336,8 +389,6 @@ export interface GetRestaurantByIdResponse {
   posts: Post[];
   admin: Admin;
 }
-
-
 
 export type GetStaffsResponse = IPaginatedRes<Admin>;
 export type GetUserResponse = IPaginatedRes<User>;

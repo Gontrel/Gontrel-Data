@@ -134,6 +134,7 @@ export const fetchPostByIdSchema = z.object({
 export const fetchGroupedPostsSubmissionsSchema = baseQuerySchema.extend({
   adminId: z.string().uuid().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
+  locationStatus: z.enum(ApprovalStatusEnum).optional(),
   includeRejected: z.boolean().optional(),
 });
 

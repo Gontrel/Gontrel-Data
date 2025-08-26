@@ -1,36 +1,39 @@
 import { trpc } from "@/lib/trpc-client";
-import { ApprovalStatusEnum } from "@/types";
+import { ApprovalStatusEnum } from "@/types/enums";
 
-interface UsePendingUserVideosProps {
+interface UseActiveVideosProps {
   currentPage: number;
   pageSize: number;
   searchTerm?: string;
   startDate?: string;
   endDate?: string;
-  userId?: string;
+  adminId?: string;
+  videoStatus?: ApprovalStatusEnum;
 }
 
-export const usePendingUserVideos = ({
+export const useActiveVideos = ({
+  videoStatus,
   currentPage,
   pageSize,
   searchTerm,
   startDate,
   endDate,
-}: UsePendingUserVideosProps) => {
+  adminId,
+}: UseActiveVideosProps) => {
   const {
     data: queryData,
     isLoading,
     error,
     refetch,
-  } = trpc.post.getPendingUserVideos.useQuery({
+  } = trpc.post.getPosts.useQuery({
+    status: videoStatus || undefined,
     pageNumber: currentPage,
     quantity: pageSize,
     query: searchTerm,
-    status: ApprovalStatusEnum.PENDING,
-    sortBy: "modifiedAt",
-    sortOrder: "DESC",
     startDate,
     endDate,
+    adminId,
   });
+
   return { queryData, isLoading, error, refetch };
 };

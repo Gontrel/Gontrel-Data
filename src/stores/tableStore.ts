@@ -8,6 +8,7 @@ import {
 } from "@/types/enums";
 import {
   ActiveRestaurantTableTypes,
+  ActiveVideoTableTypes,
   PendingRestaurantTableTypes,
   PendingVideoTableTypes,
   SubmittedRestaurantTableTypes,
@@ -45,6 +46,7 @@ export interface TableStore {
   // State for different table types
   pendingRestaurants: TableState<PendingRestaurantTableTypes>;
   pendingVideos: TableState<PendingVideoTableTypes>;
+  activeVideos: TableState<ActiveVideoTableTypes>;
   activeRestaurants: TableState<ActiveRestaurantTableTypes>;
   submittedRestaurants: TableState<SubmittedRestaurantTableTypes>;
   submittedVideos: TableState<SubmittedVideoTableTypes>;
@@ -126,6 +128,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   // Initial states for each table type
   pendingRestaurants: createInitialTableState<PendingRestaurantTableTypes>(),
   pendingVideos: createInitialTableState<PendingVideoTableTypes>(),
+  activeVideos: createInitialTableState<ActiveVideoTableTypes>(),
   pendingUserVideos: createInitialTableState<PendingVideoTableTypes>(),
   activeRestaurants: createInitialTableState<ActiveRestaurantTableTypes>(),
   submittedRestaurants:
@@ -597,6 +600,52 @@ export const usePendingVideosStore = () => {
     resetTable: () => store.resetTable(ManagerTableTabsEnum.PENDING_VIDEOS),
   };
 };
+// Helper hooks for specific table types
+
+export const useActiveVideosStore = () => {
+  const store = useTableStore();
+
+  return {
+    ...store.activeVideos,
+
+    mutationLoading: store.mutationLoading,
+    saveLoading: store.saveLoading,
+
+    approveVideo: store.approveVideo,
+    declineVideo: store.declineVideo,
+
+    saveChanges: () => store.saveChanges(ManagerTableTabsEnum.ACTIVE_VIDEOS),
+    discardChanges: () =>
+      store.discardChanges(ManagerTableTabsEnum.ACTIVE_VIDEOS),
+    getActiveChanges: () =>
+      store.getPendingChanges(ManagerTableTabsEnum.ACTIVE_VIDEOS),
+
+    setData: (data: ActiveVideoTableTypes[]) =>
+      store.setData(ManagerTableTabsEnum.ACTIVE_VIDEOS, data),
+
+    setLoading: (loading: boolean) =>
+      store.setLoading(ManagerTableTabsEnum.ACTIVE_VIDEOS, loading),
+
+    setError: (error: string | null) =>
+      store.setError(ManagerTableTabsEnum.ACTIVE_VIDEOS, error),
+
+    setPagination: (
+      pagination: Partial<TableState<ActiveVideoTableTypes>["pagination"]>
+    ) => store.setPagination(ManagerTableTabsEnum.ACTIVE_VIDEOS, pagination),
+
+    setSearchTerm: (searchTerm: string) =>
+      store.setSearchTerm(ManagerTableTabsEnum.ACTIVE_VIDEOS, searchTerm),
+
+    setSelectedRows: (selectedRows: string[]) =>
+      store.setSelectedRows(ManagerTableTabsEnum.ACTIVE_VIDEOS, selectedRows),
+
+    clearSelection: () =>
+      store.clearSelection(ManagerTableTabsEnum.ACTIVE_VIDEOS),
+
+    resetTable: () => store.resetTable(ManagerTableTabsEnum.ACTIVE_VIDEOS),
+  };
+};
+
 
 export const usePendingRestaurantsStore = () => {
   const store = useTableStore();
