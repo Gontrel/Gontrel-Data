@@ -2,12 +2,11 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { type DateRangeValue, rangeToYmd } from "@/utils/dateRange";
-import { ManagerTableTabsEnum } from "@/types";
+import { ManagerTableTabsEnum, StatsData } from "@/types";
 import { ActionPanel } from "@/components/restaurants/ActionPanel";
 import { TableContent } from "@/components/restaurants/TableContent";
 import { useTabState } from "@/hooks/useTabState";
 import { useTableTotals } from "@/hooks/useTableTotals";
-import { DEFAULT_RESTAURANT_STATS } from "@/constants/";
 import { StatsGrid } from "@/components/ui/StatsGrid";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
@@ -17,6 +16,7 @@ import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useCurrentUser } from "@/stores/authStore";
 import { useAnalystOptions } from "@/hooks/useAnalysts";
 import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
+import { trpc } from "@/lib/trpc-client";
 
 /**
  * Restaurants Page Component
@@ -25,30 +25,21 @@ export default function RestaurantsPage() {
   const currentUser = useCurrentUser();
   const [view, setView] = useState<AdminRoleEnum | null>(null);
   const { options: analystOptions } = useAnalystOptions();
-
   const initialTab =
     currentUser?.role === AdminRoleEnum.ANALYST
       ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS
       : ManagerTableTabsEnum.ACTIVE_RESTAURANTS;
-
   const [activeTab, setActiveTab] = useState<
     ManagerTableTabsEnum | AnalystTableTabsEnum
   >(initialTab);
   const { activeVideoUrl, restaurantData, tiktokUsername, setActiveVideoUrl } =
     useVideoStore();
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
-
-  useEffect(() => {
-    if (currentUser?.role && !view) {
-      setView(currentUser.role);
-    }
-  }, [currentUser?.role, view]);
-
-  // Use custom hook for tab-specific state management
   const {
     tabStates,
     updateTabSearchTerm,
     updateTabAnalyst,
+    updateTabVideoStatus,
     updateTabUser,
     updateTabDateRange,
     updateTabPage,
@@ -56,18 +47,26 @@ export default function RestaurantsPage() {
     getTabState,
   } = useTabState();
 
-  // Use custom hook for table totals with tab-specific state
   const tableTotals = useTableTotals(tabStates);
-
-  // Current tab's state
   const currentTabState = getTabState(activeTab);
   const { startDate, endDate } = rangeToYmd(currentTabState.dateRange);
+  const { data: dataStats, isLoading: statsIsLoading } =
+    trpc.restaurant.getRestaurantStats.useQuery();
 
-  const handlePreviewModalOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      setActiveVideoUrl(null);
+  useEffect(() => {
+    if (currentUser?.role && !view) {
+      setView(currentUser.role);
     }
-  };
+  }, [currentUser?.role, view]);
+
+  const handlePreviewModalOpenChange = useCallback(
+    (isOpen: boolean) => {
+      if (!isOpen) {
+        setActiveVideoUrl(null);
+      }
+    },
+    [setActiveVideoUrl]
+  );
 
   /**
    * Creates page numbers object for all tabs
@@ -80,6 +79,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+      [ManagerTableTabsEnum.ACTIVE_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage,
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
@@ -101,6 +102,8 @@ export default function RestaurantsPage() {
         tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].pageSize,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
+      [ManagerTableTabsEnum.ACTIVE_VIDEOS]:
+        tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].pageSize,
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
         tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
@@ -125,14 +128,25 @@ export default function RestaurantsPage() {
    * Handles analyst filter changes for the active tab
    */
   const handleAnalystChange = useCallback(
-    (analyst: string) => {
+    (analyst: string | undefined) => {
+  
       updateTabAnalyst(activeTab, analyst);
     },
     [activeTab, updateTabAnalyst]
   );
 
+  /**
+   * Handles analyst filter changes for the active tab
+   */
+  const handleVideoStatusChange = useCallback(
+    (videoStatus: string | undefined) => {
+      updateTabVideoStatus(activeTab, videoStatus);
+    },
+    [activeTab, updateTabVideoStatus]
+  );
+
   const handleUserChange = useCallback(
-    (user: string) => {
+    (user: string | undefined) => {
       updateTabUser(activeTab, user);
     },
     [activeTab, updateTabUser]
@@ -186,6 +200,25 @@ export default function RestaurantsPage() {
     []
   );
 
+  const DEFAULT_RESTAURANT_STATS: StatsData[] = [
+    {
+      label: "Total active restaurants",
+      value: dataStats?.activeLocations || 0,
+    },
+    {
+      label: "Total pending restaurants",
+      value: dataStats?.pendingLocations || 0,
+    },
+    {
+      label: "Total active videos",
+      value: dataStats?.totalPosts || 0,
+    },
+    {
+      label: "Total pending videos",
+      value: dataStats?.pendingPosts || 0,
+    },
+  ];
+
   return (
     <div className="min-h-screen relative bg-[#FAFAFA]">
       <PreviewVideoModal
@@ -213,7 +246,7 @@ export default function RestaurantsPage() {
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
         {/* Restaurant Stats */}
-        <StatsGrid stats={DEFAULT_RESTAURANT_STATS} />
+        <StatsGrid stats={DEFAULT_RESTAURANT_STATS} loading={statsIsLoading} />
 
         {/* Table Tabs */}
         <TableTabs
@@ -224,7 +257,7 @@ export default function RestaurantsPage() {
         />
 
         {/* Search and Actions */}
- 
+
         <ActionPanel
           searchTerm={currentTabState.searchTerm}
           onSearchChange={handleSearch}
@@ -232,6 +265,8 @@ export default function RestaurantsPage() {
           selectedAnalyst={currentTabState.selectedAnalyst}
           onAnalystChange={handleAnalystChange}
           selectedUser={currentTabState.user}
+          selectedStatus={currentTabState.videoStatus}
+          onStatusChange={handleVideoStatusChange}
           onUserChange={handleUserChange}
           selectedDateRange={currentTabState.dateRange}
           onDateRangeChange={handleDateRangeChange}
@@ -246,6 +281,7 @@ export default function RestaurantsPage() {
           selectedAnalyst={currentTabState.selectedAnalyst}
           startDate={startDate}
           endDate={endDate}
+          videoStatus={currentTabState.videoStatus}
           tablePageNumbers={createPageNumbersObject()}
           tablePageSizes={createPageSizesObject()}
           onPageChange={handlePageChange}

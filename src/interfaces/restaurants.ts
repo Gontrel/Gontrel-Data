@@ -166,6 +166,7 @@ export interface ConverTedWorkingHours {
 
 export interface TabState {
   searchTerm: string;
+  videoStatus?: ApprovalStatusEnum;
   selectedAnalyst: string;
   selectedTimePeriod: string;
   dateRange: DateRangeValue | undefined;

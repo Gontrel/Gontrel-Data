@@ -61,6 +61,7 @@ export const postRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getPosts(input);
+
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -76,7 +77,6 @@ export const postRouter = router({
     .query<GetUserPostsResponse>(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-
         const response = await apiRequest.getPendingUserVideos(input);
         return response;
       } catch (error) {

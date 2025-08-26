@@ -40,6 +40,7 @@ import {
   CreateAdminResponse,
   GetUserPostsResponse,
   GetUserResponse,
+  GetLocationStatsResponse,
 } from "@/interfaces";
 import ToggleStaffActive, {
   BaseQueryRequest,
@@ -264,6 +265,18 @@ export default class APIRequest {
     }
   };
 
+  getRestaurantStats = async (): Promise<GetLocationStatsResponse> => {
+    try {
+      const response = await this.authenticatedClient.get(
+        `/admin-location-stats`
+      );
+
+      return this.handleResponse(response);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   getPendingUserVideos = async (
     data: FetchAdminPostsRequest
   ): Promise<GetUserPostsResponse> => {
@@ -433,6 +446,15 @@ export default class APIRequest {
     const response = await this.authenticatedClient.get(
       `/tiktok-link-info?link=${data.link}`
     );
+    return this.handleResponse(response);
+  };
+
+  validateTiktokUrl = async (data: { link: string }) => {
+  
+    const response = await this.authenticatedClient.get(
+      `/validate-tiktok-link?link=${data.link?.trim()}`
+    );
+
     return this.handleResponse(response);
   };
 }

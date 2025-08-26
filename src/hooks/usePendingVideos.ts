@@ -18,6 +18,7 @@ export const usePendingVideos = ({ currentPage, pageSize, searchTerm, startDate,
     refetch
   } = trpc.post.getGroupedPostsSubmissions.useQuery({
     status: ApprovalStatusEnum.PENDING,
+    locationStatus: ApprovalStatusEnum.APPROVED,
     includeRejected: true,
     pageNumber: currentPage,
     quantity: pageSize,

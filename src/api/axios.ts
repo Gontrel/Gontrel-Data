@@ -15,19 +15,17 @@ const baseConfig: AxiosRequestConfig = {
   validateStatus: (status: number) => status >= 200 && status < 300,
 };
 
-// --- Authenticated Client ---
 const axiosInstance = axios.create({
   ...baseConfig,
-  withCredentials: true, 
+  withCredentials: true,
 });
+
 
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
-
       if (typeof window !== "undefined") {
-
         errorToast("Session expired. Please login again.");
 
         localStorage.removeItem("authState");

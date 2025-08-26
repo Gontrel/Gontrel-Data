@@ -58,12 +58,23 @@ export const VideoStep = ({
       { enabled: false }
     );
 
+  const {
+    refetch: validateTikTokRetech,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    isLoading: isLoadingTiktokValidation,
+  } = trpc.external.validateTikTokLink.useQuery(
+    { link: debouncedUrl },
+    { enabled: false }
+  );
+
   // Effect to handle debounced TikTok URL processing
   useEffect(() => {
     const processTiktokUrl = async () => {
-      const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+/;
+      const match = debouncedUrl.match(
+        /https:\/\/www\.tiktok\.com\/@[^\/]+\/video\/\d+/
+      );
 
-      if (debouncedUrl && tiktokRegex.test(debouncedUrl)) {
+      if (debouncedUrl && match) {
         try {
           const { data } = await refetch();
           if (data && data.play) {
@@ -77,11 +88,9 @@ export const VideoStep = ({
               author: data.author?.nickname,
             }));
           } else {
-            setActiveVideoUrl(null);
             errorToast("Could not retrieve video information from this URL.");
           }
         } catch {
-          setActiveVideoUrl(null);
           errorToast(
             "Failed to fetch TikTok video information. Please check the URL."
           );
@@ -90,7 +99,13 @@ export const VideoStep = ({
     };
 
     processTiktokUrl();
-  }, [debouncedUrl, refetch, setActiveVideoUrl, setTiktokUsername]);
+  }, [
+    debouncedUrl,
+    validateTikTokRetech,
+    refetch,
+    setActiveVideoUrl,
+    setTiktokUsername,
+  ]);
 
   const handleUrlChange = (
     e:

@@ -16,7 +16,6 @@ export const usePendingUserVideos = ({
   searchTerm,
   startDate,
   endDate,
-  userId,
 }: UsePendingUserVideosProps) => {
   const {
     data: queryData,

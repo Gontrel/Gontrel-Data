@@ -10,21 +10,26 @@ import { useCurrentUser } from "@/stores/authStore";
  * Props for FilterDropdowns component
  */
 interface FilterDropdownsProps {
-  selectedUser: string;
-  onUserChange: (analyst: string) => void;
-  
-  activeTab: string;  
+  selectedUser?: string;
+  onUserChange?: (user: string | undefined) => void;
+
+  selectedStatus?: string;
+  onStatusChange?: (status: string | undefined) => void;
+
+  activeTab: string;
   selectedDateRange?: DateRangeValue;
-  onDateRangeChange: (range: DateRangeValue | undefined) => void;
+  onDateRangeChange?: (range: DateRangeValue | undefined) => void;
   usersOptions?: Array<{ value: string; label: string }>;
 }
 
 /**
- * Filter dropdowns component for analysts and time periods
+ * Filter dropdowns component for analysts, status and time periods
  */
 export function FilterDropdowns({
-  selectedUser,
-  onUserChange,
+  selectedUser = undefined,
+  onUserChange = () => {},
+  selectedStatus = undefined,
+  onStatusChange = () => {},
   selectedDateRange,
   onDateRangeChange,
   activeTab,
@@ -50,16 +55,40 @@ export function FilterDropdowns({
     </svg>
   );
 
+  // Status icon
+  const statusIcon = (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
+    </svg>
+  );
+
   const optionsWithAll = [
-      activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS ? 
-    { value: "all", label: "All users" } : 
-    { value: "all", label: "All analysts" },
+    activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS
+      ? { value: "all", label: "All users" }
+      : { value: undefined, label: "All analysts" },
     ...(usersOptions ?? []),
+  ];
+
+  const statusOptions = [
+    { value: undefined, label: "All statuses" },
+    { value: "approved", label: "Approved" },
+    { value: "pending", label: "Pending" },
+    { value: "rejected", label: "Rejected" },
   ];
 
   return (
     <div className="flex items-center gap-4.5">
-      {/* Analyst Filter */}
+      {/* Analyst/User Filter (only when NOT active videos) */}
       {optionsWithAll && optionsWithAll.length > 0 && !isAnalyst && (
         <DropdownFilter
           options={optionsWithAll}
@@ -70,7 +99,19 @@ export function FilterDropdowns({
           className="w-48"
         />
       )}
-      {/* Time Period Filter */}
+
+      {activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS && (
+        <DropdownFilter
+          options={statusOptions}
+          value={selectedStatus}
+          onChange={onStatusChange}
+          placeholder="All statuses"
+          icon={statusIcon}
+          className="w-48"
+        />
+      )}
+
+      {/* Date Range Filter (always visible) */}
       {onDateRangeChange && (
         <DateRangeFilter
           value={selectedDateRange}
