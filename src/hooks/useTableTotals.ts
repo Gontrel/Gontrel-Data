@@ -83,8 +83,9 @@ export const useTableTotals = (
   const { queryData: activeVideosTotal } = useActiveVideos({
     currentPage: 1,
     pageSize: 1,
-    searchTerm:
-      tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.searchTerm || "",
+    videoStatus:
+      tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.videoStatus || undefined,
+    searchTerm: tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.searchTerm || "",
     startDate:
       tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.dateRange?.startDate
         ?.toISOString()
@@ -97,7 +98,6 @@ export const useTableTotals = (
       tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.selectedAnalyst ||
       undefined,
   });
-
 
   // Fetch active restaurants total with tab-specific search
   const { queryData: activeRestaurantsTotal } = useActiveRestaurants({

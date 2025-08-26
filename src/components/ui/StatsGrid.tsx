@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { formatNumber } from '@/lib/utils';
-import { StatsCard } from './StatsCard';
+import { formatNumber } from "@/lib/utils";
+import { StatsCard } from "./StatsCard";
 
 interface StatItem {
   label: string;
@@ -15,17 +15,22 @@ interface StatsGridProps {
   loading?: boolean;
 }
 
-/**
- * Responsive grid container for stats cards
- */
 export function StatsGrid({
   stats,
   className = "lg:grid-cols-4",
   loading = false,
 }: StatsGridProps) {
+  const displayStats = loading
+    ? Array.from({ length: stats.length || 4 }).map(() => ({
+        label: "",
+        value: "",
+        loading: true,
+      }))
+    : stats;
+
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2  gap-4 ${className}`}>
-      {stats.map((stat, index) => (
+    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${className}`}>
+      {displayStats.map((stat, index) => (
         <StatsCard
           key={index}
           label={stat.label}

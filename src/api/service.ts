@@ -40,6 +40,7 @@ import {
   CreateAdminResponse,
   GetUserPostsResponse,
   GetUserResponse,
+  GetLocationStatsResponse,
 } from "@/interfaces";
 import ToggleStaffActive, {
   BaseQueryRequest,
@@ -264,15 +265,12 @@ export default class APIRequest {
     }
   };
 
-  getRestaurantStats = async (
-    data: FetchAdminPostsRequest
-  ): Promise<GetPostsResponse> => {
-    const params = this.buildSearchParams(data);
+  getRestaurantStats = async (): Promise<GetLocationStatsResponse> => {
     try {
       const response = await this.authenticatedClient.get(
-        `/admin-location-stats?${params.toString()}`
+        `/admin-location-stats`
       );
-    
+
       return this.handleResponse(response);
     } catch (error) {
       throw error;

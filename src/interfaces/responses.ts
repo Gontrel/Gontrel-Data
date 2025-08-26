@@ -4,7 +4,6 @@ import {
   IPaginatedRes,
   ApiLocation,
   DashboardStats,
-  LocationStats,
   Videos,
 } from "./api";
 import { Post, Tag } from "./posts";
@@ -80,13 +79,18 @@ export interface DeleteLocationResponse {
 }
 
 export interface GetLocationStatsResponse {
-  stats: LocationStats;
+  totalLocations: number;
+  activeLocations: number;
+  pendingLocations: number;
+  declinedLocations: number;
+  totalPosts: number;
+  pendingPosts: number;
+  declinedPosts: number;
 }
 
 // Post management responses
 export type GetPostsResponse = IPaginatedRes<
   {
-
     location: Location | null;
     admin: Admin | null;
     user: User | null;

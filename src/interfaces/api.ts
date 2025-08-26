@@ -98,14 +98,7 @@ export interface StaffStats {
   all: number;
 }
 
-export interface LocationStats {
-  total: number;
-  active: number;
-  pending: number;
-  inactive: number;
-  approved: number;
-  rejected: number;
-}
+
 
 export interface QueryParams {
   pageNumber?: number;
