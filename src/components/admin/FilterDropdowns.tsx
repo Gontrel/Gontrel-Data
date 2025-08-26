@@ -26,9 +26,9 @@ interface FilterDropdownsProps {
  * Filter dropdowns component for analysts, status and time periods
  */
 export function FilterDropdowns({
-  selectedUser = "all",
+  selectedUser = undefined,
   onUserChange = () => {},
-  selectedStatus = "all",
+  selectedStatus = undefined,
   onStatusChange = () => {},
   selectedDateRange,
   onDateRangeChange,
@@ -80,7 +80,7 @@ export function FilterDropdowns({
   ];
 
   const statusOptions = [
-    { value: "all", label: "All statuses" },
+    { value: undefined, label: "All statuses" },
     { value: "approved", label: "Approved" },
     { value: "pending", label: "Pending" },
     { value: "rejected", label: "Rejected" },

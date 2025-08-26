@@ -16,7 +16,7 @@ interface DropdownOption {
  */
 interface DropdownFilterProps {
   options: DropdownOption[];
-  value: string;
+  value: string | undefined;
   onChange: (value: string | undefined) => void;
   placeholder: string;
   icon?: React.ReactNode;

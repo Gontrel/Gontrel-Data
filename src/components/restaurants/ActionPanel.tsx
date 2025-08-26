@@ -57,7 +57,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   onDateRangeChange,
 
   // Status
-  selectedStatus = "all",
+  selectedStatus = undefined,
   onStatusChange = () => {},
 
   // Other

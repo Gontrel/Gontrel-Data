@@ -20,6 +20,7 @@ export const useActiveVideos = ({
   endDate,
   adminId,
 }: UseActiveVideosProps) => {
+  console.log(videoStatus, "videoStatusvideoStatusvideoStatus");
   const {
     data: queryData,
     isLoading,
