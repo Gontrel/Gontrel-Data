@@ -9,7 +9,6 @@ import {
   Menu,
   GetGroupedPostsSubmissionsResponse,
   GetUserPostsResponse,
-  PostTypesResponse,
   GetPostsResponse,
 } from "@/interfaces";
 

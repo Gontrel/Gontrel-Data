@@ -56,7 +56,7 @@ export const useTabState = () => {
       user: "",
     },
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: {
-      videoStatus: "",
+      videoStatus: undefined,
       searchTerm: "",
       selectedAnalyst: isAnalyst ? "all" : "",
       selectedTimePeriod: "all",
