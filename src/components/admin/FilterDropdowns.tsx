@@ -11,10 +11,10 @@ import { useCurrentUser } from "@/stores/authStore";
  */
 interface FilterDropdownsProps {
   selectedUser?: string;
-  onUserChange?: (user: string) => void;
+  onUserChange?: (user: string | undefined) => void;
 
   selectedStatus?: string;
-  onStatusChange?: (status: string) => void;
+  onStatusChange?: (status: string | undefined) => void;
 
   activeTab: string;
   selectedDateRange?: DateRangeValue;
@@ -75,7 +75,7 @@ export function FilterDropdowns({
   const optionsWithAll = [
     activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS
       ? { value: "all", label: "All users" }
-      : { value: "all", label: "All analysts" },
+      : { value: undefined, label: "All analysts" },
     ...(usersOptions ?? []),
   ];
 
@@ -89,21 +89,17 @@ export function FilterDropdowns({
   return (
     <div className="flex items-center gap-4.5">
       {/* Analyst/User Filter (only when NOT active videos) */}
-      {activeTab !== ManagerTableTabsEnum.ACTIVE_VIDEOS &&
-        optionsWithAll &&
-        optionsWithAll.length > 0 &&
-        !isAnalyst && (
-          <DropdownFilter
-            options={optionsWithAll}
-            value={selectedUser}
-            onChange={onUserChange}
-            placeholder="All analysts"
-            icon={personIcon}
-            className="w-48"
-          />
-        )}
+      {optionsWithAll && optionsWithAll.length > 0 && !isAnalyst && (
+        <DropdownFilter
+          options={optionsWithAll}
+          value={selectedUser}
+          onChange={onUserChange}
+          placeholder="All analysts"
+          icon={personIcon}
+          className="w-48"
+        />
+      )}
 
-      {/* Status Filter (only when ACTIVE_VIDEOS) */}
       {activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS && (
         <DropdownFilter
           options={statusOptions}

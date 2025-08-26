@@ -46,6 +46,7 @@ export default function RestaurantsPage() {
     updateTabPageSize,
     getTabState,
   } = useTabState();
+
   const tableTotals = useTableTotals(tabStates);
   const currentTabState = getTabState(activeTab);
   const { startDate, endDate } = rangeToYmd(currentTabState.dateRange);
@@ -127,7 +128,8 @@ export default function RestaurantsPage() {
    * Handles analyst filter changes for the active tab
    */
   const handleAnalystChange = useCallback(
-    (analyst: string) => {
+    (analyst: string | undefined) => {
+  
       updateTabAnalyst(activeTab, analyst);
     },
     [activeTab, updateTabAnalyst]
@@ -137,14 +139,14 @@ export default function RestaurantsPage() {
    * Handles analyst filter changes for the active tab
    */
   const handleVideoStatusChange = useCallback(
-    (videoStatus: string) => {
+    (videoStatus: string | undefined) => {
       updateTabVideoStatus(activeTab, videoStatus);
     },
     [activeTab, updateTabVideoStatus]
   );
 
   const handleUserChange = useCallback(
-    (user: string) => {
+    (user: string | undefined) => {
       updateTabUser(activeTab, user);
     },
     [activeTab, updateTabUser]

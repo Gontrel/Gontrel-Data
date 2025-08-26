@@ -82,7 +82,7 @@ export const useTableTotals = (
 
   const { queryData: activeVideosTotal } = useActiveVideos({
     currentPage: 1,
-    pageSize: 1,
+    pageSize: 10,
     videoStatus:
       tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.videoStatus || undefined,
     searchTerm: tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.searchTerm || "",

@@ -61,6 +61,14 @@ export const ResubmitVideoStepStep = ({
       { enabled: false }
     );
 
+  const {
+    refetch: validateTikTokRetech,
+    isLoading: isLoadingTiktokValidation,
+  } = trpc.external.validateTikTokLink.useQuery(
+    { link: debouncedUrl },
+    { enabled: false }
+  );
+
   const { mutate: updatePost, isPending: isLoadingUpdate } =
     trpc.post.updatePost.useMutation({
       onSuccess: () => {
@@ -103,7 +111,13 @@ export const ResubmitVideoStepStep = ({
     };
 
     processTiktokUrl();
-  }, [debouncedUrl, refetch, setActiveVideoUrl, setTiktokUsername]);
+  }, [
+    debouncedUrl,
+    validateTikTokRetech,
+    refetch,
+    setActiveVideoUrl,
+    setTiktokUsername,
+  ]);
 
   const handleUrlChange = (
     e:

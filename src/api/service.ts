@@ -448,4 +448,13 @@ export default class APIRequest {
     );
     return this.handleResponse(response);
   };
+
+  validateTiktokUrl = async (data: { link: string }) => {
+  
+    const response = await this.authenticatedClient.get(
+      `/validate-tiktok-link?link=${data.link?.trim()}`
+    );
+
+    return this.handleResponse(response);
+  };
 }

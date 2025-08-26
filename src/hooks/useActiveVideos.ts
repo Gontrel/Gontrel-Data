@@ -2,8 +2,8 @@ import { trpc } from "@/lib/trpc-client";
 import { ApprovalStatusEnum } from "@/types/enums";
 
 interface UseActiveVideosProps {
-  currentPage: number;
-  pageSize: number;
+  currentPage?: number;
+  pageSize?: number;
   searchTerm?: string;
   startDate?: string;
   endDate?: string;
