@@ -2,8 +2,8 @@ import { trpc } from "@/lib/trpc-client";
 import { ApprovalStatusEnum } from "@/types/enums";
 
 interface UseActiveVideosProps {
-  currentPage: number;
-  pageSize: number;
+  currentPage?: number;
+  pageSize?: number;
   searchTerm?: string;
   startDate?: string;
   endDate?: string;
@@ -20,6 +20,7 @@ export const useActiveVideos = ({
   endDate,
   adminId,
 }: UseActiveVideosProps) => {
+  console.log(videoStatus, "videoStatusvideoStatusvideoStatus");
   const {
     data: queryData,
     isLoading,

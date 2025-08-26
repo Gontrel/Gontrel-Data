@@ -59,7 +59,7 @@ export const externalRouter = router({
         const response = await apiRequest.placeDetails({
           placeId,
           sessionToken: sessionToken ?? "",
-        });        
+        });
 
         return response;
       } catch (error) {
@@ -79,6 +79,24 @@ export const externalRouter = router({
 
       try {
         const response = await apiRequest.getTiktokDetails({ link });
+        return response;
+      } catch {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch TikTok link info.",
+        });
+      }
+    }),
+
+  validateTikTokLink: publicProcedure
+    .input(z.object({ link: z.string().url() }))
+    .query(async ({ input, ctx }) => {
+      const { link } = input;
+      const apiRequest = new APIRequest(ctx.req.headers);
+
+      try {
+        const response = await apiRequest.validateTiktokUrl({ link });
+      
         return response;
       } catch {
         throw new TRPCError({

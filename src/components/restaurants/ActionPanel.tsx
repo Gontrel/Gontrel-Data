@@ -18,9 +18,9 @@ interface ActionPanelProps {
 
   // Analyst/User
   selectedAnalyst?: string;
-  onAnalystChange?: (analyst: string) => void;
+  onAnalystChange?: (analyst: string | undefined) => void;
   selectedUser?: string;
-  onUserChange?: (user: string) => void;
+  onUserChange?: (user: string | undefined) => void;
 
   // Date
   selectedDateRange?: DateRangeValue;
@@ -28,7 +28,7 @@ interface ActionPanelProps {
 
   // Status (NEW)
   selectedStatus?: string;
-  onStatusChange?: (status: string) => void;
+  onStatusChange?: (status: string | undefined) => void;
 
   // Other
   showFilters?: boolean;
@@ -57,7 +57,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   onDateRangeChange,
 
   // Status
-  selectedStatus = "all",
+  selectedStatus = undefined,
   onStatusChange = () => {},
 
   // Other
@@ -106,9 +106,11 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
               <FilterDropdowns
                 activeTab={activeTab}
                 selectedDateRange={selectedDateRange}
+                onUserChange={onAnalystChange}
                 onDateRangeChange={onDateRangeChange}
                 selectedStatus={selectedStatus}
                 onStatusChange={onStatusChange}
+                usersOptions={mergedAnalystOptions}
               />
             )}
 

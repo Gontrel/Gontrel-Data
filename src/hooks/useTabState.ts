@@ -129,7 +129,7 @@ export const useTabState = () => {
   const updateTabAnalyst = useCallback(
     (
       tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
-      analyst: string
+      analyst: string | undefined
     ) => {
       setTabStates((prev) => ({
         ...prev,
@@ -148,7 +148,7 @@ export const useTabState = () => {
   const updateTabUser = useCallback(
     (
       tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
-      user: string
+      user: string | undefined
     ) => {
       setTabStates((prev) => ({
         ...prev,
@@ -168,7 +168,7 @@ export const useTabState = () => {
   const updateTabVideoStatus = useCallback(
     (
       tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
-      videoStatus: string
+      videoStatus: string | undefined
     ) => {
       setTabStates((prev) => ({
         ...prev,
@@ -340,6 +340,7 @@ export const useTabState = () => {
       },
       [ManagerTableTabsEnum.ACTIVE_VIDEOS]: {
         searchTerm: "",
+        videoStatus: undefined,
         selectedAnalyst: "all",
         selectedTimePeriod: "all",
         dateRange: undefined,
