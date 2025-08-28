@@ -10,22 +10,31 @@ interface UsePendingVideosProps {
   adminId?: string;
 }
 
-export const usePendingVideos = ({ currentPage, pageSize, searchTerm, startDate, endDate, adminId }: UsePendingVideosProps) => {
+export const usePendingVideos = ({
+  currentPage,
+  pageSize,
+  searchTerm,
+  startDate,
+  endDate,
+  adminId,
+}: UsePendingVideosProps) => {
   const {
     data: queryData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = trpc.post.getGroupedPostsSubmissions.useQuery({
     status: ApprovalStatusEnum.PENDING,
     locationStatus: ApprovalStatusEnum.APPROVED,
     includeRejected: true,
+    sortBy: "modifiedAt",
+    sortOrder: "DESC",
     pageNumber: currentPage,
     quantity: pageSize,
     query: searchTerm,
     startDate,
     endDate,
-    adminId
+    adminId,
   });
   return { queryData, isLoading, error, refetch };
-}
+};

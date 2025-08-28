@@ -1,4 +1,4 @@
-import { ColumnDef, } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { SubmittedRestaurantTableTypes } from "@/types/restaurant";
 import { Check, X } from "lucide-react";
 import { ActionButtons } from "@/components/ui/ActionButtons";
@@ -18,7 +18,7 @@ import { Post } from "@/interfaces";
  */
 export const createSubmittedRestaurantsColumns = (
   handleOpenVideoPreview: (posts: Post[], restaurantId: string) => void,
-  handleOpenResubmitModal: (restaurantId: string) => void,
+  handleOpenResubmitModal: (restaurantId: string) => void
 ): ColumnDef<SubmittedRestaurantTableTypes>[] => [
   {
     accessorKey: "id",
@@ -41,23 +41,8 @@ export const createSubmittedRestaurantsColumns = (
     accessorKey: "name",
     header: () => <TableHeader title="Restaurant name" />,
     cell: ({ row }) => {
-      // const handleClick = (e: React.MouseEvent, row: Row<SubmittedRestaurantTableTypes>) => {
-      //   onRowClick?.(row.original);
-      // };
-      // const handleKeyDown = (
-      //   e: React.KeyboardEvent,
-      //   row: Row<SubmittedRestaurantTableTypes>,
-      //   onRowClick?: (row: SubmittedRestaurantTableTypes) => void
-      // ) => {
-      //   if (e.key === "Enter" || e.key === " ") {
-      //     e.preventDefault();
-      //     onRowClick?.(row.original);
-      //   }
-      // };
       return (
         <div
-          // onClick={(e) => handleClick(e, row)}
-          // onKeyDown={(e) => handleKeyDown(e, row, onRowClick)}
           role="button"
           tabIndex={0}
           aria-label="View restaurant details"
@@ -265,7 +250,6 @@ export const createSubmittedRestaurantsColumns = (
     id: "action",
     header: () => <TableHeader title="Actions" />,
     cell: ({ row }) => {
-
       const { videos, address, menu, reservation } = row.original;
 
       const isPending =

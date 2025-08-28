@@ -49,3 +49,5 @@ export const useIsAdmin = () =>
   useAuthStore((state) => state.user?.role === "admin");
 export const useIsAnalyst = () =>
   useAuthStore((state) => state.user?.role === "analyst");
+export const useIsManager = () =>
+  useAuthStore((state) => state.user?.role === "manager");

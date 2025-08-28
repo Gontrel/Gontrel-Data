@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Loader } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { trpc } from "@/lib/trpc-client";
@@ -37,6 +37,7 @@ export const ResubmitVideoStepStep = ({
     updateVideo,
     setActiveVideoUrl,
     resetVideos,
+    removeVideo,
     setTiktokUsername,
   } = useVideoStore();
   const [currentVideo, setCurrentVideo] = useState({
@@ -63,7 +64,6 @@ export const ResubmitVideoStepStep = ({
 
   const {
     refetch: validateTikTokRetech,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isLoadingTiktokValidation,
   } = trpc.external.validateTikTokLink.useQuery(
     { link: debouncedUrl },
@@ -80,14 +80,51 @@ export const ResubmitVideoStepStep = ({
       },
     });
 
+  const { mutate: createPost, isPending: isLoadingPostCreated } =
+    trpc.post.createPost.useMutation({
+      onSuccess: () => {
+        successToast("Post created successfully!");
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
+
+  const { mutate: deleteVideoMutation, isPending: isLoadingPostRemoval } =
+    trpc.post.deletePost.useMutation({
+      onSuccess: (_, variables) => {
+        successToast("Post successfully deleted");
+        if (variables.postId) {
+          removeVideo(variables?.postId);
+        }
+      },
+    });
+
+  const handleRemoveVideo = useCallback(
+    (currentPostId: string) => {
+      if (!currentPostId) return;
+
+      deleteVideoMutation({ postId: currentPostId });
+    },
+    [deleteVideoMutation]
+  );
+
   // Effect to handle debounced TikTok URL processing
   useEffect(() => {
+    if (editingVideoId) return;
     const processTiktokUrl = async () => {
       const match = debouncedUrl.match(
         /https:\/\/www\.tiktok\.com\/@[^\/]+\/video\/\d+/
       );
 
       if (debouncedUrl && match) {
+        const validUrlTiktok = await validateTikTokRetech();
+
+        if (!validUrlTiktok?.data?.valid) {
+          errorToast("Tiktok link already exist");
+          return;
+        }
+
         try {
           const { data } = await refetch();
           if (data && data.play) {
@@ -98,7 +135,7 @@ export const ResubmitVideoStepStep = ({
               url: debouncedUrl,
               thumbUrl: data?.cover,
               videoUrl: data?.play,
-              author: data.author?.nickname,
+              author: data?.author?.nickname,
             }));
           } else {
             errorToast("Could not retrieve video information from this URL.");
@@ -113,6 +150,7 @@ export const ResubmitVideoStepStep = ({
 
     processTiktokUrl();
   }, [
+    editingVideoId,
     debouncedUrl,
     validateTikTokRetech,
     refetch,
@@ -142,7 +180,7 @@ export const ResubmitVideoStepStep = ({
   };
 
   const convertPosts = async (posts: Post[]): Promise<VideoData[]> => {
-    return posts.map((post) => ({
+    return posts?.map((post) => ({
       id: post.id,
       url: post.tiktokLink,
       tags: post.tags.map((tag) => tag.name),
@@ -212,47 +250,51 @@ export const ResubmitVideoStepStep = ({
 
   let shouldResubmit = 0;
 
-  const handleAddOrUpdateVideo = () => {
-    if (!currentVideo.url) {
+  const handleAddOrUpdateVideo = async () => {
+    if (!currentVideo?.url) {
       errorToast("Please add a video URL.");
       return;
     }
 
-    if (currentVideo.tags.length === 0) {
+    if (currentVideo?.tags?.length === 0) {
       errorToast("Each video must have at least one tags.");
       return;
     }
 
     const videoData = {
-      url: currentVideo.url,
-      tags: currentVideo.tags,
-      thumbUrl: currentVideo.thumbUrl,
-      videoUrl: currentVideo.videoUrl,
-      author: currentVideo.author,
-      locationName: currentVideo.locationName,
-      isFoodVisible: currentVideo.isFoodVisible,
-      rating: currentVideo.rating || 0,
+      url: currentVideo?.url,
+      tags: currentVideo?.tags,
+      thumbUrl: currentVideo?.thumbUrl,
+      videoUrl: currentVideo?.videoUrl,
+      author: currentVideo?.author,
+      locationName: currentVideo?.locationName,
+      isFoodVisible: currentVideo?.isFoodVisible,
+      rating: currentVideo?.rating || 0,
       isUpdated: true,
+    };
+
+    const payload = {
+      locationId: restaurant?.id,
+      postId: editingVideoId,
+      tiktokLink: videoData?.url,
+      videoUrl: videoData?.videoUrl,
+      thumbUrl: videoData?.thumbUrl,
+      isFoodVisible: videoData?.isFoodVisible,
+      tags: [...videoData?.tags],
     };
 
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
       setEditingVideoId(null);
 
-      const payload = {
-        locationId: restaurant?.id,
-        postId: editingVideoId,
-        tiktokLink: videoData.url,
-        videoUrl: videoData.videoUrl,
-        thumbUrl: videoData.thumbUrl,
-        isFoodVisible: videoData.isFoodVisible,
-        tags: [...videoData.tags],
-      };
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      updatePost(payload as any);
+      await updatePost(payload as any);
       shouldResubmit++;
+      return;
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await createPost(payload as any);
   };
 
   const handleSetFoodVisibility = (checked: boolean) => {
@@ -264,30 +306,25 @@ export const ResubmitVideoStepStep = ({
 
   const handleEdit = (id: string) => {
     const videoToEdit = videos.find((v) => v.id === id);
+
     if (videoToEdit) {
       setEditingVideoId(id);
       setCurrentVideo({
-        url: videoToEdit.url,
-        tags: videoToEdit.tags,
-        thumbUrl: videoToEdit.thumbUrl || "",
-        videoUrl: videoToEdit.videoUrl || "",
+        url: videoToEdit?.url,
+        tags: videoToEdit?.tags,
+        thumbUrl: videoToEdit?.thumbUrl || "",
+        videoUrl: videoToEdit?.videoUrl || "",
         author: videoToEdit.author || "",
-        locationName: videoToEdit.locationName || "",
+        locationName: videoToEdit?.locationName || "",
         isFoodVisible: videoToEdit?.isFoodVisible ?? false,
-        rating: videoToEdit.rating || 0,
+        rating: videoToEdit?.rating || 0,
       });
-      setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
-      setTiktokUsername(videoToEdit.author || null);
+      setActiveVideoUrl(videoToEdit?.videoUrl || videoToEdit?.url);
     }
   };
 
   const handleOnNext = () => {
-    if (currentVideo.url !== "" && currentVideo.tags.length !== 0)
-      handleAddOrUpdateVideo();
-    if (isRestaurantFlow) {
-      onNext();
-      return;
-    }
+    onNext();
   };
 
   const shouldDisable =
@@ -306,17 +343,45 @@ export const ResubmitVideoStepStep = ({
         </div>
       )}
 
+      {isLoadingTiktokValidation && (
+        <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <Loader className="animate-spin w-8 h-8 text-[#0070F3]" />
+            <p className="mt-3 text-gray-700">Validating TikTok video...</p>
+          </div>
+        </div>
+      )}
+
+      {isLoadingPostCreated && (
+        <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <Loader className="animate-spin w-8 h-8 text-[#0070F3]" />
+            <p className="mt-3 text-gray-700">Creating post...</p>
+          </div>
+        </div>
+      )}
+
+      {isLoadingPostRemoval && (
+        <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <Loader className="animate-spin w-8 h-8 text-[#0070F3]" />
+            <p className="mt-3 text-gray-700">Removing post...</p>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4 mb-4">
-        {videos.map((video) => (
+        {videos?.map((video) => (
           <VideoCard
             key={video.id}
             video={video}
             onEdit={handleEdit}
+            removeVideo={handleRemoveVideo}
             editFlow={editFlow}
           />
         ))}
       </div>
-      {editingVideoId && (
+      {(editingVideoId || videos?.length === 0) && (
         <div className="flex-grow">
           <label htmlFor="tiktok-link" className="text-lg font-semibold">
             TikTok link
@@ -328,15 +393,14 @@ export const ResubmitVideoStepStep = ({
             <input
               type="url"
               id="tiktok-link"
-              placeholder="https://tiktok.com"
+              placeholder="https://www.tiktok.com/@username/video/1234567890"
               className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
-              value={currentVideo.url?.trim()}
+              value={currentVideo?.url?.trim()}
               onChange={handleUrlChange}
               onPaste={handleUrlChange}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  // Create a synthetic event that matches the expected input change event
                   const syntheticEvent = {
                     target: { value: e.currentTarget.value },
                   } as React.ChangeEvent<HTMLInputElement>;
@@ -346,7 +410,7 @@ export const ResubmitVideoStepStep = ({
             />
           </div>
 
-          {currentVideo.url && (
+          {currentVideo?.url && (
             <div className="mt-6">
               <label htmlFor="tag-input" className="text-lg font-semibold">
                 Tag
@@ -362,7 +426,7 @@ export const ResubmitVideoStepStep = ({
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
-                {currentVideo.tags.map((tag) => (
+                {currentVideo?.tags.map((tag) => (
                   <div
                     key={tag}
                     className="flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700"
@@ -384,7 +448,7 @@ export const ResubmitVideoStepStep = ({
                   <input
                     type="checkbox"
                     id="food-visible"
-                    checked={currentVideo.isFoodVisible} // Use currentVideo state
+                    checked={currentVideo.isFoodVisible}
                     onChange={(e) => handleSetFoodVisibility(e.target.checked)}
                     className="w-4 h-4"
                   />
@@ -394,7 +458,7 @@ export const ResubmitVideoStepStep = ({
                 </div>
               }
 
-              {editingVideoId && videos?.length >= 0 && (
+              {(editingVideoId || videos?.length >= 0) && (
                 <div className="mt-6 pt-4 flex justify-left">
                   <Button
                     disabled={shouldDisable}
@@ -439,6 +503,7 @@ export const ResubmitVideoStepStep = ({
             Previous
           </Button>
         )}
+
         {isRestaurantFlow && (
           <Button
             onClick={handleOnNext}

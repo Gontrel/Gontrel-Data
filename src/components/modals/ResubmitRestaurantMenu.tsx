@@ -6,23 +6,23 @@ interface ResubmitRestaurantMenuProps {
   onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
   restaurant?: RestaurantData;
   isLoading: boolean;
+  isUpdateMenuLoading: boolean;
   editFlow?: boolean;
 }
 const ResubmitRestaurantMenu = ({
   onPrevious,
   onSubmit,
   restaurant,
+  isUpdateMenuLoading,
   isLoading,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   editFlow = false,
 }: ResubmitRestaurantMenuProps) => {
-
   const [menuUrl, setMenuUrl] = useState("");
   const [reservationUrl, setReservationUrl] = useState("");
 
-
   useEffect(() => {
     if (restaurant) {
-    
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant.menu);
       } else if (restaurant.menu?.content) {
@@ -39,14 +39,11 @@ const ResubmitRestaurantMenu = ({
     onSubmit({ menuUrl, reservationUrl });
   };
 
-  const showMenuInput = !restaurant?.menu;
-  const showReservationInput = restaurant?.reservation && !editFlow;
-
   return (
     <div className="flex flex-col h-full justify-between">
       <div>
         {/* Menu input - show if not in edit flow or if menu doesn't exist */}
-        {showMenuInput && (
+        {
           <div className="mb-6">
             <label
               htmlFor="menu-url"
@@ -63,10 +60,10 @@ const ResubmitRestaurantMenu = ({
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             />
           </div>
-        )}
+        }
 
         {/* Reservation input - show if not in edit flow or if reservation doesn't exist */}
-        {showReservationInput && (
+        {
           <div>
             <label
               htmlFor="reservation-url"
@@ -83,7 +80,7 @@ const ResubmitRestaurantMenu = ({
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
             />
           </div>
-        )}
+        }
       </div>
 
       <div className="flex items-center gap-4 mt-6">
@@ -95,7 +92,7 @@ const ResubmitRestaurantMenu = ({
         </button>
         <button
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || isUpdateMenuLoading}
           className="w-full bg-[#0070F3] text-white py-3 rounded-lg font-semibold transition-colors hover:bg-blue-600"
         >
           <span className="font-semibold text-lg">Submit</span>
@@ -105,21 +102,17 @@ const ResubmitRestaurantMenu = ({
   );
 };
 
-
 const EditRestaurantMenu = ({
   onPrevious,
   onSubmit,
   restaurant,
   isLoading,
 }: ResubmitRestaurantMenuProps) => {
-
   const [menuUrl, setMenuUrl] = useState("");
   const [reservationUrl, setReservationUrl] = useState("");
 
-
   useEffect(() => {
     if (restaurant) {
-
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant?.menu);
       } else if (restaurant.menu?.content) {

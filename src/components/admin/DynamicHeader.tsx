@@ -6,7 +6,7 @@ import { UserProfile } from "../users/UserProfile";
 import { useHeaderStore } from "@/stores/headerStore";
 import { useEffect } from "react";
 import { Button } from "../ui/Button";
-import { useIsAdmin } from "@/stores/authStore";
+import { useIsAdmin, useIsManager } from "@/stores/authStore";
 import { cn } from "@/lib/utils";
 import { NotificationBell } from "@/components/notification/NotificationBell";
 
@@ -98,7 +98,7 @@ export function DynamicHeader() {
   } = useHeaderStore();
 
   const isAdmin = useIsAdmin();
-
+  const isManager = useIsManager();
   const routeConfig = getConfigForPath(pathname);
 
   const title = zustandTitle ?? routeConfig?.title;
@@ -140,25 +140,27 @@ export function DynamicHeader() {
       </div>
 
       <div className="flex items-center gap-6">
-        {isAdmin && showBackButton && title.includes("restaurants") && (
-          <Button
-            onClick={() => setConfirmationModalOpen(true)}
-            className={cn(
-              "flex items-center justify-center py-[10px] px-[30px] rounded-[10px] gap-x-4 transition-colors",
-              isActive
-                ? "bg-[#FDE6E6] border-[#F35454] hover:bg-[#FDE6E6]/90 text-[#ED0000]"
-                : "bg-[#E6F7FF] border-[#0070F3] hover:bg-[#E6F7FF]/90 text-[#0070F3]"
-            )}
-          >
-            <Icon
-              name={isActive ? "deactivateIcon" : "saveIcon"}
-              stroke={isActive ? "#ED0000" : "#0070F3"}
-            />
-            <span className="text-lg font-semibold leading-[100%]">
-              {isActive ? "Deactivate" : "Reactivate"}
-            </span>
-          </Button>
-        )}
+        {(isAdmin || isManager) &&
+          showBackButton &&
+          pathname.startsWith("/restaurants/") && (
+            <Button
+              onClick={() => setConfirmationModalOpen(true)}
+              className={cn(
+                "flex items-center justify-center py-[10px] px-[30px] rounded-[10px] gap-x-4 transition-colors",
+                isActive
+                  ? "bg-[#FDE6E6] border-[#F35454] hover:bg-[#FDE6E6]/90 text-[#ED0000]"
+                  : "bg-[#E6F7FF] border-[#0070F3] hover:bg-[#E6F7FF]/90 text-[#0070F3]"
+              )}
+            >
+              <Icon
+                name={isActive ? "deactivateIcon" : "saveIcon"}
+                stroke={isActive ? "#ED0000" : "#0070F3"}
+              />
+              <span className="text-lg font-semibold leading-[100%]">
+                {isActive ? "Deactivate" : "Reactivate"}
+              </span>
+            </Button>
+          )}
 
         <NotificationBell count={0} />
         <UserProfile />

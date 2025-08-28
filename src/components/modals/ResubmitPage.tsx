@@ -2,7 +2,7 @@
 
 import { ConfirmResubmitRestaurant } from "./ConfirmResubmitRestaurant";
 import { ResubmitVideoStepStep } from "./ResubmitVideoStep";
-import {ResubmitRestaurantMenu} from "./ResubmitRestaurantMenu";
+import { ResubmitRestaurantMenu } from "./ResubmitRestaurantMenu";
 import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";
@@ -15,6 +15,7 @@ interface ResubmitRestaurantSheetProps {
   step: number;
   description: string;
   isLoading: boolean;
+  isUpdateMenuLoading: boolean;
   handleClose: () => void;
   handleResubmit?: () => void;
   onContinue: () => void;
@@ -31,6 +32,7 @@ export const ResubmitPage = ({
   isRestaurantFlow,
   restaurant,
   step,
+  isUpdateMenuLoading,
   isLoading,
   handleClose,
   handleResubmit,
@@ -90,6 +92,7 @@ export const ResubmitPage = ({
               )}
               {step === 3 && isRestaurantFlow ? (
                 <ResubmitRestaurantMenu
+                  isUpdateMenuLoading={isUpdateMenuLoading}
                   restaurant={restaurant ?? []}
                   isLoading={isLoading}
                   onPrevious={onPreviousRestaurantMenu}
