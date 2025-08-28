@@ -36,9 +36,6 @@ const ResubmitRestaurantMenu = ({
     onSubmit({ menuUrl, reservationUrl });
   };
 
-  const showMenuInput = !restaurant?.menu;
-  const showReservationInput = restaurant?.reservation && !editFlow;
-
   return (
     <div className="flex flex-col h-full justify-between">
       <div>
