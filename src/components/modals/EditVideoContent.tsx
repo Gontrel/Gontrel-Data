@@ -13,6 +13,7 @@ interface EditPostContainerProps {
   step: number;
   description: string;
   isLoading: boolean;
+  isUpdateMenuLoading: boolean;
   handleClose: () => void;
   handleResubmit?: () => void;
   onContinue: () => void;
@@ -27,6 +28,7 @@ export const EditPostContainer = ({
   description,
   isRestaurantFlow,
   restaurant,
+  isUpdateMenuLoading,
   step,
   isLoading,
   handleClose,
@@ -36,7 +38,6 @@ export const EditPostContainer = ({
   onPreviousRestaurantMenu,
   onSubmit,
 }: EditPostContainerProps) => {
-
   return (
     <div className="py-6 w-[518px] flex flex-col justify-between">
       <section className="">
@@ -74,6 +75,7 @@ export const EditPostContainer = ({
                   restaurant={restaurant ?? []}
                   isLoading={isLoading}
                   editFlow={true}
+                  isUpdateMenuLoading={isUpdateMenuLoading}
                   onPrevious={onPreviousRestaurantMenu}
                   onSubmit={onSubmit}
                 />

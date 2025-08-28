@@ -313,6 +313,7 @@ export const createLocationSchema = z.object({
   isVerified: z.boolean().optional(),
   posts: z.array(postCreationSchema).optional(),
   openingHours: z.array(locationAvailabilitySchema).optional(),
+  googleOpeningHours: z.array(z.string()).optional(),
 });
 
 /**

@@ -96,7 +96,7 @@ export const externalRouter = router({
 
       try {
         const response = await apiRequest.validateTiktokUrl({ link });
-      
+
         return response;
       } catch {
         throw new TRPCError({

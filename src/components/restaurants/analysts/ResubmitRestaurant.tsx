@@ -44,7 +44,7 @@ export const ResubmitRestaurant = ({
       { enabled: !!restaurantId && open }
     );
 
-  const { mutate: updateAdminLocation } =
+  const { mutate: updateAdminLocation, isPending: updateAdminLocationLoading } =
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
@@ -173,6 +173,7 @@ export const ResubmitRestaurant = ({
         onGoBackToSearch={handleGoBackToSearch}
         onPreviousRestaurantMenu={() => setStep(2)}
         onWorkingHoursSave={handleWorkingHoursSave}
+        isUpdateMenuLoading={updateAdminLocationLoading}
         onSubmit={(data) => handleSubmitRestaurant(data)}
       />
     </Sheet>

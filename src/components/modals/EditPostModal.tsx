@@ -38,7 +38,7 @@ export const EditVideo = ({
     { enabled: !!submissionId && open }
   );
 
-  const { mutate: updateAdminLocation } =
+  const { mutate: updateAdminLocation, isPending: isLoactionLoading } =
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
@@ -145,7 +145,10 @@ export const EditVideo = ({
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
       openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
         ([day, hours]) => {
-          if (hours[0].toLowerCase() === "24 hours") {
+          if (
+            hours[0].toLowerCase() === "24 hours" ||
+            hours[0].toLowerCase() === "Open 24 hours"
+          ) {
             return {
               dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
               opensAt: 0,
@@ -204,13 +207,14 @@ export const EditVideo = ({
         restaurant={selectedRestaurant}
         step={step}
         isLoading={isLoading}
+        isUpdateMenuLoading={isLoactionLoading}
         handleClose={handleClose}
         onContinue={() => setStep(2)}
         onNextVideoStep={() => setStep(3)}
         handleResubmit={handleResubmit}
         isRestaurantFlow={true}
         onPreviousVideoStep={() => setStep(2)}
-        onPreviousRestaurantMenu={() => setStep(2)}
+        onPreviousRestaurantMenu={() => setStep(1)}
         onSubmit={(data) => handleEditPost(data)}
       />
 

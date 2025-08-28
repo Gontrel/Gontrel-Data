@@ -450,7 +450,6 @@ export default class APIRequest {
   };
 
   validateTiktokUrl = async (data: { link: string }) => {
-  
     const response = await this.authenticatedClient.get(
       `/validate-tiktok-link?link=${data.link?.trim()}`
     );

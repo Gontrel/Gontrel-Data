@@ -272,6 +272,7 @@ export interface CreateLocationRequest {
     opensAt?: number;
     closesAt?: number;
   }>;
+  googleOpeningHours?: string[];
 }
 
 /**

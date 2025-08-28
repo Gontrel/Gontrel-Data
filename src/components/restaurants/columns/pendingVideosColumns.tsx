@@ -56,6 +56,7 @@ export const createPendingVideosColumns = (
     header: () => <TableHeader iconName="videoIcon" title="Video" />,
     cell: ({ row }) => {
       const { postCount } = row.original;
+
       return (
         <div className="flex flex-col gap-y-2 w-fit">
           <PillButton

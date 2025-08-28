@@ -10,17 +10,24 @@ interface UseSubmittedVideosProps {
   endDate?: string;
 }
 
-export const useSubmittedVideos = ({ currentPage, pageSize, searchTerm, startDate, endDate }: UseSubmittedVideosProps) => {
+export const useSubmittedVideos = ({
+  currentPage,
+  pageSize,
+  searchTerm,
+  startDate,
+  endDate,
+}: UseSubmittedVideosProps) => {
   const currentUser = useCurrentUser();
   const {
     data: queryData,
     isLoading,
     error,
-    refetch
+    refetch,
   } = trpc.post.getGroupedPostsSubmissions.useQuery({
     adminId: currentUser?.id,
     pageNumber: currentPage,
     quantity: pageSize,
+    locationStatus: ApprovalStatusEnum.APPROVED,
     status: ApprovalStatusEnum.PENDING,
     includeRejected: true,
     query: searchTerm,

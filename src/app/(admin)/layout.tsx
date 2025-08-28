@@ -3,8 +3,8 @@ import { DynamicHeader } from "@/components/admin/DynamicHeader";
 import React from "react";
 
 export const metadata = {
-  title: "admin sidebar",
-  description: "Admin layout with sidebar",
+  title: "Gontrel Admin",
+  description: "Gontrel Admin, monitor, facilitate operations",
 };
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {

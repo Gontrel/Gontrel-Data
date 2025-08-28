@@ -33,6 +33,7 @@ export const VideoStep = ({
     updateVideo,
     setActiveVideoUrl,
     resetVideos,
+    removeVideo,
     setTiktokUsername,
   } = useVideoStore();
   const [currentVideo, setCurrentVideo] = useState({
@@ -60,7 +61,6 @@ export const VideoStep = ({
 
   const {
     refetch: validateTikTokRetech,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isLoadingTiktokValidation,
   } = trpc.external.validateTikTokLink.useQuery(
     { link: debouncedUrl },
@@ -75,6 +75,12 @@ export const VideoStep = ({
       );
 
       if (debouncedUrl && match) {
+        const validUrlTiktok = await validateTikTokRetech();
+
+        if (!validUrlTiktok?.data?.valid) {
+          errorToast("Tiktok link already exist");
+          return;
+        }
         try {
           const { data } = await refetch();
           if (data && data.play) {
@@ -118,7 +124,6 @@ export const VideoStep = ({
     } else {
       url = e.target.value;
     }
-
     const isValidTiktokurl = isValidTikTokUrl(url);
     if (!isValidTiktokurl) {
       errorToast("Invalid TikTok URL");
@@ -225,7 +230,7 @@ export const VideoStep = ({
         videoUrl: videoToEdit.videoUrl || "",
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
-        isFoodVisible: videoToEdit.isFoodVisible || false, // Proper initialization
+        isFoodVisible: videoToEdit.isFoodVisible || false,
         rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
@@ -234,8 +239,11 @@ export const VideoStep = ({
   };
 
   const handleOnNext = () => {
-    if (currentVideo.url !== "" && currentVideo.tags.length !== 0)
+    if (currentVideo.url !== "" && currentVideo.tags.length !== 0) {
       handleAddOrUpdateVideo();
+      return;
+    }
+
     onNext();
   };
 
@@ -296,6 +304,14 @@ export const VideoStep = ({
           </div>
         </div>
       )}
+      {isLoadingTiktokValidation && (
+        <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <Loader className="animate-spin w-8 h-8 text-[#0070F3]" />
+            <p className="mt-3 text-gray-700">Validating TikTok video...</p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4 mb-4">
         {videos.map((video) => (
@@ -303,6 +319,7 @@ export const VideoStep = ({
             key={video.id}
             video={video}
             onEdit={handleEdit}
+            removeVideo={removeVideo}
             editFlow={true}
           />
         ))}

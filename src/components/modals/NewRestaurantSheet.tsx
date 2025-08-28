@@ -122,6 +122,7 @@ export const NewRestaurantSheet = ({
         workingHours: workingHours,
         website: result.website ?? "",
         url: result.url ?? "",
+        googleOpeningHours: result.opening_hours?.weekday_text,
       };
 
       setIsRestaurantConfirmed(true);
@@ -183,7 +184,12 @@ export const NewRestaurantSheet = ({
     const store = useVideoStore.getState();
     const currentVideos = store.getCurrentVideos();
 
-    const availability = processGoogleHours(selectedRestaurant.workingHours);
+    const availability = processGoogleHours(selectedRestaurant?.workingHours);
+
+    const convertGoogleOpeningHours =
+      selectedRestaurant?.googleOpeningHours?.map(
+        (entry) => entry?.split(": ")[1]
+      );
 
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
@@ -204,17 +210,23 @@ export const NewRestaurantSheet = ({
       rating: selectedRestaurant.rating ?? 0,
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
       posts:
-        currentVideos.map((video) => ({
-          tiktokLink: video.url,
-          videoUrl: video.videoUrl || "",
-          thumbUrl: video.thumbUrl,
-          locationName: selectedRestaurant.name,
+        currentVideos?.map((video) => ({
+          tiktokLink: video?.url,
+          videoUrl: video?.videoUrl || "",
+          thumbUrl: video?.thumbUrl,
+          locationName: selectedRestaurant?.name,
           rating: 0,
           ...(video.isFoodVisible && { isFoodVisible: video.isFoodVisible }),
           ...(video.tags && { tags: video.tags }),
         })) ?? [],
       openingHours: availability,
+      googleOpeningHours:
+        convertGoogleOpeningHours ?? selectedRestaurant?.googleOpeningHours,
     };
+
+    if (payload?.posts?.length === 0) {
+      errorToast("Please add at least one video.");
+    }
 
     createAdminLocation(payload);
   };

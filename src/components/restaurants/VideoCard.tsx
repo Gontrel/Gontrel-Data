@@ -1,5 +1,4 @@
 import { Copy } from "lucide-react";
-import { useVideoStore } from "@/stores/videoStore";
 import Image from "next/image";
 import Icon from "../svgs/Icons";
 import { VideoData } from "@/interfaces/restaurants";
@@ -8,11 +7,10 @@ interface VideoCardProps {
   video: VideoData;
   editFlow?: boolean;
   onEdit: (id: string) => void;
+  removeVideo: (id: string) => void;
 }
 
-export const VideoCard = ({ video, onEdit, editFlow }: VideoCardProps) => {
-  const { removeVideo } = useVideoStore();
-
+export const VideoCard = ({ video, onEdit, removeVideo, editFlow }: VideoCardProps) => {
   const isApproved = video.status === "approved" && !editFlow;
   const isPending = video.status === "pending";
   const isRejected = video.status === "rejected";

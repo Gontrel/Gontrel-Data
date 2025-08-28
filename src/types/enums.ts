@@ -17,6 +17,11 @@ export enum StaffTableTabsEnum {
   DEACTIVATED_STAFF = "deactivatedStaffs",
 }
 
+export enum ReportTableTabsEnum {
+  REPORTED_VIDEOS = "reportedVideos",
+  REPORTED_USERS = "reportedUsers",
+}
+
 export enum ApprovalType {
   POST = "post",
   ADDRESS = "address",

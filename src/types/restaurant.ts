@@ -141,6 +141,7 @@ export type RestaurantData = {
   status?: string;
   summary?: Summary;
   toilets?: boolean;
+  googleOpeningHours?: string[];
 };
 
 export type LinkStep = {

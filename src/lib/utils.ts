@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { WorkingHours } from "@/components/modals/EditWorkingHoursModal";
 import { ConverTedWorkingHours, OpeningHour } from "@/interfaces/restaurants";
 import { DayOfTheWeek } from "@/types/enums";
+import { Availability } from "@/interfaces";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -117,7 +118,10 @@ export function formatNumber(num: number): string {
 }
 export const convertTimeTo24Hour = (time: string): number => {
   // Handle "24 hours" case
-  if (time.toLowerCase() === "24 hours") {
+  if (
+    time.toLowerCase() === "24 hours" ||
+    time.toLowerCase() === "Open 24 hours"
+  ) {
     return 24;
   }
 
@@ -192,9 +196,16 @@ export const transformToModalHours = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (result as any)[day] = {
       isOpen: true,
-      isAllDay: ranges.some((r) => r.toLowerCase().includes("24 hours")),
+      isAllDay: ranges.some(
+        (r) =>
+          r.toLowerCase().includes("24 hours") ||
+          r.toLowerCase().includes("Open 24 hours")
+      ),
       slots: ranges.map((range) => {
-        if (range.toLowerCase().includes("24 hours")) {
+        if (
+          range.toLowerCase().includes("24 hours") ||
+          range.toLowerCase().includes("Open 24 hours")
+        ) {
           return { start: "12:00 AM", end: "11:59 PM" };
         }
         return parseTimeRange(range);
@@ -324,7 +335,7 @@ export const formatPostTime = (isoDateString: string): string => {
 
   const timeFormatter = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
-    minute: "numeric", 
+    minute: "numeric",
     hour12: true,
   });
   const formattedTime = timeFormatter.format(postDate).toLowerCase();
@@ -342,6 +353,8 @@ export const formatPostTime = (isoDateString: string): string => {
 
   return `${month} ${day} at ${formattedTime}`;
 };
+
+
 export const formatRestaurantTime = (isoDateString: string): string => {
   if (isoDateString.length === 0) {
     return "";
@@ -384,53 +397,30 @@ export const formatRestaurantTime = (isoDateString: string): string => {
   return `${formattedDate} at ${formattedTime}`;
 };
 
-interface Availability {
-  dayOfTheWeek: DayOfTheWeek;
-  opensAt: number;
-  closesAt: number;
-}
+export const processGoogleHours = (
+  googleHours: Record<string, string[]>
+): Availability[] => {
+  return Object.entries(googleHours)?.map(([day, hours]) => {
+    const dayOfWeek = day.toUpperCase() as DayOfTheWeek;
 
-const normalizeTimeString = (timeStr: string): string => {
-  return timeStr
-    .replace(/[  ]/g, " ") // Replace special spaces with normal spaces
-    .trim()
-    .toUpperCase();
-};
+    if (!hours || !hours[0]) {
+      return { dayOfTheWeek: dayOfWeek, opensAt: 0, closesAt: 0 };
+    }
 
-const parseTime = (timeStr: string): number => {
-  const normalized = normalizeTimeString(timeStr);
+    const timeRange = hours[0];
+    // eslint-disable-next-line prefer-const
+    let { opensAt, closesAt } = parseTimeRanges(timeRange);
 
-  // Handle special cases
-  if (normalized === "24 HOURS") return 24;
-  if (normalized === "CLOSED") return 0;
-  if (normalized === "NOON") return 12;
-  if (normalized === "MIDNIGHT") return 0;
+    if (closesAt === 0 && opensAt >= 12) {
+      closesAt = 24;
+    }
 
-  // Handle AM/PM format (e.g., "9:30 PM")
-  const ampmMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
-  if (ampmMatch) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, hourStr, minuteStr, period] = ampmMatch;
-    let hour = parseInt(hourStr, 10);
-    const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
-
-    if (period === "PM" && hour < 12) hour += 12;
-    if (period === "AM" && hour === 12) hour = 0;
-
-    return hour + minutes;
-  }
-
-  // Handle 24-hour format (e.g., "13:30")
-  const twentyFourHourMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?$/);
-  if (twentyFourHourMatch) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, hourStr, minuteStr] = twentyFourHourMatch;
-    const hour = parseInt(hourStr, 10);
-    const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
-    return hour + minutes;
-  }
-
-  return 0;
+    return {
+      dayOfTheWeek: dayOfWeek,
+      opensAt,
+      closesAt,
+    };
+  });
 };
 
 const parseTimeRanges = (
@@ -438,7 +428,8 @@ const parseTimeRanges = (
 ): { opensAt: number; closesAt: number } => {
   const normalized = normalizeTimeString(rangeStr);
 
-  if (normalized === "24 HOURS") return { opensAt: 0, closesAt: 24 };
+  if (normalized === "24 HOURS" || normalized === "OPEN 24 HOURS")
+    return { opensAt: 0, closesAt: 24 };
   if (normalized === "CLOSED") return { opensAt: 0, closesAt: 0 };
 
   // Split the range (handles both en-dash "–" and hyphen "-")
@@ -450,27 +441,36 @@ const parseTimeRanges = (
   };
 };
 
-export const processGoogleHours = (
-  googleHours: Record<string, string[]>
-): Availability[] => {
-  return Object.entries(googleHours).map(([day, hours]) => {
-    const dayOfWeek = day.toUpperCase() as DayOfTheWeek;
+const normalizeTimeString = (timeStr: string): string => {
+  return timeStr.replace(/[  ]/g, " ").trim().toUpperCase();
+};
 
-    if (!hours || !hours[0]) {
-      return { dayOfTheWeek: dayOfWeek, opensAt: 0, closesAt: 0 };
-    }
+const parseTime = (timeStr: string): number => {
+  const normalized = normalizeTimeString(timeStr);
 
-    const timeRange = hours[0];
-    const { opensAt, closesAt } = parseTimeRanges(timeRange);
+  if (normalized === "24 HOURS" || normalized === "OPEN 24 HOURS") return 24;
+  if (normalized === "CLOSED") return 0;
+  if (normalized === "NOON") return 12;
+  if (normalized === "MIDNIGHT") return 0;
 
-    // Handle cases where closing time might be next day (e.g., "11 PM - 1 AM")
-    const adjustedClosesAt =
-      closesAt < opensAt && closesAt > 0 ? closesAt + 24 : closesAt;
+  const ampmMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i);
+  if (ampmMatch) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, hourStr, minuteStr, period] = ampmMatch;
+    let hour = parseInt(hourStr, 10) % 12; 
+    const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
+    if (period.toUpperCase() === "PM") hour += 12;
+    return hour + minutes;
+  }
 
-    return {
-      dayOfTheWeek: dayOfWeek,
-      opensAt,
-      closesAt: adjustedClosesAt,
-    };
-  });
+  const twentyFourHourMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?$/);
+  if (twentyFourHourMatch) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, hourStr, minuteStr] = twentyFourHourMatch;
+    const hour = parseInt(hourStr, 10);
+    const minutes = minuteStr ? parseInt(minuteStr, 10) / 60 : 0;
+    return hour + minutes;
+  }
+
+  return 0;
 };
