@@ -27,7 +27,7 @@ interface GontrelPostViewProps {
 export const GontrelPostView = ({
   videoUrl,
   restaurantData,
-  tiktokUsername,
+  tiktokUsername = "",
   width = "w-[448px]",
   height = "h-[564px]",
   borderRadius = "rounded-[15px]",

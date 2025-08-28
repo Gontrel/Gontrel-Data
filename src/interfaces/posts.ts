@@ -1,3 +1,4 @@
+import { DayOfTheWeek } from "@/types";
 import { Admin, User } from "./user";
 
 export interface Post {
@@ -37,6 +38,11 @@ export interface Tag {
   resource: string;
   type: string;
   isTaste: boolean;
+}
+export interface Availability {
+  dayOfTheWeek: DayOfTheWeek;
+  opensAt: number;
+  closesAt: number;
 }
 
 export interface Analytics {

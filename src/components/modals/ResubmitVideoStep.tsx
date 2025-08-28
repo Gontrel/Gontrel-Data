@@ -92,23 +92,26 @@ export const ResubmitVideoStepStep = ({
 
   const { mutate: deleteVideoMutation, isPending: isLoadingPostRemoval } =
     trpc.post.deletePost.useMutation({
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         successToast("Post successfully deleted");
+        if (variables.postId) {
+          removeVideo(variables?.postId);
+        }
       },
     });
 
   const handleRemoveVideo = useCallback(
     (currentPostId: string) => {
       if (!currentPostId) return;
-      removeVideo(currentPostId);
 
       deleteVideoMutation({ postId: currentPostId });
     },
-    [removeVideo, deleteVideoMutation]
+    [deleteVideoMutation]
   );
 
   // Effect to handle debounced TikTok URL processing
   useEffect(() => {
+    if (editingVideoId) return;
     const processTiktokUrl = async () => {
       const match = debouncedUrl.match(
         /https:\/\/www\.tiktok\.com\/@[^\/]+\/video\/\d+/
@@ -147,6 +150,7 @@ export const ResubmitVideoStepStep = ({
 
     processTiktokUrl();
   }, [
+    editingVideoId,
     debouncedUrl,
     validateTikTokRetech,
     refetch,
@@ -246,7 +250,7 @@ export const ResubmitVideoStepStep = ({
 
   let shouldResubmit = 0;
 
-  const handleAddOrUpdateVideo = () => {
+  const handleAddOrUpdateVideo = async () => {
     if (!currentVideo?.url) {
       errorToast("Please add a video URL.");
       return;
@@ -284,12 +288,13 @@ export const ResubmitVideoStepStep = ({
       setEditingVideoId(null);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      updatePost(payload as any);
+      await updatePost(payload as any);
       shouldResubmit++;
+      return;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createPost(payload as any);
+    await createPost(payload as any);
   };
 
   const handleSetFoodVisibility = (checked: boolean) => {
@@ -301,6 +306,7 @@ export const ResubmitVideoStepStep = ({
 
   const handleEdit = (id: string) => {
     const videoToEdit = videos.find((v) => v.id === id);
+
     if (videoToEdit) {
       setEditingVideoId(id);
       setCurrentVideo({
@@ -314,17 +320,11 @@ export const ResubmitVideoStepStep = ({
         rating: videoToEdit?.rating || 0,
       });
       setActiveVideoUrl(videoToEdit?.videoUrl || videoToEdit?.url);
-      setTiktokUsername(videoToEdit?.author || null);
     }
   };
 
   const handleOnNext = () => {
-    if (currentVideo.url !== "" && currentVideo.tags.length !== 0)
-      handleAddOrUpdateVideo();
-    if (isRestaurantFlow) {
-      onNext();
-      return;
-    }
+    onNext();
   };
 
   const shouldDisable =
@@ -381,118 +381,113 @@ export const ResubmitVideoStepStep = ({
           />
         ))}
       </div>
-      {editingVideoId ||
-        (videos?.length === 0 && (
-          <div className="flex-grow">
-            <label htmlFor="tiktok-link" className="text-lg font-semibold">
-              TikTok link
-            </label>
-            <div className="relative mt-3">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Icon name="linkIcon" className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="url"
-                id="tiktok-link"
-                placeholder="https://tiktok.com"
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
-                value={currentVideo?.url?.trim()}
-                onChange={handleUrlChange}
-                onPaste={handleUrlChange}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    const syntheticEvent = {
-                      target: { value: e.currentTarget.value },
-                    } as React.ChangeEvent<HTMLInputElement>;
-                    handleUrlChange(syntheticEvent);
-                  }
-                }}
-              />
+      {(editingVideoId || videos?.length === 0) && (
+        <div className="flex-grow">
+          <label htmlFor="tiktok-link" className="text-lg font-semibold">
+            TikTok link
+          </label>
+          <div className="relative mt-3">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              <Icon name="linkIcon" className="w-5 h-5 text-gray-400" />
             </div>
-
-            {currentVideo?.url && (
-              <div className="mt-6">
-                <label htmlFor="tag-input" className="text-lg font-semibold">
-                  Tag
-                </label>
-                <div className="relative mt-3">
-                  <input
-                    type="text"
-                    id="tag-input"
-                    placeholder="Type a tag and press enter"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
-                    onKeyDown={handleTagKeyDown}
-                  />
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {currentVideo?.tags.map((tag) => (
-                    <div
-                      key={tag}
-                      className="flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700"
-                    >
-                      <span>{tag}</span>
-                      <button
-                        onClick={() => removeTag(tag)}
-                        className="ml-2 text-gray-500 hover:text-gray-700"
-                        aria-label={`Remove tag "${tag}"`}
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                {
-                  <div className="flex items-center gap-2 mb-4 mt-4">
-                    <input
-                      type="checkbox"
-                      id="food-visible"
-                      checked={currentVideo.isFoodVisible} // Use currentVideo state
-                      onChange={(e) =>
-                        handleSetFoodVisibility(e.target.checked)
-                      }
-                      className="w-4 h-4"
-                    />
-                    <label htmlFor="food-visible">
-                      Food is visible in the next 3 seconds
-                    </label>
-                  </div>
+            <input
+              type="url"
+              id="tiktok-link"
+              placeholder="https://www.tiktok.com/@username/video/1234567890"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+              value={currentVideo?.url?.trim()}
+              onChange={handleUrlChange}
+              onPaste={handleUrlChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const syntheticEvent = {
+                    target: { value: e.currentTarget.value },
+                  } as React.ChangeEvent<HTMLInputElement>;
+                  handleUrlChange(syntheticEvent);
                 }
-
-                {(editingVideoId && videos?.length >= 0) ||
-                  (currentVideo.url !== "" &&
-                    currentVideo?.tags?.length !== 0 && (
-                      <div className="mt-6 pt-4 flex justify-left">
-                        <Button
-                          disabled={shouldDisable}
-                          loading={isLoadingUpdate}
-                          onClick={handleAddOrUpdateVideo}
-                          className={mergeClasses(
-                            "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
-                            "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
-                            "hover:bg-blue-600"
-                          )}
-                        >
-                          <Icon
-                            name="saveIcon"
-                            stroke={
-                              isLoadingUpdate ||
-                              currentVideo.tags.length === 0 ||
-                              currentVideo.url === ""
-                                ? "#99a1af"
-                                : "white"
-                            }
-                          />
-                          <span>Save</span>
-                        </Button>
-                      </div>
-                    ))}
-              </div>
-            )}
+              }}
+            />
           </div>
-        ))}
+
+          {currentVideo?.url && (
+            <div className="mt-6">
+              <label htmlFor="tag-input" className="text-lg font-semibold">
+                Tag
+              </label>
+              <div className="relative mt-3">
+                <input
+                  type="text"
+                  id="tag-input"
+                  placeholder="Type a tag and press enter"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                  onKeyDown={handleTagKeyDown}
+                />
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {currentVideo?.tags.map((tag) => (
+                  <div
+                    key={tag}
+                    className="flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700"
+                  >
+                    <span>{tag}</span>
+                    <button
+                      onClick={() => removeTag(tag)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                      aria-label={`Remove tag "${tag}"`}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {
+                <div className="flex items-center gap-2 mb-4 mt-4">
+                  <input
+                    type="checkbox"
+                    id="food-visible"
+                    checked={currentVideo.isFoodVisible}
+                    onChange={(e) => handleSetFoodVisibility(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="food-visible">
+                    Food is visible in the next 3 seconds
+                  </label>
+                </div>
+              }
+
+              {(editingVideoId || videos?.length >= 0) && (
+                <div className="mt-6 pt-4 flex justify-left">
+                  <Button
+                    disabled={shouldDisable}
+                    loading={isLoadingUpdate}
+                    onClick={handleAddOrUpdateVideo}
+                    className={mergeClasses(
+                      "flex items-center gap-4 text-white bg-[#0070F3] rounded-[10px] py-[10px] px-[40px] text-[14px] font-semibold h-11",
+                      "disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed",
+                      "hover:bg-blue-600"
+                    )}
+                  >
+                    <Icon
+                      name="saveIcon"
+                      stroke={
+                        isLoadingUpdate ||
+                        currentVideo.tags.length === 0 ||
+                        currentVideo.url === ""
+                          ? "#99a1af"
+                          : "white"
+                      }
+                    />
+                    <span>Save</span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex-shrink-0 pt-6 flex items-center gap-4 mb-10">
         {!editFlow && (
@@ -508,6 +503,7 @@ export const ResubmitVideoStepStep = ({
             Previous
           </Button>
         )}
+
         {isRestaurantFlow && (
           <Button
             onClick={handleOnNext}

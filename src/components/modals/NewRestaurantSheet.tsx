@@ -122,6 +122,7 @@ export const NewRestaurantSheet = ({
         workingHours: workingHours,
         website: result.website ?? "",
         url: result.url ?? "",
+        googleOpeningHours: result.opening_hours?.weekday_text,
       };
 
       setIsRestaurantConfirmed(true);
@@ -185,6 +186,11 @@ export const NewRestaurantSheet = ({
 
     const availability = processGoogleHours(selectedRestaurant?.workingHours);
 
+    const convertGoogleOpeningHours =
+      selectedRestaurant?.googleOpeningHours?.map(
+        (entry) => entry?.split(": ")[1]
+      );
+
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant.placeId,
@@ -214,6 +220,8 @@ export const NewRestaurantSheet = ({
           ...(video.tags && { tags: video.tags }),
         })) ?? [],
       openingHours: availability,
+      googleOpeningHours:
+        convertGoogleOpeningHours ?? selectedRestaurant?.googleOpeningHours,
     };
 
     if (payload?.posts?.length === 0) {

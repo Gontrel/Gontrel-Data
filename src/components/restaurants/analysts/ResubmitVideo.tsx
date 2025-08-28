@@ -44,7 +44,7 @@ export const ResubmitVideo = ({
     { enabled: !!submissionId && open }
   );
 
-  const { mutate: updateAdminLocation } =
+  const { mutate: updateAdminLocation, isPending: isUpdateLocationLoading } =
     trpc.restaurant.updateRestaurant.useMutation({
       onSuccess: () => {
         successToast("Restaurant updated successfully!");
@@ -230,6 +230,7 @@ export const ResubmitVideo = ({
         onGoBackToSearch={handleGoBackToSearch}
         onPreviousRestaurantMenu={() => setStep(2)}
         onWorkingHoursSave={handleWorkingHoursSave}
+        isUpdateMenuLoading={isUpdateLocationLoading}
         onSubmit={(data) => handleSubmitRestaurant(data)}
       />
 

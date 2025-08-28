@@ -239,8 +239,11 @@ export const VideoStep = ({
   };
 
   const handleOnNext = () => {
-    if (currentVideo.url !== "" && currentVideo.tags.length !== 0)
+    if (currentVideo.url !== "" && currentVideo.tags.length !== 0) {
       handleAddOrUpdateVideo();
+      return;
+    }
+
     onNext();
   };
 

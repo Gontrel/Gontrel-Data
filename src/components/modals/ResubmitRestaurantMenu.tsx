@@ -6,13 +6,16 @@ interface ResubmitRestaurantMenuProps {
   onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
   restaurant?: RestaurantData;
   isLoading: boolean;
+  isUpdateMenuLoading: boolean;
   editFlow?: boolean;
 }
 const ResubmitRestaurantMenu = ({
   onPrevious,
   onSubmit,
   restaurant,
+  isUpdateMenuLoading,
   isLoading,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   editFlow = false,
 }: ResubmitRestaurantMenuProps) => {
   const [menuUrl, setMenuUrl] = useState("");
@@ -89,7 +92,7 @@ const ResubmitRestaurantMenu = ({
         </button>
         <button
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || isUpdateMenuLoading}
           className="w-full bg-[#0070F3] text-white py-3 rounded-lg font-semibold transition-colors hover:bg-blue-600"
         >
           <span className="font-semibold text-lg">Submit</span>
