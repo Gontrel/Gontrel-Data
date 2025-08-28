@@ -76,10 +76,6 @@ export const VideoStep = ({
 
       if (debouncedUrl && match) {
         const validUrlTiktok = await validateTikTokRetech();
-        console.log(
-          validUrlTiktok,
-          "validUrlTiktokvalidUrlTiktokva;lidUrlTiktok"
-        );
 
         if (!validUrlTiktok?.data?.valid) {
           errorToast("Tiktok link already exist");

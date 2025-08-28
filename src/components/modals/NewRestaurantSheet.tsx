@@ -183,11 +183,6 @@ export const NewRestaurantSheet = ({
     const store = useVideoStore.getState();
     const currentVideos = store.getCurrentVideos();
 
-    console.log(
-      selectedRestaurant?.workingHours,
-      "selectedRestaurant?.workingHoursselectedRestaurant?.workingHours"
-    );
-
     const availability = processGoogleHours(selectedRestaurant?.workingHours);
 
     const payload: CreateLocationRequest = {
@@ -220,8 +215,6 @@ export const NewRestaurantSheet = ({
         })) ?? [],
       openingHours: availability,
     };
-
-    console.log(payload, "payloadpayloadpayloadpayload");
 
     if (payload?.posts?.length === 0) {
       errorToast("Please add at least one video.");
