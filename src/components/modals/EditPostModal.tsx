@@ -145,7 +145,10 @@ export const EditVideo = ({
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
       openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
         ([day, hours]) => {
-          if (hours[0].toLowerCase() === "24 hours") {
+          if (
+            hours[0].toLowerCase() === "24 hours" ||
+            hours[0].toLowerCase() === "Open 24 hours"
+          ) {
             return {
               dayOfTheWeek: day?.toUpperCase() as DayOfTheWeek,
               opensAt: 0,

@@ -137,6 +137,7 @@ export default class APIRequest {
 
   // createRestaurant
   createRestaurant = async (data: CreateLocationRequest) => {
+    console.log(data, "datadatadatadatadata");
     const response = await this.authenticatedClient.post(
       `/admin-location`,
       data
@@ -450,10 +451,11 @@ export default class APIRequest {
   };
 
   validateTiktokUrl = async (data: { link: string }) => {
-  
     const response = await this.authenticatedClient.get(
       `/validate-tiktok-link?link=${data.link?.trim()}`
     );
+
+    console.log(response, "responseresponse");
 
     return this.handleResponse(response);
   };

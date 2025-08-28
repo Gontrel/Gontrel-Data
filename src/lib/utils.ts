@@ -117,7 +117,10 @@ export function formatNumber(num: number): string {
 }
 export const convertTimeTo24Hour = (time: string): number => {
   // Handle "24 hours" case
-  if (time.toLowerCase() === "24 hours") {
+  if (
+    time.toLowerCase() === "24 hours" ||
+    time.toLowerCase() === "Open 24 hours"
+  ) {
     return 24;
   }
 
@@ -192,9 +195,16 @@ export const transformToModalHours = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (result as any)[day] = {
       isOpen: true,
-      isAllDay: ranges.some((r) => r.toLowerCase().includes("24 hours")),
+      isAllDay: ranges.some(
+        (r) =>
+          r.toLowerCase().includes("24 hours") ||
+          r.toLowerCase().includes("Open 24 hours")
+      ),
       slots: ranges.map((range) => {
-        if (range.toLowerCase().includes("24 hours")) {
+        if (
+          range.toLowerCase().includes("24 hours") ||
+          range.toLowerCase().includes("Open 24 hours")
+        ) {
           return { start: "12:00 AM", end: "11:59 PM" };
         }
         return parseTimeRange(range);
@@ -324,7 +334,7 @@ export const formatPostTime = (isoDateString: string): string => {
 
   const timeFormatter = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
-    minute: "numeric", 
+    minute: "numeric",
     hour12: true,
   });
   const formattedTime = timeFormatter.format(postDate).toLowerCase();
@@ -391,17 +401,14 @@ interface Availability {
 }
 
 const normalizeTimeString = (timeStr: string): string => {
-  return timeStr
-    .replace(/[  ]/g, " ") // Replace special spaces with normal spaces
-    .trim()
-    .toUpperCase();
+  return timeStr.replace(/[  ]/g, " ").trim().toUpperCase();
 };
 
 const parseTime = (timeStr: string): number => {
   const normalized = normalizeTimeString(timeStr);
 
   // Handle special cases
-  if (normalized === "24 HOURS") return 24;
+  if (normalized === "24 HOURS" || normalized === "OPEN 24 HOURS") return 24;
   if (normalized === "CLOSED") return 0;
   if (normalized === "NOON") return 12;
   if (normalized === "MIDNIGHT") return 0;
@@ -438,7 +445,8 @@ const parseTimeRanges = (
 ): { opensAt: number; closesAt: number } => {
   const normalized = normalizeTimeString(rangeStr);
 
-  if (normalized === "24 HOURS") return { opensAt: 0, closesAt: 24 };
+  if (normalized === "24 HOURS" || normalized === "OPEN 24 HOURS")
+    return { opensAt: 0, closesAt: 24 };
   if (normalized === "CLOSED") return { opensAt: 0, closesAt: 0 };
 
   // Split the range (handles both en-dash "–" and hyphen "-")
