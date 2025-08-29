@@ -13,6 +13,7 @@ import { VideoData } from "@/interfaces/restaurants";
 import { Button } from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
 import { cleanTiktokUrl, isValidTikTokUrl, mergeClasses } from "@/lib/utils";
+import { CreateBulkPostRequest } from "@/interfaces";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   handleResubmit?: () => void;
@@ -80,10 +81,15 @@ export const ResubmitVideoStepStep = ({
       },
     });
 
-  const { mutate: createPost, isPending: isLoadingPostCreated } =
-    trpc.post.createPost.useMutation({
+  const { mutate: createBulkPost, isPending: isLoadingPostCreated } =
+    trpc.post.createBulkPost.useMutation({
       onSuccess: () => {
         successToast("Post created successfully!");
+        (async () => {
+          const convertedPosts = await convertPosts(restaurant?.posts ?? []);
+          resetVideos();
+          addVideos(convertedPosts);
+        })();
       },
       onError: (error) => {
         errorToast(error.message);
@@ -94,7 +100,7 @@ export const ResubmitVideoStepStep = ({
     trpc.post.deletePost.useMutation({
       onSuccess: (_, variables) => {
         successToast("Post successfully deleted");
-        if (variables.postId) {
+        if (variables?.postId) {
           removeVideo(variables?.postId);
         }
       },
@@ -293,8 +299,20 @@ export const ResubmitVideoStepStep = ({
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await createPost(payload as any);
+    const createBulkPostData: CreateBulkPostRequest = {
+      locationId: payload?.locationId,
+      posts: [
+        {
+          videoUrl: payload?.videoUrl,
+          tiktokLink: payload?.tiktokLink,
+          thumbUrl: payload?.thumbUrl,
+          isFoodVisible: payload?.isFoodVisible,
+          tags: payload?.tags,
+        },
+      ],
+    };
+
+    await createBulkPost(createBulkPostData);
   };
 
   const handleSetFoodVisibility = (checked: boolean) => {

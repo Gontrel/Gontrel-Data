@@ -76,13 +76,14 @@ const Sidebar = () => {
           alt="Gontrel Logo"
           width={60}
           height={60}
+          className="w-[60px] h-auto"
         />
       </div>
 
       <nav className="flex flex-col gap-8 mt-[41px]">
         {navSections.map((section) => {
           if (section.title === "MANAGEMENT" && !isAdmin) {
-            return null; 
+            return null;
           }
 
           return (
