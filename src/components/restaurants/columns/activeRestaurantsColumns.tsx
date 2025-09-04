@@ -103,6 +103,16 @@ export const createActiveRestaurantsColumns = (
     minSize: TABLE_COLUMN_SIZES.VIDEO,
   },
   {
+    accessorKey: "restaurant.type",
+    header: () => <TableHeader iconName="videoIcon" title="Restaurant type" />,
+    cell: ({ row }) => (
+      <div className="text-center text-[17px] font-medium">
+        {row.original?.orderType ?? "N/A"}
+      </div>
+    ),
+    minSize: TABLE_COLUMN_SIZES.VIDEO,
+  },
+  {
     accessorKey: "order.link",
     header: () => <TableHeader iconName="linkIcon" title="Order Link" />,
     cell: ({ row }) => (

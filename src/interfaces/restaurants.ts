@@ -128,6 +128,7 @@ export interface Location {
   rating: number;
   reservation: Reservation;
   orderLink: OrderLink;
+  orderType: RestaurantTypeEnum;
   toilets: boolean;
   type: string;
   isActive?: boolean;
