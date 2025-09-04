@@ -105,9 +105,11 @@ export const createActiveRestaurantsColumns = (
   {
     accessorKey: "order.link",
     header: () => <TableHeader iconName="linkIcon" title="Order Link" />,
-    cell: () => (
+    cell: ({ row }) => (
       <div className="text-center text-[17px] font-medium">
-        N/A
+        {row.original?.orderLink?.content
+          ? row.original?.orderLink?.content
+          : "N/A"}
       </div>
     ),
     minSize: TABLE_COLUMN_SIZES.VIDEO,

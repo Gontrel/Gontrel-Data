@@ -1,58 +1,50 @@
 "use client";
 
-import { StaffTableTabsEnum } from "@/types";
-import React from "react";
+import { ReportTableTabsEnum } from "@/types";
 
-interface StaffTableTabsProps {
-  activeTab: StaffTableTabsEnum;
-  onTabChange: (tab: StaffTableTabsEnum) => void;
-  tableTotals: Record<StaffTableTabsEnum, number>;
+interface Tab {
+  id: ReportTableTabsEnum;
+  label: string;
+  count: number;
 }
 
-/**
- * StaffTableTabs Component
- */
-export function StaffTableTabs({
-  activeTab,
-  onTabChange,
-  tableTotals,
-}: StaffTableTabsProps): React.JSX.Element {
-  const activeTabStyles =
-    "text-blue-500 border-b-4 border-blue-500 font-semibold";
-  const inactiveTabStyles = "text-gray-300 font-medium";
+interface ReportTableTabsProps {
+  activeTab: ReportTableTabsEnum;
+  tableTotals: Record<ReportTableTabsEnum, number>;
+  onTabChange: (tab: ReportTableTabsEnum) => void;
+}
+
+export const ReportTableTabs = ({ activeTab, tableTotals, onTabChange }: ReportTableTabsProps) => {
+  const tabs: Tab[] = [
+    {
+      id: ReportTableTabsEnum.REPORTED_VIDEOS,
+      label: "Reported Videos",
+      count: tableTotals[ReportTableTabsEnum.REPORTED_VIDEOS] ?? 0,
+    },
+    {
+      id: ReportTableTabsEnum.REPORTED_USERS,
+      label: "Reported Users",
+      count: tableTotals[ReportTableTabsEnum.REPORTED_USERS] ?? 0,
+    },
+  ];
 
   return (
-    <div className="flex items-center justify-between border-b border-[#D5D5D5] mb-2.5 overflow-x-auto">
-      <div className="flex items-center gap-x-7.5 min-w-0">
-        {(
-          Object.keys(StaffTableTabsEnum) as Array<
-            keyof typeof StaffTableTabsEnum
+    <div className="border-b border-gray-200">
+      <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
+            className={`${
+              activeTab === tab.id
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+            } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
-        ).map((key) => {
-          const tabKey = StaffTableTabsEnum[key];
-          const tabLabels: Record<typeof tabKey, string> = {
-            [StaffTableTabsEnum.ACTIVE_STAFF]: "Active Staff",
-            [StaffTableTabsEnum.DEACTIVATED_STAFF]: "Deactivated Staff",
-          };
-          const total = tableTotals[tabKey];
-          const showTotal = typeof total === "number" && total >= 0; // Changed to >= 0 as 0 is a valid total
-          const label = tabLabels[tabKey] ?? tabKey;
-
-          return (
-            <button
-              key={tabKey}
-              type="button"
-              className={`text-lg py-3 px-2.5 whitespace-nowrap ${
-                activeTab === tabKey ? activeTabStyles : inactiveTabStyles
-              }`}
-              onClick={() => onTabChange(tabKey)}
-            >
-              {label}
-              {showTotal && <span>{` (${total})`}</span>}
-            </button>
-          );
-        })}
-      </div>
+            {tab.label} ({tab.count})
+          </button>
+        ))}
+      </nav>
     </div>
   );
-}
+};

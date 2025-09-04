@@ -31,12 +31,13 @@ export const LivePostCard = ({
   className = "min-w-[530px]",
   RestaurantDetailsFlow = false,
 }: LivePostCardProps) => {
-  const isUser = post.source === AdminRoleEnum.USER;
+  const isUser = post?.source === AdminRoleEnum.USER;
   const showEditAndDelete =
-    RestaurantDetailsFlow && post.status === ApprovalStatusEnum.APPROVED;
+    RestaurantDetailsFlow && post?.status === ApprovalStatusEnum.APPROVED;
 
   const gontrelRestaurantData: GontrelRestaurantData = {
     name: restaurant?.name ?? "",
+    videoUrl: post?.videoUrl,
     menu:
       typeof restaurant?.menu === "string"
         ? restaurant?.menu
@@ -58,7 +59,7 @@ export const LivePostCard = ({
         {" "}
         {/* Added wrapper div */}
         <GontrelPostView
-          videoUrl={post.videoUrl}
+          videoUrl={post?.videoUrl}
           restaurantData={gontrelRestaurantData}
           width="w-full"
           height="h-[564px]"
@@ -95,10 +96,10 @@ export const LivePostCard = ({
           {isUser ? (
             <span className="flex flex-wrap mr-2">
               {" "}
-              {post.user?.displayName} (User){" "}
+              {post?.user?.displayName} (User){" "}
             </span>
           ) : (
-            <span className="flex flex-wrap mr-2"> {post.admin?.name}</span>
+            <span className="flex flex-wrap mr-2"> {post?.admin?.name}</span>
           )}{" "}
         </p>
         <p className="ml-auto">{}</p>
@@ -129,7 +130,7 @@ export const LivePostCard = ({
 
       {handleApprove &&
         handleDecline &&
-        (post.status === ApprovalStatusEnum.PENDING ? (
+        (post?.status === ApprovalStatusEnum.PENDING ? (
           <div className="flex items-center border-t border-[#D2D4D5] pt-4 gap-[18px] px-7.5">
             <ActionButtons
               actions={[
@@ -163,18 +164,18 @@ export const LivePostCard = ({
               actions={[
                 {
                   icon:
-                    post.status === ApprovalStatusEnum.APPROVED ? (
+                    post?.status === ApprovalStatusEnum.APPROVED ? (
                       <Check className="w-6 h-6" />
                     ) : (
                       <X className="w-6 h-6" />
                     ),
                   label:
-                    post.status === ApprovalStatusEnum.APPROVED
+                    post?.status === ApprovalStatusEnum.APPROVED
                       ? "Approved"
                       : "Declined",
                   onClick: () => {},
                   variant:
-                    post.status === ApprovalStatusEnum.APPROVED
+                    post?.status === ApprovalStatusEnum.APPROVED
                       ? "success"
                       : "danger",
                   active: true,

@@ -215,6 +215,44 @@ export const createSubmittedRestaurantsColumns = (
     minSize: TABLE_COLUMN_SIZES.RESERVATION_LINK,
   },
   {
+    accessorKey: "orderLink",
+    header: () => <TableHeader iconName="linkIcon" title="Order link" />,
+    cell: ({ row }) => {
+      const { content, status } = row.original.orderLink;
+      const isApproved = status === ApprovalStatusEnum.APPROVED;
+      const isPending = status === ApprovalStatusEnum.PENDING;
+      return (
+        <div
+          className={`flex flex-col gap-y-2 ${!isPending && "items-center"}`}
+        >
+          <ExternalLink href={content} title={content}>
+            <span className="text-black">View link</span>
+          </ExternalLink>
+          {!isPending && (
+            <ActionButtons
+              actions={[
+                {
+                  icon: isApproved ? (
+                    <Check className="w-6 h-6" />
+                  ) : (
+                    <X className="w-6 h-6" />
+                  ),
+                  onClick: () => {},
+                  variant: isApproved ? "success" : "danger",
+                  active: true,
+                  disabled: true,
+                  label: isApproved ? "Approved" : "Declined",
+                },
+              ]}
+              className="w-64 h-9"
+            />
+          )}
+        </div>
+      );
+    },
+    minSize: TABLE_COLUMN_SIZES.ORDER_LINK,
+  },
+  {
     accessorKey: "comment",
     header: () => <TableHeader title="Comment" />,
     cell: ({ row }) => {

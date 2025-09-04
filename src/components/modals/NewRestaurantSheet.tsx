@@ -193,22 +193,24 @@ export const NewRestaurantSheet = ({
 
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
-      placeId: selectedRestaurant.placeId,
+      placeId: selectedRestaurant?.placeId,
       // Conditional address
-      ...(selectedRestaurant.address && {
+      ...(selectedRestaurant?.address && {
         address:
-          typeof selectedRestaurant.address === "string"
-            ? selectedRestaurant.address
-            : selectedRestaurant.address.content,
+          typeof selectedRestaurant?.address === "string"
+            ? selectedRestaurant?.address
+            : selectedRestaurant?.address?.content,
       }),
-      ...(data.menuUrl && { menu: data.menuUrl }),
-      ...(selectedRestaurant.name && { name: selectedRestaurant.name }),
-      ...(selectedRestaurant.website && {
-        website: selectedRestaurant.website,
+      ...(data?.menuUrl && { menu: data?.menuUrl }),
+      ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
+      ...(selectedRestaurant?.website && {
+        website: selectedRestaurant?.website,
       }),
-      ...(selectedRestaurant.image && { photos: [selectedRestaurant.image] }),
+      ...(selectedRestaurant?.image && { photos: [selectedRestaurant?.image] }),
       rating: selectedRestaurant.rating ?? 0,
-      ...(data.reservationUrl && { reservation: data.reservationUrl }),
+      ...(data.reservationUrl && { reservation: data?.reservationUrl }),
+      ...(data?.orderUrl && { orderLink: data?.orderUrl }),
+      ...(data?.restaurantType && { orderType: data?.restaurantType }),
       posts:
         currentVideos?.map((video) => ({
           tiktokLink: video?.url,
@@ -216,8 +218,8 @@ export const NewRestaurantSheet = ({
           thumbUrl: video?.thumbUrl,
           locationName: selectedRestaurant?.name,
           rating: 0,
-          ...(video.isFoodVisible && { isFoodVisible: video.isFoodVisible }),
-          ...(video.tags && { tags: video.tags }),
+          ...(video?.isFoodVisible && { isFoodVisible: video?.isFoodVisible }),
+          ...(video?.tags && { tags: video?.tags }),
         })) ?? [],
       openingHours: availability,
       googleOpeningHours:
@@ -227,6 +229,8 @@ export const NewRestaurantSheet = ({
     if (payload?.posts?.length === 0) {
       errorToast("Please add at least one video.");
     }
+
+    console.log(payload, "payloadpayloadpayloadpayloadpayloadpayload");
 
     createAdminLocation(payload);
   };

@@ -113,8 +113,6 @@ export const staffsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
-
-      
         const response = await apiRequest.toggleStaffActive(input);
 
         return response;

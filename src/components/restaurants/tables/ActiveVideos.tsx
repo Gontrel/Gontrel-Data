@@ -132,6 +132,7 @@ const ActiveVideos = ({
     return currentRestaurant
       ? {
           id: currentRestaurant.location?.id ?? "",
+      
           name: currentRestaurant.location?.name ?? "",
           menu: currentRestaurant.location?.menu?.content || "",
           reservation: currentRestaurant.location?.reservation?.content || "",

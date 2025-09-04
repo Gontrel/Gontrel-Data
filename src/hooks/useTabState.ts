@@ -3,6 +3,7 @@ import { type DateRangeValue } from "@/utils/dateRange";
 import {
   AnalystTableTabsEnum,
   ManagerTableTabsEnum,
+  ReportTableTabsEnum,
   StaffTableTabsEnum,
 } from "@/types/enums";
 import { useIsAnalyst } from "@/stores/authStore";
@@ -15,7 +16,7 @@ export const useTabState = () => {
   const isAnalyst = useIsAnalyst();
   const [tabStates, setTabStates] = useState<
     Record<
-      ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum,
       TabState
     >
   >({
@@ -101,6 +102,24 @@ export const useTabState = () => {
       pageSize: 10,
       user: "",
     },
+    [ReportTableTabsEnum.REPORTED_VIDEOS]: {
+      searchTerm: "",
+      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedTimePeriod: "all",
+      dateRange: undefined,
+      currentPage: 1,
+      pageSize: 10,
+      user: "",
+    },
+    [ReportTableTabsEnum.REPORTED_USERS]: {
+      searchTerm: "",
+      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedTimePeriod: "all",
+      dateRange: undefined,
+      currentPage: 1,
+      pageSize: 10,
+      user: "",
+    },
   });
 
   /**
@@ -108,7 +127,7 @@ export const useTabState = () => {
    */
   const updateTabSearchTerm = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum ,
       searchTerm: string
     ) => {
       setTabStates((prev) => ({
@@ -128,7 +147,7 @@ export const useTabState = () => {
    */
   const updateTabAnalyst = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum ,
       analyst: string | undefined
     ) => {
       setTabStates((prev) => ({
@@ -147,7 +166,7 @@ export const useTabState = () => {
    */
   const updateTabUser = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum,
       user: string | undefined
     ) => {
       setTabStates((prev) => ({
@@ -167,7 +186,7 @@ export const useTabState = () => {
    */
   const updateTabVideoStatus = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum ,
       videoStatus: string | undefined
     ) => {
       setTabStates((prev) => ({
@@ -175,6 +194,23 @@ export const useTabState = () => {
         [tab]: {
           ...prev[tab],
           videoStatus: videoStatus,
+          currentPage: 1,
+        },
+      }));
+    },
+    []
+  );
+
+  const updateTabStatus = useCallback(
+    (
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum ,
+      status: string | undefined
+    ) => {
+      setTabStates((prev) => ({
+        ...prev,
+        [tab]: {
+          ...prev[tab],
+          status: status,
           currentPage: 1,
         },
       }));
@@ -218,7 +254,7 @@ export const useTabState = () => {
 
   const updateTabDateRange = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum ,
       range?: DateRangeValue
     ) => {
       setTabStates((prev) => ({
@@ -239,7 +275,7 @@ export const useTabState = () => {
    */
   const updateTabPage = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum ,
       page: number
     ) => {
       setTabStates((prev) => ({
@@ -258,7 +294,7 @@ export const useTabState = () => {
    */
   const updateTabPageSize = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum,
       pageSize: number
     ) => {
       setTabStates((prev) => ({
@@ -278,7 +314,7 @@ export const useTabState = () => {
    */
   const getTabState = useCallback(
     (
-      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum
+      tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum
     ): TabState => {
       return tabStates[tab];
     },
@@ -289,7 +325,7 @@ export const useTabState = () => {
    * Reset all filters for a specific tab
    */
   const resetTabFilters = useCallback(
-    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum) => {
+    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum) => {
       setTabStates((prev) => ({
         ...prev,
         [tab]: {
@@ -393,6 +429,24 @@ export const useTabState = () => {
         pageSize: 10,
         user: "",
       },
+      [ReportTableTabsEnum.REPORTED_VIDEOS]: {
+        searchTerm: "",
+        selectedAnalyst: isAnalyst ? "all" : "",
+        selectedTimePeriod: "all",
+        dateRange: undefined,
+        currentPage: 1,
+        pageSize: 10,
+        user: "",
+      },
+      [ReportTableTabsEnum.REPORTED_USERS]: {
+        searchTerm: "",
+        selectedAnalyst: isAnalyst ? "all" : "",
+        selectedTimePeriod: "all",
+        dateRange: undefined,
+        currentPage: 1,
+        pageSize: 10,
+        user: "",
+      },
     });
   }, [isAnalyst]);
 
@@ -407,6 +461,7 @@ export const useTabState = () => {
     updateTabPage,
     updateTabPageSize,
     getTabState,
+    updateTabStatus,
     resetTabFilters,
     resetAllTabs,
   };

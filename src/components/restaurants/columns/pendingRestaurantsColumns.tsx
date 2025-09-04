@@ -221,6 +221,40 @@ export const createPendingRestaurantsColumns = (
     minSize: TABLE_COLUMN_SIZES.RESERVATION_LINK,
   },
   {
+    accessorKey: "order.link",
+    header: () => <TableHeader iconName="linkIcon" title="Order link" />,
+    cell: ({ row }) => {
+      const { content, status } = row.original?.orderLink;
+      const isApproved = status === ApprovalStatusEnum.APPROVED;
+      const isDeclined = status === ApprovalStatusEnum.REJECTED;
+      return (
+        <div className="flex flex-col gap-y-2">
+          <ExternalLink href={content} title={content}>
+            <span className="text-black">View link</span>
+          </ExternalLink>
+          <ActionButtons
+            actions={[
+              {
+                icon: <Check className="w-6 h-6" />,
+                onClick: () => handleApprove(row.original.id, "orderLink"),
+                variant: "success",
+                active: isApproved,
+              },
+              {
+                icon: <X className="w-6 h-6" />,
+                onClick: () => handleDecline(row.original.id, "orderLink"),
+                variant: "danger",
+                active: isDeclined,
+              },
+            ]}
+            className="w-64 h-9"
+          />
+        </div>
+      );
+    },
+    minSize: TABLE_COLUMN_SIZES.RESERVATION_LINK,
+  },
+  {
     accessorKey: "addedBy",
     header: () => <TableHeader iconName="calendarIcon" title="Added by" />,
     cell: ({ row }) => {

@@ -1,5 +1,6 @@
 import { DayOfTheWeek } from "@/types";
 import { Admin, User } from "./user";
+import { Location } from "./restaurants";
 
 export interface Post {
   id: string;
@@ -47,4 +48,24 @@ export interface Availability {
 
 export interface Analytics {
   [key: string]: unknown;
+}
+
+
+export interface ReportedPostDataItem {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  reason: string;
+  status: string;
+  post: {
+    adminPost: {
+      admin: Omit<Admin, 'firebaseId' | 'deletedAt'>;
+    };
+    location?: Location;
+  } & Post;
+  user: Omit<User, 'firebaseId' | 'deletedAt'>;
 }

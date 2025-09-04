@@ -103,6 +103,11 @@ export const staffToggleSchema = z.object({
   comment: z.string().optional(),
 });
 
+export const postToggleSchema = z.object({
+  postId: z.string(),
+  comment: z.string().optional(),
+});
+
 // ============================================================================
 // POST MANAGEMENT SCHEMAS
 // ============================================================================
@@ -114,6 +119,16 @@ export const fetchAdminPostsSchema = baseQuerySchema.extend({
   userId: z.string().uuid().optional(),
   isVerified: z.boolean().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
+  locationId: z.string().uuid().optional(),
+  adminId: z.string().uuid().optional(),
+  submissionId: z.string().uuid().optional(),
+  includeRejected: z.boolean().optional(),
+});
+
+export const fetchReportedVideosBaseSchema = baseQuerySchema.extend({
+  userId: z.string().uuid().optional(),
+  isVerified: z.boolean().optional(),
+  status: z.string().optional(),
   locationId: z.string().uuid().optional(),
   adminId: z.string().uuid().optional(),
   submissionId: z.string().uuid().optional(),
@@ -420,3 +435,4 @@ export const locationAvailabilityRequestSchema = locationAvailabilitySchema;
 export const postCreationRequestSchema = postCreationSchema;
 
 export const fetchPendingUserVideosSchema = fetchAdminPostsSchema.extend({});
+export const fetchReportedVideosSchema = fetchReportedVideosBaseSchema.extend({});

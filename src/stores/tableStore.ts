@@ -5,6 +5,7 @@ import {
   AnalystTableTabsEnum,
   ApprovalStatusEnum,
   StaffTableTabsEnum,
+  ReportTableTabsEnum,
 } from "@/types/enums";
 import {
   ActiveRestaurantTableTypes,
@@ -14,13 +15,17 @@ import {
   SubmittedRestaurantTableTypes,
   SubmittedVideoTableTypes,
 } from "@/types/restaurant";
-import { StaffTableTypes } from "@/types/user"; 
-
+import {
+  StaffTableTypes,
+  ReportedUserTypes,
+  ReportedVideoTypes,
+} from "@/types/user";
 
 export type TableType =
   | ManagerTableTabsEnum
   | AnalystTableTabsEnum
-  | StaffTableTabsEnum;
+  | StaffTableTabsEnum
+  | ReportTableTabsEnum;
 
 export interface TableState<T> {
   data: T[];
@@ -53,6 +58,8 @@ export interface TableStore {
   activeStaffs: TableState<StaffTableTypes>;
   deactivatedStaffs: TableState<StaffTableTypes>;
   pendingUserVideos: TableState<PendingVideoTableTypes>;
+  reportedUsers: TableState<ReportedUserTypes>;
+  reportedVideos: TableState<ReportedVideoTypes>;
 
   // Loading states
   mutationLoading: boolean;
@@ -79,13 +86,13 @@ export interface TableStore {
   approveRestaurant: (
     tableType: ManagerTableTabsEnum,
     restaurantId: string,
-    propertyKey?: "address" | "menu" | "reservation" | "posts",
+    propertyKey?: "address" | "menu" | "reservation" | "posts" | "orderLink",
     postId?: string
   ) => void;
   declineRestaurant: (
     tableType: ManagerTableTabsEnum,
     restaurantId: string,
-    propertyKey?: "address" | "menu" | "reservation" | "posts",
+    propertyKey?: "address" | "menu" | "reservation" | "posts" | "orderLink",
     postId?: string
   ) => void;
   approveVideo: (videoId: string) => void;
@@ -136,6 +143,8 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   submittedVideos: createInitialTableState<SubmittedVideoTableTypes>(),
   activeStaffs: createInitialTableState<StaffTableTypes>(), // New: Active Staffs initial state
   deactivatedStaffs: createInitialTableState<StaffTableTypes>(), // New: Deactivated Staffs initial state
+  reportedUsers: createInitialTableState<ReportedUserTypes>(),
+  reportedVideos: createInitialTableState<ReportedVideoTypes>(),
   mutationLoading: false,
   saveLoading: false,
 
@@ -250,7 +259,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   approveRestaurant: (
     tableType: ManagerTableTabsEnum,
     restaurantId: string,
-    propertyKey?: "address" | "menu" | "reservation" | "posts",
+    propertyKey?: "address" | "menu" | "reservation" | "posts" | "orderLink",
     postId?: string
   ) => {
     if (tableType !== ManagerTableTabsEnum.PENDING_RESTAURANTS) {
@@ -287,7 +296,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   declineRestaurant: (
     tableType: ManagerTableTabsEnum,
     restaurantId: string,
-    propertyKey?: "address" | "menu" | "reservation" | "posts",
+    propertyKey?: "address" | "menu" | "reservation" | "posts" | "orderLink",
     postId?: string
   ) => {
     if (tableType !== ManagerTableTabsEnum.PENDING_RESTAURANTS) {
@@ -445,7 +454,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
       store.setSaveLoading(true);
 
       try {
-  
         set(
           (state) =>
             ({
@@ -456,7 +464,6 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
               },
             } as Partial<TableStore>)
         );
-
       } catch (error: unknown) {
         store.setError(
           tableType,
@@ -645,7 +652,6 @@ export const useActiveVideosStore = () => {
     resetTable: () => store.resetTable(ManagerTableTabsEnum.ACTIVE_VIDEOS),
   };
 };
-
 
 export const usePendingRestaurantsStore = () => {
   const store = useTableStore();
@@ -859,5 +865,34 @@ export const useDeactivatedStaffsStore = () => {
     clearSelection: () =>
       store.clearSelection(StaffTableTabsEnum.DEACTIVATED_STAFF),
     resetTable: () => store.resetTable(StaffTableTabsEnum.DEACTIVATED_STAFF),
+  };
+};
+
+
+export const useReportedVideosStore = () => {
+  const store = useTableStore();
+  return {
+    ...store.reportedVideos,
+
+    approveVideo: store.approveVideo,
+    declineVideo: store.declineVideo,
+    mutationLoading: store.mutationLoading,
+    saveLoading: store.saveLoading,
+    setData: (data: ReportedVideoTypes[]) =>
+      store.setData(ReportTableTabsEnum.REPORTED_VIDEOS, data),
+    setLoading: (loading: boolean) =>
+      store.setLoading(ReportTableTabsEnum.REPORTED_VIDEOS, loading),
+    setError: (error: string | null) =>
+      store.setError(ReportTableTabsEnum.REPORTED_VIDEOS, error),
+    setPagination: (
+      pagination: Partial<TableState<ReportedVideoTypes>["pagination"]>
+    ) => store.setPagination(ReportTableTabsEnum.REPORTED_VIDEOS, pagination),
+    setSearchTerm: (searchTerm: string) =>
+      store.setSearchTerm(ReportTableTabsEnum.REPORTED_VIDEOS, searchTerm),
+    setSelectedRows: (selectedRows: string[]) =>
+      store.setSelectedRows(ReportTableTabsEnum.REPORTED_VIDEOS, selectedRows),
+    clearSelection: () =>
+      store.clearSelection(ReportTableTabsEnum.REPORTED_VIDEOS),
+    resetTable: () => store.resetTable(ReportTableTabsEnum.REPORTED_VIDEOS),
   };
 };

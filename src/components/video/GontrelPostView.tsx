@@ -93,7 +93,7 @@ export const GontrelPostView = ({
       <VideoPlayer
         videoRef={videoRef as React.RefObject<HTMLVideoElement>}
         src={videoUrl}
-        className={`${borderRadius} ${width} ${height} object-cover`}
+        className={`${borderRadius} ${width} ${height} object-cover w-full`}
         autoPlay={autoPlay}
         muted={muted}
         loop={loop}

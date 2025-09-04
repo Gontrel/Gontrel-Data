@@ -24,7 +24,7 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
   const getVariantStyles = (variant: ActionButton['variant']) => {
     switch (variant) {
       case 'success':
-        return 'text-[#009543]';
+        return 'text-[#008A04]';
       case 'primary':
         return 'text-blue-500 disabled:text-[#B0D3FB]';
       case 'danger':
@@ -34,6 +34,7 @@ export function ActionButtons({ actions, className = '' }: ActionButtonsProps) {
     }
   };
 
+  
   const getActiveVariantStyles = (variant: ActionButton['variant']) => {
     switch (variant) {
       case 'success':

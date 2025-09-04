@@ -1,6 +1,8 @@
 import {
   AnalystTableTabsEnum,
+  ApprovalStatusEnum,
   ManagerTableTabsEnum,
+  ReportTableTabsEnum,
   StaffTableTabsEnum,
 } from "@/types/enums";
 import { usePendingRestaurants } from "./usePendingRestaurants";
@@ -13,13 +15,15 @@ import { useDeactivatedStaffs } from "./useDeactivatedStaffs";
 import { TabState } from "@/interfaces";
 import { usePendingUserVideos } from "./usePendingUserVideos";
 import { useActiveVideos } from "./useActiveVideos";
+import { useReportedUsers } from "./useReportedUsers";
+import { useReportedVideos } from "./useReportedVideos";
 
 /**
  * Custom hook to fetch table totals for each tab independently using tRPC
  */
 export const useTableTotals = (
   tabStates: Record<
-    ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum,
+    ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum,
     TabState
   >
 ) => {
@@ -180,6 +184,43 @@ export const useTableTotals = (
         .split("T")[0] || undefined,
   });
 
+  const { queryData: reportedVideosTotal } = useReportedVideos({
+    status: tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.status ?? undefined,
+    currentPage: 1,
+    pageSize: 10,
+    searchTerm: tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.searchTerm || "",
+    startDate:
+      tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    adminId:
+      tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.selectedAnalyst ||
+      undefined,
+  });
+
+  const { queryData: reportedUsersTotal } = useReportedUsers({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm: tabStates[ReportTableTabsEnum.REPORTED_USERS]?.searchTerm || "",
+    startDate:
+      tabStates[ReportTableTabsEnum.REPORTED_USERS]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[ReportTableTabsEnum.REPORTED_USERS]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    adminId:
+      tabStates[ReportTableTabsEnum.REPORTED_USERS]?.selectedAnalyst ||
+      undefined,
+    status: ApprovalStatusEnum.PENDING,
+    includeRejected: true,
+  });
+
   // Extract totals from tRPC responses
   const getTotalFromResponse = (response: unknown): number => {
     if (!response || typeof response !== "object") return 0;
@@ -216,6 +257,8 @@ export const useTableTotals = (
   const activeStaffsCount = getTotalFromResponse(activeStaffsTotal);
   const deactivatedStaffsCount = getTotalFromResponse(deactivatedStaffsTotal);
   const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
+  const reportedVideosCount = getTotalFromResponse(reportedVideosTotal);
+  const reportedUsersCount = getTotalFromResponse(reportedUsersTotal);
 
   return {
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
@@ -227,5 +270,7 @@ export const useTableTotals = (
     [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: deactivatedStaffsCount,
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
+    [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount,
+    [ReportTableTabsEnum.REPORTED_USERS]: reportedUsersCount,
   };
 };

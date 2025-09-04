@@ -5,7 +5,7 @@ import { useAnalystOptions } from "@/hooks/useAnalysts";
 import { useMemo } from "react";
 import { useUserOptions } from "@/hooks/useUserHook";
 import { type DateRangeValue } from "@/utils/dateRange";
-import { ManagerTableTabsEnum } from "@/types";
+import { ManagerTableTabsEnum, ReportTableTabsEnum } from "@/types";
 
 /**
  * Props for ActionPanel component
