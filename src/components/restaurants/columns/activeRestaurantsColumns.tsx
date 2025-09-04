@@ -105,13 +105,19 @@ export const createActiveRestaurantsColumns = (
   {
     accessorKey: "restaurant.type",
     header: () => <TableHeader iconName="videoIcon" title="Restaurant type" />,
-    cell: ({ row }) => (
-      <div className="text-center text-[17px] font-medium">
-        {row.original?.orderType ?? "N/A"}
-      </div>
-    ),
-    minSize: TABLE_COLUMN_SIZES.VIDEO,
+    cell: ({ row }) => {
+      const type = row?.original?.orderType;
+      const formatted =
+        type && type.length > 0
+          ? type.charAt(0).toUpperCase() + type.slice(1)
+          : "N/A";
+
+      return (
+        <div className="text-center text-[17px] font-medium">{formatted}</div>
+      );
+    },
   },
+
   {
     accessorKey: "order.link",
     header: () => <TableHeader iconName="linkIcon" title="Order Link" />,
