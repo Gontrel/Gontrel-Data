@@ -14,6 +14,7 @@ import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
 import { successToast, errorToast } from "@/utils/toast";
 import { UpdateLocationRequest } from "@/interfaces/requests";
+import { RestaurantMenuFormData } from "@/interfaces";
 
 interface ResubmitRestaurantSheetProps {
   open: boolean;
@@ -121,10 +122,7 @@ export const ResubmitRestaurant = ({
     [selectedRestaurant]
   );
 
-  const handleSubmitRestaurant = (data: {
-    menuUrl: string;
-    reservationUrl: string;
-  }) => {
+  const handleSubmitRestaurant = (data: RestaurantMenuFormData) => {
     const availability = processGoogleHours(
       selectedRestaurant?.workingHours ?? {}
     );
@@ -141,6 +139,12 @@ export const ResubmitRestaurant = ({
       ...(data.menuUrl && { menu: data.menuUrl }),
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
+      ...(selectedRestaurant?.orderLink && {
+        orderLink: data?.orderUrl,
+      }),
+      ...(selectedRestaurant?.orderType && {
+        orderType: data?.orderUrl,
+      }),
       openingHours: availability,
     };
 

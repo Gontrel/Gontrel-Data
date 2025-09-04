@@ -14,17 +14,16 @@ interface ReportTableTabsProps {
   onTabChange: (tab: ReportTableTabsEnum) => void;
 }
 
-export const ReportTableTabs = ({ activeTab, tableTotals, onTabChange }: ReportTableTabsProps) => {
+export const ReportTableTabs = ({
+  activeTab,
+  tableTotals,
+  onTabChange,
+}: ReportTableTabsProps) => {
   const tabs: Tab[] = [
     {
       id: ReportTableTabsEnum.REPORTED_VIDEOS,
       label: "Reported Videos",
       count: tableTotals[ReportTableTabsEnum.REPORTED_VIDEOS] ?? 0,
-    },
-    {
-      id: ReportTableTabsEnum.REPORTED_USERS,
-      label: "Reported Users",
-      count: tableTotals[ReportTableTabsEnum.REPORTED_USERS] ?? 0,
     },
   ];
 

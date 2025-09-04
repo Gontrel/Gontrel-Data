@@ -316,7 +316,7 @@ export interface UpdateLocationRequest {
   rating?: number;
   reservation?: string;
   orderLink?: string;
-  orderType?: RestaurantTypeEnum;
+  orderType?: RestaurantTypeEnum | string;
   toilets?: boolean;
   type?: string;
   website?: string;

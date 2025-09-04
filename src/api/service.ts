@@ -141,12 +141,11 @@ export default class APIRequest {
 
   // createRestaurant
   createRestaurant = async (data: CreateLocationRequest) => {
-    console.log(data, "datadatadatadatadatadatadata");
-    // const response = await this.authenticatedClient.post(
-    //   `/admin-location`,
-    //   data
-    // );
-    // return this.handleResponse(response);
+    const response = await this.authenticatedClient.post(
+      `/admin-location`,
+      data
+    );
+    return this.handleResponse(response);
   };
   // getRestaurants
   getRestaurants = async (

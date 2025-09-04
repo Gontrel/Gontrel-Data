@@ -7,7 +7,6 @@ import { IChartData, IPieConfig } from "@/components/charts/PieTwoAngleChart";
 import MetricCard from "@/components/ui/MetricCard";
 import { TIconNames } from "@/components/svgs/IconNames";
 import RestaurantAnalyticsChart from "@/components/dashboard/RestaurantAnalyticsChart";
-import TopPerformingRestaurant from "@/components/dashboard/TopPerformingRestaurant";
 import ActiveRestaurants from "@/components/restaurants/tables/ActiveRestaurants";
 import LineChart from "@/components/charts/LineChart";
 import MapComponent from "@/components/dashboard/MapComponent";
@@ -215,10 +214,10 @@ export default function DashboardPage() {
           showLegend={false}
         />
       </section>
-
+      {/* 
       <section className="mt-2">
         <MapComponent />
-      </section>
+      </section> */}
     </div>
   );
 }

@@ -210,6 +210,6 @@ export interface AuditLog {
 export interface RestaurantMenuFormData {
   restaurantType: string;
   menuUrl?: string;
-  reservationUrl?: string;
+  reservationUrl?: string | RestaurantTypeEnum;
   orderUrl?: string;
 }

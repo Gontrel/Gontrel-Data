@@ -22,7 +22,6 @@ export const useReportedVideos = ({
   adminId,
 }: UseReportedVideosProps) => {
 
-  console.log(status, "statusstatusstatusstatusstatusstatusstatusstatus")
   const {
     data: queryData,
     isLoading,
@@ -40,6 +39,5 @@ export const useReportedVideos = ({
     adminId,
   });
 
-  console.log(queryData, "queryDataqueryDataqueryDataqueryDataqueryData")
   return { queryData, isLoading, error, refetch };
 };

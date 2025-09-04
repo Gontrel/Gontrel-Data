@@ -5,7 +5,6 @@ import { ReportTableContent } from "@/components/reports/ReportTableContent";
 import { ReportTableTabs } from "@/components/reports/ReportTableTabs";
 import { useTableTotals } from "@/hooks/useTableTotals";
 import { useTabState } from "@/hooks/useTabState";
-import { trpc } from "@/lib/trpc-client";
 import { useCurrentUser } from "@/stores/authStore";
 import { AdminRoleEnum, ReportTableTabsEnum } from "@/types";
 import { rangeToYmd, DateRangeValue } from "@/utils/dateRange";

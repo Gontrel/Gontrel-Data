@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Sheet } from "@/components/modals/Sheet";
 import { ReportedPostDataItem } from "@/interfaces/posts";
-import { ReportTableTabsEnum } from "@/types/enums";
-import { trpc } from "@/lib/trpc-client";
 import { ReportDetailsCard } from "./ReportDetailsCard";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import Icon from "../svgs/Icons";

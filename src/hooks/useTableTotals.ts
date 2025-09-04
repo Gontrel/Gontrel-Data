@@ -202,24 +202,6 @@ export const useTableTotals = (
       undefined,
   });
 
-  const { queryData: reportedUsersTotal } = useReportedUsers({
-    currentPage: 1,
-    pageSize: 1,
-    searchTerm: tabStates[ReportTableTabsEnum.REPORTED_USERS]?.searchTerm || "",
-    startDate:
-      tabStates[ReportTableTabsEnum.REPORTED_USERS]?.dateRange?.startDate
-        ?.toISOString()
-        .split("T")[0] || undefined,
-    endDate:
-      tabStates[ReportTableTabsEnum.REPORTED_USERS]?.dateRange?.endDate
-        ?.toISOString()
-        .split("T")[0] || undefined,
-    adminId:
-      tabStates[ReportTableTabsEnum.REPORTED_USERS]?.selectedAnalyst ||
-      undefined,
-    status: ApprovalStatusEnum.PENDING,
-    includeRejected: true,
-  });
 
   // Extract totals from tRPC responses
   const getTotalFromResponse = (response: unknown): number => {
@@ -258,7 +240,6 @@ export const useTableTotals = (
   const deactivatedStaffsCount = getTotalFromResponse(deactivatedStaffsTotal);
   const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
   const reportedVideosCount = getTotalFromResponse(reportedVideosTotal);
-  const reportedUsersCount = getTotalFromResponse(reportedUsersTotal);
 
   return {
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
@@ -270,7 +251,6 @@ export const useTableTotals = (
     [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: deactivatedStaffsCount,
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
-    [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount,
-    [ReportTableTabsEnum.REPORTED_USERS]: reportedUsersCount,
+    [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount
   };
 };

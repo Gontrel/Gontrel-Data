@@ -229,9 +229,6 @@ export const NewRestaurantSheet = ({
     if (payload?.posts?.length === 0) {
       errorToast("Please add at least one video.");
     }
-
-    console.log(payload, "payloadpayloadpayloadpayloadpayloadpayload");
-
     createAdminLocation(payload);
   };
 
