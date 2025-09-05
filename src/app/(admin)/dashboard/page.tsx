@@ -213,10 +213,6 @@ export default function DashboardPage() {
           showLegend={false}
         />
       </section>
-      {/* 
-      <section className="mt-2">
-        <MapComponent />
-      </section> */}
     </div>
   );
 }
