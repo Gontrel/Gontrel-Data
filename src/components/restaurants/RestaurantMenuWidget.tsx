@@ -115,7 +115,7 @@ export const RestaurantMenuWidget = ({
       <div className="flex items-center gap-4 mt-6">
         <Button
           onClick={onPrevious}
-          className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold transition-colors hover:bg-gray-100"
+          className="w-full border bg-gray-100 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold transition-colors"
         >
           Previous
         </Button>
