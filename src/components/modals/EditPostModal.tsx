@@ -92,6 +92,8 @@ export const EditVideo = ({
             lng: locationFromPost?.lng,
             mapLink: locationFromPost?.mapLink ?? "",
             menu: locationFromPost?.menu?.content ?? "",
+            orderLink: locationFromPost?.orderLink ?? "",
+            orderType: locationFromPost?.orderType ?? "",
             modifiedAt: locationFromPost?.modifiedAt ?? "",
             createdAt: locationFromPost?.createdAt ?? "",
             photos: locationFromPost?.photos ?? [],

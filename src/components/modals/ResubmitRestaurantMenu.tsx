@@ -160,18 +160,22 @@ const EditRestaurantMenu = ({
 
   useEffect(() => {
     if (restaurant) {
+      if (restaurant.orderType) {
+        setRestaurantType(restaurant.orderType);
+      }
+
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant.menu);
       } else if (restaurant.menu?.content) {
-        setMenuUrl(restaurant.menu.content);
+        setMenuUrl(restaurant.menu?.content);
       }
 
       if (restaurant.reservation?.content) {
-        setReservationUrl(restaurant.reservation.content);
+        setReservationUrl(restaurant.reservation?.content);
       }
 
       if (restaurant.orderLink?.content) {
-        setOrderUrl(restaurant.orderLink.content);
+        setOrderUrl(restaurant.orderLink?.content);
       }
     }
   }, [restaurant]);
@@ -204,8 +208,10 @@ const EditRestaurantMenu = ({
           </select>
         </div>
 
-        {/* Conditional fields */}
-        {(restaurantType === "dine-in" || restaurantType === "both") && (
+        {/* Show fields based on type */}
+        {(restaurantType === "dine-in" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <>
             <div className="mb-6">
               <label
@@ -243,7 +249,9 @@ const EditRestaurantMenu = ({
           </>
         )}
 
-        {(restaurantType === "takeout" || restaurantType === "both") && (
+        {(restaurantType === "takeout" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <div className="mb-6">
             <label
               htmlFor="order-url"
