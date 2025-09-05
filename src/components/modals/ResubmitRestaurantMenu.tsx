@@ -1,5 +1,6 @@
 import { RestaurantMenuFormData } from "@/interfaces";
 import { RestaurantData } from "@/types";
+import { errorToast } from "@/utils/toast";
 import React, { useState, useEffect } from "react";
 
 interface ResubmitRestaurantMenuProps {
@@ -181,6 +182,9 @@ const EditRestaurantMenu = ({
   }, [restaurant]);
 
   const handleSubmit = () => {
+    if (!!restaurantType) {
+      return errorToast("Restaurant type must be selected");
+    }
     onSubmit({ restaurantType, menuUrl, reservationUrl, orderUrl });
   };
 
