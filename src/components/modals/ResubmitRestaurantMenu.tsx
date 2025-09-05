@@ -1,5 +1,6 @@
 import { RestaurantMenuFormData } from "@/interfaces";
 import { RestaurantData } from "@/types";
+import { errorToast } from "@/utils/toast";
 import React, { useState, useEffect } from "react";
 
 interface ResubmitRestaurantMenuProps {
@@ -25,6 +26,9 @@ const ResubmitRestaurantMenu = ({
 
   useEffect(() => {
     if (restaurant) {
+      if (restaurant.orderType) {
+        setRestaurantType(restaurant.orderType);
+      }
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant.menu);
       } else if (restaurant.menu?.content) {
@@ -42,6 +46,10 @@ const ResubmitRestaurantMenu = ({
   }, [restaurant]);
 
   const handleSubmit = () => {
+    if (restaurantType === "unknown") {
+      return errorToast("Restaurant type must be selected");
+    }
+
     onSubmit({ restaurantType, menuUrl, reservationUrl, orderUrl });
   };
 
@@ -70,7 +78,9 @@ const ResubmitRestaurantMenu = ({
         </div>
 
         {/* Conditional fields */}
-        {(restaurantType === "dine-in" || restaurantType === "both") && (
+        {(restaurantType === "dine-in" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <>
             <div className="mb-6">
               <label
@@ -108,7 +118,9 @@ const ResubmitRestaurantMenu = ({
           </>
         )}
 
-        {(restaurantType === "takeout" || restaurantType === "both") && (
+        {(restaurantType === "takeout" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <div className="mb-6">
             <label
               htmlFor="order-url"
@@ -160,23 +172,31 @@ const EditRestaurantMenu = ({
 
   useEffect(() => {
     if (restaurant) {
+      if (restaurant.orderType) {
+        setRestaurantType(restaurant.orderType);
+      }
+
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant.menu);
       } else if (restaurant.menu?.content) {
-        setMenuUrl(restaurant.menu.content);
+        setMenuUrl(restaurant.menu?.content);
       }
 
       if (restaurant.reservation?.content) {
-        setReservationUrl(restaurant.reservation.content);
+        setReservationUrl(restaurant.reservation?.content);
       }
 
       if (restaurant.orderLink?.content) {
-        setOrderUrl(restaurant.orderLink.content);
+        setOrderUrl(restaurant.orderLink?.content);
       }
     }
   }, [restaurant]);
 
   const handleSubmit = () => {
+    if (restaurantType === "unknown") {
+      return errorToast("Restaurant type must be selected");
+    }
+
     onSubmit({ restaurantType, menuUrl, reservationUrl, orderUrl });
   };
 
@@ -204,8 +224,10 @@ const EditRestaurantMenu = ({
           </select>
         </div>
 
-        {/* Conditional fields */}
-        {(restaurantType === "dine-in" || restaurantType === "both") && (
+        {/* Show fields based on type */}
+        {(restaurantType === "dine-in" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <>
             <div className="mb-6">
               <label
@@ -243,7 +265,9 @@ const EditRestaurantMenu = ({
           </>
         )}
 
-        {(restaurantType === "takeout" || restaurantType === "both") && (
+        {(restaurantType === "takeout" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <div className="mb-6">
             <label
               htmlFor="order-url"
