@@ -26,6 +26,9 @@ const ResubmitRestaurantMenu = ({
 
   useEffect(() => {
     if (restaurant) {
+      if (restaurant.orderType) {
+        setRestaurantType(restaurant.orderType);
+      }
       if (typeof restaurant.menu === "string") {
         setMenuUrl(restaurant.menu);
       } else if (restaurant.menu?.content) {
@@ -43,6 +46,10 @@ const ResubmitRestaurantMenu = ({
   }, [restaurant]);
 
   const handleSubmit = () => {
+    if (restaurantType === "unknown") {
+      return errorToast("Restaurant type must be selected");
+    }
+
     onSubmit({ restaurantType, menuUrl, reservationUrl, orderUrl });
   };
 
@@ -71,7 +78,9 @@ const ResubmitRestaurantMenu = ({
         </div>
 
         {/* Conditional fields */}
-        {(restaurantType === "dine-in" || restaurantType === "both") && (
+        {(restaurantType === "dine-in" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <>
             <div className="mb-6">
               <label
@@ -109,7 +118,9 @@ const ResubmitRestaurantMenu = ({
           </>
         )}
 
-        {(restaurantType === "takeout" || restaurantType === "both") && (
+        {(restaurantType === "takeout" ||
+          restaurantType === "both" ||
+          restaurantType === "unknown") && (
           <div className="mb-6">
             <label
               htmlFor="order-url"
@@ -182,9 +193,10 @@ const EditRestaurantMenu = ({
   }, [restaurant]);
 
   const handleSubmit = () => {
-    if (!!restaurantType) {
+    if (restaurantType === "unknown") {
       return errorToast("Restaurant type must be selected");
     }
+
     onSubmit({ restaurantType, menuUrl, reservationUrl, orderUrl });
   };
 
