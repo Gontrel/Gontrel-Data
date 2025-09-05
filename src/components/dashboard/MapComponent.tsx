@@ -114,11 +114,12 @@ const MapComponent: React.FC<RestaurantMapProps> = ({
   }, []);
 
   // Debounce the fetch function to limit API calls
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchData = useCallback(
     debounce((bounds: LatLngBounds) => {
       fetchData(bounds);
     }, 500),
-    [fetchData]
+    [fetchData, debounce]
   );
 
   return (
