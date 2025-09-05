@@ -1,5 +1,5 @@
-import { ApprovalStatusEnum } from "@/types";
-import { Post, Tag } from "./posts";
+import { ApprovalStatusEnum, RestaurantTypeEnum } from "@/types";
+import { Post, ReportedPostDataItem, Tag } from "./posts";
 import { Admin } from "./user";
 import { DateRangeValue } from "@/utils/dateRange";
 
@@ -65,6 +65,8 @@ export interface Restaurant {
   priceLevel: number;
   rating: number;
   reservation: Reservation;
+  orderLink: OrderLink;
+  orderType: RestaurantTypeEnum;
   toilets: boolean;
   type: "RESTAURANT" | "CAFE" | "BAR";
   createdAt: string;
@@ -85,6 +87,10 @@ export interface Address {
 }
 
 export interface Reservation {
+  status: ApprovalStatusEnum;
+  content: string;
+}
+export interface OrderLink {
   status: ApprovalStatusEnum;
   content: string;
 }
@@ -121,6 +127,8 @@ export interface Location {
   priceLevel: number;
   rating: number;
   reservation: Reservation;
+  orderLink: OrderLink;
+  orderType: RestaurantTypeEnum;
   toilets: boolean;
   type: string;
   isActive?: boolean;
@@ -134,13 +142,16 @@ export interface Location {
 
 export interface GontrelRestaurantData {
   name: string;
+  videoUrl?: string | null;
   menu?: string | Menu;
   id?: string;
   admin?: Admin;
   user?: Admin;
   createdAt?: string;
   reservation?: string | Reservation;
+  orderLink?: string | OrderLink;
   website?: string;
+  orderType?: RestaurantTypeEnum;
   address?: string;
   tiktokUrl?: string;
   mapLink?: string;
@@ -160,6 +171,12 @@ export interface VideoPreviewModalProps {
   currentRestaurantId: string | null;
 }
 
+export interface ReportVideoPreviewModalProps {
+  isOpen: boolean;
+  data: ReportedPostDataItem;
+  currentRestaurantId: string | null;
+}
+
 export interface ConverTedWorkingHours {
   [day: string]: string[];
 }
@@ -167,7 +184,8 @@ export interface ConverTedWorkingHours {
 export interface TabState {
   searchTerm: string;
   videoStatus?: ApprovalStatusEnum;
-  selectedAnalyst: string;
+  status?: ApprovalStatusEnum;
+  selectedAnalyst: string | undefined;
   selectedTimePeriod: string;
   dateRange: DateRangeValue | undefined;
   currentPage: number;
@@ -188,4 +206,11 @@ export interface AuditLog {
   type: "POST" | "LOCATION";
   adminPost: Post;
   adminLocation: Location;
+}
+
+export interface RestaurantMenuFormData {
+  restaurantType: string;
+  menuUrl?: string;
+  reservationUrl?: string | RestaurantTypeEnum;
+  orderUrl?: string;
 }

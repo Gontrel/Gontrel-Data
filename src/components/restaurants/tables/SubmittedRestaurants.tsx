@@ -151,8 +151,8 @@ const SubmittedRestaurants = ({
       // Check for property-level changes (address, menu, reservation)
       const propertyKeys: (keyof Pick<
         SubmittedRestaurantTableTypes,
-        "address" | "menu" | "reservation"
-      >)[] = ["address", "menu", "reservation"];
+        "address" | "menu" | "reservation" | "orderLink"
+      >)[] = ["address", "menu", "reservation", "orderLink"];
 
       propertyKeys.forEach((propertyKey) => {
         const changeKey = `${restaurant.id}-${propertyKey}`;
@@ -203,6 +203,7 @@ const SubmittedRestaurants = ({
           menu: currentRestaurant.menu?.content || "",
           reservation: currentRestaurant.reservation?.content || "",
           rating: currentRestaurant.rating,
+          orderLink: currentRestaurant?.orderLink?.content || "",
           adminName: currentRestaurant.admin.name,
           adminId: currentRestaurant.admin.id,
         }
@@ -211,6 +212,7 @@ const SubmittedRestaurants = ({
           name: "",
           menu: "",
           reservation: "",
+          orderLink: "",
           rating: 0,
           adminName: "",
           adminId: "",

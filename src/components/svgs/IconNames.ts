@@ -45,4 +45,6 @@ export type TIconNames =
   | "blockIcon"
   | "emailIcon2"
   | "commentIcon"
+  | "person3Icon"
+  | "expandIcon"
   | "personIcon";

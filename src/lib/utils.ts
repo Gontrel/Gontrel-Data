@@ -325,6 +325,7 @@ export function cleanTiktokUrl(url: string): string {
 }
 
 export const formatPostTime = (isoDateString: string): string => {
+  if(!isoDateString) return "";
   const postDate = new Date(isoDateString);
   const now = new Date();
 

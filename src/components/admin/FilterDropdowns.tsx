@@ -5,6 +5,7 @@ import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { AdminRoleEnum, ManagerTableTabsEnum } from "@/types/enums";
 import { type DateRangeValue } from "@/utils/dateRange";
 import { useCurrentUser } from "@/stores/authStore";
+import { statusOptions } from "@/constants";
 
 /**
  * Props for FilterDropdowns component
@@ -77,13 +78,6 @@ export function FilterDropdowns({
       ? { value: "all", label: "All users" }
       : { value: undefined, label: "All analysts" },
     ...(usersOptions ?? []),
-  ];
-
-  const statusOptions = [
-    { value: undefined, label: "All statuses" },
-    { value: "approved", label: "Approved" },
-    { value: "pending", label: "Pending" },
-    { value: "rejected", label: "Rejected" },
   ];
 
   return (

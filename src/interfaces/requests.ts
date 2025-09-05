@@ -2,7 +2,12 @@
 // ADMIN MANAGEMENT ENDPOINTS
 // ============================================================================
 
-import { ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types";
+import {
+  ApprovalStatusEnum,
+  ApprovalType,
+  DayOfTheWeek,
+  RestaurantTypeEnum,
+} from "@/types";
 
 /**
  * POST /create-admin
@@ -109,6 +114,16 @@ export interface FetchUserGroupedPostsRequest extends BaseQueryRequest {
 export interface FetchGroupedPostsSubmissionsRequest extends BaseQueryRequest {
   adminId?: string; // UUID
   status?: ApprovalStatusEnum; // enum values from ApprovalStatus
+  includeRejected?: boolean;
+}
+
+/**
+ * GET /reported-users
+ * Fetches reported users for admin dashboard
+ */
+export interface FetchReportedUsersRequest extends BaseQueryRequest {
+  adminId?: string; // UUID
+  status?: string;
   includeRejected?: boolean;
 }
 
@@ -249,6 +264,8 @@ export interface CreateLocationRequest {
   priceLevel?: number;
   rating?: number;
   reservation?: string;
+  orderLink?: string;
+  orderType?: RestaurantTypeEnum;
   toilets?: boolean;
   type?: string;
   website?: string;
@@ -298,6 +315,8 @@ export interface UpdateLocationRequest {
   priceLevel?: number;
   rating?: number;
   reservation?: string;
+  orderLink?: string;
+  orderType?: RestaurantTypeEnum | string;
   toilets?: boolean;
   type?: string;
   website?: string;
@@ -419,12 +438,16 @@ export interface LocationAvailabilityRequest {
 export interface ToggleLocation {
   locationId?: string; // required
 }
-export default interface ToggleStaffActiveQuery {
+export interface ToggleStaffActiveQuery {
   adminId: string;
 }
 
-export default interface ToggleStaffActive {
+export interface ToggleStaffActive {
   comment?: string;
+}
+
+export interface TogglePost {
+  postId?: string;
 }
 
 /**

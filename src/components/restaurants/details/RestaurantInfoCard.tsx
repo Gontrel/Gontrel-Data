@@ -1,6 +1,7 @@
 import { GridCard } from "@/components/cards/GridCard";
 import { GontrelRestaurantData } from "@/interfaces";
 import { formatRestaurantTime } from "@/lib/utils";
+import { RestaurantTypeEnum } from "@/types";
 import React from "react";
 
 interface RestaurantInfoCardProps {
@@ -25,6 +26,16 @@ export const RestaurantInfoCard = ({
           <h1 className="text-2xl font-bold">{restaurant?.name}</h1>
           <p className="text-sm text-gray-500">
             Created by: {restaurant?.admin?.name}
+          </p>
+          <p className="text-sm text-gray-500">
+            {" "}
+            {restaurant?.orderType === RestaurantTypeEnum.BOTH
+              ? "Dine in, Takeaway"
+              : restaurant?.orderType === RestaurantTypeEnum.DINE
+              ? "Dine in"
+              : restaurant?.orderType === RestaurantTypeEnum.TAKE_OUT
+              ? "Takeaway"
+              : "Unknown"}
           </p>
           <p className="text-sm text-gray-500">
             Created on: {formatRestaurantTime(restaurant?.createdAt ?? "")}

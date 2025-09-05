@@ -103,11 +103,29 @@ export const createActiveRestaurantsColumns = (
     minSize: TABLE_COLUMN_SIZES.VIDEO,
   },
   {
+    accessorKey: "restaurant.type",
+    header: () => <TableHeader iconName="videoIcon" title="Restaurant type" />,
+    cell: ({ row }) => {
+      const type = row?.original?.orderType;
+      const formatted =
+        type && type.length > 0
+          ? type.charAt(0).toUpperCase() + type.slice(1)
+          : "N/A";
+
+      return (
+        <div className="text-center text-[17px] font-medium">{formatted}</div>
+      );
+    },
+  },
+
+  {
     accessorKey: "order.link",
     header: () => <TableHeader iconName="linkIcon" title="Order Link" />,
-    cell: () => (
+    cell: ({ row }) => (
       <div className="text-center text-[17px] font-medium">
-        N/A
+        {row.original?.orderLink?.content
+          ? row.original?.orderLink?.content
+          : "N/A"}
       </div>
     ),
     minSize: TABLE_COLUMN_SIZES.VIDEO,

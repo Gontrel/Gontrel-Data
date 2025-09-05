@@ -1,12 +1,7 @@
 import { AdminRoleEnum, ApprovalStatusEnum, ApprovalType } from "@/types";
 import { Admin, User } from "./user";
-import {
-  IPaginatedRes,
-  ApiLocation,
-  DashboardStats,
-  Videos,
-} from "./api";
-import { Post, Tag } from "./posts";
+import { IPaginatedRes, ApiLocation, DashboardStats, Videos } from "./api";
+import { Post, ReportedPostDataItem, Tag } from "./posts";
 import {
   Address,
   AuditLog,
@@ -412,3 +407,7 @@ export interface CreateAdminResponse {
   profileImage?: string;
   role: AdminRoleEnum;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface GetReportedVideosResponse
+  extends IPaginatedRes<ReportedPostDataItem> {}
