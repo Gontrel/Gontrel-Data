@@ -21,6 +21,7 @@ export const useActiveRestaurants = ({
   endDate,
   adminId,
 }: UseActiveRestaurantsProps) => {
+  
   const {
     data: queryData,
     isLoading,

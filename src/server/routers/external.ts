@@ -1,4 +1,4 @@
-import { publicProcedure, router } from "@/lib/trpc";
+import { protectedProcedure, router } from "@/lib/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import APIRequest from "@/api/service";
@@ -21,15 +21,15 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 export const externalRouter = router({
-  getPlaceAutocomplete: publicProcedure
+  getPlaceAutocomplete: protectedProcedure
     .input(
       z.object({
         input: z.string().min(1),
         sessionToken: z.string().optional(),
       })
     )
-    .query(async ({ input: { input, sessionToken } }) => {
-      const apiRequest = new APIRequest();
+    .query(async ({ input: { input, sessionToken }, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.placeAutoComplete({
           query: input,
@@ -45,15 +45,15 @@ export const externalRouter = router({
       }
     }),
 
-  getPlaceDetails: publicProcedure
+  getPlaceDetails: protectedProcedure
     .input(
       z.object({
         placeId: z.string(),
         sessionToken: z.string().optional(),
       })
     )
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
       const { placeId, sessionToken } = input;
       try {
         const response = await apiRequest.placeDetails({
@@ -70,7 +70,7 @@ export const externalRouter = router({
         });
       }
     }),
-  getTiktokLinkInfo: publicProcedure
+  getTiktokLinkInfo: protectedProcedure
     .input(z.object({ link: z.string().url() }))
     .query(async ({ input, ctx }) => {
       const { link } = input;
@@ -88,7 +88,7 @@ export const externalRouter = router({
       }
     }),
 
-  validateTikTokLink: publicProcedure
+  validateTikTokLink: protectedProcedure
     .input(z.object({ link: z.string().url() }))
     .query(async ({ input, ctx }) => {
       const { link } = input;

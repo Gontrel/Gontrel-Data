@@ -10,7 +10,9 @@ import {
   GetGroupedPostsSubmissionsResponse,
   GetUserPostsResponse,
   GetPostsResponse,
+  OrderLink,
 } from "@/interfaces";
+import { RestaurantTypeEnum } from "./enums";
 
 /**
  * Restaurant data model representing the production/live data
@@ -138,6 +140,8 @@ export type RestaurantData = {
   priceLevel?: number;
   rating?: number;
   reservation?: Reservation;
+  orderLink?: OrderLink;
+  orderType?: RestaurantTypeEnum;
   status?: string;
   summary?: Summary;
   toilets?: boolean;

@@ -83,10 +83,7 @@ const PendingRestaurants = ({
       searchTerm,
       startDate,
       endDate,
-      adminId:
-        selectedAnalyst && selectedAnalyst !== "all"
-          ? selectedAnalyst
-          : undefined,
+      adminId: selectedAnalyst ? selectedAnalyst : undefined,
     });
 
   const {
@@ -213,6 +210,11 @@ const PendingRestaurants = ({
             type: ApprovalType.RESERVATION,
             status: restaurant.reservation.status as ApprovalStatusEnum,
           },
+
+          {
+            type: ApprovalType.ORDER_LINK,
+            status: restaurant.orderLink?.status as ApprovalStatusEnum,
+          },
         ],
       });
       refetch();
@@ -254,20 +256,24 @@ const PendingRestaurants = ({
     const { comment, restaurant } = feedbackModal;
 
     bulkApproveRestaurantStatus({
-      locationId: restaurant.id,
+      locationId: restaurant?.id,
       comment,
       data: [
         {
           type: ApprovalType.ADDRESS,
-          status: restaurant.address.status as ApprovalStatusEnum,
+          status: restaurant?.address?.status as ApprovalStatusEnum,
         },
         {
           type: ApprovalType.MENU,
-          status: restaurant.menu.status as ApprovalStatusEnum,
+          status: restaurant?.menu?.status as ApprovalStatusEnum,
         },
         {
           type: ApprovalType.RESERVATION,
-          status: restaurant.reservation.status as ApprovalStatusEnum,
+          status: restaurant?.reservation?.status as ApprovalStatusEnum,
+        },
+        {
+          type: ApprovalType.ORDER_LINK,
+          status: restaurant?.orderLink?.status as ApprovalStatusEnum,
         },
       ],
     });
@@ -306,8 +312,8 @@ const PendingRestaurants = ({
       // Check for property-level changes (address, menu, reservation)
       const propertyKeys: (keyof Pick<
         PendingRestaurantTableTypes,
-        "address" | "menu" | "reservation"
-      >)[] = ["address", "menu", "reservation"];
+        "address" | "menu" | "reservation" | "orderLink"
+      >)[] = ["address", "menu", "reservation", "orderLink"];
 
       propertyKeys.forEach((propertyKey) => {
         const changeKey = `${restaurant.id}-${propertyKey}`;
@@ -333,7 +339,6 @@ const PendingRestaurants = ({
         return post;
       });
 
-      // Check for bulk posts changes
       const postsChangeKey = `${restaurant.id}-posts`;
       const postsPendingChange = pendingChanges.get(postsChangeKey);
       if (postsPendingChange) {
@@ -358,6 +363,7 @@ const PendingRestaurants = ({
           menu: currentRestaurant.menu?.content || "",
           reservation: currentRestaurant.reservation?.content || "",
           rating: currentRestaurant.rating,
+          orderLink: currentRestaurant?.orderLink?.content || "",
           adminName: currentRestaurant.admin.name,
           adminId: currentRestaurant.admin.id,
         }
@@ -366,6 +372,7 @@ const PendingRestaurants = ({
           name: "",
           menu: "",
           reservation: "",
+          orderLink: "",
           rating: 0,
           adminName: "",
           adminId: "",
@@ -394,7 +401,6 @@ const PendingRestaurants = ({
   // RENDER
   // ---------------------------------------------------------------------------
 
-  
   return (
     <div>
       <ConfirmationModal

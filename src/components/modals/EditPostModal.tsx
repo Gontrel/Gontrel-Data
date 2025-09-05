@@ -7,7 +7,7 @@ import { convertTimeTo24Hour, formatOpeningHours } from "@/lib/utils";
 import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
 import { DayOfTheWeek } from "@/types";
-import { UpdateLocationRequest } from "@/interfaces";
+import { RestaurantMenuFormData, UpdateLocationRequest } from "@/interfaces";
 import { successToast, errorToast } from "@/utils/toast";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 import { EditPostContainer } from "./EditVideoContent";
@@ -127,23 +127,22 @@ export const EditVideo = ({
     setStep(1);
   }, []);
 
-  const handleEditPost = (data: {
-    menuUrl: string;
-    reservationUrl: string;
-  }) => {
+  const handleEditPost = (data: RestaurantMenuFormData) => {
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
       status: "pending",
       ...(selectedRestaurant?.address && {
         address:
-          typeof selectedRestaurant.address === "string"
-            ? selectedRestaurant.address
-            : selectedRestaurant.address?.content,
+          typeof selectedRestaurant?.address === "string"
+            ? selectedRestaurant?.address
+            : selectedRestaurant?.address?.content,
       }),
-      ...(data.menuUrl && { menu: data.menuUrl }),
-      ...(data.reservationUrl && { reservation: data.reservationUrl }),
-      ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
-      openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
+      ...(data?.menuUrl && { menu: data.menuUrl }),
+      ...(data?.reservationUrl && { reservation: data?.reservationUrl }),
+      ...(data?.orderUrl && { orderLink: data?.orderUrl }),
+      ...(data?.restaurantType && { orderType: data?.restaurantType }),
+      ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
+      openingHours: Object.entries(selectedRestaurant?.workingHours ?? {})?.map(
         ([day, hours]) => {
           if (
             hours[0].toLowerCase() === "24 hours" ||

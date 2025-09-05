@@ -1,81 +1,53 @@
-// import React from "react";
-// import ActiveStaff from "./tables/ActiveStaff";
-// import DeactivatedStaff from "./tables/DeactivatedStaff";
-// import { StaffTableTabsEnum } from "@/types";
+"use client";
 
-// /**
-//  * Props for StaffTableContent component
-//  */
-// interface StaffTableContentProps {
-//   activeTab: StaffTableTabsEnum;
-//   searchTerm: string;
-//   selectedAnalyst?: string;
-//   startDate?: string;
-//   endDate?: string;
-//   tablePageNumbers: Record<StaffTableTabsEnum, number>;
-//   tablePageSizes: Record<StaffTableTabsEnum, number>;
-//   onPageChange: (tab: StaffTableTabsEnum, page: number) => void;
-//   onPageSizeChange: (tab: StaffTableTabsEnum, pageSize: number) => void;
-// }
+import { ReportTableTabsEnum } from "@/types";
 
-// /**
-//  * Staff Table Content Component
-//  */
-// export const StaffTableContent: React.FC<StaffTableContentProps> = ({
-//   activeTab,
-//   searchTerm,
-//   selectedAnalyst,
-//   startDate,
-//   endDate,
-//   tablePageNumbers,
-//   tablePageSizes,
-//   onPageChange,
-//   onPageSizeChange,
-// }) => {
-//   const renderTableContent = (): React.ReactNode => {
-//     switch (activeTab) {
-//       case StaffTableTabsEnum.ACTIVE_STAFF:
-//         return (
-//           <ActiveStaff
-//             searchTerm={searchTerm}
-//             selectedAnalyst={selectedAnalyst}
-//             startDate={startDate}
-//             endDate={endDate}
-//             currentPage={tablePageNumbers[StaffTableTabsEnum.ACTIVE_STAFF]}
-//             pageSize={tablePageSizes[StaffTableTabsEnum.ACTIVE_STAFF]}
-//             handleCurrentPage={(page: number) =>
-//               onPageChange(StaffTableTabsEnum.ACTIVE_STAFF, page)
-//             }
-//             handlePageSize={(pageSize: number) =>
-//               onPageSizeChange(StaffTableTabsEnum.ACTIVE_STAFF, pageSize)
-//             }
-//           />
-//         );
-//       case StaffTableTabsEnum.DEACTIVATED_STAFF:
-//         return (
-//           <DeactivatedStaff
-//             searchTerm={searchTerm}
-//             selectedAnalyst={selectedAnalyst}
-//             startDate={startDate}
-//             endDate={endDate}
-//             currentPage={tablePageNumbers[StaffTableTabsEnum.DEACTIVATED_STAFF]}
-//             pageSize={tablePageSizes[StaffTableTabsEnum.DEACTIVATED_STAFF]}
-//             handleCurrentPage={(page: number) =>
-//               onPageChange(StaffTableTabsEnum.DEACTIVATED_STAFF, page)
-//             }
-//             handlePageSize={(pageSize: number) =>
-//               onPageSizeChange(StaffTableTabsEnum.DEACTIVATED_STAFF, pageSize)
-//             }
-//           />
-//         );
-//       default:
-//         return (
-//           <div className="flex items-center justify-center h-32 text-gray-500">
-//             Unknown table tab selected.
-//           </div>
-//         );
-//     }
-//   };
+import ReportedVideoTable from "./tables/ReportedVideo";
 
-//   return <div className="w-full">{renderTableContent()}</div>;
-// };
+interface ReportTableContentProps {
+  activeTab: ReportTableTabsEnum;
+  searchTerm: string;
+  startDate?: string;
+  endDate?: string;
+  reportStatus?: string;
+  tablePageNumbers: Record<ReportTableTabsEnum, number>;
+  tablePageSizes: Record<ReportTableTabsEnum, number>;
+  onPageChange: (tab: ReportTableTabsEnum, page: number) => void;
+  onPageSizeChange: (tab: ReportTableTabsEnum, pageSize: number) => void;
+}
+
+export const ReportTableContent = ({ 
+    activeTab, 
+    searchTerm, 
+    startDate, 
+    endDate, 
+    reportStatus,
+    tablePageNumbers,
+    tablePageSizes,
+    onPageChange,
+    onPageSizeChange
+}: ReportTableContentProps) => {
+
+
+
+  if (activeTab === ReportTableTabsEnum.REPORTED_VIDEOS) {
+    return (
+          <ReportedVideoTable
+            searchTerm={searchTerm}
+            startDate={startDate}
+            reportStatus={reportStatus}
+            endDate={endDate}
+            currentPage={tablePageNumbers[ReportTableTabsEnum.REPORTED_VIDEOS]}
+            pageSize={tablePageSizes[ReportTableTabsEnum.REPORTED_VIDEOS]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ReportTableTabsEnum.REPORTED_VIDEOS, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(ReportTableTabsEnum.REPORTED_VIDEOS, pageSize)
+            }
+          />
+    );
+  }
+
+  return null;
+};

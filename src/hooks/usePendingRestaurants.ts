@@ -10,6 +10,7 @@ export type PendingRestaurantStatusKey =
   | "address"
   | "menu"
   | "reservation"
+  | "orderLink"
   | "posts";
 
 interface UsePendingRestaurantsProps {

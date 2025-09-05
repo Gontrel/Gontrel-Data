@@ -19,7 +19,6 @@ export enum StaffTableTabsEnum {
 
 export enum ReportTableTabsEnum {
   REPORTED_VIDEOS = "reportedVideos",
-  REPORTED_USERS = "reportedUsers",
 }
 
 export enum ApprovalType {
@@ -28,6 +27,7 @@ export enum ApprovalType {
   LOCATION = "location",
   RESERVATION = "reservation",
   MENU = "menu",
+  ORDER_LINK = "orderLink",
 }
 
 export enum ManagerTableTabsEnum {
@@ -65,7 +65,6 @@ export enum DayOfTheWeek {
   SUNDAY = "SUNDAY",
 }
 
-
 export enum ActivityType {
   UNKNOWN = "UNKNOWN",
   POST = "POST",
@@ -73,4 +72,10 @@ export enum ActivityType {
   APPROVAL = "APPROVAL",
   INTENT = "INTENT",
   PASSWORD = "PASSWORD",
+}
+
+export enum RestaurantTypeEnum {
+  DINE = "dine-in",
+  TAKE_OUT = "takeout",
+  BOTH = "both",
 }

@@ -1,26 +1,43 @@
-import { FilterDropdowns } from "../admin/FilterDropdowns";
-import { SearchBar } from "../admin/SearchBar";
-import { type DateRangeValue } from "@/utils/dateRange";
-import { Button } from "../ui/Button";
-import Icon from "../svgs/Icons";
-import { StaffTableTabsEnum } from "@/types";
+"use client";
 
-interface StaffActionPanelProps {
+import { DateRangeValue } from "@/utils/dateRange";
+import { SearchBar } from "../admin/SearchBar";
+import { FilterDropdowns } from "../admin/FilterDropdowns";
+
+interface ReportActionPanelProps {
   searchTerm: string;
-  onSearchChange: (term: string) => void;
-  onAddStaff: () => void;
+  onSearchChange: (value: string) => void;
   searchPlaceholder?: string;
+
+  // Date
   selectedDateRange?: DateRangeValue;
   onDateRangeChange: (range: DateRangeValue | undefined) => void;
+
+  // Status (NEW)
+  selectedStatus?: string;
+  onStatusChange?: (status: string | undefined) => void;
+
+  // Other
+  showFilters?: boolean;
+  analystOptions?: Array<{ value: string; label: string }>;
+  userOptions?: Array<{ value: string; label: string }>;
+  activeTab: string;
 }
 
-export const StaffActionPanel: React.FC<StaffActionPanelProps> = ({
+export const ReportActionPanel: React.FC<ReportActionPanelProps> = ({
   searchTerm,
   onSearchChange,
-  onAddStaff,
-  searchPlaceholder = "Search using name or email",
+  searchPlaceholder = "Search using name or location",
+
+  // Date
   selectedDateRange,
   onDateRangeChange,
+
+  // Status
+  selectedStatus = undefined,
+  onStatusChange = () => {},
+
+  activeTab,
 }) => {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4.5">
@@ -32,25 +49,12 @@ export const StaffActionPanel: React.FC<StaffActionPanelProps> = ({
         />
         {/* Date range filter can be added here if needed for staff */}
         <FilterDropdowns
-          activeTab={StaffTableTabsEnum.ACTIVE_STAFF}
+          activeTab={activeTab}
           selectedDateRange={selectedDateRange}
           onDateRangeChange={onDateRangeChange}
-          selectedUser={""}
-          onUserChange={function (error: string | undefined): void {
-            throw new Error(`Function not implemented. ${error}`);
-          }}
+          selectedStatus={selectedStatus}
+          onStatusChange={onStatusChange}
         />
-      </div>
-
-      <div className="flex items-center w-full sm:w-auto">
-        {/* This will be the Add Staff Button */}
-        <Button
-          onClick={onAddStaff}
-          className="bg-[#0070F3] text-white px-[12px] py-[16px] rounded-[10px] gap-2"
-        >
-          <Icon name="plusIcon" className="h-5 w-5 text-gray-500" />
-          <span> Add Staff</span>
-        </Button>
       </div>
     </div>
   );

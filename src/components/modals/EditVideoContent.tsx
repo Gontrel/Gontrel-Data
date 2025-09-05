@@ -5,6 +5,7 @@ import { EditRestaurantMenu } from "./ResubmitRestaurantMenu";
 import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";
+import { RestaurantMenuFormData } from "@/interfaces";
 
 interface EditPostContainerProps {
   restaurant: RestaurantData | null;
@@ -19,7 +20,7 @@ interface EditPostContainerProps {
   onContinue: () => void;
   onNextVideoStep: () => void;
   onPreviousVideoStep: () => void;
-  onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
+  onSubmit: (data: RestaurantMenuFormData) => void;
   onPreviousRestaurantMenu: () => void;
 }
 

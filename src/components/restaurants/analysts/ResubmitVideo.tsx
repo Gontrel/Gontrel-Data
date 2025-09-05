@@ -13,7 +13,7 @@ import {
 import { useVideoStore } from "@/stores/videoStore";
 import { Sheet } from "@/components/modals/Sheet";
 import { DayOfTheWeek } from "@/types";
-import { UpdateLocationRequest } from "@/interfaces";
+import { RestaurantMenuFormData, UpdateLocationRequest } from "@/interfaces";
 import { successToast, errorToast } from "@/utils/toast";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 
@@ -141,10 +141,7 @@ export const ResubmitVideo = ({
     [selectedRestaurant]
   );
 
-  const handleSubmitRestaurant = (data: {
-    menuUrl: string;
-    reservationUrl: string;
-  }) => {
+  const handleSubmitRestaurant = (data: RestaurantMenuFormData) => {
     const payload: UpdateLocationRequest = {
       locationId: selectedRestaurant?.id ?? "",
       status: "pending",
@@ -156,6 +153,8 @@ export const ResubmitVideo = ({
       }),
       ...(data.menuUrl && { menu: data.menuUrl }),
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
+      ...(data.orderUrl && { orderLink: data.orderUrl }),
+      ...(data.restaurantType && { orderType: data.restaurantType }),
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
       openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
         ([day, hours]) => {

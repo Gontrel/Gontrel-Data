@@ -7,6 +7,7 @@ import Icon from "../svgs/Icons";
 import { ProgressBar } from "../Loader/ProgressiveBar";
 import { RestaurantData } from "@/types/restaurant";
 import { WorkingHours } from "./EditWorkingHoursModal";
+import { RestaurantMenuFormData } from "@/interfaces";
 
 interface ResubmitRestaurantSheetProps {
   restaurant: RestaurantData | null;
@@ -22,7 +23,7 @@ interface ResubmitRestaurantSheetProps {
   onNextVideoStep: () => void;
   onPreviousVideoStep: () => void;
   onGoBackToSearch: () => void;
-  onSubmit: (data: { menuUrl: string; reservationUrl: string }) => void;
+  onSubmit: (data: RestaurantMenuFormData) => void;
   onPreviousRestaurantMenu: () => void;
 }
 

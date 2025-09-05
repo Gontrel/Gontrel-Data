@@ -41,11 +41,15 @@ import {
   GetUserPostsResponse,
   GetUserResponse,
   GetLocationStatsResponse,
+  GetReportedVideosResponse,
 } from "@/interfaces";
-import ToggleStaffActive, {
+import {
   BaseQueryRequest,
   CreateAdminRequest,
+  FetchReportedUsersRequest,
   ToggleLocation,
+  TogglePost,
+  ToggleStaffActive,
 } from "@/interfaces/requests";
 
 export default class APIRequest {
@@ -358,6 +362,15 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  togglePost = async (data: TogglePost) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.patch(
+      `/admin-toggle-post-active?${params?.toString()}`
+    );
+
+    return this.handleResponse(response);
+  };
+
   // updatePost
   updatePost = async (data: UpdatePostRequest) => {
     const response = await this.authenticatedClient.put(`/admin-post`, data);
@@ -456,4 +469,23 @@ export default class APIRequest {
 
     return this.handleResponse(response);
   };
+
+  // getReportedVideos
+  reported = async (
+    data: FetchReportedUsersRequest
+  ): Promise<GetReportedVideosResponse> => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-reports?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // postMapPolygon = async (data: any) => {
+  //   const response = await this.authenticatedClient.post(
+  //     `/location-by-polygon`,
+  //     data
+  //   );
+  //   return this.handleResponse(response);
+  // };
 }
