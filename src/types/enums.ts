@@ -27,6 +27,7 @@ export enum ApprovalType {
   LOCATION = "location",
   RESERVATION = "reservation",
   MENU = "menu",
+  ORDER_LINK = "orderLink",
 }
 
 export enum ManagerTableTabsEnum {
@@ -74,7 +75,7 @@ export enum ActivityType {
 }
 
 export enum RestaurantTypeEnum {
-  DINE_IN = "dine-in",
+  DINE = "dine-in",
   TAKE_OUT = "takeout",
   BOTH = "both",
 }

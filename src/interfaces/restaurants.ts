@@ -185,7 +185,7 @@ export interface TabState {
   searchTerm: string;
   videoStatus?: ApprovalStatusEnum;
   status?: ApprovalStatusEnum;
-  selectedAnalyst: string;
+  selectedAnalyst: string | undefined;
   selectedTimePeriod: string;
   dateRange: DateRangeValue | undefined;
   currentPage: number;

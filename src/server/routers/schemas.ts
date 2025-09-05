@@ -1,4 +1,9 @@
-import { ApprovalStatusEnum, ApprovalType, DayOfTheWeek } from "@/types/enums";
+import {
+  ApprovalStatusEnum,
+  ApprovalType,
+  DayOfTheWeek,
+  RestaurantTypeEnum,
+} from "@/types/enums";
 import { z } from "zod";
 
 // ============================================================================
@@ -319,6 +324,8 @@ export const createLocationSchema = z.object({
   name: z.string().min(1),
   photos: z.array(z.string()).optional(),
   phoneNumber: z.string().optional(),
+  orderType: z.enum(RestaurantTypeEnum).optional(),
+  orderLink: z.string().optional(),
   priceLevel: z.number().optional(),
   rating: z.number().optional(),
   reservation: z.string().optional(),
@@ -349,6 +356,8 @@ export const updateLocationSchema = z.object({
   priceLevel: z.number().optional(),
   rating: z.number().optional(),
   reservation: z.string().optional(),
+  orderType: z.enum(RestaurantTypeEnum).optional(),
+  orderLink: z.string().optional(),
   toilets: z.boolean().optional(),
   type: z.string().optional(),
   website: z.string().optional(),
@@ -435,4 +444,6 @@ export const locationAvailabilityRequestSchema = locationAvailabilitySchema;
 export const postCreationRequestSchema = postCreationSchema;
 
 export const fetchPendingUserVideosSchema = fetchAdminPostsSchema.extend({});
-export const fetchReportedVideosSchema = fetchReportedVideosBaseSchema.extend({});
+export const fetchReportedVideosSchema = fetchReportedVideosBaseSchema.extend(
+  {}
+);

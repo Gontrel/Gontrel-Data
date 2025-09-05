@@ -1,6 +1,5 @@
 import {
   AnalystTableTabsEnum,
-  ApprovalStatusEnum,
   ManagerTableTabsEnum,
   ReportTableTabsEnum,
   StaffTableTabsEnum,
@@ -15,7 +14,6 @@ import { useDeactivatedStaffs } from "./useDeactivatedStaffs";
 import { TabState } from "@/interfaces";
 import { usePendingUserVideos } from "./usePendingUserVideos";
 import { useActiveVideos } from "./useActiveVideos";
-import { useReportedUsers } from "./useReportedUsers";
 import { useReportedVideos } from "./useReportedVideos";
 
 /**
@@ -23,7 +21,10 @@ import { useReportedVideos } from "./useReportedVideos";
  */
 export const useTableTotals = (
   tabStates: Record<
-    ManagerTableTabsEnum | AnalystTableTabsEnum | StaffTableTabsEnum | ReportTableTabsEnum,
+    | ManagerTableTabsEnum
+    | AnalystTableTabsEnum
+    | StaffTableTabsEnum
+    | ReportTableTabsEnum,
     TabState
   >
 ) => {
@@ -117,6 +118,9 @@ export const useTableTotals = (
       tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.dateRange?.endDate
         ?.toISOString()
         .split("T")[0] || undefined,
+    adminId:
+      tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS]?.selectedAnalyst ||
+      undefined,
   });
 
   // Fetch submitted restaurants total with tab-specific search (for analysts)
@@ -188,7 +192,8 @@ export const useTableTotals = (
     status: tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.status ?? undefined,
     currentPage: 1,
     pageSize: 10,
-    searchTerm: tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.searchTerm || "",
+    searchTerm:
+      tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.searchTerm || "",
     startDate:
       tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.dateRange?.startDate
         ?.toISOString()
@@ -201,7 +206,6 @@ export const useTableTotals = (
       tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.selectedAnalyst ||
       undefined,
   });
-
 
   // Extract totals from tRPC responses
   const getTotalFromResponse = (response: unknown): number => {
@@ -251,6 +255,6 @@ export const useTableTotals = (
     [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: deactivatedStaffsCount,
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
-    [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount
+    [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount,
   };
 };

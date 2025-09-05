@@ -153,6 +153,8 @@ export const ResubmitVideo = ({
       }),
       ...(data.menuUrl && { menu: data.menuUrl }),
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
+      ...(data.orderUrl && { orderLink: data.orderUrl }),
+      ...(data.restaurantType && { orderType: data.restaurantType }),
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
       openingHours: Object.entries(selectedRestaurant?.workingHours ?? {}).map(
         ([day, hours]) => {

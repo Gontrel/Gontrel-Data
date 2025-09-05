@@ -25,7 +25,7 @@ export const useTabState = () => {
   >({
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -34,7 +34,7 @@ export const useTabState = () => {
     },
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -43,7 +43,7 @@ export const useTabState = () => {
     },
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -52,7 +52,7 @@ export const useTabState = () => {
     },
     [ManagerTableTabsEnum.PENDING_VIDEOS]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -62,7 +62,7 @@ export const useTabState = () => {
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: {
       videoStatus: undefined,
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -71,7 +71,7 @@ export const useTabState = () => {
     },
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: {
       searchTerm: "",
-      selectedAnalyst: "all",
+      selectedAnalyst: undefined,
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -80,7 +80,7 @@ export const useTabState = () => {
     },
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: {
       searchTerm: "",
-      selectedAnalyst: "all",
+      selectedAnalyst: undefined,
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -89,7 +89,7 @@ export const useTabState = () => {
     },
     [StaffTableTabsEnum.ACTIVE_STAFF]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -98,7 +98,7 @@ export const useTabState = () => {
     },
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,
@@ -107,7 +107,7 @@ export const useTabState = () => {
     },
     [ReportTableTabsEnum.REPORTED_VIDEOS]: {
       searchTerm: "",
-      selectedAnalyst: isAnalyst ? "all" : "",
+      selectedAnalyst: isAnalyst ? undefined : "",
       selectedTimePeriod: "all",
       dateRange: undefined,
       currentPage: 1,

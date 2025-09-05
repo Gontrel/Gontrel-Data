@@ -215,7 +215,7 @@ export const createSubmittedRestaurantsColumns = (
     minSize: TABLE_COLUMN_SIZES.RESERVATION_LINK,
   },
   {
-    accessorKey: "orderLink",
+    accessorKey: "order.link",
     header: () => <TableHeader iconName="linkIcon" title="Order link" />,
     cell: ({ row }) => {
       const { content, status } = row.original.orderLink;
@@ -288,12 +288,13 @@ export const createSubmittedRestaurantsColumns = (
     id: "action",
     header: () => <TableHeader title="Actions" />,
     cell: ({ row }) => {
-      const { videos, address, menu, reservation } = row.original;
+      const { videos, address, menu, reservation, orderLink } = row.original;
 
       const isPending =
         videos?.declined > 0 ||
         address?.status === ApprovalStatusEnum.REJECTED ||
         menu?.status === ApprovalStatusEnum.REJECTED ||
+        orderLink?.status === ApprovalStatusEnum.REJECTED ||
         reservation?.status === ApprovalStatusEnum.REJECTED;
       return (
         isPending && (

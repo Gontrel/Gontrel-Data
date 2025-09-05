@@ -156,6 +156,7 @@ const ReportedVideoTable = ({
       >
         {previewPost && (
           <LivePostCard
+            className="max-w-[556px]"
             handleOpenEditModal={() => {}}
             handleOpenDeleteModal={() => {}}
             post={previewPost}

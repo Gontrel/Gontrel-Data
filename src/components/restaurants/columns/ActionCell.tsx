@@ -15,27 +15,30 @@ export const ActionCell = ({
   handleSaveRestaurant,
 }: ActionCellProps) => {
   const { manuallySentFeedback, markAsSent } = useFeedbackStore();
-  const { posts, address, menu, reservation, id } = row.original;
+  const { posts, address, menu, reservation, id, orderLink } = row.original;
 
   const hasRejected =
     posts.some((post) => post.status === ApprovalStatusEnum.REJECTED) ||
     address.status === ApprovalStatusEnum.REJECTED ||
     menu.status === ApprovalStatusEnum.REJECTED ||
+    orderLink.status === ApprovalStatusEnum.REJECTED ||
     reservation.status === ApprovalStatusEnum.REJECTED;
 
   const hasPending =
     posts.some((post) => post.status === ApprovalStatusEnum.PENDING) ||
     address.status === ApprovalStatusEnum.PENDING ||
     menu.status === ApprovalStatusEnum.PENDING ||
+    orderLink.status === ApprovalStatusEnum.PENDING ||
     reservation.status === ApprovalStatusEnum.PENDING;
 
   const hasApproved =
     posts.some((post) => post.status === ApprovalStatusEnum.APPROVED) ||
     address.status === ApprovalStatusEnum.APPROVED ||
     menu.status === ApprovalStatusEnum.APPROVED ||
+    orderLink.status === ApprovalStatusEnum.APPROVED ||
     reservation.status === ApprovalStatusEnum.APPROVED;
 
-   const isFeedbackSent = manuallySentFeedback.has(id);
+  const isFeedbackSent = manuallySentFeedback.has(id);
 
   let label = "";
   let variant: "danger" | "primary" = "primary";

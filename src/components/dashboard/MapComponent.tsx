@@ -48,8 +48,8 @@ interface RestaurantMapProps {
 }
 
 const DEFAULT_CENTER: LatLngExpression = [53.345, -6.26];
-const API_URL = "https://gontrel-test.up.railway.app/location-by-polygon";
-const API_KEY = "5qegXo2xfJ7UypzWsA3Sq1WbQoL9ARtK2dcGFCDC";
+const API_URL = "";
+const API_KEY = "";
 
 // A separate component to handle map events
 const MapEventsHandler = ({

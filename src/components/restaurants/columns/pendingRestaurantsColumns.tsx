@@ -193,6 +193,7 @@ export const createPendingRestaurantsColumns = (
       const { content, status } = row.original.reservation;
       const isApproved = status === ApprovalStatusEnum.APPROVED;
       const isDeclined = status === ApprovalStatusEnum.REJECTED;
+
       return (
         <div className="flex flex-col gap-y-2">
           <ExternalLink href={content} title={content}>
@@ -227,6 +228,7 @@ export const createPendingRestaurantsColumns = (
       const { content, status } = row.original?.orderLink;
       const isApproved = status === ApprovalStatusEnum.APPROVED;
       const isDeclined = status === ApprovalStatusEnum.REJECTED;
+
       return (
         <div className="flex flex-col gap-y-2">
           <ExternalLink href={content} title={content}>

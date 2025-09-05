@@ -139,11 +139,11 @@ export const ResubmitRestaurant = ({
       ...(data.menuUrl && { menu: data.menuUrl }),
       ...(data.reservationUrl && { reservation: data.reservationUrl }),
       ...(selectedRestaurant?.name && { name: selectedRestaurant.name }),
-      ...(selectedRestaurant?.orderLink && {
+      ...(data.orderUrl && {
         orderLink: data?.orderUrl,
       }),
-      ...(selectedRestaurant?.orderType && {
-        orderType: data?.orderUrl,
+      ...(data.restaurantType && {
+        orderType: data?.restaurantType,
       }),
       openingHours: availability,
     };

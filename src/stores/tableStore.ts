@@ -99,8 +99,8 @@ export interface TableStore {
   declineVideo: (videoId: string) => void;
   resubmitRestaurant: (restaurant: SubmittedRestaurantTableTypes) => void;
   resubmitVideo: (video: SubmittedVideoTableTypes) => void;
-  deactivateStaff: (staffId: string) => void; // New: Deactivate Staff action
-  activateStaff: (staffId: string) => void; // New: Activate Staff action
+  deactivateStaff: (staffId: string) => void;
+  activateStaff: (staffId: string) => void;
 
   // Commit changes to API
   saveChanges: (tableType: TableType) => Promise<void>;
@@ -265,6 +265,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
     if (tableType !== ManagerTableTabsEnum.PENDING_RESTAURANTS) {
       return;
     }
+
     const store = get();
     const currentState = store[
       tableType
@@ -867,7 +868,6 @@ export const useDeactivatedStaffsStore = () => {
     resetTable: () => store.resetTable(StaffTableTabsEnum.DEACTIVATED_STAFF),
   };
 };
-
 
 export const useReportedVideosStore = () => {
   const store = useTableStore();

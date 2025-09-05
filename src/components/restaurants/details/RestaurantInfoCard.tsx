@@ -31,11 +31,11 @@ export const RestaurantInfoCard = ({
             {" "}
             {restaurant?.orderType === RestaurantTypeEnum.BOTH
               ? "Dine in, Takeaway"
-              : restaurant?.orderType === RestaurantTypeEnum.DINE_IN
+              : restaurant?.orderType === RestaurantTypeEnum.DINE
               ? "Dine in"
               : restaurant?.orderType === RestaurantTypeEnum.TAKE_OUT
               ? "Takeaway"
-              : "Dine in"}
+              : "Unknown"}
           </p>
           <p className="text-sm text-gray-500">
             Created on: {formatRestaurantTime(restaurant?.createdAt ?? "")}

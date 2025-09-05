@@ -63,14 +63,14 @@ const ResubmitRestaurantMenu = ({
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
           >
             <option value="">Select type</option>
-            <option value="dine">Dine</option>
-            <option value="takeaway">Takeaway</option>
+            <option value="dine-in">Dine</option>
+            <option value="takeout">Takeaway</option>
             <option value="both">Both</option>
           </select>
         </div>
 
         {/* Conditional fields */}
-        {(restaurantType === "dine" || restaurantType === "both") && (
+        {(restaurantType === "dine-in" || restaurantType === "both") && (
           <>
             <div className="mb-6">
               <label
@@ -108,7 +108,7 @@ const ResubmitRestaurantMenu = ({
           </>
         )}
 
-        {(restaurantType === "takeaway" || restaurantType === "both") && (
+        {(restaurantType === "takeout" || restaurantType === "both") && (
           <div className="mb-6">
             <label
               htmlFor="order-url"
@@ -198,14 +198,14 @@ const EditRestaurantMenu = ({
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
           >
             <option value="">Select type</option>
-            <option value="dine">Dine</option>
-            <option value="takeaway">Takeaway</option>
+            <option value="dine-in">Dine</option>
+            <option value="takeout">Takeaway</option>
             <option value="both">Both</option>
           </select>
         </div>
 
         {/* Conditional fields */}
-        {(restaurantType === "dine" || restaurantType === "both") && (
+        {(restaurantType === "dine-in" || restaurantType === "both") && (
           <>
             <div className="mb-6">
               <label
@@ -243,7 +243,7 @@ const EditRestaurantMenu = ({
           </>
         )}
 
-        {(restaurantType === "takeaway" || restaurantType === "both") && (
+        {(restaurantType === "takeout" || restaurantType === "both") && (
           <div className="mb-6">
             <label
               htmlFor="order-url"
