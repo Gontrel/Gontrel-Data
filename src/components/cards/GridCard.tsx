@@ -14,6 +14,7 @@ interface GridCardProps {
     | "menu"
     | "reservation"
     | "tiktok"
+    | "orderLink"
     | "opening_hours";
   className?: string;
 }
@@ -39,6 +40,10 @@ export const GridCard = ({
           ? restaurant.reservation
           : restaurant?.reservation?.content,
       tiktok: restaurant?.tiktokUrl,
+      orderLink:
+        typeof restaurant?.orderLink === "string"
+          ? restaurant.orderLink
+          : restaurant?.orderLink?.content,
       opening_hours: restaurant?.opening_hours,
     }[type];
 
@@ -51,6 +56,7 @@ export const GridCard = ({
     website: "No website available",
     address: "No address available",
     menu: "No menu available",
+    orderLink: "No order link available",
     reservation: "No reservation link available",
     tiktok: "No TikTok link available",
     opening_hours: "No Opening hour link available",
