@@ -5,6 +5,7 @@ import Image from "next/image";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ExternalLink } from "@/components/ui/ExternalLink";
+import { RestaurantTypeEnum } from "@/types";
 
 export const createActiveRestaurantsColumns = (
   onRowClick?: (row: ActiveRestaurantTableTypes) => void
@@ -107,10 +108,17 @@ export const createActiveRestaurantsColumns = (
     header: () => <TableHeader iconName="videoIcon" title="Restaurant type" />,
     cell: ({ row }) => {
       const type = row?.original?.orderType;
-      const formatted =
-        type && type.length > 0
-          ? type.charAt(0).toUpperCase() + type.slice(1)
-          : "N/A";
+      const isTakeAway = type === RestaurantTypeEnum.TAKE_OUT;
+      const isDine = type === RestaurantTypeEnum.DINE;
+      const isBoth = type === RestaurantTypeEnum.BOTH;
+
+      const formatted = isBoth
+        ? "Both"
+        : isDine
+        ? "Dine in"
+        : isTakeAway
+        ? "Takeaway"
+        : "Unknown";
 
       return (
         <div className="text-center text-[17px] font-medium">{formatted}</div>
@@ -121,14 +129,17 @@ export const createActiveRestaurantsColumns = (
   {
     accessorKey: "order.link",
     header: () => <TableHeader iconName="linkIcon" title="Order Link" />,
-    cell: ({ row }) => (
-      <div className="text-center text-[17px] font-medium">
-        {row.original?.orderLink?.content
-          ? row.original?.orderLink?.content
-          : "N/A"}
-      </div>
-    ),
-    minSize: TABLE_COLUMN_SIZES.VIDEO,
+    cell: ({ row }) => {
+      const orderLink = row.original?.orderLink?.content
+        ? row.original?.orderLink?.content
+        : "N/A";
+      return (
+        <ExternalLink href={orderLink} title={orderLink}>
+          <span className="text-black">View order link</span>
+        </ExternalLink>
+      );
+    },
+    minSize: TABLE_COLUMN_SIZES.ORDER_LINK,
   },
   {
     accessorKey: "status",
