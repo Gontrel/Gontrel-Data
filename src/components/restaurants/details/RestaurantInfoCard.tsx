@@ -13,6 +13,10 @@ export const RestaurantInfoCard = ({
   restaurant,
   isActive,
 }: RestaurantInfoCardProps) => {
+  const isTakeAway = restaurant?.orderType === RestaurantTypeEnum.TAKE_OUT;
+  const isDine = restaurant?.orderType === RestaurantTypeEnum.DINE;
+  const isBoth = restaurant?.orderType === RestaurantTypeEnum.BOTH;
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <div className="flex items-center gap-4 mb-6">
@@ -29,11 +33,11 @@ export const RestaurantInfoCard = ({
           </p>
           <p className="text-sm text-gray-500">
             {" "}
-            {restaurant?.orderType === RestaurantTypeEnum.BOTH
+            {isBoth
               ? "Dine in, Takeaway"
-              : restaurant?.orderType === RestaurantTypeEnum.DINE
+              : isDine
               ? "Dine in"
-              : restaurant?.orderType === RestaurantTypeEnum.TAKE_OUT
+              : isTakeAway
               ? "Takeaway"
               : "Unknown"}
           </p>
@@ -79,21 +83,38 @@ export const RestaurantInfoCard = ({
           endIcon="externalLinkIcon"
         />
 
-        <GridCard
-          restaurant={restaurant}
-          type="menu"
-          text="View menu"
-          startIcon="menuIcon"
-          endIcon="externalLinkIcon"
-        />
+        {(isDine || isBoth) && (
+          <>
+            <GridCard
+              restaurant={restaurant}
+              type="menu"
+              text="View menu"
+              startIcon="menuIcon"
+              endIcon="externalLinkIcon"
+            />
 
-        <GridCard
-          restaurant={restaurant}
-          type="reservation"
-          text="View reservation"
-          startIcon="restaurantReversationIcon"
-          endIcon="externalLinkIcon"
-        />
+            <GridCard
+              restaurant={restaurant}
+              type="reservation"
+              text="View reservation"
+              startIcon="restaurantReversationIcon"
+              endIcon="externalLinkIcon"
+            />
+          </>
+        )}
+
+        {(isTakeAway || isBoth) && (
+          <GridCard
+            restaurant={restaurant}
+            type="orderLink"
+            text="View order"
+            startIcon="menuIcon"
+            endIcon="externalLinkIcon"
+          />
+        )}
+      </div>
+
+      <section className="mt-3">
         <GridCard
           restaurant={restaurant}
           type="opening_hours"
@@ -101,7 +122,7 @@ export const RestaurantInfoCard = ({
           startIcon="restaurantTimeIcon"
           endIcon="externalLinkIcon"
         />
-      </div>
+      </section>
     </div>
   );
 };
