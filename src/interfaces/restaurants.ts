@@ -20,6 +20,7 @@ export interface VideoData {
   tags: string[];
   thumbUrl?: string;
   videoUrl?: string;
+  visibleFood?: string;
   author?: string;
   locationName?: string;
   rating?: number;

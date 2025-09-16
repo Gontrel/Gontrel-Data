@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Sheet } from "./Sheet";
 import Icon from "../svgs/Icons";
 import { Search } from "lucide-react";
@@ -20,6 +20,7 @@ import { errorToast, successToast } from "@/utils/toast";
 import { TimeSlot } from "./EditWorkingHoursModal";
 import { CreateLocationRequest } from "@/interfaces/requests";
 import { RestaurantData } from "@/types/restaurant";
+import { DEFAULT_OPENING_HOURS } from "@/constants/restaurant";
 
 interface NewRestaurantSheetProps {
   open: boolean;
@@ -98,12 +99,17 @@ export const NewRestaurantSheet = ({
       const result = placeDetailsData;
 
       const workingHours: { [key: string]: string[] } = {};
-      if (result.opening_hours?.weekday_text) {
-        result.opening_hours.weekday_text.forEach((dayString: string) => {
-          const [day, ...timeParts] = dayString.split(": ");
-          workingHours[day] = timeParts.join(": ").split(", ");
-        });
-      }
+
+      const source =
+        result.opening_hours?.weekday_text &&
+        result.opening_hours.weekday_text.length > 0
+          ? result.opening_hours.weekday_text
+          : DEFAULT_OPENING_HOURS;
+
+      source.forEach((dayString: string) => {
+        const [day, ...timeParts] = dayString.split(": ");
+        workingHours[day] = timeParts.join(": ").split(", ");
+      });
 
       const photoReference = result?.photos?.[0]?.photo_reference;
       const apiKey = process.env.GOOGLE_MAPS_API_KEY;
@@ -122,7 +128,8 @@ export const NewRestaurantSheet = ({
         workingHours: workingHours,
         website: result.website ?? "",
         url: result.url ?? "",
-        googleOpeningHours: result.opening_hours?.weekday_text,
+        googleOpeningHours:
+          result.opening_hours?.weekday_text ?? DEFAULT_OPENING_HOURS,
       };
 
       setIsRestaurantConfirmed(true);
@@ -131,7 +138,7 @@ export const NewRestaurantSheet = ({
     }
   }, [placeDetailsData]);
 
-  const handleClose = () => {
+  const handleClose =useCallback( () => {
     onOpenChange(false);
     setStep(1);
     setIsRestaurantConfirmed(false);
@@ -139,104 +146,115 @@ export const NewRestaurantSheet = ({
     setInputValue("");
     setActiveVideoUrl(null);
     resetVideos();
-  };
+  }, [onOpenChange, resetVideos, setActiveVideoUrl]);
 
-  const handleGoBackToSearch = () => {
+  const handleGoBackToSearch = useCallback(() => {
     setIsRestaurantConfirmed(false);
     setSelectedRestaurant(null);
     setInputValue("");
     setStep(1);
-  };
+  }, [setIsRestaurantConfirmed, setSelectedRestaurant]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleWorkingHoursSave = (updatedHours: any) => {
-    if (!selectedRestaurant) return;
+  const handleWorkingHoursSave = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (updatedHours: any) => {
+      if (!selectedRestaurant) return;
 
-    const newWorkingHours: Record<string, string[]> = {};
-    for (const day in updatedHours) {
-      const dayData = updatedHours[day];
-      const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+      const newWorkingHours: Record<string, string[]> = {};
+      for (const day in updatedHours) {
+        const dayData = updatedHours[day];
+        const dayName = day.charAt(0).toUpperCase() + day.slice(1);
 
-      if (dayData.isOpen) {
-        if (dayData.isAllDay) {
-          newWorkingHours[dayName] = ["24 hours"];
-        } else {
-          newWorkingHours[dayName] = dayData.slots?.map(
-            (slot: TimeSlot) =>
-              `${formatTime(slot.start)} – ${formatTime(slot.end)}`
-          );
+        if (dayData.isOpen) {
+          if (dayData.isAllDay) {
+            newWorkingHours[dayName] = ["24 hours"];
+          } else {
+            newWorkingHours[dayName] = dayData.slots?.map(
+              (slot: TimeSlot) =>
+                `${formatTime(slot.start)} – ${formatTime(slot.end)}`
+            );
+          }
         }
       }
-    }
 
-    setSelectedRestaurant({
-      ...selectedRestaurant,
-      workingHours: newWorkingHours,
-    });
-  };
+      setSelectedRestaurant((prev) => ({
+        ...prev!,
+        workingHours: newWorkingHours,
+      }));
+    },
+    [selectedRestaurant]
+  );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCreateRestaurant = (data: any) => {
-    if (isLoading) return;
+  const handleCreateRestaurant = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (data: any) => {
+      if (isLoading) return;
 
-    if (!selectedRestaurant) return;
+      if (!selectedRestaurant) return;
 
-    const store = useVideoStore.getState();
-    const currentVideos = store.getCurrentVideos();
+      const store = useVideoStore.getState();
+      const currentVideos = store.getCurrentVideos();
 
-    const availability = processGoogleHours(selectedRestaurant?.workingHours);
+      const availability = processGoogleHours(selectedRestaurant?.workingHours);
 
-    const convertGoogleOpeningHours =
-      selectedRestaurant?.googleOpeningHours?.map(
-        (entry) => entry?.split(": ")[1]
-      );
+      const convertGoogleOpeningHours =
+        selectedRestaurant?.googleOpeningHours?.map(
+          (entry) => entry?.split(": ")[1]
+        );
 
-    const payload: CreateLocationRequest = {
-      sessionToken: sessionToken,
-      placeId: selectedRestaurant?.placeId,
-      // Conditional address
-      ...(selectedRestaurant?.address && {
-        address:
-          typeof selectedRestaurant?.address === "string"
-            ? selectedRestaurant?.address
-            : selectedRestaurant?.address?.content,
-      }),
-      ...(data?.menuUrl && { menu: data?.menuUrl }),
-      ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
-      ...(selectedRestaurant?.website && {
-        website: selectedRestaurant?.website,
-      }),
-      ...(selectedRestaurant?.image && { photos: [selectedRestaurant?.image] }),
-      rating: selectedRestaurant.rating ?? 0,
-      ...(data.reservationUrl && { reservation: data?.reservationUrl }),
-      ...(data?.orderUrl && { orderLink: data?.orderUrl }),
-      ...(data?.restaurantType && { orderType: data?.restaurantType }),
-      posts:
-        currentVideos?.map((video) => ({
-          tiktokLink: video?.url,
-          videoUrl: video?.videoUrl || "",
-          thumbUrl: video?.thumbUrl,
-          locationName: selectedRestaurant?.name,
-          rating: 0,
-          ...(video?.isFoodVisible && { isFoodVisible: video?.isFoodVisible }),
-          ...(video?.tags && { tags: video?.tags }),
-        })) ?? [],
-      openingHours: availability,
-      googleOpeningHours:
-        convertGoogleOpeningHours ?? selectedRestaurant?.googleOpeningHours,
-    };
+      const payload: CreateLocationRequest = {
+        sessionToken: sessionToken,
+        placeId: selectedRestaurant?.placeId,
+        ...(selectedRestaurant?.address && {
+          address:
+            typeof selectedRestaurant?.address === "string"
+              ? selectedRestaurant?.address
+              : selectedRestaurant?.address?.content,
+        }),
+        ...(data?.menuUrl && { menu: data?.menuUrl }),
+        ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
+        ...(selectedRestaurant?.website && {
+          website: selectedRestaurant?.website,
+        }),
+        ...(selectedRestaurant?.image && {
+          photos: [selectedRestaurant?.image],
+        }),
+        rating: selectedRestaurant.rating ?? 0,
+        ...(data.reservationUrl && { reservation: data?.reservationUrl }),
+        ...(data?.orderUrl && { orderLink: data?.orderUrl }),
+        ...(data?.restaurantType && { orderType: data?.restaurantType }),
+        posts:
+          currentVideos?.map((video) => ({
+            tiktokLink: video?.url,
+            videoUrl: video?.videoUrl || "",
+            thumbUrl: video?.thumbUrl,
+            locationName: selectedRestaurant?.name,
+            rating: 0,
+            ...(video?.isFoodVisible && {
+              isFoodVisible: video?.isFoodVisible,
+            }),
+            ...(video?.visibleFood && { visibleFood: video?.visibleFood }),
+            ...(video?.tags && { tags: video?.tags }),
+          })) ?? [],
+        openingHours: availability,
 
-    if (payload?.posts?.length === 0) {
-      errorToast("Please add at least one video.");
-    }
+        googleOpeningHours:
+          convertGoogleOpeningHours ?? selectedRestaurant?.googleOpeningHours,
+      };
 
-    createAdminLocation(payload);
-  };
+      if (payload?.posts?.length === 0) {
+        errorToast("Please add at least one video.");
+      }
 
-  const handleOnNext = () => {
+      createAdminLocation(payload);
+    },
+    [selectedRestaurant, isLoading, createAdminLocation, sessionToken]
+  );
+
+  const handleOnNext = useCallback(() => {
     setStep(2);
     addRestaurantData(selectedRestaurant!);
-  };
+  }, [addRestaurantData, selectedRestaurant]);
 
   return (
     <Sheet

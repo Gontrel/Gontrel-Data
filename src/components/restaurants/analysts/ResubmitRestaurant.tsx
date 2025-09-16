@@ -95,24 +95,24 @@ export const ResubmitRestaurant = ({
   const handleWorkingHoursSave = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (updatedHours: any) => {
-      if (!selectedRestaurant) return;
+    if (!selectedRestaurant) return;
 
-      const newWorkingHours: Record<string, string[]> = {};
-      for (const day in updatedHours) {
-        const dayData = updatedHours[day];
-        const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+    const newWorkingHours: Record<string, string[]> = {};
+    for (const day in updatedHours) {
+      const dayData = updatedHours[day];
+      const dayName = day.charAt(0).toUpperCase() + day.slice(1);
 
-        if (dayData.isOpen) {
-          if (dayData.isAllDay) {
-            newWorkingHours[dayName] = ["24 hours"];
-          } else {
-            newWorkingHours[dayName] = dayData.slots?.map(
-              (slot: TimeSlot) =>
-                `${formatTime(slot.start)} - ${formatTime(slot.end)}`
-            );
-          }
+      if (dayData.isOpen) {
+        if (dayData.isAllDay) {
+          newWorkingHours[dayName] = ["24 hours"];
+        } else {
+          newWorkingHours[dayName] = dayData.slots?.map(
+            (slot: TimeSlot) =>
+              `${formatTime(slot.start)} – ${formatTime(slot.end)}`
+          );
         }
       }
+    }
 
       setSelectedRestaurant((prev) => ({
         ...prev!,
@@ -121,6 +121,7 @@ export const ResubmitRestaurant = ({
     },
     [selectedRestaurant]
   );
+
 
   const handleSubmitRestaurant = (data: RestaurantMenuFormData) => {
     const availability = processGoogleHours(
