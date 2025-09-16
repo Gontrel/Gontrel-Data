@@ -13,6 +13,7 @@ export interface Post {
   firebaseId?: string;
   analytics?: Analytics;
   submissionDate?: string;
+  visibleFood?: string;
   tiktokLink: string;
   videoUrl: string;
   isFoodVisible?: boolean;
@@ -50,7 +51,6 @@ export interface Analytics {
   [key: string]: unknown;
 }
 
-
 export interface ReportedPostDataItem {
   id: string;
   createdAt: string;
@@ -63,9 +63,9 @@ export interface ReportedPostDataItem {
   status: string;
   post: {
     adminPost: {
-      admin: Omit<Admin, 'firebaseId' | 'deletedAt'>;
+      admin: Omit<Admin, "firebaseId" | "deletedAt">;
     };
     location?: Location;
   } & Post;
-  user: Omit<User, 'firebaseId' | 'deletedAt'>;
+  user: Omit<User, "firebaseId" | "deletedAt">;
 }
