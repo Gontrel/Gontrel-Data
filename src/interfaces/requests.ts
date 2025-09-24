@@ -6,6 +6,7 @@ import {
   ApprovalStatusEnum,
   ApprovalType,
   DayOfTheWeek,
+  NotificationTypeEnum,
   RestaurantTypeEnum,
 } from "@/types";
 
@@ -126,6 +127,28 @@ export interface FetchReportedUsersRequest extends BaseQueryRequest {
   status?: string;
   includeRejected?: boolean;
 }
+
+export interface FetchNotificationsRequest extends BaseQueryRequest {
+  adminId?: string
+  type?: string;
+}
+
+export interface CreateNotificationRequest {
+  userIds?: string[];
+  message: string;
+  locationId?: string;
+  all: boolean;
+  type?: string;
+  title: string;
+  notificationType: NotificationTypeEnum;
+}
+
+export interface ErrorLogRequest{
+    userId:string,
+    log:string
+}
+
+
 
 /**
  * POST /admin-post

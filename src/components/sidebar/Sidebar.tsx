@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/svgs/Icons";
 import { TIconNames } from "@/components/svgs/IconNames";
-import { useIsAdmin } from "@/stores/authStore";
+import { useIsAdmin, useIsManager } from "@/stores/authStore";
 
 interface NavLink {
   href: string;
@@ -60,6 +60,18 @@ const navSections: NavSection[] = [
         icon: "settingsIcon",
         matchSubPaths: true,
       },
+      {
+        href: "/messages",
+        label: "Messages",
+        icon: "messagesIcon",
+        matchSubPaths: true,
+      },
+      {
+        href: "/competitions",
+        label: "Competitions",
+        icon: "competitionIcon",
+        matchSubPaths: true,
+      },
     ],
   },
 ];
@@ -67,6 +79,7 @@ const navSections: NavSection[] = [
 const Sidebar = () => {
   const pathname = usePathname();
   const isAdmin = useIsAdmin();
+  const isManager = useIsManager();
 
   return (
     <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
@@ -82,7 +95,7 @@ const Sidebar = () => {
 
       <nav className="flex flex-col gap-8 mt-[41px]">
         {navSections.map((section) => {
-          if (section.title === "MANAGEMENT" && !isAdmin) {
+          if (section.title === "MANAGEMENT" && !isManager) {
             return null;
           }
 
@@ -91,7 +104,7 @@ const Sidebar = () => {
               <h2 className="text-[#9DA1A5] leading-[100%] text-[22px] font-semibold mb-[25px] uppercase tracking-wider">
                 {section.title}
               </h2>
-              <ul className="flex flex-col gap-[38px]">
+              <ul className="flex flex-col gap-[25px]">
                 {section.links.map((link) => {
                   const isActive = link.matchSubPaths
                     ? pathname.startsWith(link.href)

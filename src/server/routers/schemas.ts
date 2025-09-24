@@ -2,8 +2,10 @@ import {
   ApprovalStatusEnum,
   ApprovalType,
   DayOfTheWeek,
+  NotificationTypeEnum,
   RestaurantTypeEnum,
 } from "@/types/enums";
+import { title } from "process";
 import { z } from "zod";
 
 // ============================================================================
@@ -440,6 +442,40 @@ export const placeAutoCompleteSchema = z.object({
 export const placeDetailsSchema = z.object({
   placeId: z.string().min(1),
   sessionToken: z.string().min(1),
+});
+
+/**
+ * Notification Schemas
+ */
+
+/**
+ * POST /admin-post - CreatePostRequest
+ */
+export const createNotificationSchema = z.object({
+  userIds: z.array(z.string()).optional(),
+  message: z.string().min(1),
+  locationId: z.string().optional(),
+  all: z.boolean(),
+  type: z.string().optional(),
+  title: z.string().min(1),
+  notificationType: z.enum(NotificationTypeEnum),
+});
+
+export const fetchNotificationsSchema = baseQuerySchema.extend({
+  type: z.string().optional(),
+  notificationType: z.enum(NotificationTypeEnum).optional(),
+});
+
+// ============================================================================
+// ERROR LOGGING SCHEMAS
+// ============================================================================
+
+/**
+ * Error Log Schemas
+ */
+export const createErrorLogSchema = z.object({
+  userId: z.string().optional(),
+  log: z.string().min(1),
 });
 
 // ============================================================================

@@ -42,10 +42,14 @@ import {
   GetUserResponse,
   GetLocationStatsResponse,
   GetReportedVideosResponse,
+  GetNotificationResponse,
 } from "@/interfaces";
 import {
   BaseQueryRequest,
   CreateAdminRequest,
+  CreateNotificationRequest,
+  ErrorLogRequest,
+  FetchNotificationsRequest,
   FetchReportedUsersRequest,
   ToggleLocation,
   TogglePost,
@@ -81,14 +85,18 @@ export default class APIRequest {
   }
 
   private handleResponse(response: AxiosResponse) {
-    if (typeof response.data === "string") {
-      try {
-        return JSON.parse(response.data);
-      } catch {
-        return response.data;
+    try {
+      if (typeof response.data === "string") {
+        try {
+          return JSON.parse(response.data);
+        } catch {
+          
+          return response.data;
+        }
       }
+      return response.data;
+    }catch{
     }
-    return response.data;
   }
 
   /**
@@ -454,14 +462,17 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  // : Promise<GetTiktokDetailsResponse>
+
   // getTiktokDetails
-  getTiktokDetails = async (data: {
-    link: string;
-  }): Promise<GetTiktokDetailsResponse> => {
-    const response = await this.authenticatedClient.get(
-      `/tiktok-link-info?link=${data.link}`
-    );
-    return this.handleResponse(response);
+  getTiktokDetails = async (data: { link: string }) => {
+
+      const response = await this.authenticatedClient.get(
+        `/tiktok-link-info?link=${data.link}`
+      );
+
+  
+      return this.handleResponse(response);
   };
 
   validateTiktokUrl = async (data: { link: string }) => {
@@ -483,11 +494,26 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
-  // postMapPolygon = async (data: any) => {
-  //   const response = await this.authenticatedClient.post(
-  //     `/location-by-polygon`,
-  //     data
-  //   );
-  //   return this.handleResponse(response);
-  // };
+  getNotifications = async (
+    data: FetchNotificationsRequest
+  ) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-sent-notifications?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  createNotification = async (data: CreateNotificationRequest) => {
+    const response = await this.authenticatedClient.post(
+      "/send-notifications",
+      data
+    );
+    return this.handleResponse(response);
+  };
+
+  createErrorLog = async (data: ErrorLogRequest) => {
+    const response = await this.authenticatedClient.post("/error-log", data);
+    return this.handleResponse(response);
+  };
 }

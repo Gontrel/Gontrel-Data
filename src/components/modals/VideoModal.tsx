@@ -79,7 +79,7 @@ const VideoModal = ({
     <>
       {/* Overlay (darker grey, below Sheet) */}
       <div
-        className={`fixed inset-0 z-30 transition-opacity duration-500 ${
+        className={`fixed inset-0 z-10 transition-opacity duration-500 ${
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => onOpenChange(false)}

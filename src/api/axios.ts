@@ -20,32 +20,58 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-
-axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  async (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
-        errorToast("Session expired. Please login again.");
-
-        localStorage.removeItem("authState");
-        sessionStorage.removeItem("authState");
-
-        window.location.href = "/";
-      }
-
-      return Promise.reject({
-        ...error,
-        isUnauthorized: true,
-        message: "Authentication required",
-      });
-    }
-
-    return Promise.reject(error);
-  }
-);
-
 // --- Unauthenticated Client ---
 const unauthenticatedClient = axios.create(baseConfig);
+
+// Helper: safe error log poster (avoid recursion)
+const postErrorLogSafely = async (client: typeof axiosInstance, payload: { log: string }) => {
+  try {
+    if (!client.defaults.baseURL) return;
+    const url = "/error-log";
+    if (typeof payload?.log === "string" && payload.log.includes(url)) return;
+
+    await client.post(url, payload);
+  } catch {
+  }
+};
+
+// Response error interceptors for both clients
+const attachErrorInterceptor = (client: typeof axiosInstance) => {
+  client.interceptors.response.use(
+    (response: AxiosResponse) => response,
+    async (error: AxiosError) => {
+      if (error.response?.status === 401) {
+        if (typeof window !== "undefined") {
+          errorToast("Session expired. Please login again.");
+
+          localStorage.removeItem("authState");
+          sessionStorage.removeItem("authState");
+
+          window.location.href = "/";
+        }
+
+        return Promise.reject({
+          ...error,
+          isUnauthorized: true,
+          message: "Authentication required",
+        });
+      }
+
+      // Prepare log payload
+      try {
+        const parts: string[] = [];
+        parts.push(`Error: ${error.message || "Unknown error"}`);
+        await postErrorLogSafely(client, { log: parts.join(" | ") });
+      } catch {
+        // ignore logging errors
+      }
+
+      return Promise.reject(error);
+    }
+  );
+};
+
+attachErrorInterceptor(axiosInstance);
+attachErrorInterceptor(unauthenticatedClient);
 
 export { axiosInstance, unauthenticatedClient };

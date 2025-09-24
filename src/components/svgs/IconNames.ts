@@ -47,4 +47,6 @@ export type TIconNames =
   | "commentIcon"
   | "person3Icon"
   | "expandIcon"
+  | "competitionIcon"
+  | "messagesIcon"
   | "personIcon";

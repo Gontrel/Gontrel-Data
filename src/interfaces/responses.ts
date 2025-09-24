@@ -411,3 +411,25 @@ export interface CreateAdminResponse {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GetReportedVideosResponse
   extends IPaginatedRes<ReportedPostDataItem> {}
+
+export interface GetNotificationResponse
+  extends IPaginatedRes<{
+    id: string;
+  }> {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt?: null | string;
+  deletedBy?: null | string;
+  updatedBy?: null | string;
+  firebaseId?: null | string;
+  userId: string;
+  action: string;
+  nextAction?: null | string;
+  icon?: string;
+  title: string;
+  content: string;
+  sender?: string;
+  isRead?: boolean;
+  type: string;
+}
