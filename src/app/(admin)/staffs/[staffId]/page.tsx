@@ -99,8 +99,8 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
             return [...prev, ...newActivities];
           });
         }
-      } catch (error) {
-        console.error("Failed to fetch staff activities:", error);
+      } catch {
+  
       } finally {
         setIsFetching(false);
       }

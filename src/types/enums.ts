@@ -44,6 +44,11 @@ export enum AnalystTableTabsEnum {
   SUBMITTED_VIDEOS = "submittedVideos",
 }
 
+export enum CompetitionTableTabsEnum {
+  ACTIVE_COMPETITIONS = "activeCompetitions",
+  COMPLETED_COMPETITIONS = "completedCompetitions",
+}
+
 export enum TrendEnum {
   POPULAR_SEARCHES = "Popular searches",
   TRENDING_TIKTOK = "Trending TikTok #",
@@ -78,4 +83,10 @@ export enum RestaurantTypeEnum {
   DINE = "dine-in",
   TAKE_OUT = "takeout",
   BOTH = "both",
+}
+
+export enum NotificationTypeEnum {
+  IN_APP_NOTIFICATION = "in_app",
+  PUSH_NOTIFICATION = "push",
+
 }

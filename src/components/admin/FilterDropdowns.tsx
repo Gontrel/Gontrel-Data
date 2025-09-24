@@ -5,7 +5,7 @@ import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { AdminRoleEnum, ManagerTableTabsEnum } from "@/types/enums";
 import { type DateRangeValue } from "@/utils/dateRange";
 import { useCurrentUser } from "@/stores/authStore";
-import { statusOptions } from "@/constants";
+import { messageStatusOptions, statusOptions } from "@/constants";
 
 /**
  * Props for FilterDropdowns component
@@ -83,7 +83,7 @@ export function FilterDropdowns({
   return (
     <div className="flex items-center gap-4.5">
       {/* Analyst/User Filter (only when NOT active videos) */}
-      {optionsWithAll && optionsWithAll.length > 0 && !isAnalyst && (
+      {optionsWithAll && optionsWithAll.length > 0 && !isAnalyst && activeTab !== "messages" && (
         <DropdownFilter
           options={optionsWithAll}
           value={selectedUser}
@@ -97,6 +97,17 @@ export function FilterDropdowns({
       {activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS && (
         <DropdownFilter
           options={statusOptions}
+          value={selectedStatus}
+          onChange={onStatusChange}
+          placeholder="All statuses"
+          icon={statusIcon}
+          className="w-48"
+        />
+      )}
+
+      {activeTab === "messages" && (
+        <DropdownFilter
+          options={messageStatusOptions}
           value={selectedStatus}
           onChange={onStatusChange}
           placeholder="All statuses"
