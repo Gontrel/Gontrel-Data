@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
@@ -60,7 +61,7 @@ export default function MessagesPage() {
   // Submit confirmation (centered) state
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
-  const startDate = useMemo(() => (dateRange?.startDate ? new Date(dateRange.startDate).toISOString().slice(0, 10) : undefined), [dateRange?.endDate]);
+  const startDate = useMemo(() => (dateRange?.startDate ? new Date(dateRange.startDate).toISOString().slice(0, 10) : undefined), [dateRange?.startDate]);
   const endDate = useMemo(() => (dateRange?.endDate ? new Date(dateRange.endDate).toISOString().slice(0, 10) : undefined), [dateRange?.endDate]);
 
   const { queryData, isLoading } = useGetNotifications({
@@ -118,7 +119,7 @@ export default function MessagesPage() {
         setSelectedMessage(row);
         setShowConfirm(true);
       }),
-    []
+    [createMessageColumns]
   );
 
   // Map selectedStatus to NotificationTypeEnum
@@ -186,7 +187,7 @@ export default function MessagesPage() {
       successToast("Message sent successfully");
       setShowSubmitConfirm(false);
       setShowNewMessage(false);
-    } catch (err) {
+    } catch  {
       errorToast("Failed to send message. Please try again.");
     }
   }, [handleCreateNotification, messageForm.title, messageForm.body, messageForm.type]);

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/svgs/Icons";
 import { TIconNames } from "@/components/svgs/IconNames";
-import { useIsAdmin, useIsManager } from "@/stores/authStore";
+import { useIsAdmin } from "@/stores/authStore";
 
 interface NavLink {
   href: string;
@@ -79,7 +79,6 @@ const navSections: NavSection[] = [
 const Sidebar = () => {
   const pathname = usePathname();
   const isAdmin = useIsAdmin();
-  const isManager = useIsManager();
 
   return (
     <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
@@ -95,7 +94,7 @@ const Sidebar = () => {
 
       <nav className="flex flex-col gap-8 mt-[41px]">
         {navSections.map((section) => {
-          if (section.title === "MANAGEMENT" && !isManager) {
+          if (section.title === "MANAGEMENT" && !isAdmin) {
             return null;
           }
 

@@ -29,7 +29,6 @@ import {
   GetGroupedPostsSubmissionsResponse,
   FetchStaffsRequest,
   GetStaffsResponse,
-  GetTiktokDetailsResponse,
   StaffStats,
   GetAdminProfileResponse,
   FetchStaffSummary,
@@ -42,7 +41,6 @@ import {
   GetUserResponse,
   GetLocationStatsResponse,
   GetReportedVideosResponse,
-  GetNotificationResponse,
 } from "@/interfaces";
 import {
   BaseQueryRequest,

@@ -1,6 +1,5 @@
 import { CreateNotificationRequest } from "@/interfaces";
 import { trpc } from "@/lib/trpc-client";
-import { NotificationTypeEnum } from "@/types";
 
 interface UseGetNotificationsProps {
   currentPage: number;

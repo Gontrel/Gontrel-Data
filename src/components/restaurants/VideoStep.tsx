@@ -97,7 +97,7 @@ export const VideoStep = ({
           } else {
             errorToast("Could not retrieve video information from this URL.");
           }
-        } catch (error) {
+        } catch {
     
           errorToast(
             "Failed to fetch TikTok video information. Please check the URL."

@@ -2,11 +2,9 @@
 
 import { useMemo, useState, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { SearchBar } from "@/components/admin/SearchBar";
-import Icon from "@/components/svgs/Icons";
 import { formatDate } from "@/lib/utils";
 
 interface Participant {
@@ -70,7 +68,7 @@ export default function CompetitionDetailPage() {
   }, [router]);
 
   const handleEndCompetition = useCallback(() => {
-  }, [data.id]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
