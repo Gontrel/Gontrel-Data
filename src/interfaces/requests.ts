@@ -159,6 +159,7 @@ export interface CreateBulkPostRequest {
     videoUrl: string; // required
     thumbUrl?: string;
     isFoodVisible?: boolean;
+    visibleFood?: string;
     postedAt?: string;
     rating?: number;
     tags?: string[]; // minimum 1 item if provided
@@ -177,6 +178,7 @@ export interface UpdatePostRequest {
   firstFrameUrl?: string;
   hlsUrl?: string;
   isFoodVisible?: boolean;
+  visibleFood?: string;
   videoUrl?: string;
   thumbUrl?: string;
   postId: string; // UUID, required
@@ -258,6 +260,7 @@ export interface CreateLocationRequest {
   lat?: number;
   lng?: number;
   menu?: string;
+  visibleFood?: string;
   name: string; // required
   photos?: string[];
   phoneNumber?: string;
@@ -315,6 +318,7 @@ export interface UpdateLocationRequest {
   priceLevel?: number;
   rating?: number;
   reservation?: string;
+  visibleFood?: string;
   orderLink?: string;
   orderType?: RestaurantTypeEnum | string;
   toilets?: boolean;
@@ -463,6 +467,7 @@ export interface PostCreationRequest {
   videoUrl: string; // required
   thumbUrl?: string;
   postedAt?: string;
+  visibleFood?: string;
   locationName?: string;
   rating?: number;
   tags?: string[];

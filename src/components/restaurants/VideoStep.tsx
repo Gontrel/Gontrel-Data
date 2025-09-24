@@ -44,6 +44,7 @@ export const VideoStep = ({
     videoUrl: "",
     locationName: "",
     isFoodVisible: false,
+    visibleFood: "",
     rating: 0,
   });
 
@@ -195,6 +196,14 @@ export const VideoStep = ({
     }));
   };
 
+  const handleFoodTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const foodType = e.target.value;
+    setCurrentVideo((prev) => ({
+      ...prev,
+      visibleFood: foodType,
+    }));
+  };
+
   const handleAddOrUpdateVideo = (): boolean => {
     handleInputError();
     const videoData = {
@@ -204,6 +213,7 @@ export const VideoStep = ({
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
       isFoodVisible: currentVideo?.isFoodVisible,
+      visibleFood: currentVideo.visibleFood,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
       isUpdated: true,
@@ -212,6 +222,7 @@ export const VideoStep = ({
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
+
       addVideo(videoData);
     }
 
@@ -231,6 +242,7 @@ export const VideoStep = ({
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
         isFoodVisible: videoToEdit.isFoodVisible || false,
+        visibleFood: videoToEdit.visibleFood || "",
         rating: videoToEdit.rating || 0,
       });
       setActiveVideoUrl(videoToEdit.videoUrl || videoToEdit.url);
@@ -257,6 +269,7 @@ export const VideoStep = ({
       locationName: "",
       rating: 0,
       isFoodVisible: false,
+      visibleFood: "",
     });
 
     setActiveVideoUrl(null);
@@ -273,6 +286,7 @@ export const VideoStep = ({
       author: currentVideo.author,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
+      visibleFood: currentVideo.visibleFood,
       isFoodVisible: currentVideo.isFoodVisible,
       isUpdated: true,
     };
@@ -396,6 +410,27 @@ export const VideoStep = ({
                 <label htmlFor="food-visible">
                   Food is visible in the next 3 seconds
                 </label>
+              </div>
+            }
+
+            {
+              <div>
+                <label
+                  htmlFor="food-type"
+                  className="text-lg font-semibold text-[#2E3032]"
+                >
+                  What type of food?
+                </label>
+                <div className="relative mt-3">
+                  <input
+                    type="url"
+                    id="food-type"
+                    placeholder="Enter food here"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                    value={currentVideo.visibleFood?.trim()}
+                    onChange={handleFoodTypeChange}
+                  />
+                </div>
               </div>
             }
 

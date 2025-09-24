@@ -49,6 +49,7 @@ export const ResubmitVideoStepStep = ({
     videoUrl: "",
     locationName: "",
     isFoodVisible: false,
+    visibleFood: "",
     rating: 0,
   });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
@@ -194,6 +195,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: post.videoUrl,
       author: post.updatedBy,
       status: post?.status,
+      visibleFood: post?.visibleFood,
       isFoodVisible: post?.isFoodVisible,
       isUpdated: false,
     }));
@@ -276,6 +278,7 @@ export const ResubmitVideoStepStep = ({
       locationName: currentVideo?.locationName,
       isFoodVisible: currentVideo?.isFoodVisible,
       rating: currentVideo?.rating || 0,
+      visibleFood: currentVideo?.visibleFood || "",
       isUpdated: true,
     };
 
@@ -286,6 +289,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: videoData?.videoUrl,
       thumbUrl: videoData?.thumbUrl,
       isFoodVisible: videoData?.isFoodVisible,
+      visibleFood: videoData?.visibleFood,
       tags: [...videoData?.tags],
     };
 
@@ -307,6 +311,7 @@ export const ResubmitVideoStepStep = ({
           tiktokLink: payload?.tiktokLink,
           thumbUrl: payload?.thumbUrl,
           isFoodVisible: payload?.isFoodVisible,
+          visibleFood: payload?.visibleFood || "",
           tags: payload?.tags,
         },
       ],
@@ -322,6 +327,14 @@ export const ResubmitVideoStepStep = ({
     }));
   };
 
+  const handleFoodTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const foodType = e.target.value;
+    setCurrentVideo((prev) => ({
+      ...prev,
+      visibleFood: foodType,
+    }));
+  };
+
   const handleEdit = (id: string) => {
     const videoToEdit = videos.find((v) => v.id === id);
 
@@ -333,6 +346,7 @@ export const ResubmitVideoStepStep = ({
         thumbUrl: videoToEdit?.thumbUrl || "",
         videoUrl: videoToEdit?.videoUrl || "",
         author: videoToEdit.author || "",
+        visibleFood: videoToEdit.visibleFood || "",
         locationName: videoToEdit?.locationName || "",
         isFoodVisible: videoToEdit?.isFoodVisible ?? false,
         rating: videoToEdit?.rating || 0,
@@ -473,6 +487,27 @@ export const ResubmitVideoStepStep = ({
                   <label htmlFor="food-visible">
                     Food is visible in the next 3 seconds
                   </label>
+                </div>
+              }
+
+              {
+                <div>
+                  <label
+                    htmlFor="food-type"
+                    className="text-lg font-semibold text-[#2E3032]"
+                  >
+                    What type of food?
+                  </label>
+                  <div className="relative mt-3">
+                    <input
+                      type="url"
+                      id="food-type"
+                      placeholder="Enter food here"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                      value={currentVideo.visibleFood?.trim()}
+                      onChange={handleFoodTypeChange}
+                    />
+                  </div>
                 </div>
               }
 

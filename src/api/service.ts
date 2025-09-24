@@ -145,6 +145,7 @@ export default class APIRequest {
       `/admin-location`,
       data
     );
+
     return this.handleResponse(response);
   };
   // getRestaurants
@@ -449,6 +450,7 @@ export default class APIRequest {
     const response = await this.authenticatedClient.get(
       `/place-details?placeId=${data.placeId}&sessionToken=${data.sessionToken}`
     );
+
     return this.handleResponse(response);
   };
 
