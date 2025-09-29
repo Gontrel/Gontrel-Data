@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosResponse, AxiosInstance } from "axios";
 import { axiosInstance, unauthenticatedClient } from "./axios";
 import { parse } from "cookie";
@@ -46,7 +47,6 @@ import {
   BaseQueryRequest,
   CreateAdminRequest,
   CreateCompetitionRequest,
-  CreateFeatureFlagRequest,
   CreateNotificationRequest,
   ErrorLogRequest,
   FetchCompetitionsRequest,

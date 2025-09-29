@@ -75,7 +75,7 @@ export default function CompetitionsPage() {
       isActive: false,
     });
 
-   const { handleCreateCompetition: createCompetition, isLoading: creating } =
+   const { handleCreateCompetition: createCompetition, } =
     useCreateCompetition();
 
   const getTotalFromResponse = (res: unknown): number => {

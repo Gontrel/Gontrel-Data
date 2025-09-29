@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { formatDate } from "@/lib/utils";
 import { CompetitionTableTabsEnum } from "@/types";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
@@ -24,17 +25,6 @@ interface Participant {
   totalSubmission: number;
 }
 
-interface CompetitionDetailData {
-  id: string;
-  title: string;
-  condition: string;
-  type: string;
-  endDateISO: string;
-  totalParticipants: number;
-  eligibleWinners: number;
-  eligibleQualifiers: number;
-  participants: Participant[];
-}
 
 export default function CompetitionDetailPage() {
   const params = useParams<{ competitionId: string }>();
@@ -122,7 +112,7 @@ export default function CompetitionDetailPage() {
     });
     setShowConfirmWinners(false);
     await refetchCompetition();
-  }, [competitionId, toggleCompetition, refetchCompetition]);
+  }, [competitionId, toggleCompetition, selectedWinnerIds, refetchCompetition]);
 
   // Source for the scrollable list
   const participantsSrc = useMemo(() => {
@@ -144,6 +134,7 @@ export default function CompetitionDetailPage() {
 
   // Load more button (simple pagination)
   {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     participantsRes?.pagination && (
       <div className="mt-3">
         <Button

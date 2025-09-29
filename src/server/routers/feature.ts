@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { protectedProcedure, router } from "@/lib/trpc";
 import APIRequest from "@/api/service";
 import { TRPCError } from "@trpc/server";
