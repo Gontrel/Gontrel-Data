@@ -45,10 +45,14 @@ import {
 import {
   BaseQueryRequest,
   CreateAdminRequest,
+  CreateCompetitionRequest,
+  CreateFeatureFlagRequest,
   CreateNotificationRequest,
   ErrorLogRequest,
+  FetchCompetitionsRequest,
   FetchNotificationsRequest,
   FetchReportedUsersRequest,
+  ToggleFeatureFlagRequest,
   ToggleLocation,
   TogglePost,
   ToggleStaffActive,
@@ -88,13 +92,11 @@ export default class APIRequest {
         try {
           return JSON.parse(response.data);
         } catch {
-          
           return response.data;
         }
       }
       return response.data;
-    }catch{
-    }
+    } catch {}
   }
 
   /**
@@ -464,13 +466,11 @@ export default class APIRequest {
 
   // getTiktokDetails
   getTiktokDetails = async (data: { link: string }) => {
+    const response = await this.authenticatedClient.get(
+      `/tiktok-link-info?link=${data.link}`
+    );
 
-      const response = await this.authenticatedClient.get(
-        `/tiktok-link-info?link=${data.link}`
-      );
-
-  
-      return this.handleResponse(response);
+    return this.handleResponse(response);
   };
 
   validateTiktokUrl = async (data: { link: string }) => {
@@ -492,9 +492,7 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
-  getNotifications = async (
-    data: FetchNotificationsRequest
-  ) => {
+  getNotifications = async (data: FetchNotificationsRequest) => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/admin-sent-notifications?${params.toString()}`
@@ -508,6 +506,130 @@ export default class APIRequest {
       data
     );
     return this.handleResponse(response);
+  };
+
+  // Competitions
+  getCompetitions = async (data: FetchCompetitionsRequest) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-get-competitions?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  getCompetitionById = async (data: { competitionId: string }) => {
+    try {
+      const params = this.buildSearchParams(data);
+
+      const response = await this.authenticatedClient.get(
+        `/admin-get-competition-by-id?${params.toString()}`
+      );
+      return this.handleResponse(response);
+    } catch (err: any) {
+      console.error(
+        JSON.stringify("Error:", err.response.data.moreInfo.errors[0].message)
+      );
+    }
+  };
+
+  createCompetition = async (data: CreateCompetitionRequest) => {
+
+    try {
+      const response = await this.authenticatedClient.post(
+        `/admin-create-competition`,
+        data
+      );
+
+      return this.handleResponse(response);
+    } catch (err: any) {
+      console.error(
+        JSON.stringify("Error:", err.response.data.moreInfo.errors[0].message)
+      );
+    }
+  };
+
+  getCompetitionParticipants = async (data: {
+    pageNumber?: number;
+    quantity?: number;
+  }) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-competition-participants?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  toggleCompetitionActive = async (data: {
+    competitionId: string;
+    winners: string[];
+  }) => {
+    try {
+      const response = await this.authenticatedClient.patch(
+        `/admin-end-competition`,
+        data
+      );
+      return this.handleResponse(response);
+    } catch (err: any) {
+      console.error(
+        JSON.stringify("Error:", err.response.data.moreInfo.errors[0].message)
+      );
+    }
+  };
+
+  // ============================
+  // Feature Flags
+  // ============================
+  getFeatureFlagCards = async () => {
+    const response = await this.authenticatedClient.get(
+      `/v2/feature-flag-cards`
+    );
+    return this.handleResponse(response);
+  };
+
+  adminListFeatureFlags = async (data: {
+    pageNumber?: number;
+    quantity?: number;
+    searchTerm?: string;
+    environment?: string;
+    lastTokenId?: string;
+  }) => {
+    const params = this.buildSearchParams({
+      pageNumber: data?.pageNumber,
+      quantity: data?.quantity,
+      query: data?.searchTerm,
+      environment: data?.environment,
+      lastTokenId: data?.lastTokenId,
+    });
+    const response = await this.authenticatedClient.get(
+      `/v2/admin-list-feature-flags?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  createFeatureFlag = async (name: string) => {
+    const data = {
+      name,
+      environment: process.env.NODE_ENV || "development",
+    };
+    const response = await this.authenticatedClient.post(
+      `/v2/admin-create-feature-flag`,
+      data
+    );
+    return this.handleResponse(response);
+  };
+
+  toggleFeatureFlagActive = async (data: ToggleFeatureFlagRequest) => {
+    try {
+      const response = await this.authenticatedClient.patch(
+        `/v2/toggle-feature-flag-active`,
+        { id: data?.featureFlagId }
+      );
+      return this.handleResponse(response);
+    } catch (err: any) {
+      console.error(
+        JSON.stringify("Error:", err.response.data.moreInfo.errors[0].message)
+      );
+    }
   };
 
   createErrorLog = async (data: ErrorLogRequest) => {

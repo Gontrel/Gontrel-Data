@@ -88,5 +88,8 @@ export enum RestaurantTypeEnum {
 export enum NotificationTypeEnum {
   IN_APP_NOTIFICATION = "in_app",
   PUSH_NOTIFICATION = "push",
+}
 
+export enum CompetitionTypeEnum {
+  REFERRAL = "referral",
 }

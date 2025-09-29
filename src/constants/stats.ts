@@ -13,3 +13,8 @@ export const messageStatusOptions = [
   { value: "push", label: "Push notification" },
   { value: "email", label: "Email" },
 ];
+
+export const competitionStatusOptions = [
+  { value: undefined, label: "All status" },
+  { value: "referral", label: "Referral" },
+];
