@@ -25,11 +25,7 @@ import { useRouter } from "next/navigation";
 import type { Post } from "@/interfaces/posts";
 import { Restaurant } from "@/interfaces";
 import StaffDetailsSkeleton from "@/components/Loader/staffs/staffDetails";
-
-export enum UserDetailsTabsEnum {
-  VIDEOS = "videos",
-  RESTAURANTS = "restaurants",
-}
+import { UserDetailsTabsEnum } from "@/types";
 
 const UserDetailsPage = ({
   params,
@@ -90,14 +86,14 @@ const UserDetailsPage = ({
   type PostItem = {
     id: string;
     postedAt?: string;
-    location?: { id?: string; name?: string };
+    location?: Restaurant;
     thumbUrl?: string;
     videoUrl?: string;
     locationName?: string;
   };
   type VisitItem = {
     id: string;
-    location?: Restaurant;
+    location: Restaurant;
   };
   const list = useMemo(() => {
     if (activeTab === UserDetailsTabsEnum.VIDEOS)
@@ -187,6 +183,10 @@ const UserDetailsPage = ({
       },
     });
 
+  if (isToggling) {
+    router.refresh();
+  }
+
   if (isLoadingUser && isFetching) {
     return <StaffDetailsSkeleton />;
   }
@@ -219,7 +219,7 @@ const UserDetailsPage = ({
         <div className="flex-1 min-w-0 bg-white rounded-lg shadow p-6">
           <UserActionsHeader
             title="User's activities"
-            isActive={!!user?.isActive}
+            isBlocked={user?.blocked}
             onToggle={() => setModalOpen(true)}
           />
           <div className="flex items-center justify-between border-b border-[#D5D5D5] mb-4 overflow-x-auto">
@@ -302,26 +302,28 @@ const UserDetailsPage = ({
                     </p>
                   </div>
                 ) : (
-                  list?.map((r) => (
+                  list?.map((restaurant) => (
                     <div
-                      key={r.id}
+                      key={restaurant.id}
                       className="flex items-center justify-between p-4 rounded border border-[#F0F1F2]"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-16 h-16 bg-gray-200 rounded" />
                         <div>
                           <div className="font-semibold text-[#2E3032]">
-                            {r?.location?.name ?? "Restaurant"}
+                            {restaurant?.location?.name ?? "Restaurant"}
                           </div>
                           <div className="text-sm text-[#9DA1A5]">
-                            {r?.location?.address ?? ""}
+                            {typeof restaurant?.location?.address === "string"
+                              ? restaurant?.location?.address
+                              : restaurant?.location?.address?.content}
                           </div>
                         </div>
                       </div>
-                      {r?.location?.id && (
+                      {restaurant?.location?.id && (
                         <a
                           className="text-blue-600 font-semibold"
-                          href={`/restaurants/${r.location.id}`}
+                          href={`/restaurants/${restaurant.location.id}`}
                         >
                           View restaurant
                         </a>

@@ -93,3 +93,8 @@ export enum NotificationTypeEnum {
 export enum CompetitionTypeEnum {
   REFERRAL = "referral",
 }
+
+export enum UserDetailsTabsEnum {
+  VIDEOS = "videos",
+  RESTAURANTS = "restaurants",
+}
