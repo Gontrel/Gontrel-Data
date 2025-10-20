@@ -495,3 +495,60 @@ export interface PostCreationRequest {
   rating?: number;
   tags?: string[];
 }
+
+export interface FetchNotificationsRequest extends BaseQueryRequest {
+  adminId?: string
+  type?: string;
+}
+
+export interface CreateNotificationRequest {
+  userIds?: string[];
+  message: string;
+  locationId?: string;
+  all: boolean;
+  type?: string;
+  title: string;
+  notificationType: NotificationTypeEnum;
+}
+
+export interface ErrorLogRequest{
+    userId:string,
+    log:string
+}
+
+
+
+/**
+ * GET /admin-get-competitions
+ * Fetches competitions with filtering options
+ * @extends BaseQueryRequest
+ */
+export interface FetchCompetitionsRequest extends BaseQueryRequest {
+  isActive?: boolean;
+}
+
+/**
+ * POST /admin-create-competition
+ * Creates a new competition
+ */
+export interface CreateCompetitionRequest {
+  title: string;
+  type: string;
+  startDate?: string;
+  endDate?: string; 
+  eligibleWinners?: number;
+  eligibleQualifiers?: number;
+  totalParticipants?: number;
+  aggregation?: string; 
+  aggregationValue?: number;
+}
+
+export interface ToggleFeatureFlagRequest {
+  featureFlagId: string;
+}
+
+export interface CreateFeatureFlagRequest {
+  name: string;
+  environment: string;
+}
+

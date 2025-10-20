@@ -72,6 +72,12 @@ const navSections: NavSection[] = [
         icon: "competitionIcon",
         matchSubPaths: true,
       },
+      {
+        href: "/features",
+        label: "Feature Flagging",
+        icon: "featureIcon",
+        matchSubPaths: true,
+      },
     ],
   },
 ];

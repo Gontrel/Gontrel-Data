@@ -96,6 +96,24 @@ export const NewCompetitionSheet: React.FC<NewCompetitionSheetProps> = ({
           <div className="w-full mt-[30px] space-y-6">
             {step === 1 && (
               <div className="space-y-6">
+                     {/* Title */}
+                <div>
+                  <label className="block text-[20px] font-semibold text-[#2E3032]">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter competition title"
+                    value={form.title}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        title: e.target.value,
+                      }))
+                    }
+                    className="mt-3 w-full px-[16px] py-[18px] border border-gray-300 rounded-[14px] focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
+                  />
+                </div>
                 {/* Type */}
                 <div>
                   <label className="block text-[20px] font-semibold text-[#2E3032]">
@@ -111,9 +129,8 @@ export const NewCompetitionSheet: React.FC<NewCompetitionSheetProps> = ({
                       }))
                     }
                   >
-                    <option>Referral program</option>
-                    <option>Leaderboard</option>
-                    <option>Custom</option>
+                    <option value="referral">Referral program</option>
+      
                   </select>
                 </div>
 

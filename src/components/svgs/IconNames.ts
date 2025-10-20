@@ -49,4 +49,5 @@ export type TIconNames =
   | "expandIcon"
   | "competitionIcon"
   | "messagesIcon"
+  | "featureIcon"
   | "personIcon";

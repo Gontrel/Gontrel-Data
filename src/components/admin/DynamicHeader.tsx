@@ -58,6 +58,14 @@ const headerConfigs: Record<string, HeaderConfig> = {
     description: "Manage competitions and events.",
     showBackButton: false,
   },
+  
+  "/features": {
+    title: "Feature Flagging",
+    description: "Manage what feature is live",
+    showBackButton: false,
+  },
+
+  // sub routes
   "/restaurants/**": {
     title: "Back",
     description: "",

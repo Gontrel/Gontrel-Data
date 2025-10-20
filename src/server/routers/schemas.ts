@@ -49,7 +49,7 @@ export const createAdminSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(2).max(100),
   lastName: z.string().min(2).max(100),
-  city: z.string().min(2).max(100),
+  city: z.string().min(2).max(100).optional(),
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
   role: z.string(),
@@ -465,6 +465,34 @@ export const fetchNotificationsSchema = baseQuerySchema.extend({
   notificationType: z.enum(NotificationTypeEnum).optional(),
 });
 
+// Competitions
+export const fetchCompetitionsSchema = baseQuerySchema.extend({
+  isActive: z.boolean().optional(),
+});
+
+export const createCompetitionSchema = z.object({
+  title: z.string().min(1),
+  type: z.string().min(1),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  eligibleWinners: z.number().optional(),
+  eligibleQualifiers: z.number().optional(),
+  totalParticipants: z.number().optional(),
+  aggregation: z.string().optional(),
+  aggregationValue: z.number().optional(),
+});
+
+export const fetchCompetitionByIdSchema = z.object({
+  competitionId: z.string().uuid(),
+});
+
+export const fetchCompetitionParticipantsSchema = baseQuerySchema.extend({});
+
+export const toggleCompetitionActiveSchema = z.object({
+  competitionId: z.string().uuid(),
+  winners: z.array(z.string()),
+});
+
 // ============================================================================
 // ERROR LOGGING SCHEMAS
 // ============================================================================
@@ -488,3 +516,16 @@ export const fetchPendingUserVideosSchema = fetchAdminPostsSchema.extend({});
 export const fetchReportedVideosSchema = fetchReportedVideosBaseSchema.extend(
   {}
 );
+
+// Feature Flags
+export const fetchFeatureFlagsSchema = baseQuerySchema.extend({
+  environment: z.string().optional(),
+});
+
+export const createFeatureFlagSchema = z.object({
+  name: z.string().min(1),
+});
+
+export const toggleFeatureFlagSchema = z.object({
+  featureFlagId: z.string(),
+});

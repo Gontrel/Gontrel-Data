@@ -56,7 +56,7 @@ export interface Summary {
 
 export interface Restaurant {
   id: string;
-  address: Address;
+  address: Address | string;
   lat: number;
   lng: number;
   menu?: Menu;
