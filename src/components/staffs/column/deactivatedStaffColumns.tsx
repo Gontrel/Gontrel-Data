@@ -77,7 +77,7 @@ export const createDeactivatedStaffColumns = (
         {row.original?.email ?? ""}
       </div>
     ),
-    minSize: TABLE_COLUMN_SIZES.WEBSITE, // Reusing size for now
+    minSize: TABLE_COLUMN_SIZES.WEBSITE,
   },
 
   {

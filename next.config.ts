@@ -63,6 +63,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "test-image.jpeg",
+        port: "",
+        pathname: "/**",
+      },
     ],
     minimumCacheTTL: 60,
   },

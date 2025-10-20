@@ -398,9 +398,56 @@ export default class APIRequest {
   //Users
   getUsers = async (data: BaseQueryRequest): Promise<GetUserResponse> => {
     const params = this.buildSearchParams(data);
+
     const response = await this.authenticatedClient.get(
       `/admin-fetch-users?${params.toString()}`
     );
+    return this.handleResponse(response);
+  };
+
+  getUserById = async (data: { userId: string }) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-fetch-user?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  getUserPostsByUser = async (data: BaseQueryRequest & { userId: string }) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-user-posts?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  getUserLocationVisits = async (
+    data: BaseQueryRequest & { userId: string }
+  ) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.get(
+      `/admin-user-location-visits?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // Toggle block/unblock user
+  toggleUserBlock = async (data: { userId: string; comment?: string }) => {
+    const params = this.buildSearchParams({ userId: data.userId, comment: data.comment });
+    const response = await this.authenticatedClient.patch(
+      `/admin-toggle-block-user?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
+  // Users - Cards Stats
+  getUsersCards = async (): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    blockedUsers: number;
+    newUsers: number;
+  }> => {
+    const response = await this.authenticatedClient.get(`/admin-users-cards`);
     return this.handleResponse(response);
   };
 
@@ -533,7 +580,6 @@ export default class APIRequest {
   };
 
   createCompetition = async (data: CreateCompetitionRequest) => {
-
     try {
       const response = await this.authenticatedClient.post(
         `/admin-create-competition`,
@@ -571,7 +617,7 @@ export default class APIRequest {
       return this.handleResponse(response);
     } catch (err: any) {
       console.error(
-        JSON.stringify("Error:", err.response.data.moreInfo.errors[0].message)
+        JSON.stringify("CompetitionParticipant Error:", err.response)
       );
     }
   };

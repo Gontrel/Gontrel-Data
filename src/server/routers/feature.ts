@@ -45,6 +45,7 @@ export const featureRouter = router({
     .mutation(async ({ input, ctx }) => {
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
+
         const res = await apiRequest.toggleFeatureFlagActive({
           featureFlagId: input.featureFlagId,
         });
