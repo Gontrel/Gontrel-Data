@@ -62,7 +62,7 @@ export const ResubmitRestaurant = ({
       if (restaurant) {
         try {
           const formattedHours = await formatOpeningHours(
-            restaurant.openingHours || []
+            restaurant?.openingHours || []
           );
           const updatedRestaurant = {
             ...restaurant,

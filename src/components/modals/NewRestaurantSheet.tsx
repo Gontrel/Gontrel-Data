@@ -68,6 +68,15 @@ export const NewRestaurantSheet = ({
     { enabled: !!selectedPlaceId && !!sessionToken }
   );
 
+  const { refetch: checkLocationExist } =
+    trpc.restaurant.checkLocationExist.useQuery(
+      {
+        name: selectedRestaurant?.name ?? "",
+        address: (selectedRestaurant?.address as string) ?? "",
+      },
+      { enabled: false }
+    );
+
   useEffect(() => {
     setSessionToken(generateSessionToken());
 
@@ -138,7 +147,7 @@ export const NewRestaurantSheet = ({
     }
   }, [placeDetailsData]);
 
-  const handleClose =useCallback( () => {
+  const handleClose = useCallback(() => {
     onOpenChange(false);
     setStep(1);
     setIsRestaurantConfirmed(false);
@@ -251,10 +260,16 @@ export const NewRestaurantSheet = ({
     [selectedRestaurant, isLoading, createAdminLocation, sessionToken]
   );
 
-  const handleOnNext = useCallback(() => {
+  const handleOnNext = useCallback(async () => {
+    if (!selectedRestaurant) return;
+    const { data } = await checkLocationExist();
+    if (!data?.valid) {
+      errorToast("This restaurant already exists");
+      return;
+    }
     setStep(2);
-    addRestaurantData(selectedRestaurant!);
-  }, [addRestaurantData, selectedRestaurant]);
+    addRestaurantData(selectedRestaurant);
+  }, [addRestaurantData, selectedRestaurant, checkLocationExist]);
 
   return (
     <Sheet

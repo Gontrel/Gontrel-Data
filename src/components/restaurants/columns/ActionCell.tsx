@@ -14,8 +14,9 @@ export const ActionCell = ({
   handleSendFeedback,
   handleSaveRestaurant,
 }: ActionCellProps) => {
-  const { manuallySentFeedback, markAsSent } = useFeedbackStore();
+  const { manuallySentFeedback } = useFeedbackStore();
   const { posts, address, menu, reservation, id, orderLink } = row.original;
+  const idKey = String(id);
 
   const hasRejected =
     posts.some((post) => post.status === ApprovalStatusEnum.REJECTED) ||
@@ -38,7 +39,7 @@ export const ActionCell = ({
     orderLink.status === ApprovalStatusEnum.APPROVED ||
     reservation.status === ApprovalStatusEnum.APPROVED;
 
-  const isFeedbackSent = manuallySentFeedback.has(id);
+  const isFeedbackSent = manuallySentFeedback.has(idKey);
 
   let label = "";
   let variant: "danger" | "primary" = "primary";
@@ -52,7 +53,7 @@ export const ActionCell = ({
     } else {
       label = "Send Feedback";
       variant = "danger";
-      disabled = false;
+      disabled = hasPending;
     }
   } else if (hasPending) {
     label = "Save";
@@ -70,9 +71,9 @@ export const ActionCell = ({
           onClick: () => {
             if (hasRejected && !isFeedbackSent) {
               handleSendFeedback(row.original);
-              markAsSent(id);
             } else if (hasApproved) {
               handleSaveRestaurant(row.original);
+              useFeedbackStore.getState().unmarkAsSent(id);
             }
           },
           variant,
