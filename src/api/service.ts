@@ -126,6 +126,15 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  // Check if a location already exists by name and address
+  checkLocationExist = async (data: { name: string; address: string }) => {
+    const params = this.buildSearchParams({ name: data.name, address: data.address });
+    const response = await this.authenticatedClient.get(
+      `/check-location-exist?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
   resetPassword = async (
     data: AdminResetPasswordRequest
   ): Promise<ResetPasswordResponse> => {
@@ -220,15 +229,6 @@ export default class APIRequest {
     const response = await this.authenticatedClient.put(
       `/admin-bulk-approve-location`,
       data
-    );
-    return this.handleResponse(response);
-  };
-
-  // getAnalystLocations
-  getAnalystLocations = async (data: FetchAnalystLocationsRequest) => {
-    const params = this.buildSearchParams(data);
-    const response = await this.authenticatedClient.get(
-      `/admin-analyst-locations?${params.toString()}`
     );
     return this.handleResponse(response);
   };

@@ -290,6 +290,7 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   tagId: z.string().optional(),
   sortBy: z.string().optional(),
   sortOrder: z.string().optional(),
+  includeRejected: z.boolean().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
 
   isVerified: z.boolean().optional(),
@@ -528,4 +529,9 @@ export const createFeatureFlagSchema = z.object({
 
 export const toggleFeatureFlagSchema = z.object({
   featureFlagId: z.string(),
+});
+
+export const checkLocationExistSchema = z.object({
+  name: z.string().min(1),
+  address: z.string().min(1),
 });

@@ -31,6 +31,7 @@ export const LivePostCard = ({
   className = "min-w-[530px]",
   RestaurantDetailsFlow = false,
 }: LivePostCardProps) => {
+
   const isUser = post?.source === AdminRoleEnum.USER;
   const showEditAndDelete =
     RestaurantDetailsFlow && post?.status === ApprovalStatusEnum.APPROVED;
@@ -93,14 +94,18 @@ export const LivePostCard = ({
         </p>
         <p>
           Uploaded by:{" "}
-          {isUser ? (
+          {isUser && (
             <span className="flex flex-wrap mr-2">
               {" "}
               {post?.user?.displayName} (User){" "}
             </span>
-          ) : (
-            <span className="flex flex-wrap mr-2"> {post?.admin?.name}</span>
-          )}{" "}
+          )}
+          {!isUser && (
+            <span className="flex flex-wrap mr-2">
+              {" "}
+              {post?.admin?.name ?? restaurant?.adminName}
+            </span>
+          )}
         </p>
         <p className="ml-auto">{}</p>
 

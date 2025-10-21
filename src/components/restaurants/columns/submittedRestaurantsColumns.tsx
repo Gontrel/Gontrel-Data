@@ -60,7 +60,6 @@ export const createSubmittedRestaurantsColumns = (
     header: () => <TableHeader iconName="videoIcon" title="Video" />,
     cell: ({ row }) => {
       const posts = row.original.posts;
-
       return (
         <div className="flex flex-col gap-y-2 w-fit">
           <PillButton

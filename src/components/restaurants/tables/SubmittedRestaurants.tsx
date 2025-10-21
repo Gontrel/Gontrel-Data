@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
@@ -18,6 +19,7 @@ import {
 import { Post } from "@/interfaces/posts";
 import { ResubmitRestaurant } from "../analysts/ResubmitRestaurant";
 import { successToast } from "@/utils/toast";
+import { useFeedbackStore } from "@/stores/feedbackStore";
 import { GenericTable } from "@/components/tables/GenericTable";
 
 // =============================================================================
@@ -144,7 +146,7 @@ const SubmittedRestaurants = ({
 
   const restaurants = useMemo(() => {
     const baseRestaurants = queryData?.data || [];
-    return baseRestaurants.map((restaurant) => {
+    return baseRestaurants.map((restaurant: any) => {
       // Create a copy of the restaurant with potential updates
       const updatedRestaurant = { ...restaurant };
 
@@ -166,7 +168,7 @@ const SubmittedRestaurants = ({
       });
 
       // Check for post-level changes
-      updatedRestaurant.posts = updatedRestaurant.posts.map((post) => {
+      updatedRestaurant.posts = updatedRestaurant.posts.map((post: any) => {
         const postChangeKey = `${restaurant.id}-post-${post.id}`;
         const postPendingChange = pendingChanges.get(postChangeKey);
         if (postPendingChange) {
@@ -182,7 +184,7 @@ const SubmittedRestaurants = ({
       const postsChangeKey = `${restaurant.id}-posts`;
       const postsPendingChange = pendingChanges.get(postsChangeKey);
       if (postsPendingChange) {
-        updatedRestaurant.posts = updatedRestaurant.posts.map((post) => ({
+        updatedRestaurant.posts = updatedRestaurant.posts.map((post: any) => ({
           ...post,
           status: postsPendingChange.newStatus,
         }));
@@ -194,7 +196,7 @@ const SubmittedRestaurants = ({
 
   const restaurant: GontrelRestaurantDetailedData = useMemo(() => {
     const currentRestaurant = restaurants.find(
-      (restaurant) => restaurant.id === videoPreview.currentRestaurantId
+      (restaurant: any) => restaurant.id === videoPreview.currentRestaurantId
     );
     return currentRestaurant
       ? {
@@ -230,8 +232,12 @@ const SubmittedRestaurants = ({
 
   const handleOnsubmitted = useCallback(async () => {
     await refetch();
+    // Clear any 'Sent Feedback' marker for this restaurant after analyst resubmits
+    if (restaurantId) {
+      useFeedbackStore.getState().unmarkAsSent(String(restaurantId));
+    }
     successToast("Posts list updated");
-  }, [refetch]);
+  }, [refetch, restaurantId]);
 
   // ---------------------------------------------------------------------------
   // RENDER

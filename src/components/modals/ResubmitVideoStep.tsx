@@ -64,14 +64,6 @@ export const ResubmitVideoStepStep = ({
       { enabled: false }
     );
 
-  const {
-    refetch: validateTikTokRetech,
-    isLoading: isLoadingTiktokValidation,
-  } = trpc.external.validateTikTokLink.useQuery(
-    { link: debouncedUrl },
-    { enabled: false }
-  );
-
   const { mutate: updatePost, isPending: isLoadingUpdate } =
     trpc.post.updatePost.useMutation({
       onSuccess: () => {
@@ -125,13 +117,6 @@ export const ResubmitVideoStepStep = ({
       );
 
       if (debouncedUrl && match) {
-        const validUrlTiktok = await validateTikTokRetech();
-
-        if (!validUrlTiktok?.data?.valid) {
-          errorToast("Tiktok link already exist");
-          return;
-        }
-
         try {
           const { data } = await refetch();
           if (data && data.play) {
@@ -159,7 +144,6 @@ export const ResubmitVideoStepStep = ({
   }, [
     editingVideoId,
     debouncedUrl,
-    validateTikTokRetech,
     refetch,
     setActiveVideoUrl,
     setTiktokUsername,
@@ -297,8 +281,21 @@ export const ResubmitVideoStepStep = ({
       updateVideo(editingVideoId, videoData);
       setEditingVideoId(null);
 
+      const updatePayload = {
+        locationId: payload.locationId,
+        postId: editingVideoId,
+        ...(payload.videoUrl && { videoUrl: payload.videoUrl }),
+        ...(payload.tiktokLink && { tiktokLink: payload.tiktokLink }),
+        ...(payload.thumbUrl && { thumbUrl: payload.thumbUrl }),
+        ...(typeof payload.isFoodVisible === "boolean" && {
+          isFoodVisible: payload.isFoodVisible,
+        }),
+        ...(payload.visibleFood && { visibleFood: payload.visibleFood }),
+        ...(payload.tags?.length ? { tags: payload.tags } : {}),
+      };
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await updatePost(payload as any);
+      updatePost(updatePayload as any);
       shouldResubmit++;
       return;
     }
@@ -317,7 +314,7 @@ export const ResubmitVideoStepStep = ({
       ],
     };
 
-    await createBulkPost(createBulkPostData);
+    createBulkPost(createBulkPostData);
   };
 
   const handleSetFoodVisibility = (checked: boolean) => {
@@ -375,14 +372,14 @@ export const ResubmitVideoStepStep = ({
         </div>
       )}
 
-      {isLoadingTiktokValidation && (
+      {/* {isLoadingTiktokValidation && (
         <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center">
             <Loader className="animate-spin w-8 h-8 text-[#0070F3]" />
             <p className="mt-3 text-gray-700">Validating TikTok video...</p>
           </div>
         </div>
-      )}
+      )} */}
 
       {isLoadingPostCreated && (
         <div className="absolute inset-0 bg-transparent bg-opacity-20 z-10 rounded-lg flex items-center justify-center">
@@ -490,7 +487,7 @@ export const ResubmitVideoStepStep = ({
                 </div>
               }
 
-              {
+              {currentVideo.isFoodVisible && (
                 <div>
                   <label
                     htmlFor="food-type"
@@ -509,7 +506,7 @@ export const ResubmitVideoStepStep = ({
                     />
                   </div>
                 </div>
-              }
+              )}
 
               {(editingVideoId || videos?.length >= 0) && (
                 <div className="mt-6 pt-4 flex justify-left">
