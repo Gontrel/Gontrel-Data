@@ -1,16 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { publicProcedure, protectedProcedure, router } from "@/lib/trpc";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { TRPCError } from "@trpc/server";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { z } from "zod";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import APIRequest from "@/api/service";
 import { AxiosError } from "axios";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AdminRoleEnum, ApprovalStatusEnum } from "@/types/enums";
+import { createCompetitionSchema, fetchCompetitionByIdSchema, fetchCompetitionParticipantsSchema, fetchCompetitionsSchema, toggleCompetitionActiveSchema } from "./schemas";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
     const data = error.response?.data;
@@ -141,4 +139,88 @@ export const adminRouter = router({
   //       });
   //     }
   //   }),
+  getCompetitions: protectedProcedure
+    .input(fetchCompetitionsSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.getCompetitions(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+
+  getCompetitionById: protectedProcedure
+    .input(fetchCompetitionByIdSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.getCompetitionById(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+    getCompetitionParticipants: protectedProcedure
+  .input(fetchCompetitionParticipantsSchema)
+  .query(async ({ input, ctx }) => {
+    const apiRequest = new APIRequest(ctx.req.headers);
+    try {
+      const response = await apiRequest.getCompetitionParticipants(input);
+      return response;
+    } catch (error) {
+      const message = getErrorMessage(error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message,
+      });
+    }
+  }),
+
+      createCompetition: protectedProcedure
+    .input(createCompetitionSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.createCompetition(input);
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+toggleCompetitionActive: protectedProcedure
+  .input(toggleCompetitionActiveSchema)
+  .mutation(async ({ input, ctx }) => {
+    const apiRequest = new APIRequest(ctx.req.headers);
+    try {
+      const response = await apiRequest.toggleCompetitionActive(input);
+      return response;
+    } catch (error) {
+      const message = getErrorMessage(error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message,
+      });
+    }
+  }),
 });
+
+
+
+

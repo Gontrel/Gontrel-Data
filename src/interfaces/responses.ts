@@ -411,3 +411,70 @@ export interface CreateAdminResponse {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GetReportedVideosResponse
   extends IPaginatedRes<ReportedPostDataItem> {}
+
+export interface GetNotificationResponse
+  extends IPaginatedRes<{
+    id: string;
+  }> {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt?: null | string;
+  deletedBy?: null | string;
+  updatedBy?: null | string;
+  firebaseId?: null | string;
+  userId: string;
+  action: string;
+  nextAction?: null | string;
+  icon?: string;
+  title: string;
+  content: string;
+  sender?: string;
+  isRead?: boolean;
+  type: string;
+}
+
+
+export interface GetNotificationResponse
+  extends IPaginatedRes<{
+    id: string;
+  }> {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt?: null | string;
+  deletedBy?: null | string;
+  updatedBy?: null | string;
+  firebaseId?: null | string;
+  userId: string;
+  action: string;
+  nextAction?: null | string;
+  icon?: string;
+  title: string;
+  content: string;
+  sender?: string;
+  isRead?: boolean;
+  type: string;
+}
+
+// Competitions
+export interface CompetitionItem {
+  id: string;
+  createdAt: string;
+  modifiedAt: string;
+  deletedAt: string | null;
+  deletedBy: string | null;
+  updatedBy: string | null;
+  firebaseId: string | null;
+  title: string;
+  totalParticipants: number | null;
+  eligibleQualifiers: number | null;
+  eligibleWinners: number | null;
+  type: string; // e.g., "referral"
+  startDate: string; // ISO
+  endDate: string; // ISO
+  isActive: boolean;
+}
+
+export type GetCompetitionsResponse = IPaginatedRes<CompetitionItem>;
+

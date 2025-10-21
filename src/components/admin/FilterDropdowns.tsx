@@ -5,7 +5,7 @@ import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import { AdminRoleEnum, ManagerTableTabsEnum } from "@/types/enums";
 import { type DateRangeValue } from "@/utils/dateRange";
 import { useCurrentUser } from "@/stores/authStore";
-import { statusOptions } from "@/constants";
+import { competitionStatusOptions, messageStatusOptions, statusOptions } from "@/constants";
 
 /**
  * Props for FilterDropdowns component
@@ -83,20 +83,46 @@ export function FilterDropdowns({
   return (
     <div className="flex items-center gap-4.5">
       {/* Analyst/User Filter (only when NOT active videos) */}
-      {optionsWithAll && optionsWithAll.length > 0 && !isAnalyst && (
-        <DropdownFilter
-          options={optionsWithAll}
-          value={selectedUser}
-          onChange={onUserChange}
-          placeholder="All analysts"
-          icon={personIcon}
-          className="w-48"
-        />
-      )}
+      {optionsWithAll &&
+        optionsWithAll.length > 0 &&
+        !isAnalyst &&
+        activeTab !== "messages" &&
+        activeTab !== "competitions" && (
+          <DropdownFilter
+            options={optionsWithAll}
+            value={selectedUser}
+            onChange={onUserChange}
+            placeholder="All analysts"
+              icon={personIcon}
+              className="w-48"
+            />
+          )}
 
       {activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS && (
         <DropdownFilter
           options={statusOptions}
+          value={selectedStatus}
+          onChange={onStatusChange}
+          placeholder="All statuses"
+          icon={statusIcon}
+          className="w-48"
+        />
+      )}
+
+      {activeTab === "messages" && (
+        <DropdownFilter
+          options={messageStatusOptions}
+          value={selectedStatus}
+          onChange={onStatusChange}
+          placeholder="All statuses"
+          icon={statusIcon}
+          className="w-48"
+        />
+      )}
+
+      {activeTab === "competitions" && (
+        <DropdownFilter
+          options={competitionStatusOptions}
           value={selectedStatus}
           onChange={onStatusChange}
           placeholder="All statuses"

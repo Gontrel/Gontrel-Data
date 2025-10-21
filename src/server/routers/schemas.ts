@@ -2,6 +2,7 @@ import {
   ApprovalStatusEnum,
   ApprovalType,
   DayOfTheWeek,
+  NotificationTypeEnum,
   RestaurantTypeEnum,
 } from "@/types/enums";
 import { z } from "zod";
@@ -48,7 +49,7 @@ export const createAdminSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(2).max(100),
   lastName: z.string().min(2).max(100),
-  city: z.string().min(2).max(100),
+  city: z.string().min(2).max(100).optional(),
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
   role: z.string(),
@@ -289,6 +290,7 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   tagId: z.string().optional(),
   sortBy: z.string().optional(),
   sortOrder: z.string().optional(),
+  includeRejected: z.boolean().optional(),
   status: z.enum(ApprovalStatusEnum).optional(),
 
   isVerified: z.boolean().optional(),
@@ -442,6 +444,68 @@ export const placeDetailsSchema = z.object({
   sessionToken: z.string().min(1),
 });
 
+/**
+ * Notification Schemas
+ */
+
+/**
+ * POST /admin-post - CreatePostRequest
+ */
+export const createNotificationSchema = z.object({
+  userIds: z.array(z.string()).optional(),
+  message: z.string().min(1),
+  locationId: z.string().optional(),
+  all: z.boolean(),
+  type: z.string().optional(),
+  title: z.string().min(1),
+  notificationType: z.enum(NotificationTypeEnum),
+});
+
+export const fetchNotificationsSchema = baseQuerySchema.extend({
+  type: z.string().optional(),
+  notificationType: z.enum(NotificationTypeEnum).optional(),
+});
+
+// Competitions
+export const fetchCompetitionsSchema = baseQuerySchema.extend({
+  isActive: z.boolean().optional(),
+});
+
+export const createCompetitionSchema = z.object({
+  title: z.string().min(1),
+  type: z.string().min(1),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  eligibleWinners: z.number().optional(),
+  eligibleQualifiers: z.number().optional(),
+  totalParticipants: z.number().optional(),
+  aggregation: z.string().optional(),
+  aggregationValue: z.number().optional(),
+});
+
+export const fetchCompetitionByIdSchema = z.object({
+  competitionId: z.string().uuid(),
+});
+
+export const fetchCompetitionParticipantsSchema = baseQuerySchema.extend({});
+
+export const toggleCompetitionActiveSchema = z.object({
+  competitionId: z.string().uuid(),
+  winners: z.array(z.string()),
+});
+
+// ============================================================================
+// ERROR LOGGING SCHEMAS
+// ============================================================================
+
+/**
+ * Error Log Schemas
+ */
+export const createErrorLogSchema = z.object({
+  userId: z.string().optional(),
+  log: z.string().min(1),
+});
+
 // ============================================================================
 // HELPER SCHEMAS (for reusability)
 // ============================================================================
@@ -453,3 +517,21 @@ export const fetchPendingUserVideosSchema = fetchAdminPostsSchema.extend({});
 export const fetchReportedVideosSchema = fetchReportedVideosBaseSchema.extend(
   {}
 );
+
+// Feature Flags
+export const fetchFeatureFlagsSchema = baseQuerySchema.extend({
+  environment: z.string().optional(),
+});
+
+export const createFeatureFlagSchema = z.object({
+  name: z.string().min(1),
+});
+
+export const toggleFeatureFlagSchema = z.object({
+  featureFlagId: z.string(),
+});
+
+export const checkLocationExistSchema = z.object({
+  name: z.string().min(1),
+  address: z.string().min(1),
+});

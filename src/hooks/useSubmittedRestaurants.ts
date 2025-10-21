@@ -40,7 +40,7 @@ export const useSubmittedRestaurants = ({
     isLoading,
     error,
     refetch,
-  } = trpc.restaurant.getAnalystRestaurants.useQuery({
+  } = trpc.restaurant.getRestaurants.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
     status: ApprovalStatusEnum.PENDING,

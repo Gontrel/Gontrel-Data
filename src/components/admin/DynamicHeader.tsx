@@ -42,12 +42,30 @@ const headerConfigs: Record<string, HeaderConfig> = {
     description: "Manage staff accounts and permissions.",
     showBackButton: false,
   },
+  // Sub routes
   "/settings": {
     title: "Settings",
     description: "Manage application settings.",
     showBackButton: false,
   },
-  // Sub routes
+  "/messages": {
+    title: "Messages",
+    description: "Communicate with your users here.",
+    showBackButton: false,
+  },
+  "/competitions": {
+    title: "Competitions",
+    description: "Manage competitions and events.",
+    showBackButton: false,
+  },
+  
+  "/features": {
+    title: "Feature Flagging",
+    description: "Manage what feature is live",
+    showBackButton: false,
+  },
+
+  // sub routes
   "/restaurants/**": {
     title: "Back",
     description: "",
@@ -68,6 +86,16 @@ const headerConfigs: Record<string, HeaderConfig> = {
     description: "",
     showBackButton: true,
   },
+  "/messages/**": {
+    title: "Back",
+    description: "",
+    showBackButton: true,
+  },
+  "/competitions/**": {
+    title: "Back",
+    description: "",
+    showBackButton: true,
+  },
 };
 
 const getConfigForPath = (path: string): HeaderConfig => {
@@ -77,6 +105,8 @@ const getConfigForPath = (path: string): HeaderConfig => {
   if (path.startsWith("/staffs/")) return headerConfigs["/staffs/**"];
   if (path.startsWith("/users/")) return headerConfigs["/users/**"];
   if (path.startsWith("/settings/")) return headerConfigs["/settings/**"];
+  if (path.startsWith("/messages/")) return headerConfigs["/messages/**"];
+  if (path.startsWith("/competitions/")) return headerConfigs["/competitions/**"];
 
   return {
     title: "Admin",

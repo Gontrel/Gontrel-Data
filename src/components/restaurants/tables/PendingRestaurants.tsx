@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
 import { GenericTable } from "@/components/tables/GenericTable";
@@ -9,6 +9,7 @@ import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsCo
 // Store and API
 import { usePendingRestaurants } from "@/hooks/usePendingRestaurants";
 import { usePendingRestaurantsStore } from "@/stores/tableStore";
+import { useFeedbackStore } from "@/stores/feedbackStore";
 import { trpc } from "@/lib/trpc-client";
 
 // Types and enums
@@ -26,7 +27,6 @@ import {
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
 import { Post } from "@/interfaces/posts";
-import { useFeedbackStore } from "@/stores/feedbackStore";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -93,9 +93,7 @@ const PendingRestaurants = ({
     declineRestaurant,
   } = usePendingRestaurantsStore();
 
-  useEffect(() => {
-    useFeedbackStore.getState().clearFeedback();
-  }, []);
+  // preserve sent feedback state across mounts to keep UI label after refresh
 
   const [feedbackModal, setFeedbackModal] = useState<FeedbackModalState>({
     isOpen: false,
@@ -185,7 +183,7 @@ const PendingRestaurants = ({
         locationId,
         type: ApprovalType.POST,
         status: ApprovalStatusEnum.REJECTED,
-        comment,
+        ...(comment && { comment }),
       });
       refetch();
     },
@@ -277,6 +275,7 @@ const PendingRestaurants = ({
         },
       ],
     });
+    useFeedbackStore.getState().markAsSent(String(restaurant.id));
     closeFeedbackModal();
     refetch();
   }, [feedbackModal, closeFeedbackModal, bulkApproveRestaurantStatus, refetch]);

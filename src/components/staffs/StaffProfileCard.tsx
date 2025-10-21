@@ -24,7 +24,7 @@ const StaffProfileCard: React.FC<StaffProfileCardProps> = ({
   isStaffActive,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-6 h-[406px]">
+    <div className="bg-white rounded-[30px] shadow p-6 h-[406px]">
       <div className="flex items-center gap-4">
         <Image
           src={profileImage}

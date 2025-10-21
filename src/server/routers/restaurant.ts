@@ -11,6 +11,7 @@ import {
   bulkApproveRestaurantStatusSchema,
   approveRestaurantStatusSchema,
   locationIdSchema,
+  checkLocationExistSchema,
 } from "./schemas";
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -37,6 +38,23 @@ export const restaurantRouter = router({
       try {
         const response = await apiRequest.getRestaurants(input);
 
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  // Check if location exists (protected)
+  checkLocationExist: protectedProcedure
+    .input(checkLocationExistSchema)
+    .query(async ({ input, ctx }) => {
+      const apiRequest = new APIRequest(ctx.req.headers);
+      try {
+        const response = await apiRequest.checkLocationExist(input);
         return response;
       } catch (error) {
         const message = getErrorMessage(error);
@@ -187,19 +205,19 @@ export const restaurantRouter = router({
   //   }),
 
   // Get analyst locations (restaurants for analysts) (protected)
-  getAnalystLocations: protectedProcedure
-    .input(fetchAnalystLocationsSchema)
-    .query(async ({ input }) => {
-      const apiRequest = new APIRequest();
-      try {
-        const response = await apiRequest.getAnalystLocations(input);
-        return response;
-      } catch (error) {
-        const message = getErrorMessage(error);
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message,
-        });
-      }
-    }),
+  // getAnalystLocations: protectedProcedure
+  //   .input(fetchAnalystLocationsSchema)
+  //   .query(async ({ input }) => {
+  //     const apiRequest = new APIRequest();
+  //     try {
+  //       const response = await apiRequest.getAnalystLocations(input);
+  //       return response;
+  //     } catch (error) {
+  //       const message = getErrorMessage(error);
+  //       throw new TRPCError({
+  //         code: "INTERNAL_SERVER_ERROR",
+  //         message,
+  //       });
+  //     }
+  //   }),
 });
