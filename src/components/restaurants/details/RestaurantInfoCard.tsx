@@ -17,6 +17,8 @@ export const RestaurantInfoCard = ({
   const isDine = restaurant?.orderType === RestaurantTypeEnum.DINE;
   const isBoth = restaurant?.orderType === RestaurantTypeEnum.BOTH;
 
+  console.log(restaurant, "restaurant");
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <div className="flex items-center gap-4 mb-6">
@@ -43,6 +45,9 @@ export const RestaurantInfoCard = ({
           </p>
           <p className="text-sm text-gray-500">
             Created on: {formatRestaurantTime(restaurant?.createdAt ?? "")}
+          </p>
+          <p className="text-sm text-gray-500">
+            Approved on: {formatRestaurantTime(restaurant?.approvalDate ?? "")}
           </p>
         </div>
         {!isActive && (
