@@ -111,6 +111,7 @@ export const postRouter = router({
       const apiRequest = new APIRequest(ctx.req.headers);
       try {
         const response = await apiRequest.getGroupedPostsSubmissions(input);
+        console.log(response, "responseresponse");
         return response;
       } catch (error) {
         const message = getErrorMessage(error);

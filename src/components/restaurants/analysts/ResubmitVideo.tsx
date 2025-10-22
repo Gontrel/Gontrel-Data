@@ -70,7 +70,7 @@ export const ResubmitVideo = ({
             address: locationFromPost?.address ?? "",
             website: locationFromPost?.website ?? "",
             workingHours: formattedHours,
-            comment: locationFromPost?.comment ?? "",
+            comment: posts?.data?.[0]?.comment,
             url: locationFromPost?.website ?? "",
             lat: locationFromPost?.lat,
             lng: locationFromPost?.lng,
