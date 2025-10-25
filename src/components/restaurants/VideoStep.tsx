@@ -49,6 +49,7 @@ export const VideoStep = ({
   });
 
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
+  const [validUrlTiktok, setValidUrlTiktok] = useState<boolean>(false);
 
   // Debounce the URL input to avoid excessive API calls
   const debouncedUrl = useDebounce(currentVideo.url, 1000);
@@ -77,6 +78,7 @@ export const VideoStep = ({
 
       if (debouncedUrl && match) {
         const validUrlTiktok = await validateTikTokRetech();
+        setValidUrlTiktok(validUrlTiktok?.data?.valid);
 
         if (!validUrlTiktok?.data?.valid) {
           errorToast("Tiktok link already exist");
@@ -98,7 +100,6 @@ export const VideoStep = ({
             errorToast("Could not retrieve video information from this URL.");
           }
         } catch {
-    
           errorToast(
             "Failed to fetch TikTok video information. Please check the URL."
           );
@@ -223,7 +224,6 @@ export const VideoStep = ({
     if (editingVideoId) {
       updateVideo(editingVideoId, videoData);
     } else {
-
       addVideo(videoData);
     }
 
@@ -414,7 +414,7 @@ export const VideoStep = ({
               </div>
             }
 
-            {
+            {currentVideo.isFoodVisible && (
               <div>
                 <label
                   htmlFor="food-type"
@@ -424,7 +424,7 @@ export const VideoStep = ({
                 </label>
                 <div className="relative mt-3">
                   <input
-                    type="url"
+                    type="text"
                     id="food-type"
                     placeholder="Enter food here"
                     className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0070F3]"
@@ -433,7 +433,7 @@ export const VideoStep = ({
                   />
                 </div>
               </div>
-            }
+            )}
 
             {editingVideoId && videos?.length >= 0 ? (
               <div className="mt-6 pt-4 flex justify-left">
@@ -489,7 +489,7 @@ export const VideoStep = ({
         <Button
           onClick={handleOnSubmit}
           type="submit"
-          disabled={shouldDisable}
+          disabled={shouldDisable || !validUrlTiktok}
           loading={isLoading}
           className={`w-full py-3 rounded-lg font-semibold transition-colors flex items-center justify-center ${
             shouldDisable

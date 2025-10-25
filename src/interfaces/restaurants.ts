@@ -61,6 +61,7 @@ export interface Restaurant {
   lng: number;
   menu?: Menu;
   name: string;
+  approvalDate?: string;
   openingHours: OpeningHour[];
   photos: string[];
   priceLevel: number;
@@ -122,6 +123,7 @@ export interface Location {
   lng: number;
   menu: Menu;
   name: string;
+  approvalDate?: string;
   openingHours: OpeningHour[];
   photos: string[];
   phoneNumber: string | null;
@@ -149,6 +151,7 @@ export interface GontrelRestaurantData {
   admin?: Admin;
   user?: Admin;
   createdAt?: string;
+  approvalDate?: string;
   reservation?: string | Reservation;
   orderLink?: string | OrderLink;
   website?: string;

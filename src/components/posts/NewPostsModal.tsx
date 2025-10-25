@@ -8,6 +8,7 @@ import { errorToast, successToast } from "@/utils/toast";
 import { useVideoStore } from "@/stores/videoStore";
 import { CreateBulkPostRequest } from "@/interfaces/requests";
 import { Restaurant, VideoData } from "@/interfaces/restaurants";
+import { useCallback } from "react";
 
 interface NewPostsSheetProps {
   open: boolean;
@@ -61,11 +62,11 @@ export const NewPostSheet = ({
     createBulkPost(createBulkPostData);
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     onOpenChange(false);
     setActiveVideoUrl(null);
     resetVideos();
-  };
+  }, [onOpenChange, setActiveVideoUrl, resetVideos]);
 
   return (
     <Sheet

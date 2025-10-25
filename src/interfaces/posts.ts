@@ -11,6 +11,8 @@ export interface Post {
   deletedBy?: string;
   updatedBy?: string;
   firebaseId?: string;
+  comment?: string;
+  approvalDate?: string;
   analytics?: Analytics;
   submissionDate?: string;
   visibleFood?: string;
