@@ -128,7 +128,7 @@ export default class APIRequest {
 
   // Check if a location already exists by name and address
   checkLocationExist = async (data: { name: string; address: string }) => {
-    const params = this.buildSearchParams({ name: data.name, address: data.address });
+    const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/check-location-exist?${params.toString()}`
     );
@@ -433,7 +433,10 @@ export default class APIRequest {
 
   // Toggle block/unblock user
   toggleUserBlock = async (data: { userId: string; comment?: string }) => {
-    const params = this.buildSearchParams({ userId: data.userId, comment: data.comment });
+    const params = this.buildSearchParams({
+      userId: data.userId,
+      comment: data.comment,
+    });
     const response = await this.authenticatedClient.patch(
       `/admin-toggle-block-user?${params.toString()}`
     );
