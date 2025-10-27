@@ -17,8 +17,6 @@ export const RestaurantInfoCard = ({
   const isDine = restaurant?.orderType === RestaurantTypeEnum.DINE;
   const isBoth = restaurant?.orderType === RestaurantTypeEnum.BOTH;
 
-  console.log(restaurant, "restaurant");
-
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm">
       <div className="flex items-center gap-4 mb-6">
