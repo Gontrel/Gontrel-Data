@@ -128,10 +128,11 @@ export default class APIRequest {
 
   // Check if a location already exists by name and address
   checkLocationExist = async (data: { name: string; address: string }) => {
-    const params = this.buildSearchParams(data); 
+    const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/check-location-exist?${params.toString()}`
     );
+
     return this.handleResponse(response);
   };
 
