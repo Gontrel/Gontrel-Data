@@ -42,6 +42,7 @@ export enum AnalystTableTabsEnum {
   ACTIVE_RESTAURANTS = "activeRestaurants",
   SUBMITTED_RESTAURANTS = "submittedRestaurants",
   SUBMITTED_VIDEOS = "submittedVideos",
+  COMMENTED_RESTAURANTS = "commentedRestaurants",
 }
 
 export enum CompetitionTableTabsEnum {

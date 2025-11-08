@@ -58,7 +58,7 @@ const headerConfigs: Record<string, HeaderConfig> = {
     description: "Manage competitions and events.",
     showBackButton: false,
   },
-  
+
   "/features": {
     title: "Feature Flagging",
     description: "Manage what feature is live",
@@ -106,7 +106,8 @@ const getConfigForPath = (path: string): HeaderConfig => {
   if (path.startsWith("/users/")) return headerConfigs["/users/**"];
   if (path.startsWith("/settings/")) return headerConfigs["/settings/**"];
   if (path.startsWith("/messages/")) return headerConfigs["/messages/**"];
-  if (path.startsWith("/competitions/")) return headerConfigs["/competitions/**"];
+  if (path.startsWith("/competitions/"))
+    return headerConfigs["/competitions/**"];
 
   return {
     title: "Admin",
@@ -192,7 +193,7 @@ export function DynamicHeader() {
             </Button>
           )}
 
-        <NotificationBell count={0} />
+        <NotificationBell count={3} />
         <UserProfile />
       </div>
     </header>

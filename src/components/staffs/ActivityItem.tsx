@@ -5,7 +5,7 @@ import { Post, Location } from "@/interfaces";
 import { useRouter } from "next/navigation";
 import { formatPostTime } from "@/lib/utils";
 
-type ActivityType = "LOCATION" | "POST" | "PASSWORD_CHANGE";
+type ActivityType = "LOCATION" | "POST" | "PASSWORD_CHANGE" | string;
 
 interface ActivityItemProps {
   type: ActivityType;
@@ -52,9 +52,18 @@ const ActivityItem: React.FC<ActivityItemProps> = ({
               {content}
             </p>
           )}
+
           {type === "PASSWORD_CHANGE" && (
             <p className="font-medium break-words"> {content}</p>
           )}
+
+          {type !== "LOCATION" &&
+            type !== "POST" &&
+            type !== "PASSWORD_CHANGE" && (
+              <p className="font-medium text-lg text-[#2E3032] leading-[100%] break-words">
+                {content}
+              </p>
+            )}
         </div>
         <p className="text-sm text-gray-500 ml-4 shrink-0">
           {formatPostTime(timestamp)}

@@ -9,6 +9,7 @@ import { usePendingVideos } from "./usePendingVideos";
 import { useActiveRestaurants } from "./useActiveRestaurants";
 import { useSubmittedRestaurants } from "./useSubmittedRestaurants";
 import { useSubmittedVideos } from "./useSubmittedVideos";
+import { useCommentedRestaurants } from "./useCommentedRestaurants";
 import { useActiveStaffs } from "./useActiveStaffs";
 import { useDeactivatedStaffs } from "./useDeactivatedStaffs";
 import { TabState } from "@/interfaces";
@@ -45,6 +46,24 @@ export const useTableTotals = (
     adminId:
       tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.selectedAnalyst ||
       undefined,
+  });
+
+  // Fetch commented restaurants total (analyst)
+  const { queryData: commentedRestaurantsTotal } = useCommentedRestaurants({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm:
+      tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS]?.searchTerm || "",
+    startDate:
+      tabStates[
+        AnalystTableTabsEnum.COMMENTED_RESTAURANTS
+      ]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
   });
 
   // Fetch pending videos total with tab-specific search
@@ -158,7 +177,7 @@ export const useTableTotals = (
   });
 
   // Fetch active staffs total with tab-specific search
-  const { queryData: activeStaffsTotal } = useActiveStaffs({
+  const { queryData: _activeStaffsTotal } = useActiveStaffs({
     currentPage: 1,
     pageSize: 1,
     searchTerm: tabStates[StaffTableTabsEnum.ACTIVE_STAFF]?.searchTerm || "",
@@ -173,7 +192,7 @@ export const useTableTotals = (
   });
 
   // Fetch deactivated staffs total with tab-specific search
-  const { queryData: deactivatedStaffsTotal } = useDeactivatedStaffs({
+  const { queryData: _deactivatedStaffsTotal } = useDeactivatedStaffs({
     currentPage: 1,
     pageSize: 1,
     searchTerm:
@@ -188,7 +207,7 @@ export const useTableTotals = (
         .split("T")[0] || undefined,
   });
 
-  const { queryData: reportedVideosTotal } = useReportedVideos({
+  const { queryData: _reportedVideosTotal } = useReportedVideos({
     status: tabStates[ReportTableTabsEnum.REPORTED_VIDEOS]?.status ?? undefined,
     currentPage: 1,
     pageSize: 10,
@@ -213,22 +232,13 @@ export const useTableTotals = (
 
     const responseObj = response as Record<string, unknown>;
 
-    // Handle different response structures
     if (responseObj.pagination && typeof responseObj.pagination === "object") {
       const pagination = responseObj.pagination as Record<string, unknown>;
-      if (typeof pagination.total === "number") {
-        return pagination.total;
-      }
+      if (typeof pagination.total === "number") return pagination.total;
     }
-
-    if (typeof responseObj.total === "number") {
-      return responseObj.total;
-    }
-
-    if (responseObj.data && Array.isArray(responseObj.data)) {
+    if (typeof responseObj.total === "number") return responseObj.total;
+    if (responseObj.data && Array.isArray(responseObj.data))
       return responseObj.data.length;
-    }
-
     return 0;
   };
 
@@ -240,21 +250,21 @@ export const useTableTotals = (
     submittedRestaurantsTotal
   );
   const submittedVideosCount = getTotalFromResponse(submittedVideosTotal);
-  const activeStaffsCount = getTotalFromResponse(activeStaffsTotal);
-  const deactivatedStaffsCount = getTotalFromResponse(deactivatedStaffsTotal);
+  const commentedRestaurantsCount = getTotalFromResponse(
+    commentedRestaurantsTotal
+  );
   const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
-  const reportedVideosCount = getTotalFromResponse(reportedVideosTotal);
 
-  return {
+  const totals: Record<ManagerTableTabsEnum | AnalystTableTabsEnum, number> = {
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsCount,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: activeVideosCount,
+    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsCount,
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
-    [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,
-    [StaffTableTabsEnum.DEACTIVATED_STAFF]: deactivatedStaffsCount,
-    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
-    [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount,
+    [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]: commentedRestaurantsCount,
   };
+
+  return totals;
 };

@@ -33,7 +33,7 @@ export const ConfirmationModal = ({
   comment = "",
   onCommentChange = () => {},
   onConfirm,
-  confirmLabel = "Send feedback",
+  confirmLabel = "feedback sent",
   cancelLabel = "Cancel",
   showCommentField = true,
   commentPlaceholder = "Add comment here",

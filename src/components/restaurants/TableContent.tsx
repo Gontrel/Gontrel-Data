@@ -11,6 +11,7 @@ import SubmittedRestaurants from "./tables/SubmittedRestaurants";
 import SubmittedVideos from "./tables/SubmittedVideos";
 import PendingUserVideos from "./tables/PendingUserVideos";
 import ActiveVideos from "./tables/ActiveVideos";
+import CommentedRestaurants from "./tables/CommentedRestaurants";
 
 /**
  * Props for TableContent component
@@ -193,6 +194,29 @@ export const TableContent: React.FC<TableContentProps> = ({
             pageSize={tablePageSizes[AnalystTableTabsEnum.SUBMITTED_VIDEOS]}
             handlePageSize={(pageSize: number) =>
               onPageSizeChange(AnalystTableTabsEnum.SUBMITTED_VIDEOS, pageSize)
+            }
+          />
+        );
+      case AnalystTableTabsEnum.COMMENTED_RESTAURANTS:
+        return (
+          <CommentedRestaurants
+            searchTerm={searchTerm}
+            startDate={startDate}
+            endDate={endDate}
+            currentPage={
+              tablePageNumbers[AnalystTableTabsEnum.COMMENTED_RESTAURANTS]
+            }
+            handleCurrentPage={(page: number) =>
+              onPageChange(AnalystTableTabsEnum.COMMENTED_RESTAURANTS, page)
+            }
+            pageSize={
+              tablePageSizes[AnalystTableTabsEnum.COMMENTED_RESTAURANTS]
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(
+                AnalystTableTabsEnum.COMMENTED_RESTAURANTS,
+                pageSize
+              )
             }
           />
         );

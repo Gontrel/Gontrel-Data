@@ -59,6 +59,11 @@ const RestaurantDetailsPage = ({
     approvalCount: 0,
   });
   const [comment, setComment] = useState<string>("");
+  const [declineFeedback, setDeclineFeedback] = useState<{
+    isOpen: boolean;
+    comment: string;
+    postId: string;
+  }>({ isOpen: false, comment: "", postId: "" });
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
 
   const { setIsActive, setIsActiveText } = useHeaderStore();
@@ -208,6 +213,30 @@ const RestaurantDetailsPage = ({
     },
     [declineRestaurant, approveRestaurantStatus, refetch]
   );
+
+  const openDeclineModal = useCallback((postId: string) => {
+    setDeclineFeedback({ isOpen: true, comment: "", postId });
+  }, []);
+
+  const closeDeclineModal = useCallback(() => {
+    setDeclineFeedback({ isOpen: false, comment: "", postId: "" });
+  }, []);
+
+  const handleDeclineCommentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setDeclineFeedback((prev) => ({ ...prev, comment: event.target.value }));
+  };
+
+  const submitDecline = () => {
+    if (!declineFeedback.postId) return;
+    handleDeclinePost(
+      restaurantId,
+      declineFeedback.postId,
+      declineFeedback.comment
+    );
+    closeDeclineModal();
+  };
 
   const toggleLocation = useCallback(async () => {
     mutate({ locationId: restaurantId });
@@ -470,7 +499,8 @@ const RestaurantDetailsPage = ({
                     }
                     handleDecline={
                       activeTab === "pending"
-                        ? () => handleDeclinePost(restaurant.id, post.id, "")
+                        ? (_restaurantId: string, postId: string) =>
+                            openDeclineModal(postId)
                         : undefined
                     }
                   />
@@ -525,6 +555,19 @@ const RestaurantDetailsPage = ({
         successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
           isActive ? "bg-[#D80000]" : "bg-[#0070F3]"
         }`}
+      />
+
+      {/* Decline Post Feedback Modal */}
+      <ConfirmationModal
+        isOpen={declineFeedback.isOpen}
+        onClose={closeDeclineModal}
+        title="Decline post?"
+        description="Are you sure you want to decline this post?"
+        comment={declineFeedback.comment}
+        onCommentChange={handleDeclineCommentChange}
+        onConfirm={submitDecline}
+        confirmLabel="feedback sent"
+        cancelLabel="Cancel"
       />
 
       {/* Edit Restaurant Modal */}

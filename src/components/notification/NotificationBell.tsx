@@ -3,12 +3,12 @@ import { Bell } from "lucide-react";
 export const NotificationBell = ({ count }: { count: number }) => {
   return (
     <button
-      className="relative p-2 rounded-full hover:bg-gray-100"
+      className="relative w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:shadow-sm transition"
       aria-label="Notifications"
     >
-      <Bell size={20} />
+      <Bell size={18} className="text-gray-700" />
       {count > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+        <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] leading-none">
           {count}
         </span>
       )}

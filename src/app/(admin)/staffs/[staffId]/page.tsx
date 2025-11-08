@@ -50,6 +50,8 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     { enabled: !!staffId }
   );
 
+  console.log(staffProfileData, "staffProfileDatastaffProfileData");
+
   const { mutate } = trpc.staffs.toggleStaffStatus.useMutation({
     onSuccess: () => {
       successToast("Staff status updated successfully");
@@ -86,7 +88,9 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
 
         if (activityData.length < PAGE_SIZE) {
           setHasMore(false);
-        }
+        } 
+
+        console.log(response, "response");
 
         if (filtersChanged) {
           setActivity(activityData);
@@ -100,7 +104,6 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           });
         }
       } catch {
-  
       } finally {
         setIsFetching(false);
       }

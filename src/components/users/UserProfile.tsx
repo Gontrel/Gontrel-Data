@@ -1,5 +1,4 @@
-import { UserCircle, LogOut } from "lucide-react";
-import Icon from "../svgs/Icons";
+import { UserCircle, LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CenterModal } from "@/components/ui/CenterModal";
@@ -11,12 +10,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/DropdownMenu";
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore, useCurrentUser } from "@/stores/authStore";
 import { Button } from "../ui/Button";
 
 export const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { logout } = useAuthStore();
+  const user = useCurrentUser();
   const router = useRouter();
 
   const { mutate: logoutMutation, isSuccess } = trpc.auth.logout.useMutation({
@@ -35,9 +35,19 @@ export const UserProfile = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="flex items-center gap-2 p-1 rounded-full cursor-pointer hover:bg-gray-100">
-            <UserCircle size={24} />
-            <Icon name="arrowdownIcon" className="w-4 h-4" />
+          <div className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full bg-white border border-gray-200 hover:shadow-sm cursor-pointer">
+            {user?.profileImage ? (
+              <img
+                src={user.profileImage}
+                alt={user.name ?? "User"}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                <UserCircle size={20} className="text-gray-500" />
+              </div>
+            )}
+            <ChevronDown size={16} className="text-gray-700" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
