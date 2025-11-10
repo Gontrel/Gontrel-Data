@@ -166,6 +166,8 @@ const PendingVideos = ({
 
   const videos = useMemo(() => queryData?.data || [], [queryData]);
 
+  console.log(queryData?.data, "videosvideosvideos");
+
   const paginationData = queryData?.pagination;
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);
 
@@ -173,6 +175,8 @@ const PendingVideos = ({
     const currentRestaurant = videos.find(
       ({ location }) => location?.id === videoPreview.currentRestaurantId
     );
+
+    console.log(currentRestaurant, "currentRestaurant");
 
     return currentRestaurant
       ? {

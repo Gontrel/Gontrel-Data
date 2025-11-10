@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "../svgs/Icons";
 import Image from "next/image";
 import { GontrelRestaurantDetailedData } from "@/interfaces/restaurants";
+import { RestaurantTypeEnum } from "@/types";
 
 interface RestaurantCardProps {
   restaurant: GontrelRestaurantDetailedData;
@@ -21,10 +22,18 @@ export const RestaurantCard = ({ restaurant }: RestaurantCardProps) => {
         <div>
           <h1 className="text-2xl font-bold">{restaurant?.name}</h1>
           <p className="text-sm text-gray-500">{restaurant?.address}</p>
+          <p className="text-sm text-gray-500">
+            Restaurant Type:{" "}
+            {restaurant?.orderType === RestaurantTypeEnum.BOTH
+              ? "Dine in & Order"
+              : restaurant?.orderType === RestaurantTypeEnum.TAKE_OUT
+              ? "Order"
+              : "Dine in"}
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 text-sm"> 
+      <div className="grid grid-cols-2 gap-4 text-sm">
         <a
           href={restaurant?.website || "#"}
           target="_blank"

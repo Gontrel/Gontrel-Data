@@ -139,9 +139,11 @@ export const EditVideo = ({
             ? selectedRestaurant?.address
             : selectedRestaurant?.address?.content,
       }),
-      ...(data?.menuUrl && { menu: data.menuUrl }),
-      ...(data?.reservationUrl && { reservation: data?.reservationUrl }),
-      ...(data?.orderUrl && { orderLink: data?.orderUrl }),
+      ...(data?.menuUrl !== undefined && { menu: data.menuUrl }),
+      ...(data?.reservationUrl !== undefined && {
+        reservation: data.reservationUrl,
+      }),
+      ...(data?.orderUrl !== undefined && { orderLink: data.orderUrl }),
       ...(data?.restaurantType && { orderType: data?.restaurantType }),
       ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
       openingHours: Object.entries(selectedRestaurant?.workingHours ?? {})?.map(

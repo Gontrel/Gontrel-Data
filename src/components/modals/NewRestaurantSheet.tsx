@@ -220,7 +220,7 @@ export const NewRestaurantSheet = ({
               ? selectedRestaurant?.address
               : selectedRestaurant?.address?.content,
         }),
-        ...(data?.menuUrl && { menu: data?.menuUrl }),
+        ...(data?.menuUrl !== undefined && { menu: data.menuUrl }),
         ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
         ...(selectedRestaurant?.website && {
           website: selectedRestaurant?.website,
@@ -229,8 +229,10 @@ export const NewRestaurantSheet = ({
           photos: [selectedRestaurant?.image],
         }),
         rating: selectedRestaurant.rating ?? 0,
-        ...(data.reservationUrl && { reservation: data?.reservationUrl }),
-        ...(data?.orderUrl && { orderLink: data?.orderUrl }),
+        ...(data?.reservationUrl !== undefined && {
+          reservation: data.reservationUrl,
+        }),
+        ...(data?.orderUrl !== undefined && { orderLink: data.orderUrl }),
         ...(data?.restaurantType && { orderType: data?.restaurantType }),
         posts:
           currentVideos?.map((video) => ({
