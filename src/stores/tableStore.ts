@@ -59,6 +59,7 @@ export interface TableStore {
   deactivatedStaffs: TableState<StaffTableTypes>;
   pendingUserVideos: TableState<PendingVideoTableTypes>;
   reportedUsers: TableState<ReportedUserTypes>;
+  commentedRestaurants: TableState<SubmittedRestaurantTableTypes>;
   reportedVideos: TableState<ReportedVideoTypes>;
 
   // Loading states
@@ -145,6 +146,8 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   deactivatedStaffs: createInitialTableState<StaffTableTypes>(), // New: Deactivated Staffs initial state
   reportedUsers: createInitialTableState<ReportedUserTypes>(),
   reportedVideos: createInitialTableState<ReportedVideoTypes>(),
+  commentedRestaurants:
+    createInitialTableState<SubmittedRestaurantTableTypes>(),
   mutationLoading: false,
   saveLoading: false,
 

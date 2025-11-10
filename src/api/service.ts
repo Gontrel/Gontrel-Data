@@ -148,7 +148,7 @@ export default class APIRequest {
 
   login = async (data: AdminLoginRequest): Promise<LoginResponse> => {
     const response = await unauthenticatedClient.post(`/admin-login`, data);
-    console.log(response, "response");
+  
     return this.handleResponse(response);
   };
 
