@@ -149,6 +149,7 @@ export default class APIRequest {
 
   login = async (data: AdminLoginRequest): Promise<LoginResponse> => {
     try {
+
       const response = await unauthenticatedClient.post(`/admin-login`, data, {
         // Ensure credentials are included (already in base config, but explicit for clarity)
         withCredentials: true,

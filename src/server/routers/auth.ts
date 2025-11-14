@@ -52,9 +52,28 @@ export const authRouter = router({
 
         return response;
       } catch (error) {
+        // Enhanced error handling to ensure errors are properly propagated
         const message = getErrorMessage(error);
+        
+        // Log error for debugging
+        console.error("[tRPC Login Error]", {
+          message,
+          error: error instanceof Error ? error.message : String(error),
+          input: { email: input.email }, // Don't log password
+        });
+        
+        // Determine appropriate error code
+        let code: "INTERNAL_SERVER_ERROR" | "BAD_REQUEST" | "UNAUTHORIZED" = "INTERNAL_SERVER_ERROR";
+        if (error instanceof AxiosError) {
+          if (error.response?.status === 401) {
+            code = "UNAUTHORIZED";
+          } else if (error.response?.status === 400) {
+            code = "BAD_REQUEST";
+          }
+        }
+        
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code,
           message,
         });
       }
