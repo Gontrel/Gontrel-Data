@@ -86,7 +86,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
 
         if (activityData.length < PAGE_SIZE) {
           setHasMore(false);
-        }
+        } 
 
         if (filtersChanged) {
           setActivity(activityData);
@@ -100,7 +100,6 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           });
         }
       } catch {
-  
       } finally {
         setIsFetching(false);
       }

@@ -38,6 +38,34 @@ export const QueryProvider = ({ children }: { children: ReactNode }) => {
       links: [
         httpBatchLink({
           url: "/api/trpc",
+          // CRITICAL: Include credentials for cookie-based auth in all browsers
+          // This is especially important for Safari and strict Chrome browsers
+          fetch: (url, options) => {
+            // Create timeout controller for browser compatibility
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
+            // Use existing signal if provided, otherwise use timeout signal
+            const signal = options?.signal || controller.signal;
+
+            const fetchPromise = fetch(url, {
+              ...options,
+              credentials: "include", // Required for cookies to work in all browsers
+              signal,
+            });
+
+            // Clear timeout if fetch completes
+            fetchPromise.finally(() => clearTimeout(timeoutId));
+
+            return fetchPromise;
+          },
+          // Add headers for better browser compatibility
+          headers: () => {
+            const headers: Record<string, string> = {
+              "Content-Type": "application/json",
+            };
+            return headers;
+          },
         }),
       ],
     })

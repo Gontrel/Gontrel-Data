@@ -87,6 +87,15 @@ export const useTabState = () => {
       pageSize: 10,
       user: "",
     },
+    [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]: {
+      searchTerm: "",
+      selectedAnalyst: undefined,
+      selectedTimePeriod: "all",
+      dateRange: undefined,
+      currentPage: 1,
+      pageSize: 10,
+      user: "",
+    },
     [StaffTableTabsEnum.ACTIVE_STAFF]: {
       searchTerm: "",
       selectedAnalyst: isAnalyst ? undefined : "",
@@ -439,6 +448,15 @@ export const useTabState = () => {
         user: "",
       },
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: {
+        searchTerm: "",
+        selectedAnalyst: "all",
+        selectedTimePeriod: "all",
+        dateRange: undefined,
+        currentPage: 1,
+        pageSize: 10,
+        user: "",
+      },
+      [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]: {
         searchTerm: "",
         selectedAnalyst: "all",
         selectedTimePeriod: "all",

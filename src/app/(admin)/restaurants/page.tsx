@@ -87,6 +87,8 @@ export default function RestaurantsPage() {
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage,
+      [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]:
+        tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS].currentPage,
     }),
     [tabStates]
   );
@@ -110,6 +112,8 @@ export default function RestaurantsPage() {
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].pageSize,
+      [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]:
+        tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS].pageSize,
     }),
     [tabStates]
   );

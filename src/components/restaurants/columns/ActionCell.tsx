@@ -51,7 +51,7 @@ export const ActionCell = ({
       variant = "danger";
       disabled = true;
     } else {
-      label = "Send Feedback";
+      label = "feedback sent";
       variant = "danger";
       disabled = hasPending;
     }

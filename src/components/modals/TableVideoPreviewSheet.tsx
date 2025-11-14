@@ -16,6 +16,7 @@ type TableVideoPreviewSheetOnApprove = (
   restaurantId: string,
   postId: string
 ) => void;
+
 type TableVideoPreviewSheetOnDecline = (
   restaurantId: string,
   postId: string,
@@ -148,8 +149,12 @@ export const TableVideoPreviewSheet = ({
     posts = queryData?.data ?? [];
   }
 
-  const handleDecline = (restaurantId: string, postId: string) => {
-    setFeedbackModal({ isOpen: true, comment: "", postId, restaurantId });
+  const handleDecline = (
+    restaurantId: string,
+    postId: string,
+    comment: string
+  ) => {
+    setFeedbackModal({ isOpen: true, comment, postId, restaurantId });
   };
   const handleSubmitFeedback = () => {
     onDecline?.(
@@ -183,7 +188,7 @@ export const TableVideoPreviewSheet = ({
         comment={feedbackModal?.comment ?? ""}
         onCommentChange={handleCommentChange}
         onConfirm={handleSubmitFeedback}
-        confirmLabel="Send feedback"
+        confirmLabel="feedback sent"
         cancelLabel="Cancel"
       />
     </Sheet>

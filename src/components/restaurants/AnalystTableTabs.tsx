@@ -28,7 +28,8 @@ export const AnalystTableTabs = ({
           const tabLabels: Record<typeof tabKey, string> = {
             [AnalystTableTabsEnum.ACTIVE_RESTAURANTS]: 'Active restaurants',
             [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: 'Submitted restaurants',
-            [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: 'Submitted videos'
+            [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: 'Submitted videos',
+            [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]: 'Commented restaurants'
           };
           const total = tableTotals[tabKey];
           const showTotal = typeof total === 'number' && total > 0;

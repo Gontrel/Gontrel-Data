@@ -43,6 +43,7 @@ import {
   GetLocationStatsResponse,
   GetReportedVideosResponse,
 } from "@/interfaces";
+
 import {
   BaseQueryRequest,
   CreateAdminRequest,
@@ -147,8 +148,55 @@ export default class APIRequest {
   };
 
   login = async (data: AdminLoginRequest): Promise<LoginResponse> => {
-    const response = await unauthenticatedClient.post(`/admin-login`, data);
-    return this.handleResponse(response);
+    try {
+      const response = await unauthenticatedClient.post(`/admin-login`, data, {
+        // Ensure credentials are included (already in base config, but explicit for clarity)
+        withCredentials: true,
+        // Add timeout for this specific request
+        timeout: 30000,
+        // Add headers for better browser compatibility
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        // Retry configuration for transient network failures
+        maxRedirects: 0, // Prevent redirects that can cause issues in some browsers
+      });
+      return this.handleResponse(response);
+    } catch (error: any) {
+      // Enhanced error handling for browser compatibility issues
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        throw new Error("Request timed out. Please check your connection.");
+      }
+      if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+        // Check if it's a CORS issue
+        if (
+          error.message?.includes("CORS") ||
+          error.message?.includes("cross-origin")
+        ) {
+          throw new Error(
+            "CORS error. Please check your browser settings or contact support."
+          );
+        }
+        throw new Error(
+          "Network error. Please check your connection and try again."
+        );
+      }
+      // Handle browser-specific errors
+      if (error.code === "ERR_BLOCKED_BY_CLIENT") {
+        throw new Error(
+          "Request blocked by browser extension. Please disable ad blockers and try again."
+        );
+      }
+      if (error.response) {
+        // Server responded with error
+        throw error;
+      }
+      // Unknown error - provide helpful message
+      const errorMessage =
+        error.message || "Login failed. Please try again or contact support.";
+      throw new Error(errorMessage);
+    }
   };
 
   /**
@@ -156,7 +204,6 @@ export default class APIRequest {
    * @description This class handles API requests related to restaurants.
    *
    */
-
   // createRestaurant
   createRestaurant = async (data: CreateLocationRequest) => {
     const response = await this.authenticatedClient.post(
