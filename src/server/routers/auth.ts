@@ -32,14 +32,20 @@ export const authRouter = router({
         const token = response.token;
 
         if (token) {
+          // Use "lax" instead of "strict" for better browser compatibility
+          // "strict" can block cookies in some browsers during redirects
+          // "lax" allows cookies on top-level navigations while maintaining security
+          const isProduction = process.env.NODE_ENV === "production";
           ctx.resHeaders.append(
             "Set-Cookie",
             serialize("user_token", token, {
               path: "/",
               httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "strict",
+              secure: isProduction, // Must be true in production for HTTPS
+              sameSite: isProduction ? "lax" : "lax", // Changed from "strict" to "lax" for better compatibility
               maxAge: 60 * 60 * 24, // 1 day
+              // Add domain if needed for cross-subdomain support
+              // domain: process.env.COOKIE_DOMAIN,
             })
           );
         }
@@ -113,13 +119,14 @@ export const authRouter = router({
         const response = await apiRequest.resetPassword({ ...input, token });
 
         // Clear the cookie after successful reset
+        const isProduction = process.env.NODE_ENV === "production";
         ctx.resHeaders.append(
           "Set-Cookie",
           serialize("reset_token", "", {
             path: "/",
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: "lax", // Changed from "strict" to "lax"
             maxAge: -1, // Expire the cookie immediately
           })
         );
