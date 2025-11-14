@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "../components/ui/Button";
@@ -19,8 +19,18 @@ export default function Login() {
   const router = useRouter();
   const togglePassword = () => setShowPassword((prev) => !prev);
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const { mutate: login, isPending: isLoading } = trpc.auth.login.useMutation({
+    // Add timeout to prevent infinite loading
+    retry: false, // Disable retries to prevent infinite loops
+    retryDelay: 0,
     onSuccess: (data) => {
+      // Clear any pending timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       successToast("Login successful!");
       // Store User details
       setUser(data.user);
@@ -28,12 +38,38 @@ export default function Login() {
       router.push("/restaurants");
     },
     onError: (error) => {
-      errorToast(error.message);
+      // Clear any pending timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      // Enhanced error handling
+      const errorMessage = error.message || "Login failed. Please try again.";
+      errorToast(errorMessage);
+      console.error("Login error:", error);
     },
+    // Add mutation timeout
+    gcTime: 0, // Don't cache failed mutations
   });
 
+  // Add client-side timeout as a safety net
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Set a timeout to prevent infinite loading (safety net)
+    timeoutRef.current = setTimeout(() => {
+      errorToast(
+        "Request is taking too long. Please check your connection and try again."
+      );
+      console.error("Login timeout - request took longer than 35 seconds");
+      timeoutRef.current = null;
+    }, 35000); // 35 seconds (slightly longer than server timeout)
+
     login({ email, password });
   };
 
