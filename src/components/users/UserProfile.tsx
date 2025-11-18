@@ -1,4 +1,4 @@
-import { UserCircle, LogOut, ChevronDown } from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CenterModal } from "@/components/ui/CenterModal";
@@ -12,6 +12,7 @@ import {
 } from "../ui/DropdownMenu";
 import { useAuthStore, useCurrentUser } from "@/stores/authStore";
 import { Button } from "../ui/Button";
+import Image from "next/image";
 
 export const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,16 +36,18 @@ export const UserProfile = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full bg-white border border-gray-200 hover:shadow-sm cursor-pointer">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white border border-gray-200 hover:shadow-md cursor-pointer">
             {user?.profileImage ? (
-              <img
+              <Image
                 src={user.profileImage}
-                alt={user.name ?? "User"}
+                alt={user.name.charAt(0) ?? "User"}
+                width={50}
+                height={50}
                 className="w-8 h-8 rounded-full object-cover"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                <UserCircle size={20} className="text-gray-500" />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 text-white flex items-center justify-center font-bold">
+                {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
               </div>
             )}
             <ChevronDown size={16} className="text-gray-700" />

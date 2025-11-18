@@ -403,6 +403,7 @@ const PendingRestaurants = ({
   return (
     <div>
       <ConfirmationModal
+        icon="commentSuccessIcon"
         isOpen={feedbackModal.isOpen}
         onClose={closeFeedbackModal}
         title="Send feedback"

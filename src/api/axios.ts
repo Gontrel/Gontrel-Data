@@ -8,16 +8,15 @@ const API_KEY = process.env.API_KEY;
 const baseConfig: AxiosRequestConfig = {
   baseURL: API_URL,
   timeout: 30000, // Increased from 10s to 30s for slow networks
+  withCredentials: true,
+  // Retry configuration for transient network failures
+  maxRedirects: 0,
   headers: {
     "Content-Type": "application/json",
     "x-api-key": API_KEY || "",
-    // Add Accept header for better browser compatibility
     Accept: "application/json",
   },
   validateStatus: (status: number) => status >= 200 && status < 300,
-  // CRITICAL: Ensure credentials are sent for cookie-based auth
-  // This is required for Safari and strict Chrome browsers
-  withCredentials: true,
 };
 
 const axiosInstance = axios.create({
@@ -25,12 +24,10 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// --- Unauthenticated Client ---
-// CRITICAL: Must have withCredentials: true for cookies to work in all browsers
-// Especially important for Safari and strict Chrome browsers
+
 const unauthenticatedClient = axios.create({
   ...baseConfig,
-  withCredentials: true, // Added: Required for cookie handling in all browsers
+  withCredentials: true, 
 });
 
 // Helper: safe error log poster (avoid recursion)

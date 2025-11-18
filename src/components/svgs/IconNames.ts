@@ -50,4 +50,5 @@ export type TIconNames =
   | "competitionIcon"
   | "messagesIcon"
   | "featureIcon"
+  | "commentSuccessIcon"
   | "personIcon";

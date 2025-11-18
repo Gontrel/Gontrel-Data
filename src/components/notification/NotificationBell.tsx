@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 export const NotificationBell = ({ count }: { count: number }) => {
   return (
     <button
-      className="relative w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:shadow-sm transition"
+      className="relative w-15 h-15 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:shadow-sm transition"
       aria-label="Notifications"
     >
       <Bell size={18} className="text-gray-700" />

@@ -31,20 +31,36 @@ const handler = async (req: Request) => {
     });
   }
 
-  const response = await fetchRequestHandler({
-    endpoint: "/api/trpc",
-    req,
-    router: appRouter,
-    createContext: (opts) =>
-      createContext({ req, resHeaders, info: opts.info }),
-  });
+  try {
 
-  // Merge response headers with our CORS headers
-  resHeaders.forEach((value, key) => {
-    response.headers.set(key, value);
-  });
+    const response = await fetchRequestHandler({
+      endpoint: "/api/trpc",
+      req,
+      router: appRouter,
+      createContext: (opts) =>
+        createContext({ req, resHeaders, info: opts.info }),
+    });
 
-  return response;
+    // Merge response headers with our CORS headers
+    resHeaders.forEach((value, key) => {
+      response.headers.set(key, value);
+    });
+
+    return response;
+  } catch {
+    // Return error response
+    const errorResponse = new Response(
+      JSON.stringify({ error: "Internal server error" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          ...Object.fromEntries(resHeaders.entries()),
+        },
+      }
+    );
+    return errorResponse;
+  }
 };
 
 export { handler as GET, handler as POST };

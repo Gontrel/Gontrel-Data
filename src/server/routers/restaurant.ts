@@ -34,7 +34,8 @@ export const restaurantRouter = router({
   getRestaurants: protectedProcedure
     .input(fetchLocationsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getRestaurants(input);
 
@@ -52,7 +53,8 @@ export const restaurantRouter = router({
   checkLocationExist: protectedProcedure
     .input(checkLocationExistSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.checkLocationExist(input);
         return response;
@@ -67,7 +69,8 @@ export const restaurantRouter = router({
 
   // Get restaurant statistics (protected)
   getRestaurantStats: protectedProcedure.query(async ({ ctx }) => {
-    const apiRequest = new APIRequest(ctx.req.headers);
+    const apiRequest = APIRequest.getInstance();
+    apiRequest.configure(ctx.req.headers);
     try {
       const response = await apiRequest.getRestaurantStats();
       return response;
@@ -84,7 +87,8 @@ export const restaurantRouter = router({
   getRestaurantById: protectedProcedure
     .input(fetchLocationByIdSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getRestaurantById(input);
         return response;
@@ -100,7 +104,8 @@ export const restaurantRouter = router({
   getToggleLocation: protectedProcedure
     .input(locationIdSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.toggleLocation(input);
 
@@ -117,7 +122,8 @@ export const restaurantRouter = router({
   getAnalystRestaurants: protectedProcedure
     .input(fetchAnalystLocationsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       const response = await apiRequest.getAnalystRestaurants(input);
       return response;
     }),
@@ -126,7 +132,8 @@ export const restaurantRouter = router({
   createRestaurant: protectedProcedure
     .input(createLocationSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.createRestaurant(input);
         return response;
@@ -142,7 +149,8 @@ export const restaurantRouter = router({
   updateRestaurant: protectedProcedure
     .input(updateLocationSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.updateRestaurant(input);
         return response;
@@ -158,7 +166,8 @@ export const restaurantRouter = router({
   bulkApproveRestaurantStatus: protectedProcedure
     .input(bulkApproveRestaurantStatusSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.bulkApproveRestaurantStatus(input);
         return response;
@@ -174,7 +183,8 @@ export const restaurantRouter = router({
   approveRestaurantStatus: protectedProcedure
     .input(approveRestaurantStatusSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.approveRestaurantStatus(input);
         return response;

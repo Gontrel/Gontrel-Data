@@ -29,7 +29,8 @@ export const externalRouter = router({
       })
     )
     .query(async ({ input: { input, sessionToken }, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.placeAutoComplete({
           query: input,
@@ -53,7 +54,8 @@ export const externalRouter = router({
       })
     )
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       const { placeId, sessionToken } = input;
       try {
         const response = await apiRequest.placeDetails({
@@ -75,7 +77,8 @@ export const externalRouter = router({
     .query(async ({ input, ctx }) => {
       const { link } = input;
 
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
 
       try {
         const response = await apiRequest.getTiktokDetails({ link });
@@ -92,7 +95,8 @@ export const externalRouter = router({
     .input(z.object({ link: z.string().url() }))
     .query(async ({ input, ctx }) => {
       const { link } = input;
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
 
       try {
         const response = await apiRequest.validateTiktokUrl({ link });
