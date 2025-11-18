@@ -193,7 +193,7 @@ export function DynamicHeader() {
             </Button>
           )}
 
-        <NotificationBell count={3} />
+        <NotificationBell count={0} />
         <UserProfile />
       </div>
     </header>
