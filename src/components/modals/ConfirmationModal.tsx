@@ -31,7 +31,7 @@ export const ConfirmationModal = ({
   description,
   icon = "warningIcon",
   comment = "",
-  onCommentChange = () => {},
+  onCommentChange,
   onConfirm,
   confirmLabel = "feedback sent",
   cancelLabel = "Cancel",
@@ -49,10 +49,8 @@ export const ConfirmationModal = ({
       className="shadow-none bg-transparent"
     >
       <div className="flex flex-col justify-center items-center">
-        <div className="z-100 rounded-full w-25 h-25 flex items-center justify-center border-7 border-white">
-          <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-r from-[#C7B206] to-[#C50000]">
-            <Icon name={icon} width={40} height={40} />
-          </div>
+        <div className="z-100 rounded-full flex items-center justify-center">
+          <Icon name={icon} width={100} height={100} />
         </div>
         <div className="flex flex-col gap-6 justify-center items-center p-15 w-full bg-white rounded-[20px] mt-[-50px]">
           <h1 className="text-3xl font-semibold text-[#2E3032]">{title}</h1>

@@ -9,7 +9,8 @@ export const notificationRouter = router({
   createNotification: publicProcedure
     .input(createNotificationSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.createNotification(input);
         return response;
@@ -26,7 +27,8 @@ export const notificationRouter = router({
   getNotifications: protectedProcedure
     .input(fetchNotificationsSchema)
     .query<GetNotificationResponse[]>(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getNotifications(input);
 

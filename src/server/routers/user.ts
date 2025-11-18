@@ -34,7 +34,8 @@ export const userRouter = router({
       })
     )
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getUsers(input);
     
@@ -48,7 +49,8 @@ export const userRouter = router({
       }
     }),
   getUsersCards: protectedProcedure.query(async ({ ctx }) => {
-    const apiRequest = new APIRequest(ctx.req.headers);
+    const apiRequest = APIRequest.getInstance();
+    apiRequest.configure(ctx.req.headers);
     try {
       const response = await apiRequest.getUsersCards();
       return response;
@@ -63,7 +65,8 @@ export const userRouter = router({
   getUserDetails: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getUserById({ userId: input.userId });
         return response;
@@ -75,7 +78,8 @@ export const userRouter = router({
   getUserPosts: protectedProcedure
     .input(fetchAdminPostsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getPosts(input);
         return response;
@@ -87,7 +91,8 @@ export const userRouter = router({
   getUserPostsByUser: protectedProcedure
     .input(baseQuerySchema.extend({ userId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getUserPostsByUser(input);
         return response;
@@ -99,7 +104,8 @@ export const userRouter = router({
   getUserRestaurants: protectedProcedure
     .input(fetchLocationsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getRestaurants(input);
         return response;
@@ -111,7 +117,8 @@ export const userRouter = router({
   getUserLocationVisits: protectedProcedure
     .input(baseQuerySchema.extend({ userId: z.string() }))
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getUserLocationVisits(input);
         return response;
@@ -123,7 +130,8 @@ export const userRouter = router({
   toggleUserBlock: protectedProcedure
     .input(z.object({ userId: z.string(), comment: z.string().optional() }))
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.toggleUserBlock(input);
         return response;

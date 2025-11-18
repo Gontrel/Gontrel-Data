@@ -69,6 +69,7 @@ const PendingVideos = ({
     posts: [],
     currentRestaurantId: null,
   });
+
   const { queryData, isLoading, refetch } = usePendingVideos({
     currentPage,
     pageSize,
@@ -165,8 +166,6 @@ const PendingVideos = ({
   // ---------------------------------------------------------------------------
 
   const videos = useMemo(() => queryData?.data || [], [queryData]);
-
-
 
   const paginationData = queryData?.pagination;
   const totalPages = Math.ceil((paginationData?.total || 0) / pageSize);

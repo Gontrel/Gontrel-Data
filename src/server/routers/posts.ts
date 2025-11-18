@@ -25,7 +25,8 @@ export const postRouter = router({
   createPost: publicProcedure
     .input(createPostSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.createPost(input);
         return response;
@@ -41,7 +42,8 @@ export const postRouter = router({
   createBulkPost: publicProcedure
     .input(createBulkPostSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.createBulkPost(input);
 
@@ -59,7 +61,8 @@ export const postRouter = router({
   getPosts: protectedProcedure
     .input(fetchAdminPostsSchema)
     .query<GetPostsResponse>(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getPosts(input);
 
@@ -76,7 +79,8 @@ export const postRouter = router({
   getPendingUserVideos: protectedProcedure
     .input(fetchPendingUserVideosSchema)
     .query<GetUserPostsResponse>(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getPendingUserVideos(input);
         return response;
@@ -92,7 +96,8 @@ export const postRouter = router({
   getPostById: protectedProcedure
     .input(fetchPostByIdSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getPostById(input);
         return response;
@@ -108,7 +113,8 @@ export const postRouter = router({
   getGroupedPostsSubmissions: protectedProcedure
     .input(fetchGroupedPostsSubmissionsSchema)
     .query<GetGroupedPostsSubmissionsResponse>(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getGroupedPostsSubmissions(input);
         return response;
@@ -124,7 +130,8 @@ export const postRouter = router({
   getGroupedPosts: protectedProcedure
     .input(fetchGroupedPostsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getGroupedPosts(input);
         return response;
@@ -140,7 +147,8 @@ export const postRouter = router({
   getUserGroupedPosts: protectedProcedure
     .input(fetchUserGroupedPostsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getUserGroupedPosts(input);
         return response;
@@ -156,7 +164,8 @@ export const postRouter = router({
   updatePost: protectedProcedure
     .input(updatePostSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.updatePost(input);
         return response;
@@ -172,7 +181,8 @@ export const postRouter = router({
   deletePost: protectedProcedure
     .input(deletePostSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.deletePostById(input);
         return response;
@@ -188,7 +198,8 @@ export const postRouter = router({
       togglePost: protectedProcedure
         .input(postToggleSchema)
         .mutation(async ({ input, ctx }) => {
-          const apiRequest = new APIRequest(ctx.req.headers);
+          const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
           try {
             const response = await apiRequest.togglePost(input);
     

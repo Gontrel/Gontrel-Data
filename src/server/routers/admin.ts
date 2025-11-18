@@ -142,7 +142,8 @@ export const adminRouter = router({
   getCompetitions: protectedProcedure
     .input(fetchCompetitionsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getCompetitions(input);
         return response;
@@ -159,7 +160,8 @@ export const adminRouter = router({
   getCompetitionById: protectedProcedure
     .input(fetchCompetitionByIdSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getCompetitionById(input);
         return response;
@@ -175,7 +177,8 @@ export const adminRouter = router({
     getCompetitionParticipants: protectedProcedure
   .input(fetchCompetitionParticipantsSchema)
   .query(async ({ input, ctx }) => {
-    const apiRequest = new APIRequest(ctx.req.headers);
+    const apiRequest = APIRequest.getInstance();
+    apiRequest.configure(ctx.req.headers);
     try {
       const response = await apiRequest.getCompetitionParticipants(input);
       return response;
@@ -191,7 +194,8 @@ export const adminRouter = router({
       createCompetition: protectedProcedure
     .input(createCompetitionSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.createCompetition(input);
         return response;
@@ -207,7 +211,8 @@ export const adminRouter = router({
 toggleCompetitionActive: protectedProcedure
   .input(toggleCompetitionActiveSchema)
   .mutation(async ({ input, ctx }) => {
-    const apiRequest = new APIRequest(ctx.req.headers);
+    const apiRequest = APIRequest.getInstance();
+    apiRequest.configure(ctx.req.headers);
     try {
       const response = await apiRequest.toggleCompetitionActive(input);
       return response;

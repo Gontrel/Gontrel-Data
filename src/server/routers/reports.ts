@@ -26,7 +26,8 @@ export const reportRouter = router({
 fetchReportedVideosSchema
     )
     .query(async ({ input, ctx }) => {
-          const apiRequest = new APIRequest(ctx.req.headers);
+          const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.reported(input);
         return response;
@@ -44,7 +45,8 @@ fetchReportedVideosSchema
 fetchReportedVideosSchema
     )
     .query(async ({ input, ctx }) => {
-          const apiRequest = new APIRequest(ctx.req.headers);
+          const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
     
       try {
    const response = await apiRequest.reported(input);

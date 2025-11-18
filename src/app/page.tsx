@@ -38,15 +38,45 @@ export default function Login() {
       router.push("/restaurants");
     },
     onError: (error) => {
+
       // Clear any pending timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
-      // Enhanced error handling
-      const errorMessage = error.message || "Login failed. Please try again.";
+
+      // Enhanced error handling - extract message from various possible locations
+      let errorMessage = "Login failed. Please try again.";
+
+      // tRPC errors have the message directly on the error object
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      // Check error.data for nested message (tRPC error format)
+      else if (error?.data) {
+        if (typeof error.data === "string") {
+          errorMessage = error.data;
+        } else if (typeof error.data === "object") {
+          const errorData = error.data as Record<string, unknown>;
+          if (typeof errorData.message === "string") {
+            errorMessage = errorData.message;
+          } else if (typeof errorData.error === "string") {
+            errorMessage = errorData.error;
+          }
+        }
+      }
+      // Check error.shape for tRPC error shape
+      else if (error?.shape?.message) {
+        errorMessage = error.shape.message;
+      }
       errorToast(errorMessage);
-      console.error("Login error:", error);
+    },
+    onSettled: () => {
+      // Always clear timeout when mutation completes (success or error)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
     },
     // Add mutation timeout
     gcTime: 0, // Don't cache failed mutations
@@ -55,6 +85,17 @@ export default function Login() {
   // Add client-side timeout as a safety net
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate email and password
+    if (!email || !email.trim()) {
+      errorToast("Please enter your email address");
+      return;
+    }
+
+    if (!password || !password.trim()) {
+      errorToast("Please enter your password");
+      return;
+    }
 
     // Clear any existing timeout
     if (timeoutRef.current) {
@@ -66,11 +107,10 @@ export default function Login() {
       errorToast(
         "Request is taking too long. Please check your connection and try again."
       );
-      console.error("Login timeout - request took longer than 35 seconds");
       timeoutRef.current = null;
     }, 35000); // 35 seconds (slightly longer than server timeout)
 
-    login({ email, password });
+    login({ email: email.trim(), password });
   };
 
   return (

@@ -29,11 +29,11 @@ export const useCommentedRestaurants = ({
   } = trpc.restaurant.getRestaurants.useQuery({
     pageNumber: currentPage,
     quantity: pageSize,
-    status: ApprovalStatusEnum.PENDING,
-    includeRejected: true,
+    status: ApprovalStatusEnum.APPROVED,
     sortBy: "modifiedAt",
     sortOrder: "DESC",
     query: searchTerm,
+    hasComment: true,
     adminId: currentUser?.id,
     startDate,
     endDate,
