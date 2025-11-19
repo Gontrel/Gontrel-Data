@@ -47,7 +47,7 @@ export function TableHeader<T>({ table }: TableHeaderProps<T>) {
                 <th
                   key={header.id}
                   colSpan={header.colSpan}
-                  className={mergeClasses('px-2.5 py-5.5 text-left text-lg text-black font-semibold bg-[#F9F9F9]', stickyHeaderClass)}
+                  className={mergeClasses('px-2 py-3 text-left text-sm font-semibold text-black bg-[#F9F9F9]', stickyHeaderClass)}
                   style={stickyHeaderStyle}
                 >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}

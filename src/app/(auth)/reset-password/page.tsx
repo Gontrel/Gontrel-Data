@@ -88,10 +88,10 @@ const ResetPasswordContent = () => {
   };
 
   return (
-    <main className=" flex min-h-screen items-center justify-center ">
-      <section className="flex flex-col items-center max-w-[559px] h-full">
+    <main className="flex min-h-screen items-center justify-center p-4">
+      <section className="flex flex-col items-center w-full max-w-md sm:max-w-lg h-full">
         {/* Header section */}
-        <div className="flex flex-col flex-wrap items-center w-[413px] bg-white">
+        <div className="flex flex-col flex-wrap items-center w-full bg-white">
           <Image
             src={"/images/reset-logo.png"}
             width={100}
@@ -99,12 +99,12 @@ const ResetPasswordContent = () => {
             alt="Reset Logo"
             className="mx-auto"
           />
-          <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold ">
+          <h1 className="pt-6 text-2xl sm:text-3xl leading-[100%] tracking-[0px] font-semibold">
             Email Sent
           </h1>
-          <p className="pt-[12px] text-center text-[22px] font-medium ">
+          <p className="pt-3 text-center text-base sm:text-lg font-medium">
             We have sent a 4-digit code to your email{" "}
-            <span className="font-semibold text-[22px] ">
+            <span className="font-semibold text-base sm:text-lg">
               {maskEmail(userEmail)}
             </span>
             . Use it to confirm password change
@@ -112,22 +112,21 @@ const ResetPasswordContent = () => {
         </div>
 
         {/* Form section */}
-        <section className="mt-[60px] min-w-[559px] md:w-1/2 ">
+        <section className="mt-8 sm:mt-12 w-full">
           <form className="" onSubmit={handleSubmit}>
             {/*  New Password field */}
-            <div className="mb-[30px]">
-              <label className="text-xl font-medium text-[#444] ">
+            <div className="mb-6">
+              <label className="text-base sm:text-lg font-medium text-[#444]">
                 New Password
               </label>
 
-              <div className="relative mt-[19px]">
+              <div className="relative mt-4">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] h-[80px] py-[28px]
-                  placeholder-[#8A8A8A] placeholder:font-placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-4 py-3 sm:px-5 sm:py-4 placeholder-[#8A8A8A] placeholder:text-sm sm:placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
 
                 <button
@@ -143,19 +142,17 @@ const ResetPasswordContent = () => {
 
             {/* Confirm new Password field */}
             <div>
-              <label className="text-xl font-medium text-[#444] ">
+              <label className="text-base sm:text-lg font-medium text-[#444]">
                 Confirm new Password
               </label>
 
-              <div className="relative mt-[19px]">
+              <div className="relative mt-4">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                   placeholder-[#8A8A8A] placeholder:text-lg
-                  placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-4 py-3 sm:px-5 sm:py-4 placeholder-[#8A8A8A] placeholder:text-sm sm:placeholder:text-base placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
                   type="button"
@@ -168,9 +165,9 @@ const ResetPasswordContent = () => {
               </div>
             </div>
 
-            <div className="w-full mt-[30px]">
+            <div className="w-full mt-6">
               <div className="flex flex-row items-center justify-between ">
-                <p className="text-[#444] font-medium text-[20px] ">
+                <p className="text-[#444] font-medium text-base sm:text-lg">
                   Enter code
                 </p>
                 <Button
@@ -178,13 +175,13 @@ const ResetPasswordContent = () => {
                   disabled={isResending}
                   loading={isResending}
                   loadingText="Resending..."
-                  className="text-[#0070F3] font-medium text-[20px] cursor-pointer transition-all duration-300 ease-out hover:underline  disabled:text-gray-400 disabled:cursor-not-allowed"
+                  className="text-[#0070F3] font-medium text-base sm:text-lg cursor-pointer transition-all duration-300 ease-out hover:underline disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   Resend code
                 </Button>
               </div>
 
-              <div className="relative mt-[19px]">
+              <div className="relative mt-4">
                 <input
                   type="text"
                   inputMode="numeric"
@@ -192,22 +189,21 @@ const ResetPasswordContent = () => {
                   placeholder="Enter your code"
                   value={otpCode}
                   onChange={handleOtpChange}
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px] placeholder-[#8A8A8A] placeholder:text-lg
-                  placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-4 py-3 sm:px-5 sm:py-4 placeholder-[#8A8A8A] placeholder:text-sm sm:placeholder:text-base placeholder:font-medium focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
               </div>
             </div>
             <Button
               type="submit"
               loading={isLoading}
-              className="cursor-pointer my-[70px] w-full bg-blue-500 h-[80px] border rounded-[20px] font-semibold text-[20px] text-white"
+              className="cursor-pointer my-8 w-full bg-blue-500 h-12 sm:h-14 border rounded-[20px] font-semibold text-base sm:text-lg text-white"
             >
               Continue
             </Button>
           </form>
 
           <Link href="/" passHref>
-            <p className="text-blue-500 font-medium text-center text-[22px] leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
+            <p className="text-blue-500 font-medium text-center text-base sm:text-lg leading-[100%] transition-all duration-300 ease-out cursor-pointer hover:underline">
               Back to sign in
             </p>
           </Link>
@@ -221,11 +217,11 @@ const ResetPassword = () => {
   return (
     <Suspense fallback={
       <main className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center max-w-[559px] h-full">
-          <div className="flex flex-col flex-wrap items-center w-[413px] bg-white">
+        <div className="flex flex-col items-center w-full max-w-md sm:max-w-lg h-full">
+          <div className="flex flex-col flex-wrap items-center w-full bg-white">
             <div className="w-[100px] h-[100px] bg-gray-200 rounded-lg animate-pulse mx-auto"></div>
-            <div className="pt-[27px] w-48 h-10 bg-gray-200 rounded animate-pulse"></div>
-            <div className="pt-[12px] w-80 h-6 bg-gray-200 rounded animate-pulse"></div>
+            <div className="pt-6 w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
+            <div className="pt-3 w-80 h-6 bg-gray-200 rounded animate-pulse"></div>
           </div>
         </div>
       </main>

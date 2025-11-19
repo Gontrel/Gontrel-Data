@@ -1,8 +1,6 @@
-import { useMemo } from "react";
 import { trpc } from "@/lib/trpc-client";
 import { useCurrentUser } from "@/stores/authStore";
 import { ApprovalStatusEnum } from "@/types";
-import { ActiveRestaurantTableTypes } from "@/types/restaurant";
 
 interface UseCommentedRestaurantsProps {
   currentPage: number;
@@ -39,28 +37,8 @@ export const useCommentedRestaurants = ({
     endDate,
   });
 
-  const filtered = useMemo(() => {
-    const data = (queryData?.data ?? []) as ActiveRestaurantTableTypes[];
-    return data.filter((r) => Boolean(r?.comment));
-  }, [queryData?.data]);
-
-  const paginated = useMemo(() => {
-    const total = filtered.length;
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    return {
-      data: filtered.slice(start, end),
-      pagination: {
-        total,
-        page: currentPage,
-        limit: pageSize,
-        totalPages: Math.ceil(total / pageSize) || 1,
-      },
-    };
-  }, [filtered, currentPage, pageSize]);
-
   return {
-    queryData: paginated,
+    queryData,
     isLoading,
     error,
     refetch,

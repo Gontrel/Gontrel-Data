@@ -248,7 +248,7 @@ export default function RestaurantsPage() {
       </PreviewVideoModal>
 
       {/* Main Content */}
-      <div className="flex flex-col mx-auto px-4 sm:px-6 lg:px-8 py-8 gap-y-7.5 w-full max-w-full">
+      <div className="flex flex-col mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 gap-y-4 sm:gap-y-6 w-full max-w-full">
         {/* Restaurant Stats */}
         <StatsGrid stats={DEFAULT_RESTAURANT_STATS} loading={statsIsLoading} />
 

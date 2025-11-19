@@ -29,7 +29,7 @@ export const ConfirmationModal = ({
   onClose,
   title,
   description,
-  icon = "warningIcon",
+  icon = "commentWarningIcon",
   comment = "",
   onCommentChange,
   onConfirm,
@@ -38,7 +38,7 @@ export const ConfirmationModal = ({
   showCommentField = true,
   commentPlaceholder = "Add comment here",
   commentLabel = "Comment",
-  successButtonClassName = "w-full h-18 bg-[#D80000] text-white rounded-[20px] transition-colors text-[20px] font-semibold",
+  successButtonClassName = "w-full h-12 sm:h-14 bg-[#D80000] text-white rounded-[20px] transition-colors text-base sm:text-lg font-semibold",
 }: ConfirmationModalProps) => {
   return (
     <CenterModal
@@ -49,13 +49,15 @@ export const ConfirmationModal = ({
       className="shadow-none bg-transparent"
     >
       <div className="flex flex-col justify-center items-center">
-        <div className="z-100 rounded-full flex items-center justify-center">
+        <div className="z-100 rounded-full flex items-center justify-center mb-4">
           <Icon name={icon} width={100} height={100} />
         </div>
-        <div className="flex flex-col gap-6 justify-center items-center p-15 w-full bg-white rounded-[20px] mt-[-50px]">
-          <h1 className="text-3xl font-semibold text-[#2E3032]">{title}</h1>
+        <div className="flex flex-col gap-4 sm:gap-6 justify-center items-center p-6 sm:p-8 w-full bg-white rounded-[20px] mt-[-50px]">
+          <h1 className="text-xl sm:text-2xl font-semibold text-[#2E3032]">
+            {title}
+          </h1>
           <p
-            className="text-xl text-[#2E3032] text-center font-medium"
+            className="text-base sm:text-lg text-[#2E3032] text-center font-medium"
             dangerouslySetInnerHTML={{ __html: description }}
           />
 
@@ -63,7 +65,7 @@ export const ConfirmationModal = ({
             <div className="w-full flex flex-col gap-y-4.5">
               <label
                 htmlFor="feedback-comment"
-                className="text-xl font-medium text-[#2E3032]"
+                className="text-base sm:text-lg font-medium text-[#2E3032]"
               >
                 {commentLabel}
               </label>
@@ -72,7 +74,7 @@ export const ConfirmationModal = ({
                 placeholder={commentPlaceholder}
                 value={comment}
                 onChange={onCommentChange}
-                className="w-full px-5 py-6 border-[1.5px] border-[#D2D4D5] placeholder:text-[#9DA1A5] text-[#2E3032] rounded-[20px] resize-none text-xl font-medium"
+                className="w-full px-4 py-3 sm:px-5 sm:py-4 border-[1.5px] border-[#D2D4D5] placeholder:text-[#9DA1A5] text-[#2E3032] rounded-[20px] resize-none text-sm sm:text-base font-medium"
                 rows={4}
                 required
               />
@@ -80,7 +82,7 @@ export const ConfirmationModal = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-4 w-full mt-11.5">
+          <div className="flex gap-3 sm:gap-4 w-full mt-6 sm:mt-8">
             <ActionButtons
               className="w-full"
               actions={[
@@ -90,7 +92,7 @@ export const ConfirmationModal = ({
                   variant: "primary",
                   active: false,
                   className:
-                    "w-full h-18 bg-[#F0F1F2] text-[#2E3032] rounded-[20px] transition-colors text-[20px] font-semibold",
+                    "w-full h-12 sm:h-14 bg-[#F0F1F2] text-[#2E3032] rounded-[20px] transition-colors text-base sm:text-lg font-semibold",
                 },
                 {
                   label: confirmLabel,

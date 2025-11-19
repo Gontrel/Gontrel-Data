@@ -340,14 +340,15 @@ const UserDetailsPage = ({
       {/* Block/Unblock Confirmation Modal */}
       <ConfirmationModal
         isOpen={modalOpen}
+        icon={`${user?.blocked ? "commentSuccessIcon" : "commentWarningIcon"}`}
         onClose={() => setModalOpen(false)}
-        title={`${user?.isActive ? "Deactivate user?" : "Reactivate user?"}`}
+        title={`${!user?.blocked ? "Block user?" : "Unblock user?"}`}
         description={`${
-          user?.isActive
+          !user?.blocked
             ? "Are you sure you want to block this user?"
             : "Are you sure you want to unblock this user?"
         }`}
-        showCommentField={!!user?.isActive}
+        showCommentField={!user?.blocked ? true : false}
         onCommentChange={(e) =>
           setBlockComment((e?.target?.value as string) ?? "")
         }
@@ -355,12 +356,12 @@ const UserDetailsPage = ({
           if (!userId) return;
           toggleUserBlock({
             userId,
-            comment: user?.isActive ? blockComment : undefined,
+            comment: !user?.blocked ? blockComment : undefined,
           });
         }}
-        confirmLabel={`${user?.isActive ? "Deactivate" : "Reactivate"}`}
-        successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
-          user?.isActive ? "bg-[#D80000]" : "bg-[#0070F3]"
+        confirmLabel={`${!user?.blocked ? "Block user" : "Unblock user"}`}
+        successButtonClassName={`${
+          !user?.blocked ? "bg-[#D80000]" : "bg-[#0070F3]"
         }`}
       />
     </div>

@@ -19,16 +19,16 @@ const MetricCard: React.FC<IMetricCardProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="flex flex-col p-4 bg-white rounded-2xl border border-gray-100 shadow-sm min-w-[200px] min-h-[100px] font-sans">
-      <div className="flex flex-row items-center gap-4">
+    <div className="flex flex-col p-3 sm:p-4 bg-white rounded-2xl border border-gray-100 shadow-sm min-w-[180px] sm:min-w-[200px] min-h-[90px] sm:min-h-[100px] font-sans">
+      <div className="flex flex-row items-center gap-3 sm:gap-4">
         {isLoading ? (
           <div
-            className="w-10 h-10 rounded-lg animate-pulse"
+            className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg animate-pulse"
             style={{ backgroundColor: "#E5E7EB" }}
           ></div>
         ) : (
           <div
-            className="flex items-center justify-center w-10 h-10 rounded-lg text-white"
+            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-white"
             style={{ backgroundColor: iconBackgroundColor }}
           >
             <Icon name={iconName} />
@@ -43,7 +43,7 @@ const MetricCard: React.FC<IMetricCardProps> = ({
             )}
           </h3>
 
-          <div className="mt-2 text-2xl font-bold text-[#2E3032]">
+          <div className="mt-1 sm:mt-2 text-xl sm:text-2xl font-bold text-[#2E3032]">
             {isLoading ? (
               <div className="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
             ) : (
