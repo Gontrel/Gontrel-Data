@@ -4,6 +4,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { GenericTable } from "@/components/tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
+import RestaurantCard from "@/components/cards/RestaurantCard";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
 
 // Store and API
@@ -372,6 +374,10 @@ const PendingRestaurants = ({
           orderLink: currentRestaurant?.orderLink?.content || "",
           adminName: currentRestaurant.admin.name,
           adminId: currentRestaurant.admin.id,
+          address: currentRestaurant.address?.content || "",
+          website: currentRestaurant.website || "",
+          mapLink: currentRestaurant.mapLink || "",
+          orderType: currentRestaurant.orderType,
         }
       : {
           id: "",
@@ -382,6 +388,9 @@ const PendingRestaurants = ({
           rating: 0,
           adminName: "",
           adminId: "",
+          address: "",
+          website: "",
+          mapLink: "",
         };
   }, [restaurants, videoPreview.currentRestaurantId]);
 
@@ -449,6 +458,14 @@ const PendingRestaurants = ({
         }
         cancelLabel="Cancel"
       />
+
+      <PreviewVideoModal
+        open={videoPreview.isOpen}
+        onOpenChange={handleCloseVideoPreview}
+        showCloseButton={false}
+      >
+        {restaurant && restaurant.id && <RestaurantCard restaurant={restaurant} />}
+      </PreviewVideoModal>
 
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_RESTAURANTS}
