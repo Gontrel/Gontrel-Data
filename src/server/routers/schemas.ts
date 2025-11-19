@@ -109,6 +109,11 @@ export const staffToggleSchema = z.object({
   comment: z.string().optional(),
 });
 
+export const changeRoleSchema = z.object({
+  adminId: z.string(),
+  role: z.string(),
+});
+
 export const postToggleSchema = z.object({
   postId: z.string(),
   comment: z.string().optional(),

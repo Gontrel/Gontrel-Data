@@ -486,6 +486,22 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  changeRole = async (data: { adminId: string; role: string }) => {
+    try {
+      const response = await this.authenticatedClient.patch(
+        `/admin-change-role`,
+        {
+          adminId: data.adminId,
+          role: data.role,
+        }
+      );
+
+      return this.handleResponse(response);
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
   togglePost = async (data: TogglePost) => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.patch(

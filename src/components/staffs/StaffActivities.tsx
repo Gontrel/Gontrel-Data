@@ -13,6 +13,7 @@ import ActivityTypeFilter from "../filters/activityFilter";
 interface StaffActivitiesProps {
   activitiesData: AuditLog[];
   onDeactivateStaff: () => void;
+  openChangeRoleModal: () => void;
   onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
   isStaffActive: boolean;
@@ -34,6 +35,7 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
   isFetching,
   onDateRangeChange,
   hasMore,
+  openChangeRoleModal,
   onActivityTypeChange,
   activityType,
 }) => {
@@ -54,20 +56,33 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
         <h2 className="text-lg text-[#2E3032] font-medium">
           Staff&apos;s activities
         </h2>
-        <button
-          className={cn(
-            " text-white px-4 py-2 rounded-lg flex items-center gap-2",
-            isStaffActive
-              ? "bg-[#FDE6E6] border-[#F35454] hover:bg-[#FDE6E6]/90 text-[#D80000]"
-              : "bg-[#E6F7FF] border-[#0070F3] hover:bg-[#E6F7FF]/90 text-[#0070F3]"
-          )}
-          onClick={onDeactivateStaff}
-        >
-          <Icon name={isStaffActive ? "blockIcon" : "saveIcon"} />
-          <span className="text-base font-semibold leading-[100%]">
-            {isStaffActive ? "Deactivate staff" : "Reactivate staff"}
-          </span>
-        </button>
+        <div className="flex flex-row gap-2">
+          <button
+            className={cn(
+              " text-white px-4 py-2 rounded-lg flex items-center gap-2 bg-[#0070F3]"
+            )}
+            onClick={openChangeRoleModal}
+          >
+            <Icon name={"changeRoleIcon"} />
+            <span className="text-base font-semibold leading-[100%]">
+              Change role
+            </span>
+          </button>
+          <button
+            className={cn(
+              " text-white px-4 py-2 rounded-lg flex items-center gap-2",
+              isStaffActive
+                ? " bg-[#D80000] hover:bg-[#FDE6E6]/90 text-white"
+                : " bg-[#0070F3] hover:bg-[#E6F7FF]/90 text-white"
+            )}
+            onClick={onDeactivateStaff}
+          >
+            <Icon name={isStaffActive ? "blockIcon" : "saveIcon"} />
+            <span className="text-base font-semibold leading-[100%]">
+              {isStaffActive ? "Deactivate staff" : "Reactivate staff"}
+            </span>
+          </button>
+        </div>
       </div>
 
       <section className="flex justify-between">
