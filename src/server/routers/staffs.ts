@@ -8,6 +8,7 @@ import {
   fetchStaffsSchema,
   staffIdSchema,
   staffToggleSchema,
+  changeRoleSchema,
 } from "./schemas";
 
 
@@ -120,6 +121,24 @@ export const staffsRouter = router({
       apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.toggleStaffActive(input);
+
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  changeRole: protectedProcedure
+    .input(changeRoleSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
+      try {
+        const response = await apiRequest.changeRole(input);
 
         return response;
       } catch (error) {

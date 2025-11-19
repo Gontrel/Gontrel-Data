@@ -51,4 +51,5 @@ export type TIconNames =
   | "messagesIcon"
   | "featureIcon"
   | "commentSuccessIcon"
+  | "changeRoleIcon"
   | "personIcon";

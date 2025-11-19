@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import ChangeRoleModal from "@/components/modals/ChangeRoleModal";
 import AccountSummaryCard from "@/components/staffs/AccountSummaryCard";
 import StaffActivities from "@/components/staffs/StaffActivities";
 import StaffProfileCard from "@/components/staffs/StaffProfileCard";
@@ -24,6 +25,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const [hasMore, setHasMore] = useState(true);
   const [comment, setComment] = useState<string>("");
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [isChangeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
   const [activityType, setActivityType] = useState<ActivityType | undefined>(
     undefined
   );
@@ -86,7 +88,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
 
         if (activityData.length < PAGE_SIZE) {
           setHasMore(false);
-        } 
+        }
 
         if (filtersChanged) {
           setActivity(activityData);
@@ -116,6 +118,16 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
 
   const handleDeactivateStaff = () => {
     setConfirmationModalOpen(true);
+  };
+
+  const handleChangeRole = () => {
+    setChangeRoleModalOpen(true);
+  };
+
+  const handleRoleChangeSuccess = () => {
+    refetchStaffProfile();
+    refetchStaffAccountSummary();
+    fetchActivities(1, true);
   };
 
   const isStaffActive = staffProfileData?.isActive ?? false;
@@ -203,6 +215,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           {/* Staff's Activities */}
           <StaffActivities
             onDeactivateStaff={handleDeactivateStaff}
+            openChangeRoleModal={handleChangeRole}
             activitiesData={activity}
             onScroll={handleScroll}
             isFetching={isFetching}
@@ -239,6 +252,20 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
         successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
           isStaffActive ? "bg-[#D80000]" : "bg-[#0070F3]"
         }`}
+      />
+
+      {/* Change Role Modal */}
+      <ChangeRoleModal
+        open={isChangeRoleModalOpen}
+        onOpenChange={setChangeRoleModalOpen}
+        staffId={staffProfileData?.id ?? ""}
+        staffName={staffProfileData?.name ?? ""}
+        staffRole={staffProfileData?.role ?? ""}
+        staffEmail={staffProfileData?.email ?? ""}
+        staffProfileImage={
+          staffProfileData?.profileImage || "/images/avatar.png"
+        }
+        onSuccess={handleRoleChangeSuccess}
       />
     </div>
   );
