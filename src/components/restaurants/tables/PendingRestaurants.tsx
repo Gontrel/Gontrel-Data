@@ -47,6 +47,7 @@ interface FeedbackModalState {
   isOpen: boolean;
   restaurant: PendingRestaurantTableTypes | null;
   comment: string;
+  context: "feedback" | "saveAndComment";
 }
 
 // =============================================================================
@@ -99,6 +100,7 @@ const PendingRestaurants = ({
     isOpen: false,
     restaurant: null,
     comment: "",
+    context: "feedback",
   });
 
   // ---------------------------------------------------------------------------
@@ -221,11 +223,15 @@ const PendingRestaurants = ({
   );
 
   const openFeedbackModal = useCallback(
-    (restaurant: PendingRestaurantTableTypes) => {
+    (
+      restaurant: PendingRestaurantTableTypes,
+      context: "feedback" | "saveAndComment" = "feedback"
+    ) => {
       setFeedbackModal({
         isOpen: true,
         restaurant,
         comment: "",
+        context,
       });
     },
     []
@@ -236,6 +242,7 @@ const PendingRestaurants = ({
       isOpen: false,
       restaurant: null,
       comment: "",
+      context: "feedback",
     });
   }, []);
 
@@ -378,6 +385,13 @@ const PendingRestaurants = ({
         };
   }, [restaurants, videoPreview.currentRestaurantId]);
 
+  const handleSendFeedbackForSaveAndComment = useCallback(
+    (restaurant: PendingRestaurantTableTypes) => {
+      openFeedbackModal(restaurant, "saveAndComment");
+    },
+    [openFeedbackModal]
+  );
+
   const columns = useMemo(
     () =>
       createPendingRestaurantsColumns(
@@ -385,13 +399,15 @@ const PendingRestaurants = ({
         handleApprove,
         handleDecline,
         handleSendFeedback,
-        handleSaveRestaurant
+        handleSaveRestaurant,
+        handleSendFeedbackForSaveAndComment
       ),
     [
       handleApprove,
       handleDecline,
       handleSaveRestaurant,
       handleSendFeedback,
+      handleSendFeedbackForSaveAndComment,
       handleOpenVideoPreview,
     ]
   );
@@ -403,15 +419,34 @@ const PendingRestaurants = ({
   return (
     <div>
       <ConfirmationModal
-        icon="commentSuccessIcon"
+        icon={
+          feedbackModal.context === "saveAndComment"
+            ? "commentSuccessIcon"
+            : "commentWarningIcon"
+        }
         isOpen={feedbackModal.isOpen}
         onClose={closeFeedbackModal}
-        title="Send feedback"
-        description="Drop a comment for the analyst that<br />submitted this restaurant"
+        title={
+          feedbackModal.context === "saveAndComment"
+            ? "Drop a comment"
+            : "Send feedback"
+        }
+        description={
+          feedbackModal.context === "saveAndComment"
+            ? "Drop a comment for the analyst that <br /> submitted this restaurant whilst approving it"
+            : "Drop a comment for the analyst that <br />submitted this restaurant"
+        }
         comment={feedbackModal.comment}
         onCommentChange={handleCommentChange}
         onConfirm={handleSubmitFeedback}
-        confirmLabel="Send feedback"
+        confirmLabel={
+          feedbackModal.context === "saveAndComment"
+            ? "Approve & Send comment"
+            : "Send feedback"
+        }
+        successButtonClassName={
+          feedbackModal.context === "saveAndComment" ? "bg-[#0070F3]" : ""
+        }
         cancelLabel="Cancel"
       />
 

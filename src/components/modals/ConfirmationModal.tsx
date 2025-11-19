@@ -1,7 +1,7 @@
 import React from "react";
+import Image from "next/image";
 import { ActionButtons } from "../ui/ActionButtons";
 import { CenterModal } from "../ui/CenterModal";
-import Icon from "../svgs/Icons";
 import { TIconNames } from "../svgs/IconNames";
 
 interface ConfirmationModalProps {
@@ -50,7 +50,12 @@ export const ConfirmationModal = ({
     >
       <div className="flex flex-col justify-center items-center">
         <div className="z-100 rounded-full flex items-center justify-center mb-4">
-          <Icon name={icon} width={100} height={100} />
+          <Image
+            src={icon === "commentSuccessIcon" ? "/images/commentSuccess.png" : "/images/commentWarning.png"}
+            alt={icon === "commentSuccessIcon" ? "Success" : "Warning"}
+            width={100}
+            height={100}
+          />
         </div>
         <div className="flex flex-col gap-4 sm:gap-6 justify-center items-center p-6 sm:p-8 w-full bg-white rounded-[20px] mt-[-50px]">
           <h1 className="text-xl sm:text-2xl font-semibold text-[#2E3032]">

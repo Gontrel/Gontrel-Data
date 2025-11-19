@@ -50,18 +50,11 @@ const CommentedRestaurants = ({
     [handleView]
   );
 
-  // const handleRowSelection = useCallback(
-  //   (_selectedRows: SubmittedRestaurantTableTypes[]) => {
-  //     // no row actions for now
-  //   },
-  //   []
-  // );
 
   return (
     <GenericTable<SubmittedRestaurantTableTypes>
       data={restaurants}
       loading={isLoading}
-      // onRowSelect={handleRowSelection}
       showSelection={true}
       columns={columns}
       currentPage={currentPage}
