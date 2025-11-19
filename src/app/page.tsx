@@ -114,8 +114,8 @@ export default function Login() {
   };
 
   return (
-    <main className=" flex min-h-screen items-center justify-center ">
-      <section className="flex flex-col items-center min-w-[559px] min-h-[697px]">
+    <main className="flex min-h-screen items-center justify-center p-4">
+      <section className="flex flex-col items-center w-full max-w-md sm:max-w-lg">
         {/* Header section */}
         <div className="flex flex-col items-center bg-white">
           <Image
@@ -126,20 +126,20 @@ export default function Login() {
             // className="mx-auto block"
           />
 
-          <h1 className="pt-[27px] text-[40px] leading-[100%] tracking-[0px] font-semibold">
+          <h1 className="pt-6 text-2xl sm:text-3xl leading-[100%] tracking-[0px] font-semibold">
             Welcome back
           </h1>
-          <p className="pt-[12px] text-center text-[20px] font-medium">
+          <p className="pt-3 text-center text-base sm:text-lg font-medium">
             Let’s get you signed in
           </p>
         </div>
 
         {/* Form section */}
-        <section className="mt-[60px] min-w-[559px] md:w-1/2">
+        <section className="mt-8 sm:mt-12 w-full">
           <form className="" onSubmit={handleLogin}>
             {/* Email field */}
-            <div className="mb-[30px]">
-              <label className="text-xl font-medium text-[#444]">
+            <div className="mb-6">
+              <label className="text-base sm:text-lg font-medium text-[#444]">
                 Email Address
               </label>
               <input
@@ -147,31 +147,30 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
-                className="w-full border border-[#D5D5D5] rounded-[20px] mt-[19px] px-[22px] py-[28px] placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="w-full border border-[#D5D5D5] rounded-[20px] mt-4 px-4 py-3 sm:px-5 sm:py-4 placeholder-[#8A8A8A] placeholder:text-sm sm:placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
 
             {/* Password field */}
             <div>
               <div className="flex flex-row justify-between">
-                <label className="text-xl font-medium text-[#444]">
+                <label className="text-base sm:text-lg font-medium text-[#444]">
                   Password
                 </label>
                 <Link href="/forget-password">
-                  <p className="text-blue-500 font-medium text-[20px]">
+                  <p className="text-blue-500 font-medium text-base sm:text-lg">
                     Forgot Password?
                   </p>
                 </Link>
               </div>
 
-              <div className="relative mt-[19px]">
+              <div className="relative mt-4">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Your password"
-                  className="w-full border border-[#D5D5D5] rounded-[20px] px-[22px] py-[28px]
-                      placeholder-[#8A8A8A] placeholder:text-lg focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
+                  className="w-full border border-[#D5D5D5] rounded-[20px] px-4 py-3 sm:px-5 sm:py-4 placeholder-[#8A8A8A] placeholder:text-sm sm:placeholder:text-base focus:outline-none focus:ring-2 focus:ring-blue-300 pr-12"
                 />
                 <button
                   type="button"
@@ -185,7 +184,7 @@ export default function Login() {
             </div>
             <Button
               type="submit"
-              className="cursor-pointer mt-[50px] w-full bg-blue-500 h-[80px] border rounded-[20px] font-semibold text-[20px] text-white"
+              className="cursor-pointer mt-8 w-full bg-blue-500 h-12 sm:h-14 border rounded-[20px] font-semibold text-base sm:text-lg text-white"
               disabled={isLoading}
               loading={isLoading}
             >

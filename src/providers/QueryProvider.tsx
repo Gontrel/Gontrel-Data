@@ -45,17 +45,6 @@ export const QueryProvider = ({ children }: { children: ReactNode }) => {
         // Add logger for debugging (only in development)
         loggerLink({
           enabled: () => true, // Always enabled for debugging
-          logger: (opts) => {
-            if (opts.direction === "down") {
-              if (opts.result instanceof Error) {
-                const errorWithData = opts.result as Error & {
-                  data?: unknown;
-                  shape?: unknown;
-                };
-          
-              }
-            }
-          },
         }),
         httpBatchLink({
           url: "/api/trpc",

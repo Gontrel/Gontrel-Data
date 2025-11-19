@@ -33,9 +33,7 @@ const TableReportPreviewSheetHeader = ({
 }: TableReportPreviewSheetHeaderProps) => {
   return (
     <section className="flex flex-row items-center justify-between pb-5 px-6 pt-9 bg-[#FFF]">
-      <h2 className="text-xl font-semibold text-[#2E3032]">
-        Reported videos
-      </h2>
+      <h2 className="text-xl font-semibold text-[#2E3032]">Reported videos</h2>
       <button
         onClick={() => onOpenChange(false)}
         aria-label="Close preview modal"
@@ -73,7 +71,9 @@ export const TableReportPreviewSheet = ({
     setModalState({ isOpen: false, comment: "", actionType: null });
   };
 
-  const handleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleCommentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setModalState({
       ...modalState,
       comment: event.target.value,
@@ -124,32 +124,32 @@ export const TableReportPreviewSheet = ({
       className="bg-white overflow-y-auto"
     >
       <TableReportPreviewSheetHeader onOpenChange={onOpenChange} />
-  
-        <ReportDetailsCard
-          reporter={reporter}
-          uploader={uploader}
-          onApprove={() => handleOpenActionModal("approve")}
-          onDecline={() => handleOpenActionModal("decline")}
-          status={data?.status ?? ""}
-        />
 
+      <ReportDetailsCard
+        reporter={reporter}
+        uploader={uploader}
+        onApprove={() => handleOpenActionModal("approve")}
+        onDecline={() => handleOpenActionModal("decline")}
+        status={data?.status ?? ""}
+      />
 
       <ConfirmationModal
         isOpen={modalState.isOpen}
         onClose={closeActionModal}
+        icon={`${isDecline ? "commentSuccessIcon" : "commentWarningIcon"}`}
         title={isDecline ? "Decline report?" : "Approve report?"}
         description={
           isDecline
             ? "Are you sure you want to decline this report? This action cannot be undone."
             : "Are you sure you want to approve this report? This action cannot be undone."
         }
-        showCommentField={false} 
+        showCommentField={false}
         onCommentChange={handleCommentChange}
         onConfirm={handleSubmitAction}
         confirmLabel={isDecline ? "Decline report" : "Approve report"}
         cancelLabel="Cancel"
         successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
-          isDecline ? "bg-[#008A04]":  "bg-[#D80000]"
+          isDecline ? "bg-[#008A04]" : "bg-[#D80000]"
         }`}
       />
     </Sheet>

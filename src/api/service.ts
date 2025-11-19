@@ -170,7 +170,6 @@ export default class APIRequest {
 
   login = async (data: AdminLoginRequest): Promise<LoginResponse> => {
     try {
-    
       const response = await unauthenticatedClient.post(`/admin-login`, data, {
         timeout: 10000, // 10 second timeout for login (fail fast)
       });
@@ -203,7 +202,6 @@ export default class APIRequest {
 
       return responseData;
     } catch (error: any) {
-
       // Handle timeout errors
       if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
         throw new Error("Request timed out. Please check your connection.");

@@ -34,7 +34,7 @@ export function TableRow<T>({ row }: TableRowProps<T>) {
           <td
             key={cell.id}
             className={mergeClasses(
-              "py-5 px-2.5 text-left bg-white transition-colors duration-150",
+              "py-3 px-2 text-left bg-white transition-colors duration-150",
               isSticky ? "sticky z-10" : "relative"
             )}
             style={

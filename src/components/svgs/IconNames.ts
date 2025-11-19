@@ -33,7 +33,7 @@ export type TIconNames =
   | "deactivateIcon"
   | "saveIcon"
   | "statusIcon"
-  | "warningIcon"
+  | "commentWarningIcon"
   | "googleIcon"
   | "binIcon"
   | "pencilIcon"

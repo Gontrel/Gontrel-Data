@@ -265,13 +265,14 @@ export const useTableTotals = (
     | ReportTableTabsEnum,
     number
   > = {
-    // Manager
-    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
+    // Manager & Analyst shared
+    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount, // Also covers AnalystTableTabsEnum.ACTIVE_RESTAURANTS
+    // Manager only
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsCount,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: activeVideosCount,
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
-    // Analyst
+    // Analyst only
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsCount,
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
     [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]: commentedRestaurantsCount,
