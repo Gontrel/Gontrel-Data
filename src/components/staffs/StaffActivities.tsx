@@ -12,6 +12,7 @@ import ActivityTypeFilter from "../filters/activityFilter";
 
 interface StaffActivitiesProps {
   activitiesData: AuditLog[];
+  totalActivities: number;
   onDeactivateStaff: () => void;
   openChangeRoleModal: () => void;
   onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
@@ -27,6 +28,7 @@ interface StaffActivitiesProps {
 
 const StaffActivities: React.FC<StaffActivitiesProps> = ({
   activitiesData,
+  totalActivities,
   onDeactivateStaff,
   onScroll,
   scrollContainerRef,
@@ -40,15 +42,112 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
   activityType,
 }) => {
   const [currentMonth, setCurrentMonth] = useState("");
+  const activityItemRefs = React.useRef<Map<string, HTMLDivElement>>(new Map());
 
-  useEffect(() => {
-    const today = new Date();
+  // Format date to month string
+  const formatMonth = (date: Date): string => {
     const formatter = new Intl.DateTimeFormat("en-US", {
       month: "long",
       year: "numeric",
     });
-    setCurrentMonth(formatter.format(today));
-  }, []);
+    return formatter.format(date);
+  };
+
+  // Calculate month from first activity (latest)
+  useEffect(() => {
+    if (activitiesData.length > 0) {
+      const firstActivity = activitiesData[0];
+      if (firstActivity?.createdAt) {
+        try {
+          const date = new Date(firstActivity.createdAt);
+          if (!isNaN(date.getTime())) {
+            const monthString = formatMonth(date);
+            console.log("Setting month from first activity:", monthString, "Date:", firstActivity.createdAt);
+            setCurrentMonth(monthString);
+          } else {
+            console.log("Invalid date:", firstActivity.createdAt);
+          }
+        } catch (error) {
+          console.error("Error parsing date:", error, firstActivity.createdAt);
+        }
+      } else {
+        console.log("First activity has no createdAt:", firstActivity);
+      }
+    } else {
+      console.log("No activities data available");
+    }
+  }, [activitiesData]);
+
+  // Handle scroll to detect month changes
+  const handleScrollWithMonthDetection = (
+    e: React.UIEvent<HTMLDivElement>
+  ) => {
+    onScroll(e);
+
+    // Throttle month updates to avoid excessive re-renders
+    if (!scrollContainerRef.current || activitiesData.length === 0) return;
+
+    requestAnimationFrame(() => {
+      if (!scrollContainerRef.current) return;
+
+      const container = scrollContainerRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const scrollTop = container.scrollTop;
+      const containerHeight = container.clientHeight;
+      const viewportCenter = scrollTop + containerHeight / 2;
+
+      // Find the activity item closest to the viewport center
+      let closestActivity: AuditLog | null = null;
+      let closestDistance = Infinity;
+
+      for (const activity of activitiesData) {
+        const element = activityItemRefs.current.get(activity.id);
+        if (!element) continue;
+
+        const elementTop = element.offsetTop;
+        const elementHeight = element.offsetHeight;
+        const elementCenter = elementTop + elementHeight / 2;
+        const distance = Math.abs(elementCenter - viewportCenter);
+
+        // Only consider elements that are at least partially visible
+        if (elementTop < scrollTop + containerHeight && elementTop + elementHeight > scrollTop) {
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestActivity = activity;
+          }
+        }
+      }
+
+      // If no visible activity found, use the first activity (latest)
+      if (!closestActivity && activitiesData.length > 0) {
+        closestActivity = activitiesData[0];
+      }
+
+      // Update month based on the closest visible activity
+      if (closestActivity?.createdAt) {
+        try {
+          const date = new Date(closestActivity.createdAt);
+          if (!isNaN(date.getTime())) {
+            const monthString = formatMonth(date);
+            setCurrentMonth(monthString);
+          }
+        } catch (error) {
+          // Invalid date, skip
+        }
+      }
+    });
+  };
+
+  // Set ref callback for activity items
+  const setActivityItemRef = (activityId: string) => {
+    return (element: HTMLDivElement | null) => {
+      if (element) {
+        activityItemRefs.current.set(activityId, element);
+      } else {
+        activityItemRefs.current.delete(activityId);
+      }
+    };
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-l-sm p-6">
@@ -100,30 +199,36 @@ const StaffActivities: React.FC<StaffActivitiesProps> = ({
 
       <div
         ref={scrollContainerRef}
-        onScroll={onScroll}
+        onScroll={handleScrollWithMonthDetection}
         className="mt-6 flex-grow overflow-y-auto space-y-6"
         style={{ maxHeight: "calc(100vh - 300px)" }}
       >
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-[20px] font-semibold text-[#2E3032]">
-            {currentMonth}
+            {currentMonth || (activitiesData.length > 0 ? "Loading..." : "No activities")}
           </h3>
           <div className="text-[20px] font-semibold text-[#2E3032]">
-            {activitiesData.length} activities
+            {totalActivities > 0 ? totalActivities : activitiesData.length}{" "}
+            {totalActivities === 1 || activitiesData.length === 1 ? "activity" : "activities"}
           </div>
         </div>
 
         {activitiesData.length > 0 ? (
           <>
             {activitiesData.map((activity) => (
-              <ActivityItem
+              <div
                 key={activity.id}
-                type={activity.type}
-                content={activity.content}
-                timestamp={activity.createdAt}
-                restaurant={activity.adminLocation}
-                post={activity.adminPost}
-              />
+                ref={setActivityItemRef(activity.id)}
+                data-activity-date={activity.createdAt}
+              >
+                <ActivityItem
+                  type={activity.type}
+                  content={activity.content}
+                  timestamp={activity.createdAt}
+                  restaurant={activity.adminLocation}
+                  post={activity.adminPost}
+                />
+              </div>
             ))}
             {isFetching ? (
               <p className="text-center text-gray-500 my-4">Loading more...</p>
