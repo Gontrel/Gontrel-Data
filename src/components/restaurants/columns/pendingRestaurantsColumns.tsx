@@ -35,7 +35,8 @@ export const createPendingRestaurantsColumns = (
     statusKey?: PendingRestaurantStatusKey
   ) => void,
   handleSendFeedback: (restaurant: PendingRestaurantTableTypes) => void,
-  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void
+  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void,
+  handleSendFeedbackForSaveAndComment?: (restaurant: PendingRestaurantTableTypes) => void
 ): ColumnDef<PendingRestaurantTableTypes>[] => [
   {
     accessorKey: "id",
@@ -314,7 +315,7 @@ export const createPendingRestaurantsColumns = (
     cell: ({ row }) => (
       <SaveCommentCell
         row={row}
-        onRequestComment={handleSendFeedback}
+        onRequestComment={handleSendFeedbackForSaveAndComment || handleSendFeedback}
       />
     ),
     minSize: TABLE_COLUMN_SIZES.ACTIONS,
