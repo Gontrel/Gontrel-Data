@@ -49,6 +49,12 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   } = trpc.staffs.getStaffsAccountSummary.useQuery(
     {
       adminId: staffId,
+      startDate: dateRange?.startDate
+        ? format(dateRange.startDate, "yyyy-MM-dd")
+        : undefined,
+      endDate: dateRange?.endDate
+        ? format(dateRange.endDate, "yyyy-MM-dd")
+        : undefined,
     },
     { enabled: !!staffId }
   );
@@ -221,7 +227,6 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   if (isLoadingStaffProfile && isLoadingStaffAccountSummary && isFetching) {
     return <StaffDetailsSkeleton />;
   }
-
 
   return (
     <div className="p-6 bg-[#FAFAFA] h-screen">
