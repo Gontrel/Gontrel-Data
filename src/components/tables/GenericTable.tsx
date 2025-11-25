@@ -92,7 +92,7 @@ export function GenericTable<T>({
 
   return (
     <div className="w-full">
-      <div className="rounded-2xl p-5 bg-white">
+      <div className="rounded-2xl p-3 sm:p-4 bg-white">
         {/* Responsive scroll container */}
         <div className="w-full overflow-x-auto">
           <table className="w-full min-w-max">

@@ -1,5 +1,4 @@
-import { UserCircle, LogOut } from "lucide-react";
-import Icon from "../svgs/Icons";
+import { LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CenterModal } from "@/components/ui/CenterModal";
@@ -11,12 +10,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/DropdownMenu";
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore, useCurrentUser } from "@/stores/authStore";
 import { Button } from "../ui/Button";
+import Image from "next/image";
 
 export const UserProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { logout } = useAuthStore();
+  const user = useCurrentUser();
   const router = useRouter();
 
   const { mutate: logoutMutation, isSuccess } = trpc.auth.logout.useMutation({
@@ -35,9 +36,21 @@ export const UserProfile = () => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="flex items-center gap-2 p-1 rounded-full cursor-pointer hover:bg-gray-100">
-            <UserCircle size={24} />
-            <Icon name="arrowdownIcon" className="w-4 h-4" />
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white border border-gray-200 hover:shadow-md cursor-pointer">
+            {user?.profileImage ? (
+              <Image
+                src={user.profileImage}
+                alt={user.name.charAt(0) ?? "User"}
+                width={50}
+                height={50}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 text-white flex items-center justify-center font-bold">
+                {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
+              </div>
+            )}
+            <ChevronDown size={16} className="text-gray-700" />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

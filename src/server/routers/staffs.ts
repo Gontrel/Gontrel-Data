@@ -8,6 +8,7 @@ import {
   fetchStaffsSchema,
   staffIdSchema,
   staffToggleSchema,
+  changeRoleSchema,
 } from "./schemas";
 
 
@@ -31,7 +32,8 @@ export const staffsRouter = router({
   getStaffs: protectedProcedure
     .input(fetchStaffsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getStaffs(input);
 
@@ -46,7 +48,8 @@ export const staffsRouter = router({
     }),
 
   getStaffsStats: protectedProcedure.query(async ({ ctx }) => {
-    const apiRequest = new APIRequest(ctx.req.headers);
+    const apiRequest = APIRequest.getInstance();
+    apiRequest.configure(ctx.req.headers);
     try {
       const response = await apiRequest.getStaffsStats();
       return response;
@@ -62,7 +65,8 @@ export const staffsRouter = router({
   getStaffProfile: protectedProcedure
     .input(staffIdSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getStaffProfile(input);
 
@@ -79,7 +83,8 @@ export const staffsRouter = router({
   getStaffsAccountSummary: protectedProcedure
     .input(fetchAdminSummarySchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getStaffsAccountSummary(input);
         return response;
@@ -95,7 +100,8 @@ export const staffsRouter = router({
   getStaffActivities: protectedProcedure
     .input(fetchStaffActivitieSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.getStaffsActivities(input);
         return response;
@@ -111,9 +117,28 @@ export const staffsRouter = router({
   toggleStaffStatus: protectedProcedure
     .input(staffToggleSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.toggleStaffActive(input);
+
+        return response;
+      } catch (error) {
+        const message = getErrorMessage(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message,
+        });
+      }
+    }),
+
+  changeRole: protectedProcedure
+    .input(changeRoleSchema)
+    .mutation(async ({ input, ctx }) => {
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
+      try {
+        const response = await apiRequest.changeRole(input);
 
         return response;
       } catch (error) {

@@ -69,6 +69,7 @@ const PendingVideos = ({
     posts: [],
     currentRestaurantId: null,
   });
+
   const { queryData, isLoading, refetch } = usePendingVideos({
     currentPage,
     pageSize,
@@ -139,13 +140,14 @@ const PendingVideos = ({
   );
 
   const handleDeclinePost = useCallback(
-    (locationId: string, postId: string) => {
+    (locationId: string, postId: string, comment: string) => {
       declineVideo(postId);
       approveRestaurantStatus({
         resourceId: postId,
         locationId,
         type: ApprovalType.POST,
         status: ApprovalStatusEnum.REJECTED,
+        comment,
       });
     },
     [declineVideo, approveRestaurantStatus]

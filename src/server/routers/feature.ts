@@ -7,7 +7,8 @@ import { createFeatureFlagSchema, fetchFeatureFlagsSchema, toggleFeatureFlagSche
 
 export const featureRouter = router({
   getFeatureFlagCards: protectedProcedure.query(async ({ ctx }) => {
-    const apiRequest = new APIRequest(ctx.req.headers);
+    const apiRequest = APIRequest.getInstance();
+    apiRequest.configure(ctx.req.headers);
     try {
       const res = await apiRequest.getFeatureFlagCards();
       return res;
@@ -22,7 +23,8 @@ export const featureRouter = router({
   adminListFeatureFlags: protectedProcedure
     .input(fetchFeatureFlagsSchema)
     .query(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const res = await apiRequest.adminListFeatureFlags({
           pageNumber: input.pageNumber,
@@ -43,7 +45,8 @@ export const featureRouter = router({
       toggleFeatureFlagActive: protectedProcedure
     .input(toggleFeatureFlagSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
 
         const res = await apiRequest.toggleFeatureFlagActive({
@@ -58,7 +61,8 @@ export const featureRouter = router({
   createFeatureFlag: protectedProcedure
     .input(createFeatureFlagSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const res = await apiRequest.createFeatureFlag(input.name);
         return res;

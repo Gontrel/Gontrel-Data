@@ -9,6 +9,7 @@ import { GontrelRestaurantData } from "@/interfaces/restaurants";
 import Icon from "../svgs/Icons";
 import { formatPostTime } from "@/lib/utils";
 import EditDeletePopup from "../popups/editAndDelete";
+import { useIsAnalyst } from "@/stores/authStore";
 
 interface LivePostCardProps {
   handleApprove?: (restaurantId: string, postId: string) => void;
@@ -33,6 +34,7 @@ export const LivePostCard = ({
 }: LivePostCardProps) => {
 
   const isUser = post?.source === AdminRoleEnum.USER;
+  const isAnalyst = useIsAnalyst();
   const showEditAndDelete =
     RestaurantDetailsFlow && post?.status === ApprovalStatusEnum.APPROVED;
 
@@ -133,7 +135,19 @@ export const LivePostCard = ({
         </div>
       </div>
 
-      {handleApprove &&
+      {post?.status === ApprovalStatusEnum.REJECTED && (
+        <div className="border-t border-[#D2D4D5] pt-4">
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-semibold text-[#2E3032]">Comment</span>
+            <p className="text-sm text-[#6B6E72] whitespace-pre-wrap">
+              {post?.comment || "No comment provided."}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {!isAnalyst &&
+        handleApprove &&
         handleDecline &&
         (post?.status === ApprovalStatusEnum.PENDING ? (
           <div className="flex items-center border-t border-[#D2D4D5] pt-4 gap-[18px] px-7.5">

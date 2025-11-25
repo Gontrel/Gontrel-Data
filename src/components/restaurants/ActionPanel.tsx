@@ -80,8 +80,8 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   }, [userOptions, fetchedUserOptions]);
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4.5">
-      <div className="flex-1 gap-4.5 flex flex-row justify-between w-full">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="flex-1 gap-3 sm:gap-4 flex flex-row justify-between w-full">
         {/* Search */}
         <SearchBar
           value={searchTerm}

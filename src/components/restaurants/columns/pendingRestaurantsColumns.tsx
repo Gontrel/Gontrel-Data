@@ -13,6 +13,7 @@ import { PillButton } from "@/components/ui/PillButton";
 import { TableHeader } from "./utils";
 import { Post } from "@/interfaces";
 import { ActionCell } from "./ActionCell";
+import { SaveCommentCell } from "./SaveCommentCell";
 
 /**
  * Creates column definitions for pending restaurants table
@@ -34,7 +35,8 @@ export const createPendingRestaurantsColumns = (
     statusKey?: PendingRestaurantStatusKey
   ) => void,
   handleSendFeedback: (restaurant: PendingRestaurantTableTypes) => void,
-  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void
+  handleSaveRestaurant: (restaurant: PendingRestaurantTableTypes) => void,
+  handleSendFeedbackForSaveAndComment?: (restaurant: PendingRestaurantTableTypes) => void
 ): ColumnDef<PendingRestaurantTableTypes>[] => [
   {
     accessorKey: "id",
@@ -303,6 +305,17 @@ export const createPendingRestaurantsColumns = (
         row={row}
         handleSendFeedback={handleSendFeedback}
         handleSaveRestaurant={handleSaveRestaurant}
+      />
+    ),
+    minSize: TABLE_COLUMN_SIZES.ACTIONS,
+  },
+  {
+    id: "saveAndComment",
+    header: () => <span />,
+    cell: ({ row }) => (
+      <SaveCommentCell
+        row={row}
+        onRequestComment={handleSendFeedbackForSaveAndComment || handleSendFeedback}
       />
     ),
     minSize: TABLE_COLUMN_SIZES.ACTIONS,

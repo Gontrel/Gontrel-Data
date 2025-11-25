@@ -33,7 +33,7 @@ export type TIconNames =
   | "deactivateIcon"
   | "saveIcon"
   | "statusIcon"
-  | "warningIcon"
+  | "commentWarningIcon"
   | "googleIcon"
   | "binIcon"
   | "pencilIcon"
@@ -50,4 +50,6 @@ export type TIconNames =
   | "competitionIcon"
   | "messagesIcon"
   | "featureIcon"
+  | "commentSuccessIcon"
+  | "changeRoleIcon"
   | "personIcon";

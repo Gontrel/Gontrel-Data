@@ -109,6 +109,11 @@ export const staffToggleSchema = z.object({
   comment: z.string().optional(),
 });
 
+export const changeRoleSchema = z.object({
+  adminId: z.string(),
+  role: z.string(),
+});
+
 export const postToggleSchema = z.object({
   postId: z.string(),
   comment: z.string().optional(),
@@ -288,6 +293,7 @@ export const fetchLocationsSchema = baseQuerySchema.extend({
   userId: z.string().optional(),
   adminId: z.string().optional(),
   tagId: z.string().optional(),
+  hasComment: z.boolean().optional(),
   sortBy: z.string().optional(),
   sortOrder: z.string().optional(),
   includeRejected: z.boolean().optional(),

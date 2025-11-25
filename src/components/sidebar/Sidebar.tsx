@@ -87,18 +87,18 @@ const Sidebar = () => {
   const isAdmin = useIsAdmin();
 
   return (
-    <aside className="w-[300px] bg-white h-screen fixed left-0 top-0 p-8 shadow-md flex flex-col">
-      <div className="flex items-center gap-2 mb-12">
+    <aside className="w-[240px] lg:w-[260px] bg-white h-screen fixed left-0 top-0 p-4 lg:p-6 shadow-md flex flex-col z-20 hidden md:flex">
+      <div className="flex items-center gap-2 mb-6 lg:mb-8">
         <Image
           src={"/images/logo.png"}
           alt="Gontrel Logo"
-          width={60}
-          height={60}
-          className="w-[60px] h-auto"
+          width={40}
+          height={40}
+          className="w-[40px] lg:w-[50px] h-auto"
         />
       </div>
 
-      <nav className="flex flex-col gap-8 mt-[41px]">
+      <nav className="flex flex-col gap-6 lg:gap-8 mt-6 lg:mt-8">
         {navSections.map((section) => {
           if (section.title === "MANAGEMENT" && !isAdmin) {
             return null;
@@ -106,10 +106,10 @@ const Sidebar = () => {
 
           return (
             <div key={section.title}>
-              <h2 className="text-[#9DA1A5] leading-[100%] text-[22px] font-semibold mb-[25px] uppercase tracking-wider">
+              <h2 className="text-[#9DA1A5] leading-[100%] text-sm lg:text-base font-semibold mb-4 lg:mb-5 uppercase tracking-wider">
                 {section.title}
               </h2>
-              <ul className="flex flex-col gap-[25px]">
+              <ul className="flex flex-col gap-3 lg:gap-4">
                 {section.links.map((link) => {
                   const isActive = link.matchSubPaths
                     ? pathname.startsWith(link.href)
@@ -118,7 +118,7 @@ const Sidebar = () => {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className={`flex items-center gap-4 py-4 px-[10px] hover:px-[10px],py-4 rounded-lg transition-all duration-200 ${
+                        className={`flex items-center gap-3 py-3 px-2 lg:px-3 rounded-lg transition-all duration-200 ${
                           isActive
                             ? "bg-gradient-to-r from-[#B405FE] to-[#1D5FF5] text-white shadow-lg"
                             : "text-[#9DA1A5]  hover:bg-gray-100"
@@ -130,7 +130,7 @@ const Sidebar = () => {
                           stroke={`${isActive ? "#FFFFFF" : "#9DA1A5"}`}
                         />
                         <span
-                          className={`text-[#9DA1A5] leading-[100%] text-[22px] font-medium ${
+                          className={`text-[#9DA1A5] leading-[100%] text-sm lg:text-base font-medium ${
                             isActive ? "text-white" : "text-[#9DA1A5]"
                           }  `}
                         >

@@ -43,6 +43,7 @@ import {
   GetLocationStatsResponse,
   GetReportedVideosResponse,
 } from "@/interfaces";
+
 import {
   BaseQueryRequest,
   CreateAdminRequest,
@@ -61,29 +62,50 @@ import {
 export default class APIRequest {
   private authenticatedClient: AxiosInstance;
   private unauthenticatedClient: AxiosInstance;
+  private static instance: APIRequest | null = null;
 
-  constructor(headers?: Headers) {
+  private constructor() {
+    // Initialize with default authenticated client (no token)
+    this.authenticatedClient = axiosInstance;
+    this.unauthenticatedClient = unauthenticatedClient;
+  }
+
+  /**
+   * Get the singleton instance of APIRequest
+   */
+  public static getInstance(): APIRequest {
+    if (!APIRequest.instance) {
+      APIRequest.instance = new APIRequest();
+    }
+    return APIRequest.instance;
+  }
+
+  /**
+   * Configure the authenticated client with headers (for server-side requests)
+   * This updates the authenticated client to use the token from cookies
+   */
+  public configure(headers?: Headers): void {
     if (typeof window === "undefined" && headers?.get("cookie")) {
       const cookieHeader = headers.get("cookie");
       if (cookieHeader) {
         const cookies = parse(cookieHeader);
         const token = cookies.user_token;
 
-        this.authenticatedClient = axios.create({
-          ...axiosInstance.defaults,
-          headers: {
-            ...axiosInstance.defaults.headers,
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else {
-        this.authenticatedClient = axiosInstance;
+        if (token) {
+          // Update authenticated client with token from headers
+          this.authenticatedClient = axios.create({
+            ...axiosInstance.defaults,
+            headers: {
+              ...axiosInstance.defaults.headers,
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          return;
+        }
       }
-    } else {
-      this.authenticatedClient = axiosInstance;
     }
-
-    this.unauthenticatedClient = unauthenticatedClient;
+    // Fallback to default authenticated client
+    this.authenticatedClient = axiosInstance;
   }
 
   private handleResponse(response: AxiosResponse) {
@@ -128,10 +150,11 @@ export default class APIRequest {
 
   // Check if a location already exists by name and address
   checkLocationExist = async (data: { name: string; address: string }) => {
-    const params = this.buildSearchParams(data); 
+    const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.get(
       `/check-location-exist?${params.toString()}`
     );
+
     return this.handleResponse(response);
   };
 
@@ -146,8 +169,99 @@ export default class APIRequest {
   };
 
   login = async (data: AdminLoginRequest): Promise<LoginResponse> => {
-    const response = await unauthenticatedClient.post(`/admin-login`, data);
-    return this.handleResponse(response);
+    try {
+      const response = await unauthenticatedClient.post(`/admin-login`, data, {
+        timeout: 10000, // 10 second timeout for login (fail fast)
+      });
+
+      const responseData = this.handleResponse(response);
+
+      // Check if response contains an error even with 200 status
+      if (responseData && typeof responseData === "object") {
+        const hasToken = "token" in responseData && responseData.token;
+        const hasError =
+          "error" in responseData || ("message" in responseData && !hasToken);
+
+        if (hasError) {
+          const errorMsg =
+            (responseData as any).error ||
+            (responseData as any).message ||
+            "Login failed";
+
+          throw new Error(errorMsg);
+        }
+
+        if (!hasToken) {
+          const errorMsg =
+            (responseData as any).message ||
+            (responseData as any).error ||
+            "Login failed. Invalid credentials.";
+          throw new Error(errorMsg);
+        }
+      }
+
+      return responseData;
+    } catch (error: any) {
+      // Handle timeout errors
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        throw new Error("Request timed out. Please check your connection.");
+      }
+
+      // Handle network errors
+      if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+        if (
+          error.message?.includes("CORS") ||
+          error.message?.includes("cross-origin")
+        ) {
+          throw new Error(
+            "CORS error. Please check your browser settings or contact support."
+          );
+        }
+        throw new Error(
+          "Network error. Please check your connection and try again."
+        );
+      }
+
+      // Handle browser blocking
+      if (error.code === "ERR_BLOCKED_BY_CLIENT") {
+        throw new Error(
+          "Request blocked by browser extension. Please disable ad blockers and try again."
+        );
+      }
+
+      // Handle response errors (400, 401, 500, etc.)
+      if (error.response) {
+        const errorData = error.response.data;
+        let errorMessage = "Login failed. Please try again.";
+
+        // Extract error message from response data
+        if (typeof errorData === "string") {
+          errorMessage = errorData;
+        } else if (errorData && typeof errorData === "object") {
+          // Try multiple possible message fields
+          errorMessage =
+            errorData.message ||
+            errorData.error ||
+            errorData.msg ||
+            (errorData.data &&
+              (errorData.data.message || errorData.data.error)) ||
+            "Login failed. Please try again.";
+        }
+
+        // Create a proper Error object with the extracted message
+        const loginError = new Error(errorMessage);
+        // Attach status code for better error handling
+        (loginError as any).status = error.response.status;
+        (loginError as any).response = error.response;
+
+        throw loginError;
+      }
+
+      // Fallback for unknown errors
+      const errorMessage =
+        error.message || "Login failed. Please try again or contact support.";
+      throw new Error(errorMessage);
+    }
   };
 
   /**
@@ -155,7 +269,6 @@ export default class APIRequest {
    * @description This class handles API requests related to restaurants.
    *
    */
-
   // createRestaurant
   createRestaurant = async (data: CreateLocationRequest) => {
     const response = await this.authenticatedClient.post(
@@ -322,6 +435,7 @@ export default class APIRequest {
     );
     return this.handleResponse(response);
   };
+
   // getGroupedPostsSubmissions
   getGroupedPostsSubmissions = async (
     data: FetchGroupedPostsSubmissionsRequest
@@ -332,6 +446,7 @@ export default class APIRequest {
     );
     return this.handleResponse(response);
   };
+
   // getGroupedPosts
   getGroupedPosts = async (
     data: FetchGroupedPostsRequest
@@ -369,6 +484,22 @@ export default class APIRequest {
     );
 
     return this.handleResponse(response);
+  };
+
+  changeRole = async (data: { adminId: string; role: string }) => {
+    try {
+      const response = await this.authenticatedClient.patch(
+        `/admin-change-role`,
+        {
+          adminId: data.adminId,
+          role: data.role,
+        }
+      );
+
+      return this.handleResponse(response);
+    } catch (error: any) {
+      throw error;
+    }
   };
 
   togglePost = async (data: TogglePost) => {

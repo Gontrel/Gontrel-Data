@@ -1,6 +1,7 @@
 "use client";
 
 import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import ChangeRoleModal from "@/components/modals/ChangeRoleModal";
 import AccountSummaryCard from "@/components/staffs/AccountSummaryCard";
 import StaffActivities from "@/components/staffs/StaffActivities";
 import StaffProfileCard from "@/components/staffs/StaffProfileCard";
@@ -22,8 +23,10 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   const [activity, setActivity] = useState<AuditLog[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [totalActivities, setTotalActivities] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [isChangeRoleModalOpen, setChangeRoleModalOpen] = useState(false);
   const [activityType, setActivityType] = useState<ActivityType | undefined>(
     undefined
   );
@@ -46,6 +49,12 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
   } = trpc.staffs.getStaffsAccountSummary.useQuery(
     {
       adminId: staffId,
+      startDate: dateRange?.startDate
+        ? format(dateRange.startDate, "yyyy-MM-dd")
+        : undefined,
+      endDate: dateRange?.endDate
+        ? format(dateRange.endDate, "yyyy-MM-dd")
+        : undefined,
     },
     { enabled: !!staffId }
   );
@@ -82,7 +91,43 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           endDate: endDateString,
         });
 
-        const activityData: AuditLog[] = response?.data ?? [];
+        // Response structure: { data: Array(10), pagination: {...}, meta: {...} }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const responseAny = response as any;
+        let activityData: AuditLog[] = [];
+        let pagination: { total?: number } | undefined;
+
+        // Handle the flat structure: { data: [...], pagination: {...} }
+        if (responseAny && typeof responseAny === "object") {
+          if (Array.isArray(responseAny.data)) {
+            activityData = responseAny.data;
+            pagination = responseAny.pagination;
+          }
+          // Fallback: nested structure { data: { data: [...], pagination: {...} } }
+          else if (
+            responseAny.data?.data &&
+            Array.isArray(responseAny.data.data)
+          ) {
+            activityData = responseAny.data.data;
+            pagination = responseAny.data.pagination;
+          }
+        }
+        // Fallback: direct array
+        else if (Array.isArray(responseAny)) {
+          activityData = responseAny;
+        }
+
+        // Update total activities count from pagination
+        if (
+          pagination &&
+          typeof pagination === "object" &&
+          "total" in pagination
+        ) {
+          const total = pagination.total;
+          if (typeof total === "number") {
+            setTotalActivities(total);
+          }
+        }
 
         if (activityData.length < PAGE_SIZE) {
           setHasMore(false);
@@ -100,7 +145,6 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           });
         }
       } catch {
-  
       } finally {
         setIsFetching(false);
       }
@@ -119,6 +163,16 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     setConfirmationModalOpen(true);
   };
 
+  const handleChangeRole = () => {
+    setChangeRoleModalOpen(true);
+  };
+
+  const handleRoleChangeSuccess = () => {
+    refetchStaffProfile();
+    refetchStaffAccountSummary();
+    fetchActivities(1, true);
+  };
+
   const isStaffActive = staffProfileData?.isActive ?? false;
 
   const handleScroll = useCallback(() => {
@@ -135,6 +189,7 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     setPage(1);
     setActivity([]);
     setHasMore(true);
+    setTotalActivities(0);
   }, [dateRange, activityType]);
 
   useEffect(() => {
@@ -204,7 +259,9 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           {/* Staff's Activities */}
           <StaffActivities
             onDeactivateStaff={handleDeactivateStaff}
+            openChangeRoleModal={handleChangeRole}
             activitiesData={activity}
+            totalActivities={totalActivities}
             onScroll={handleScroll}
             isFetching={isFetching}
             scrollContainerRef={scrollContainerRef}
@@ -240,6 +297,20 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
         successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
           isStaffActive ? "bg-[#D80000]" : "bg-[#0070F3]"
         }`}
+      />
+
+      {/* Change Role Modal */}
+      <ChangeRoleModal
+        open={isChangeRoleModalOpen}
+        onOpenChange={setChangeRoleModalOpen}
+        staffId={staffProfileData?.id ?? ""}
+        staffName={staffProfileData?.name ?? ""}
+        staffRole={staffProfileData?.role ?? ""}
+        staffEmail={staffProfileData?.email ?? ""}
+        staffProfileImage={
+          staffProfileData?.profileImage || "/images/avatar.png"
+        }
+        onSuccess={handleRoleChangeSuccess}
       />
     </div>
   );

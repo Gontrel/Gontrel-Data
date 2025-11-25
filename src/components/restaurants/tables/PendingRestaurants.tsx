@@ -4,6 +4,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { GenericTable } from "@/components/tables/GenericTable";
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
+import RestaurantCard from "@/components/cards/RestaurantCard";
 import { createPendingRestaurantsColumns } from "../columns/pendingRestaurantsColumns";
 
 // Store and API
@@ -47,6 +49,7 @@ interface FeedbackModalState {
   isOpen: boolean;
   restaurant: PendingRestaurantTableTypes | null;
   comment: string;
+  context: "feedback" | "saveAndComment";
 }
 
 // =============================================================================
@@ -99,6 +102,7 @@ const PendingRestaurants = ({
     isOpen: false,
     restaurant: null,
     comment: "",
+    context: "feedback",
   });
 
   // ---------------------------------------------------------------------------
@@ -221,11 +225,15 @@ const PendingRestaurants = ({
   );
 
   const openFeedbackModal = useCallback(
-    (restaurant: PendingRestaurantTableTypes) => {
+    (
+      restaurant: PendingRestaurantTableTypes,
+      context: "feedback" | "saveAndComment" = "feedback"
+    ) => {
       setFeedbackModal({
         isOpen: true,
         restaurant,
         comment: "",
+        context,
       });
     },
     []
@@ -236,6 +244,7 @@ const PendingRestaurants = ({
       isOpen: false,
       restaurant: null,
       comment: "",
+      context: "feedback",
     });
   }, []);
 
@@ -365,6 +374,10 @@ const PendingRestaurants = ({
           orderLink: currentRestaurant?.orderLink?.content || "",
           adminName: currentRestaurant.admin.name,
           adminId: currentRestaurant.admin.id,
+          address: currentRestaurant.address?.content || "",
+          website: currentRestaurant.website || "",
+          mapLink: currentRestaurant.mapLink || "",
+          orderType: currentRestaurant.orderType,
         }
       : {
           id: "",
@@ -375,8 +388,18 @@ const PendingRestaurants = ({
           rating: 0,
           adminName: "",
           adminId: "",
+          address: "",
+          website: "",
+          mapLink: "",
         };
   }, [restaurants, videoPreview.currentRestaurantId]);
+
+  const handleSendFeedbackForSaveAndComment = useCallback(
+    (restaurant: PendingRestaurantTableTypes) => {
+      openFeedbackModal(restaurant, "saveAndComment");
+    },
+    [openFeedbackModal]
+  );
 
   const columns = useMemo(
     () =>
@@ -385,13 +408,15 @@ const PendingRestaurants = ({
         handleApprove,
         handleDecline,
         handleSendFeedback,
-        handleSaveRestaurant
+        handleSaveRestaurant,
+        handleSendFeedbackForSaveAndComment
       ),
     [
       handleApprove,
       handleDecline,
       handleSaveRestaurant,
       handleSendFeedback,
+      handleSendFeedbackForSaveAndComment,
       handleOpenVideoPreview,
     ]
   );
@@ -403,16 +428,44 @@ const PendingRestaurants = ({
   return (
     <div>
       <ConfirmationModal
+        icon={
+          feedbackModal.context === "saveAndComment"
+            ? "commentSuccessIcon"
+            : "commentWarningIcon"
+        }
         isOpen={feedbackModal.isOpen}
         onClose={closeFeedbackModal}
-        title="Send feedback"
-        description="Drop a comment for the analyst that<br />submitted this restaurant"
+        title={
+          feedbackModal.context === "saveAndComment"
+            ? "Drop a comment"
+            : "Send feedback"
+        }
+        description={
+          feedbackModal.context === "saveAndComment"
+            ? "Drop a comment for the analyst that <br /> submitted this restaurant whilst approving it"
+            : "Drop a comment for the analyst that <br />submitted this restaurant"
+        }
         comment={feedbackModal.comment}
         onCommentChange={handleCommentChange}
         onConfirm={handleSubmitFeedback}
-        confirmLabel="Send feedback"
+        confirmLabel={
+          feedbackModal.context === "saveAndComment"
+            ? "Approve & Send comment"
+            : "Send feedback"
+        }
+        successButtonClassName={
+          feedbackModal.context === "saveAndComment" ? "bg-[#0070F3]" : ""
+        }
         cancelLabel="Cancel"
       />
+
+      <PreviewVideoModal
+        open={videoPreview.isOpen}
+        onOpenChange={handleCloseVideoPreview}
+        showCloseButton={false}
+      >
+        {restaurant && restaurant.id && <RestaurantCard restaurant={restaurant} />}
+      </PreviewVideoModal>
 
       <TableVideoPreviewSheet
         table={ManagerTableTabsEnum.PENDING_RESTAURANTS}

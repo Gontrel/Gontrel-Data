@@ -9,6 +9,7 @@ import { usePendingVideos } from "./usePendingVideos";
 import { useActiveRestaurants } from "./useActiveRestaurants";
 import { useSubmittedRestaurants } from "./useSubmittedRestaurants";
 import { useSubmittedVideos } from "./useSubmittedVideos";
+import { useCommentedRestaurants } from "./useCommentedRestaurants";
 import { useActiveStaffs } from "./useActiveStaffs";
 import { useDeactivatedStaffs } from "./useDeactivatedStaffs";
 import { TabState } from "@/interfaces";
@@ -45,6 +46,24 @@ export const useTableTotals = (
     adminId:
       tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS]?.selectedAnalyst ||
       undefined,
+  });
+
+  // Fetch commented restaurants total (analyst)
+  const { queryData: commentedRestaurantsTotal } = useCommentedRestaurants({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm:
+      tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS]?.searchTerm || "",
+    startDate:
+      tabStates[
+        AnalystTableTabsEnum.COMMENTED_RESTAURANTS
+      ]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
   });
 
   // Fetch pending videos total with tab-specific search
@@ -213,22 +232,13 @@ export const useTableTotals = (
 
     const responseObj = response as Record<string, unknown>;
 
-    // Handle different response structures
     if (responseObj.pagination && typeof responseObj.pagination === "object") {
       const pagination = responseObj.pagination as Record<string, unknown>;
-      if (typeof pagination.total === "number") {
-        return pagination.total;
-      }
+      if (typeof pagination.total === "number") return pagination.total;
     }
-
-    if (typeof responseObj.total === "number") {
-      return responseObj.total;
-    }
-
-    if (responseObj.data && Array.isArray(responseObj.data)) {
+    if (typeof responseObj.total === "number") return responseObj.total;
+    if (responseObj.data && Array.isArray(responseObj.data))
       return responseObj.data.length;
-    }
-
     return 0;
   };
 
@@ -240,21 +250,38 @@ export const useTableTotals = (
     submittedRestaurantsTotal
   );
   const submittedVideosCount = getTotalFromResponse(submittedVideosTotal);
+  const commentedRestaurantsCount = getTotalFromResponse(
+    commentedRestaurantsTotal
+  );
+  const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
   const activeStaffsCount = getTotalFromResponse(activeStaffsTotal);
   const deactivatedStaffsCount = getTotalFromResponse(deactivatedStaffsTotal);
-  const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
   const reportedVideosCount = getTotalFromResponse(reportedVideosTotal);
 
-  return {
-    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount,
+  const totals: Record<
+    | ManagerTableTabsEnum
+    | AnalystTableTabsEnum
+    | StaffTableTabsEnum
+    | ReportTableTabsEnum,
+    number
+  > = {
+    // Manager & Analyst shared
+    [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount, // Also covers AnalystTableTabsEnum.ACTIVE_RESTAURANTS
+    // Manager only
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsCount,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: activeVideosCount,
+    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
+    // Analyst only
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsCount,
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
+    [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]: commentedRestaurantsCount,
+    // Staff
     [StaffTableTabsEnum.ACTIVE_STAFF]: activeStaffsCount,
     [StaffTableTabsEnum.DEACTIVATED_STAFF]: deactivatedStaffsCount,
-    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
+    // Report
     [ReportTableTabsEnum.REPORTED_VIDEOS]: reportedVideosCount,
   };
+
+  return totals;
 };

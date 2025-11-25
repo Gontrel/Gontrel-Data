@@ -24,7 +24,8 @@ export const errorLogRouter = router({
   createErrorLog: protectedProcedure
     .input(createErrorLogSchema)
     .mutation(async ({ input, ctx }) => {
-      const apiRequest = new APIRequest(ctx.req.headers);
+      const apiRequest = APIRequest.getInstance();
+      apiRequest.configure(ctx.req.headers);
       try {
         const response = await apiRequest.createErrorLog({
           userId: input.userId ?? "",

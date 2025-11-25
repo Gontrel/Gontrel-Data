@@ -194,71 +194,71 @@ export const NewRestaurantSheet = ({
     [selectedRestaurant]
   );
 
-  const handleCreateRestaurant = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (data: any) => {
-      if (isLoading) return;
+const handleCreateRestaurant = useCallback(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (data: any) => {
+    if (isLoading) return;
 
-      if (!selectedRestaurant) return;
+    if (!selectedRestaurant) return;
 
-      const store = useVideoStore.getState();
-      const currentVideos = store.getCurrentVideos();
+    const store = useVideoStore.getState();
+    const currentVideos = store.getCurrentVideos();
 
-      const availability = processGoogleHours(selectedRestaurant?.workingHours);
+    const availability = processGoogleHours(selectedRestaurant?.workingHours);
 
-      const convertGoogleOpeningHours =
-        selectedRestaurant?.googleOpeningHours?.map(
-          (entry) => entry?.split(": ")[1]
-        );
+    const convertGoogleOpeningHours =
+      selectedRestaurant?.googleOpeningHours?.map(
+        (entry) => entry?.split(": ")[1]
+      );
 
-      const payload: CreateLocationRequest = {
-        sessionToken: sessionToken,
-        placeId: selectedRestaurant?.placeId,
-        ...(selectedRestaurant?.address && {
-          address:
-            typeof selectedRestaurant?.address === "string"
-              ? selectedRestaurant?.address
-              : selectedRestaurant?.address?.content,
-        }),
-        ...(data?.menuUrl && { menu: data?.menuUrl }),
-        ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
-        ...(selectedRestaurant?.website && {
-          website: selectedRestaurant?.website,
-        }),
-        ...(selectedRestaurant?.image && {
-          photos: [selectedRestaurant?.image],
-        }),
-        rating: selectedRestaurant.rating ?? 0,
-        ...(data.reservationUrl && { reservation: data?.reservationUrl }),
-        ...(data?.orderUrl && { orderLink: data?.orderUrl }),
-        ...(data?.restaurantType && { orderType: data?.restaurantType }),
-        posts:
-          currentVideos?.map((video) => ({
-            tiktokLink: video?.url,
-            videoUrl: video?.videoUrl || "",
-            thumbUrl: video?.thumbUrl,
-            locationName: selectedRestaurant?.name,
-            rating: 0,
-            ...(video?.isFoodVisible && {
-              isFoodVisible: video?.isFoodVisible,
-            }),
-            ...(video?.visibleFood && { visibleFood: video?.visibleFood }),
-            ...(video?.tags && { tags: video?.tags }),
-          })) ?? [],
-        openingHours: availability,
+    const payload: CreateLocationRequest = {
+      sessionToken: sessionToken,
+      placeId: selectedRestaurant?.placeId,
+      ...(selectedRestaurant?.address && {
+        address:
+          typeof selectedRestaurant?.address === "string"
+            ? selectedRestaurant?.address
+            : selectedRestaurant?.address?.content,
+      }),
+      ...(data?.menuUrl && { menu: data?.menuUrl }),
+      ...(selectedRestaurant?.name && { name: selectedRestaurant?.name }),
+      ...(selectedRestaurant?.website && {
+        website: selectedRestaurant?.website,
+      }),
+      ...(selectedRestaurant?.image && {
+        photos: [selectedRestaurant?.image],
+      }),
+      rating: selectedRestaurant.rating ?? 0,
+      ...(data.reservationUrl && { reservation: data?.reservationUrl }),
+      ...(data?.orderUrl && { orderLink: data?.orderUrl }),
+      ...(data?.restaurantType && { orderType: data?.restaurantType }),
+      posts:
+        currentVideos?.map((video) => ({
+          tiktokLink: video?.url,
+          videoUrl: video?.videoUrl || "",
+          thumbUrl: video?.thumbUrl,
+          locationName: selectedRestaurant?.name,
+          rating: 0,
+          ...(video?.isFoodVisible && {
+            isFoodVisible: video?.isFoodVisible,
+          }),
+          ...(video?.visibleFood && { visibleFood: video?.visibleFood }),
+          ...(video?.tags && { tags: video?.tags }),
+        })) ?? [],
+      openingHours: availability,
 
-        googleOpeningHours:
-          convertGoogleOpeningHours ?? selectedRestaurant?.googleOpeningHours,
-      };
+      googleOpeningHours:
+        convertGoogleOpeningHours ?? selectedRestaurant?.googleOpeningHours,
+    };
 
-      if (payload?.posts?.length === 0) {
-        errorToast("Please add at least one video.");
-      }
+    if (payload?.posts?.length === 0) {
+      errorToast("Please add at least one video.");
+    }
 
-      createAdminLocation(payload);
-    },
-    [selectedRestaurant, isLoading, createAdminLocation, sessionToken]
-  );
+    createAdminLocation(payload);
+  },
+  [selectedRestaurant, isLoading, createAdminLocation, sessionToken]
+);
 
   const handleOnNext = useCallback(async () => {
     if (!selectedRestaurant) return;
