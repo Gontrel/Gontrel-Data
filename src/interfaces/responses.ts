@@ -231,6 +231,10 @@ export interface GetStaffSummaryResponse {
   approvedLocations: number;
   totalPosts: number;
   approvedPosts: number;
+  locationsApprovedBy: number;
+  locationsDeclinedBy: number;
+  postsApprovedBy: number;
+  postsDeclinedBy: number;
 }
 
 export interface GetAdminProfileResponse {
