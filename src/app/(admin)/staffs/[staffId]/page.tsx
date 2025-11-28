@@ -59,6 +59,11 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
     { enabled: !!staffId }
   );
 
+  console.log(
+    staffAccountSummaryData,
+    "staffAccountSummaryDatastaffAccountSummaryData"
+  );
+
   const { mutate } = trpc.staffs.toggleStaffStatus.useMutation({
     onSuccess: () => {
       successToast("Staff status updated successfully");
@@ -246,12 +251,18 @@ const StaffDetails = ({ params }: { params: Promise<{ staffId: string }> }) => {
           />
 
           <AccountSummaryCard
-            restaurantsCreated={staffAccountSummaryData?.totalLocations || 0}
-            restaurantsApproved={
-              staffAccountSummaryData?.approvedLocations || 0
+            data={
+              staffAccountSummaryData || {
+                totalLocations: 0,
+                approvedLocations: 0,
+                totalPosts: 0,
+                approvedPosts: 0,
+                locationsApprovedBy: 0,
+                locationsDeclinedBy: 0,
+                postsApprovedBy: 0,
+                postsDeclinedBy: 0,
+              }
             }
-            videosCreated={staffAccountSummaryData?.totalPosts || 0}
-            videosApproved={staffAccountSummaryData?.approvedPosts || 0}
           />
         </div>
 
