@@ -27,6 +27,10 @@ export interface VideoData {
   status?: string;
   isFoodVisible?: boolean;
   isUpdated?: boolean;
+  file?: File | null;
+  isUploaded?: boolean;
+  userId?: string;
+  creatorName?: string;
 }
 
 export interface openingHours {

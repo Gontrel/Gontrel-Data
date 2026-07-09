@@ -1,8 +1,8 @@
 import { errorToast } from "@/utils/toast";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
-const API_URL = process.env.API_BASE_URL;
-const API_KEY = process.env.API_KEY;
+const API_URL = "https://gontrel-test.up.railway.app/";
+const API_KEY = "5qegXo2xfJ7UypzWsA3Sq1WbQoL9ARtK2dcGFCDC";
 
 // --- Base Client Configuration ---
 const baseConfig: AxiosRequestConfig = {

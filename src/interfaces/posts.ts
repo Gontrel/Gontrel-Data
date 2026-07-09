@@ -26,6 +26,12 @@ export interface Post {
   user?: User;
   source: string;
   tags: Tag[];
+  targetTimeStamps?: TargetTimeStamp[];
+}
+
+export interface TargetTimeStamp {
+  time: string;
+  tags: string[];
 }
 
 export interface Tag {

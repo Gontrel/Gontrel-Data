@@ -6,7 +6,7 @@ import { VideoStep } from "../restaurants/VideoStep";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
 import { useVideoStore } from "@/stores/videoStore";
-import { CreateBulkPostRequest } from "@/interfaces/requests";
+import { CreatePostRequest } from "@/interfaces/requests";
 import { Restaurant, VideoData } from "@/interfaces/restaurants";
 import { useCallback } from "react";
 
@@ -26,10 +26,9 @@ export const NewPostSheet = ({
   const videos = useVideoStore((state) => state.videos);
   const { resetVideos, setActiveVideoUrl } = useVideoStore();
   const locationId = restaurant?.id;
-
-  const { mutate: createBulkPost, isPending: isLoading } =
-    trpc.post.createBulkPost.useMutation({
-      onSuccess: () => {
+  const { mutate: createPost, isPending: isLoading } =
+    trpc.post.createPost.useMutation({
+      onSuccess: (data) => {
         successToast("Post created successfully!");
         onPostCreated();
         handleClose();
@@ -42,24 +41,21 @@ export const NewPostSheet = ({
   const onSubmit = (currentVideos?: VideoData[]) => {
     const videosToUse = currentVideos || videos;
 
-    const videosData = videosToUse.map((video) => ({
-      tiktokLink: video.url ?? "",
-      videoUrl: video.videoUrl || "",
-      hlsUrl: video.videoUrl,
-      firstFrameUrl: video.videoUrl,
-      thumbUrl: video.thumbUrl || "",
-      locationName: video.locationName || "",
-      isFoodVisible: video.isFoodVisible || false,
-      rating: video.rating || 0,
-      tags: video.tags ?? [],
-    }));
-
-    const createBulkPostData: CreateBulkPostRequest = {
-      locationId: locationId,
-      posts: videosData,
-    };
-
-    createBulkPost(createBulkPostData);
+    videosToUse.forEach((video) => {
+      const postData: CreatePostRequest = {
+        locationId: locationId,
+        videoUrl: video.videoUrl || video.url || "",
+        hlsUrl: video.videoUrl,
+        firstFrameUrl: video.videoUrl,
+        thumbUrl: video.thumbUrl || "",
+        locationName: restaurant?.name || video.locationName || "",
+        isFoodVisible: video.isFoodVisible ?? false,
+        rating: video.rating || 0,
+        ...(video.tags && video.tags.length > 0 && { tags: video.tags }),
+        userId: video.userId,
+      };
+      createPost(postData);
+    });
   };
 
   const handleClose = useCallback(() => {
@@ -76,7 +72,7 @@ export const NewPostSheet = ({
       width="w-[638px]"
       className="p-8 flex flex-col"
     >
-      <div className="flex-shrink-0">
+      <div className="flex-1 overflow-y-auto min-h-0">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">New Post</h2>
           <button
@@ -95,7 +91,9 @@ export const NewPostSheet = ({
           onSubmit={(vids) => onSubmit(vids)}
           isLoading={isLoading}
           postOnly={true}
+          restaurantName={restaurant?.name}
         />
+
       </div>
     </Sheet>
   );

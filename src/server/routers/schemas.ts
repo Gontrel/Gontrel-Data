@@ -187,9 +187,7 @@ export const createPostSchema = z.object({
   isVerified: z.boolean().optional(),
   locationId: z.string().optional(),
   randomField: z.string().optional(),
-  tiktokLink: z.string().optional(),
   firstFrameUrl: z.string().optional(),
-  visibleFood: z.string().optional(),
   hlsUrl: z.string().optional(),
   videoUrl: z.string().min(1),
   thumbUrl: z.string().optional(),
@@ -197,6 +195,8 @@ export const createPostSchema = z.object({
   locationName: z.string().optional(),
   rating: z.number().optional(),
   tags: z.array(z.string()).min(1).optional(),
+  userId: z.string().optional(),
+  isFoodVisible: z.boolean().optional(),
 });
 
 /**
@@ -346,6 +346,7 @@ export const createLocationSchema = z.object({
   type: z.string().optional(),
   website: z.string().optional(),
   isVerified: z.boolean().optional(),
+  userId: z.string().optional(),
   posts: z.array(postCreationSchema).optional(),
   openingHours: z.array(locationAvailabilitySchema).optional(),
   googleOpeningHours: z.array(z.string()).optional(),
