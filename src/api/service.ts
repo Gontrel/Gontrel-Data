@@ -287,10 +287,10 @@ export default class APIRequest {
 
     // Standalone axios instance for upload using env config
     const uploadClient = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
+      baseURL: process.env.API_BASE_URL || "",
       timeout: 3600000,
       headers: {
-        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+        "x-api-key": process.env.API_KEY || "",
       },
     });
 
