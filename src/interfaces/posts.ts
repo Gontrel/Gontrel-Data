@@ -19,6 +19,7 @@ export interface Post {
   tiktokLink: string;
   videoUrl: string;
   isFoodVisible?: boolean;
+  isLowQuality?: boolean;
   thumbUrl: string;
   postedAt?: string;
   status: string;

@@ -57,6 +57,7 @@ export const VideoStep = ({
     videoUrl: "",
     locationName: "",
     isFoodVisible: false,
+    isLowQuality: false,
     visibleFood: "",
     rating: 0,
   });
@@ -269,6 +270,13 @@ export const VideoStep = ({
     }));
   };
 
+  const handleSetLowQuality = (checked: boolean) => {
+    setCurrentVideo((prev) => ({
+      ...prev,
+      isLowQuality: checked,
+    }));
+  };
+
   const handleFoodTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const foodType = e.target.value;
     setCurrentVideo((prev) => ({
@@ -331,6 +339,7 @@ export const VideoStep = ({
       videoUrl: currentVideo.videoUrl,
       author: currentVideo.author,
       isFoodVisible: currentVideo?.isFoodVisible,
+      isLowQuality: currentVideo?.isLowQuality,
       visibleFood: currentVideo.visibleFood,
       locationName: currentVideo.locationName,
       rating: currentVideo.rating || 0,
@@ -363,6 +372,7 @@ export const VideoStep = ({
         author: videoToEdit.author || "",
         locationName: videoToEdit.locationName || "",
         isFoodVisible: videoToEdit.isFoodVisible || false,
+        isLowQuality: videoToEdit.isLowQuality || false,
         visibleFood: videoToEdit.visibleFood || "",
         rating: videoToEdit.rating || 0,
       });
@@ -403,6 +413,7 @@ export const VideoStep = ({
       locationName: "",
       rating: 0,
       isFoodVisible: false,
+      isLowQuality: false,
       visibleFood: "",
     });
 
@@ -424,6 +435,7 @@ export const VideoStep = ({
       rating: currentVideo.rating || 0,
       visibleFood: currentVideo.visibleFood,
       isFoodVisible: currentVideo.isFoodVisible,
+      isLowQuality: currentVideo.isLowQuality,
       isUpdated: true,
       userId: selectedCreator?.userID,
       creatorName: selectedCreator?.displayName,
@@ -686,6 +698,21 @@ export const VideoStep = ({
                 />
                 <label htmlFor="food-visible">
                   Food is visible in the next 3 seconds
+                </label>
+              </div>
+            }
+
+            {
+              <div className="flex items-center gap-2 mb-4 mt-4">
+                <input
+                  type="checkbox"
+                  id="low-quality"
+                  checked={currentVideo.isLowQuality}
+                  onChange={(e) => handleSetLowQuality(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="low-quality">
+                  Video is low quality
                 </label>
               </div>
             }

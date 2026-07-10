@@ -242,6 +242,9 @@ const handleCreateRestaurant = useCallback(
           ...(video?.isFoodVisible && {
             isFoodVisible: video?.isFoodVisible,
           }),
+          ...(video?.isLowQuality && {
+            isLowQuality: video?.isLowQuality,
+          }),
           ...(video?.tags && { tags: video?.tags }),
           ...(video?.userId && { userId: video?.userId }),
         })) ?? [],

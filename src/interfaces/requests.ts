@@ -168,6 +168,7 @@ export interface CreatePostRequest {
   tags?: string[]; // minimum 1 item if provided
   userId?: string;
   isFoodVisible?: boolean;
+  isLowQuality?: boolean;
 }
 
 /**
@@ -183,6 +184,7 @@ export interface CreateBulkPostRequest {
     videoUrl: string; // required
     thumbUrl?: string;
     isFoodVisible?: boolean;
+    isLowQuality?: boolean;
     postedAt?: string;
     rating?: number;
     tags?: string[]; // minimum 1 item if provided
@@ -201,6 +203,7 @@ export interface UpdatePostRequest {
   firstFrameUrl?: string;
   hlsUrl?: string;
   isFoodVisible?: boolean;
+  isLowQuality?: boolean;
   visibleFood?: string;
   videoUrl?: string;
   thumbUrl?: string;
@@ -312,6 +315,7 @@ export interface CreateLocationRequest {
     tags?: string[];
     userId?: string;
     isFoodVisible?: boolean;
+    isLowQuality?: boolean;
   }>;
   openingHours?: Array<{
     dayOfTheWeek: DayOfTheWeek; // required, enum values

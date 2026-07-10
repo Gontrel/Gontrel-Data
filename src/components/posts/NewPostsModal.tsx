@@ -50,6 +50,7 @@ export const NewPostSheet = ({
         thumbUrl: video.thumbUrl || "",
         locationName: restaurant?.name || video.locationName || "",
         isFoodVisible: video.isFoodVisible ?? false,
+        isLowQuality: video.isLowQuality ?? false,
         rating: video.rating || 0,
         ...(video.tags && video.tags.length > 0 && { tags: video.tags }),
         userId: video.userId,

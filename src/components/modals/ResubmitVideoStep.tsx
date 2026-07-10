@@ -51,6 +51,7 @@ export const ResubmitVideoStepStep = ({
     videoUrl: "",
     locationName: "",
     isFoodVisible: false,
+    isLowQuality: false,
     visibleFood: "",
     rating: 0,
     userId: "",
@@ -184,6 +185,7 @@ export const ResubmitVideoStepStep = ({
       status: post?.status,
       visibleFood: post?.visibleFood,
       isFoodVisible: post?.isFoodVisible,
+      isLowQuality: post?.isLowQuality,
       isUpdated: false,
     }));
   };
@@ -264,6 +266,7 @@ export const ResubmitVideoStepStep = ({
       author: currentVideo?.author,
       locationName: currentVideo?.locationName,
       isFoodVisible: currentVideo?.isFoodVisible,
+      isLowQuality: currentVideo?.isLowQuality,
       rating: currentVideo?.rating || 0,
       visibleFood: currentVideo?.visibleFood || "",
       isUpdated: true,
@@ -276,6 +279,7 @@ export const ResubmitVideoStepStep = ({
       videoUrl: videoData?.videoUrl || videoData?.url || "",
       thumbUrl: videoData?.thumbUrl,
       isFoodVisible: videoData?.isFoodVisible,
+      isLowQuality: videoData?.isLowQuality,
       visibleFood: videoData?.visibleFood,
       tags: [...videoData?.tags],
       userId: videoData?.userId,
@@ -293,6 +297,9 @@ export const ResubmitVideoStepStep = ({
         ...(typeof payload.isFoodVisible === "boolean" && {
           isFoodVisible: payload.isFoodVisible,
         }),
+        ...(typeof payload.isLowQuality === "boolean" && {
+          isLowQuality: payload.isLowQuality,
+        }),
         ...(payload.tags && payload.tags.length > 0 && { tags: payload.tags }),
       };
 
@@ -308,6 +315,7 @@ export const ResubmitVideoStepStep = ({
       thumbUrl: payload?.thumbUrl,
       locationName: restaurant?.name || "",
       isFoodVisible: payload?.isFoodVisible ?? false,
+      isLowQuality: payload?.isLowQuality ?? false,
       ...(payload?.tags && payload.tags.length > 0 && { tags: payload.tags }),
       userId: payload?.userId,
     };
@@ -319,6 +327,13 @@ export const ResubmitVideoStepStep = ({
     setCurrentVideo((prev) => ({
       ...prev,
       isFoodVisible: checked,
+    }));
+  };
+
+  const handleSetLowQuality = (checked: boolean) => {
+    setCurrentVideo((prev) => ({
+      ...prev,
+      isLowQuality: checked,
     }));
   };
 
@@ -344,6 +359,7 @@ export const ResubmitVideoStepStep = ({
         visibleFood: videoToEdit.visibleFood || "",
         locationName: videoToEdit?.locationName || "",
         isFoodVisible: videoToEdit?.isFoodVisible ?? false,
+        isLowQuality: videoToEdit?.isLowQuality ?? false,
         rating: videoToEdit?.rating || 0,
         userId: videoToEdit?.userId || "",
       });
@@ -529,7 +545,22 @@ export const ResubmitVideoStepStep = ({
                 </div>
               }
 
-              {currentVideo.isFoodVisible && (
+            {
+              <div className="flex items-center gap-2 mb-4 mt-4">
+                <input
+                  type="checkbox"
+                  id="low-quality"
+                  checked={currentVideo.isLowQuality}
+                  onChange={(e) => handleSetLowQuality(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="low-quality">
+                  Video is low quality
+                </label>
+              </div>
+            }
+
+            {currentVideo.isFoodVisible && (
                 <div>
                   <label
                     htmlFor="food-type"

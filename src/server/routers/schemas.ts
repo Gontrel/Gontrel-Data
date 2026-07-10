@@ -197,6 +197,7 @@ export const createPostSchema = z.object({
   tags: z.array(z.string()).min(1).optional(),
   userId: z.string().optional(),
   isFoodVisible: z.boolean().optional(),
+  isLowQuality: z.boolean().optional(),
 });
 
 /**
@@ -213,6 +214,7 @@ export const createBulkPostSchema = z.object({
         videoUrl: z.string().min(1),
         thumbUrl: z.string().optional(),
         isFoodVisible: z.boolean().optional(),
+        isLowQuality: z.boolean().optional(),
         visibleFood: z.string().optional(),
         postedAt: z.string().optional(),
         rating: z.number().optional(),
@@ -235,6 +237,7 @@ export const updatePostSchema = z.object({
   hlsUrl: z.string().optional(),
   videoUrl: z.string().optional(),
   isFoodVisible: z.boolean().optional(),
+  isLowQuality: z.boolean().optional(),
   visibleFood: z.string().optional(),
   thumbUrl: z.string().optional(),
   postId: z.string().uuid(),
@@ -275,6 +278,7 @@ const postCreationSchema = z.object({
   hlsUrl: z.string().optional(),
   videoUrl: z.string().min(1),
   isFoodVisible: z.boolean().optional(),
+  isLowQuality: z.boolean().optional(),
   visibleFood: z.string().optional(),
   thumbUrl: z.string().optional(),
   postedAt: z.string().optional(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward, Maximize2, Minimize2 } from "lucide-react";
 import React, { useRef, useEffect, useState, useId, useCallback } from "react";
 import { useVideoStore } from "@/stores/videoStore";
 
@@ -46,7 +46,9 @@ export const VideoPlayer = ({
   const [volume, setVolume] = useState(muted ? 0 : 1);
   const [isMuted, setIsMuted] = useState(muted);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { registerVideoPlayer, unregisterVideoPlayer, playVideo } =
     useVideoStore();
@@ -270,8 +272,27 @@ export const VideoPlayer = ({
 
   const progressPercent = duration ? (currentTime / duration) * 100 : 0;
 
+  const toggleFullscreen = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       className="relative aspect-video bg-black group"
       onMouseMove={showControlsTemporarily}
       onMouseLeave={() => isPlaying && setShowControls(false)}
@@ -417,6 +438,18 @@ export const VideoPlayer = ({
                 background: `linear-gradient(to right, white ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.3) ${(isMuted ? 0 : volume) * 100}%)`,
               }}
             />
+            {/* Fullscreen toggle */}
+            <button
+              onClick={toggleFullscreen}
+              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+              className="text-white hover:text-blue-400 transition"
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-4 h-4" />
+              ) : (
+                <Maximize2 className="w-4 h-4" />
+              )}
+            </button>
           </div>
         </div>
       </div>

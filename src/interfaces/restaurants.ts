@@ -26,6 +26,7 @@ export interface VideoData {
   rating?: number;
   status?: string;
   isFoodVisible?: boolean;
+  isLowQuality?: boolean;
   isUpdated?: boolean;
   file?: File | null;
   isUploaded?: boolean;
