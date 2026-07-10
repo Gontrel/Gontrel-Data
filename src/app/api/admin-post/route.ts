@@ -7,11 +7,11 @@ export async function PUT(request: NextRequest) {
     // Get token from cookies
     const token = request.cookies.get('user_token')?.value;
 
-    const response = await fetch('https://gontrel-test.up.railway.app/admin-post', {
+    const response = await fetch(`${process.env.API_BASE_URL}admin-post`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': '5qegXo2xfJ7UypzWsA3Sq1WbQoL9ARtK2dcGFCDC',
+        'x-api-key': process.env.API_KEY || '',
         ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(body),
