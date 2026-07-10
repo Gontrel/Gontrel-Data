@@ -4,7 +4,7 @@ import { QueryProvider } from "../providers/QueryProvider";
 import ToasterProvider from "@/providers/ToasterProvider";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { useEffect } from "react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export default function ClientLayout({
   children,
