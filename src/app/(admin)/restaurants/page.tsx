@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { type DateRangeValue, rangeToYmd } from "@/utils/dateRange";
 import { ManagerTableTabsEnum, StatsData } from "@/types";
 import { ActionPanel } from "@/components/restaurants/ActionPanel";
@@ -12,7 +13,6 @@ import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { useVideoStore } from "@/stores/videoStore";
 import { AdminRoleEnum, AnalystTableTabsEnum } from "@/types/enums";
 import TableTabs from "@/components/restaurants/TableTabs";
-import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useCurrentUser } from "@/stores/authStore";
 import { useAnalystOptions } from "@/hooks/useAnalysts";
 import { NewRestaurantSheet } from "@/components/modals/NewRestaurantSheet";
@@ -21,22 +21,24 @@ import { trpc } from "@/lib/trpc-client";
 /**
  * Restaurants Page Component
  */
-export default function RestaurantsPage() {
+function RestaurantsPageContent() {
   const currentUser = useCurrentUser();
   const [view, setView] = useState<AdminRoleEnum | null>(null);
   const { options: analystOptions } = useAnalystOptions();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const initialTab =
     currentUser?.role === AdminRoleEnum.ANALYST
       ? AnalystTableTabsEnum.ACTIVE_RESTAURANTS
       : ManagerTableTabsEnum.ACTIVE_RESTAURANTS;
-  const [activeTab, setActiveTab] = useState<
-    ManagerTableTabsEnum | AnalystTableTabsEnum
-  >(initialTab);
-  const { activeVideoUrl, restaurantData, tiktokUsername, setActiveVideoUrl } =
+  const { activeVideoUrl, setActiveVideoUrl } =
     useVideoStore();
   const [showNewRestaurantModal, setShowNewRestaurantModal] = useState(false);
   const {
     tabStates,
+    activeTab: storedActiveTab,
+    setActiveTab: storeSetActiveTab,
     updateTabSearchTerm,
     updateTabAnalyst,
     updateTabVideoStatus,
@@ -47,8 +49,33 @@ export default function RestaurantsPage() {
     getTabState,
   } = useTabState();
 
+  const urlPage = parseInt(searchParams.get("page") || "1", 10);
+  const urlTab = searchParams.get("tab") as ManagerTableTabsEnum | AnalystTableTabsEnum | null;
+  const activeTab: ManagerTableTabsEnum | AnalystTableTabsEnum =
+    (urlTab as ManagerTableTabsEnum | AnalystTableTabsEnum) ??
+    (storedActiveTab as ManagerTableTabsEnum | AnalystTableTabsEnum | null) ??
+    initialTab;
+  const setActiveTab = useCallback(
+    (tab: ManagerTableTabsEnum | AnalystTableTabsEnum) => {
+      storeSetActiveTab(tab);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", tab);
+      params.set("page", String(tabStates[tab]?.currentPage || 1));
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [storeSetActiveTab, searchParams, router, pathname, tabStates]
+  );
+
   const tableTotals = useTableTotals(tabStates);
-  const currentTabState = getTabState(activeTab);
+  const currentTabState = { ...getTabState(activeTab), currentPage: urlPage || getTabState(activeTab).currentPage };
+
+  // Sync URL page to store on mount/navigation
+  useEffect(() => {
+    if (urlTab && urlPage > 0) {
+      updateTabPage(urlTab, urlPage);
+    }
+  }, [urlPage, urlTab, updateTabPage]);
+
   const { startDate, endDate } = rangeToYmd(currentTabState.dateRange);
   const { data: dataStats, isLoading: statsIsLoading } =
     trpc.restaurant.getRestaurantStats.useQuery();
@@ -74,23 +101,39 @@ export default function RestaurantsPage() {
   const createPageNumbersObject = useCallback(
     () => ({
       [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]:
-        tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage,
+        activeTab === ManagerTableTabsEnum.ACTIVE_RESTAURANTS
+          ? urlPage || tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage
+          : tabStates[ManagerTableTabsEnum.ACTIVE_RESTAURANTS].currentPage,
       [ManagerTableTabsEnum.PENDING_RESTAURANTS]:
-        tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
+        activeTab === ManagerTableTabsEnum.PENDING_RESTAURANTS
+          ? urlPage || tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage
+          : tabStates[ManagerTableTabsEnum.PENDING_RESTAURANTS].currentPage,
       [ManagerTableTabsEnum.PENDING_VIDEOS]:
-        tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
+        activeTab === ManagerTableTabsEnum.PENDING_VIDEOS
+          ? urlPage || tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage
+          : tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].currentPage,
       [ManagerTableTabsEnum.ACTIVE_VIDEOS]:
-        tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage,
+        activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS
+          ? urlPage || tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage
+          : tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage,
       [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
-        tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
+        activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS
+          ? urlPage || tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage
+          : tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
-        tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
+        activeTab === AnalystTableTabsEnum.SUBMITTED_RESTAURANTS
+          ? urlPage || tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage
+          : tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
-        tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage,
+        activeTab === AnalystTableTabsEnum.SUBMITTED_VIDEOS
+          ? urlPage || tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage
+          : tabStates[AnalystTableTabsEnum.SUBMITTED_VIDEOS].currentPage,
       [AnalystTableTabsEnum.COMMENTED_RESTAURANTS]:
-        tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS].currentPage,
+        activeTab === AnalystTableTabsEnum.COMMENTED_RESTAURANTS
+          ? urlPage || tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS].currentPage
+          : tabStates[AnalystTableTabsEnum.COMMENTED_RESTAURANTS].currentPage,
     }),
-    [tabStates]
+    [tabStates, activeTab, urlPage]
   );
 
   /**
@@ -180,8 +223,12 @@ export default function RestaurantsPage() {
   const handlePageChange = useCallback(
     (tab: ManagerTableTabsEnum | AnalystTableTabsEnum, page: number) => {
       updateTabPage(tab, page);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", tab);
+      params.set("page", String(page));
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
-    [updateTabPage]
+    [updateTabPage, searchParams, router, pathname]
   );
 
   /**
@@ -229,23 +276,7 @@ export default function RestaurantsPage() {
         open={!!activeVideoUrl}
         onOpenChange={handlePreviewModalOpenChange}
         showCloseButton={false}
-      >
-        {restaurantData && (
-          <GontrelPostView
-            videoUrl={activeVideoUrl}
-            restaurantData={{
-              name: restaurantData.name || "",
-              menu:
-                typeof restaurantData?.menu === "string"
-                  ? restaurantData?.menu
-                  : restaurantData?.menu?.content ?? "",
-              reservation: restaurantData.reservation?.content || "",
-              rating: restaurantData.rating || 0,
-            }}
-            tiktokUsername={tiktokUsername || ""}
-          />
-        )}
-      </PreviewVideoModal>
+      />
 
       {/* Main Content */}
       <div className="flex flex-col mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 gap-y-4 sm:gap-y-6 w-full max-w-full">
@@ -300,5 +331,13 @@ export default function RestaurantsPage() {
         onOpenChange={setShowNewRestaurantModal}
       />
     </div>
+  );
+}
+
+export default function RestaurantsPage() {
+  return (
+    <Suspense fallback={null}>
+      <RestaurantsPageContent />
+    </Suspense>
   );
 }

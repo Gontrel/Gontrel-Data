@@ -5,13 +5,11 @@ import { Plus } from "lucide-react";
 import { LivePostCard } from "@/components/restaurants/LivePostCard";
 import { NewPostSheet } from "@/components/posts/NewPostsModal";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
-import { GontrelPostView } from "@/components/video/GontrelPostView";
 import { useVideoStore } from "@/stores/videoStore";
 import { trpc } from "@/lib/trpc-client";
 import { RestaurantDetailsSkeleton } from "@/components/Loader/restaurants/RestaurantDetailsSkeleton";
 import { Post } from "@/interfaces/posts";
 import Icon from "@/components/svgs/Icons";
-import { GontrelRestaurantData } from "@/interfaces";
 import {
   ApprovalStatusEnum,
   ApprovalType,
@@ -42,7 +40,7 @@ const RestaurantDetailsPage = ({
     "approved"
   );
   const [showNewPostModal, setShowNewPostModal] = useState(false);
-  const { activeVideoUrl, setActiveVideoUrl, restaurantData, tiktokUsername } =
+  const { activeVideoUrl, setActiveVideoUrl } =
     useVideoStore();
   const { isConfirmationModalOpen, setConfirmationModalOpen, isActive } =
     useHeaderStore();
@@ -366,28 +364,13 @@ const RestaurantDetailsPage = ({
     setComment(event.target.value);
   };
 
-  const gontrelRestaurantData: GontrelRestaurantData = {
-    name: restaurant?.name,
-    menu: restaurant.menu?.content,
-    reservation: restaurant.reservation?.content,
-    rating: restaurant?.rating,
-  };
-
   return (
     <div className="bg-[#FAFAFA] p-8 relative">
       <PreviewVideoModal
         open={!!activeVideoUrl}
         onOpenChange={handleNewPostModalOpenChange}
         showCloseButton={false}
-      >
-        {restaurantData && (
-          <GontrelPostView
-            videoUrl={activeVideoUrl}
-            restaurantData={gontrelRestaurantData}
-            tiktokUsername={tiktokUsername || ""}
-          />
-        )}
-      </PreviewVideoModal>
+      />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
         <div className="lg:col-span-1 space-y-8 w-min-[512px]">

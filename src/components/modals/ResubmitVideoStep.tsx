@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, Loader } from "lucide-react";
+import { createPortal } from "react-dom";
+import { X, Loader, Clock } from "lucide-react";
 import { useVideoStore } from "@/stores/videoStore";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
@@ -13,7 +14,8 @@ import { VideoData } from "@/interfaces/restaurants";
 import { Button } from "@/components/ui/Button";
 import { RestaurantData } from "@/types";
 import { cleanTiktokUrl, isValidTikTokUrl, mergeClasses } from "@/lib/utils";
-import { CreateBulkPostRequest } from "@/interfaces";
+import { CreatePostRequest } from "@/interfaces";
+import { TimestampView } from "@/components/video/TimestampView";
 interface ResubmitVideoStepProps {
   onNext: () => void;
   handleResubmit?: () => void;
@@ -49,8 +51,10 @@ export const ResubmitVideoStepStep = ({
     videoUrl: "",
     locationName: "",
     isFoodVisible: false,
+    isLowQuality: false,
     visibleFood: "",
     rating: 0,
+    userId: "",
   });
   const [editingVideoId, setEditingVideoId] = useState<string | null>(null);
 
@@ -74,8 +78,8 @@ export const ResubmitVideoStepStep = ({
       },
     });
 
-  const { mutate: createBulkPost, isPending: isLoadingPostCreated } =
-    trpc.post.createBulkPost.useMutation({
+  const { mutate: createPost, isPending: isLoadingPostCreated } =
+    trpc.post.createPost.useMutation({
       onSuccess: () => {
         successToast("Post created successfully!");
         (async () => {
@@ -181,6 +185,7 @@ export const ResubmitVideoStepStep = ({
       status: post?.status,
       visibleFood: post?.visibleFood,
       isFoodVisible: post?.isFoodVisible,
+      isLowQuality: post?.isLowQuality,
       isUpdated: false,
     }));
   };
@@ -261,20 +266,23 @@ export const ResubmitVideoStepStep = ({
       author: currentVideo?.author,
       locationName: currentVideo?.locationName,
       isFoodVisible: currentVideo?.isFoodVisible,
+      isLowQuality: currentVideo?.isLowQuality,
       rating: currentVideo?.rating || 0,
       visibleFood: currentVideo?.visibleFood || "",
       isUpdated: true,
+      userId: currentVideo?.userId,
     };
 
     const payload = {
       locationId: restaurant?.id,
       postId: editingVideoId,
-      tiktokLink: videoData?.url,
-      videoUrl: videoData?.videoUrl,
+      videoUrl: videoData?.videoUrl || videoData?.url || "",
       thumbUrl: videoData?.thumbUrl,
       isFoodVisible: videoData?.isFoodVisible,
+      isLowQuality: videoData?.isLowQuality,
       visibleFood: videoData?.visibleFood,
       tags: [...videoData?.tags],
+      userId: videoData?.userId,
     };
 
     if (editingVideoId) {
@@ -285,13 +293,14 @@ export const ResubmitVideoStepStep = ({
         locationId: payload.locationId,
         postId: editingVideoId,
         ...(payload.videoUrl && { videoUrl: payload.videoUrl }),
-        ...(payload.tiktokLink && { tiktokLink: payload.tiktokLink }),
         ...(payload.thumbUrl && { thumbUrl: payload.thumbUrl }),
         ...(typeof payload.isFoodVisible === "boolean" && {
           isFoodVisible: payload.isFoodVisible,
         }),
-        ...(payload.visibleFood && { visibleFood: payload.visibleFood }),
-        ...(payload.tags?.length ? { tags: payload.tags } : {}),
+        ...(typeof payload.isLowQuality === "boolean" && {
+          isLowQuality: payload.isLowQuality,
+        }),
+        ...(payload.tags && payload.tags.length > 0 && { tags: payload.tags }),
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -300,27 +309,31 @@ export const ResubmitVideoStepStep = ({
       return;
     }
 
-    const createBulkPostData: CreateBulkPostRequest = {
+    const createPostData: CreatePostRequest = {
       locationId: payload?.locationId,
-      posts: [
-        {
-          videoUrl: payload?.videoUrl,
-          tiktokLink: payload?.tiktokLink,
-          thumbUrl: payload?.thumbUrl,
-          isFoodVisible: payload?.isFoodVisible,
-          visibleFood: payload?.visibleFood || "",
-          tags: payload?.tags,
-        },
-      ],
+      videoUrl: payload?.videoUrl ?? "",
+      thumbUrl: payload?.thumbUrl,
+      locationName: restaurant?.name || "",
+      isFoodVisible: payload?.isFoodVisible ?? false,
+      isLowQuality: payload?.isLowQuality ?? false,
+      ...(payload?.tags && payload.tags.length > 0 && { tags: payload.tags }),
+      userId: payload?.userId,
     };
 
-    createBulkPost(createBulkPostData);
+    createPost(createPostData);
   };
 
   const handleSetFoodVisibility = (checked: boolean) => {
     setCurrentVideo((prev) => ({
       ...prev,
       isFoodVisible: checked,
+    }));
+  };
+
+  const handleSetLowQuality = (checked: boolean) => {
+    setCurrentVideo((prev) => ({
+      ...prev,
+      isLowQuality: checked,
     }));
   };
 
@@ -346,7 +359,9 @@ export const ResubmitVideoStepStep = ({
         visibleFood: videoToEdit.visibleFood || "",
         locationName: videoToEdit?.locationName || "",
         isFoodVisible: videoToEdit?.isFoodVisible ?? false,
+        isLowQuality: videoToEdit?.isLowQuality ?? false,
         rating: videoToEdit?.rating || 0,
+        userId: videoToEdit?.userId || "",
       });
       setActiveVideoUrl(videoToEdit?.videoUrl || videoToEdit?.url);
     }
@@ -360,6 +375,35 @@ export const ResubmitVideoStepStep = ({
     currentVideo.tags.length <= 1 && currentVideo.url === "";
 
   const shouldResubmitModal = shouldResubmit > 0 ? true : false;
+
+  const [showTimestampView, setShowTimestampView] = useState(false);
+
+  // Fetch full post data by ID to get targetTimeStamps
+  const { data: fetchedPost } = trpc.post.getPostById.useQuery(
+    { postId: editingVideoId || "" },
+    {
+      enabled: !!editingVideoId && showTimestampView,
+      staleTime: 0,
+      refetchOnMount: true,
+    }
+  );
+
+  if (showTimestampView && (currentVideo.videoUrl || currentVideo.url)) {
+    const existingTimeStamps = fetchedPost?.targetTimeStamps;
+    console.log("DEBUG - fetchedPost targetTimeStamps:", JSON.stringify(existingTimeStamps, null, 2));
+    return createPortal(
+      <div className="fixed right-0 top-0 h-full bg-white z-50 overflow-y-auto rounded-l-3xl" style={{ width: 1200 }}>
+        <TimestampView
+          videoUrl={currentVideo.videoUrl || currentVideo.url}
+          onBack={() => setShowTimestampView(false)}
+          locationId={restaurant?.id || ""}
+          postId={editingVideoId || ""}
+          existingTimeStamps={existingTimeStamps}
+        />
+      </div>,
+      document.body
+    );
+  }
 
   return (
     <div className="flex justify-center flex-col h-full w-[518px]">
@@ -441,9 +485,23 @@ export const ResubmitVideoStepStep = ({
 
           {currentVideo?.url && (
             <div className="mt-6">
-              <label htmlFor="tag-input" className="text-lg font-semibold">
-                Tag
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="tag-input" className="text-lg font-semibold">
+                  Tag
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    useVideoStore.getState().pauseAllVideosExcept("");
+                    setActiveVideoUrl(null);
+                    setShowTimestampView(true);
+                  }}
+                  className="flex items-center gap-1 h-8 min-w-[100px] px-4 py-1.5 rounded-lg border border-[#0070F3] bg-white text-[#0070F3] text-sm font-medium leading-5"
+                >
+                  <Clock size={16} />
+                  <span>Add time stamp</span>
+                </button>
+              </div>
               <div className="relative mt-3">
                 <input
                   type="text"
@@ -487,7 +545,22 @@ export const ResubmitVideoStepStep = ({
                 </div>
               }
 
-              {currentVideo.isFoodVisible && (
+            {
+              <div className="flex items-center gap-2 mb-4 mt-4">
+                <input
+                  type="checkbox"
+                  id="low-quality"
+                  checked={currentVideo.isLowQuality}
+                  onChange={(e) => handleSetLowQuality(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="low-quality">
+                  Video is low quality
+                </label>
+              </div>
+            }
+
+            {currentVideo.isFoodVisible && (
                 <div>
                   <label
                     htmlFor="food-type"

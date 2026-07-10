@@ -6,7 +6,7 @@ import { VideoStep } from "../restaurants/VideoStep";
 import { trpc } from "@/lib/trpc-client";
 import { errorToast, successToast } from "@/utils/toast";
 import { useVideoStore } from "@/stores/videoStore";
-import { CreateBulkPostRequest } from "@/interfaces/requests";
+import { CreatePostRequest } from "@/interfaces/requests";
 import { Restaurant } from "@/interfaces/restaurants";
 
 interface ResubmitPostProps {
@@ -23,24 +23,8 @@ export const ResubmitPost = ({
   const { videos, resetVideos, setActiveVideoUrl } = useVideoStore();
   const locationId = restaurant?.id;
 
-  const videosData = videos.map((video) => ({
-    tiktokLink: video.url ?? "",
-    videoUrl: video.videoUrl || "",
-    hlsUrl: video.videoUrl,
-    firstFrameUrl: video.videoUrl,
-    thumbUrl: video.thumbUrl || "",
-    locationName: video.locationName || "",
-    rating: video.rating || 0,
-    tags: video.tags ?? [],
-  }));
-
-  const createBulkPostData: CreateBulkPostRequest = {
-    locationId: locationId,
-    posts: videosData,
-  };
-
-  const { mutate: createBulkPost, isPending: isLoading } =
-    trpc.post.createBulkPost.useMutation({
+  const { mutate: createPost, isPending: isLoading } =
+    trpc.post.createPost.useMutation({
       onSuccess: () => {
         successToast("Post created successfully!");
         handleClose();
@@ -51,7 +35,22 @@ export const ResubmitPost = ({
     });
 
   const onSubmit = () => {
-    createBulkPost(createBulkPostData);
+    videos.forEach((video) => {
+      const postData: CreatePostRequest = {
+        locationId: locationId,
+        videoUrl: video.videoUrl || video.url || "",
+        hlsUrl: video.videoUrl,
+        firstFrameUrl: video.videoUrl,
+        thumbUrl: video.thumbUrl || "",
+        locationName: restaurant?.name || video.locationName || "",
+        isFoodVisible: video.isFoodVisible ?? false,
+        isLowQuality: video.isLowQuality ?? false,
+        rating: video.rating || 0,
+        ...(video.tags && video.tags.length > 0 && { tags: video.tags }),
+        userId: video.userId,
+      };
+      createPost(postData);
+    });
   };
 
   const handleClose = () => {
@@ -87,6 +86,7 @@ export const ResubmitPost = ({
           onSubmit={onSubmit}
           isLoading={isLoading}
           postOnly={true}
+          restaurantName={restaurant?.name}
         />
       </div>
     </Sheet>
