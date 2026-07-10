@@ -285,12 +285,12 @@ export default class APIRequest {
       formData.append("userId", userId);
     }
 
-    // Standalone axios instance for upload with hardcoded production URL
+    // Standalone axios instance for upload using env config
     const uploadClient = axios.create({
-      baseURL: "https://gontrel-test.up.railway.app/",
+      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "",
       timeout: 3600000,
       headers: {
-        "x-api-key": "5qegXo2xfJ7UypzWsA3Sq1WbQoL9ARtK2dcGFCDC",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
       },
     });
 

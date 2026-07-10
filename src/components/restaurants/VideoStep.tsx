@@ -95,10 +95,10 @@ export const VideoStep = ({
     setIsSearchingCreators(true);
     try {
       const res = await fetch(
-        `https://gontrel-test.up.railway.app/get-user-search-suggestions?query=${encodeURIComponent(query)}&quantity=5&sessionToken=${user?.id || ""}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}get-user-search-suggestions?query=${encodeURIComponent(query)}&quantity=5&sessionToken=${user?.id || ""}`,
         {
           headers: {
-            "x-api-key": "5qegXo2xfJ7UypzWsA3Sq1WbQoL9ARtK2dcGFCDC",
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
           },
         }
       );
