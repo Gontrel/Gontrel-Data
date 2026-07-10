@@ -214,6 +214,7 @@ const handleCreateRestaurant = useCallback(
     const payload: CreateLocationRequest = {
       sessionToken: sessionToken,
       placeId: selectedRestaurant?.placeId,
+      ...(currentVideos?.[0]?.userId && { userId: currentVideos[0].userId }),
       ...(selectedRestaurant?.address && {
         address:
           typeof selectedRestaurant?.address === "string"
@@ -234,16 +235,18 @@ const handleCreateRestaurant = useCallback(
       ...(data?.restaurantType && { orderType: data?.restaurantType }),
       posts:
         currentVideos?.map((video) => ({
-          tiktokLink: video?.url,
-          videoUrl: video?.videoUrl || "",
+          videoUrl: video?.videoUrl || video?.url || "",
           thumbUrl: video?.thumbUrl,
           locationName: selectedRestaurant?.name,
           rating: 0,
           ...(video?.isFoodVisible && {
             isFoodVisible: video?.isFoodVisible,
           }),
-          ...(video?.visibleFood && { visibleFood: video?.visibleFood }),
+          ...(video?.isLowQuality && {
+            isLowQuality: video?.isLowQuality,
+          }),
           ...(video?.tags && { tags: video?.tags }),
+          ...(video?.userId && { userId: video?.userId }),
         })) ?? [],
       openingHours: availability,
 
@@ -318,6 +321,8 @@ const handleCreateRestaurant = useCallback(
                   <VideoStep
                     onPrevious={() => setStep(1)}
                     onNext={() => setStep(3)}
+                    locationId={selectedRestaurant?.id || ""}
+                    postId=""
                   />
                 )}
                 {step === 3 && (

@@ -19,6 +19,7 @@ export interface Post {
   tiktokLink: string;
   videoUrl: string;
   isFoodVisible?: boolean;
+  isLowQuality?: boolean;
   thumbUrl: string;
   postedAt?: string;
   status: string;
@@ -26,6 +27,12 @@ export interface Post {
   user?: User;
   source: string;
   tags: Tag[];
+  targetTimeStamps?: TargetTimeStamp[];
+}
+
+export interface TargetTimeStamp {
+  time: string;
+  tags: string[];
 }
 
 export interface Tag {

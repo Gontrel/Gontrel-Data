@@ -265,6 +265,62 @@ export default class APIRequest {
   };
 
   /**
+   * Upload a video file to the server
+   * @param file - The video file to upload
+   * @returns Object containing the uploaded video URL, thumbnail URL, HLS URL and first frame URL
+   */
+  uploadVideo = async (
+    file: File,
+    userId?: string,
+    onUploadProgress?: (progressEvent: { loaded: number; total?: number }) => void
+  ): Promise<{
+    videoUrl: string;
+    thumbUrl: string;
+    hlsUrl?: string;
+    firstFrameUrl?: string;
+  }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (userId) {
+      formData.append("userId", userId);
+    }
+
+    // Standalone axios instance for upload with hardcoded production URL
+    const uploadClient = axios.create({
+      baseURL: "https://gontrel-test.up.railway.app/",
+      timeout: 3600000,
+      headers: {
+        "x-api-key": "5qegXo2xfJ7UypzWsA3Sq1WbQoL9ARtK2dcGFCDC",
+      },
+    });
+
+    // eslint-disable-next-line no-console
+    console.log("[uploadVideo] Request:", {
+      url: "/upload-file",
+      method: "POST",
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      userId: userId || "not set",
+      baseURL: uploadClient.defaults.baseURL,
+    });
+
+    try {
+      const response = await uploadClient.post(`/upload-file`, formData, {
+        onUploadProgress,
+      });
+
+      // eslint-disable-next-line no-console
+      console.log("[uploadVideo] Response:", response.status, response.data);
+      return this.handleResponse(response);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("[uploadVideo] Error:", error);
+      throw error;
+    }
+  };
+
+  /**
    *
    * @description This class handles API requests related to restaurants.
    *
