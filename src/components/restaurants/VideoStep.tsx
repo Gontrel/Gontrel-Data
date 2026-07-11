@@ -15,6 +15,7 @@ import { cleanTiktokUrl } from "@/lib/utils";
 import { uploadVideoFile } from "@/lib/upload";
 import { VideoData } from "@/interfaces";
 import { TimestampView } from "@/components/video/TimestampView";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { TargetTimeStamp } from "@/interfaces/posts";
 
 interface VideoStepProps {
@@ -306,6 +307,7 @@ export const VideoStep = ({
         videoUrl: result.videoUrl,
         thumbUrl: result.thumbUrl,
       }));
+      setActiveVideoUrl(result.videoUrl);
       successToast("Video uploaded successfully!");
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status: number; statusText: string; data: unknown }; config?: { url?: string }; message?: string };
@@ -414,6 +416,7 @@ export const VideoStep = ({
 
     setActiveVideoUrl(null);
     setTiktokUsername(null);
+    setShowPreview(false);
   };
 
   const handleOnSubmit = () => {
@@ -454,6 +457,8 @@ export const VideoStep = ({
     (currentVideo.tags.length < 1 || currentVideo.url === "");
 
   const [showTimestampView, setShowTimestampView] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [localTimestamps, setLocalTimestamps] = useState<{ time: number; tags: string[] }[]>([]);
 
   if (showTimestampView && currentVideo.videoUrl) {
     return createPortal(
@@ -463,7 +468,8 @@ export const VideoStep = ({
             onBack={() => setShowTimestampView(false)}
             locationId={locationId || ""}
             postId={postId || ""}
-            existingTimeStamps={existingTimeStamps}
+            existingTimeStamps={existingTimeStamps || localTimestamps.map(ts => ({ time: ts.time.toString(), tags: ts.tags }))}
+            onSaveTimestamps={!postId ? (timestamps) => setLocalTimestamps(timestamps) : undefined}
           />
       </div>,
       document.body
@@ -801,6 +807,16 @@ export const VideoStep = ({
         </Button>
       )}
 
+      <PreviewVideoModal
+        open={showPreview}
+        onOpenChange={(open) => {
+          setShowPreview(open);
+          if (!open) {
+            setActiveVideoUrl(null);
+          }
+        }}
+        showCloseButton={true}
+      />
     </div>
   );
 };
