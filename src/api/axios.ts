@@ -1,8 +1,14 @@
 import { errorToast } from "@/utils/toast";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 
-const API_URL = process.env.API_BASE_URL;
-const API_KEY = process.env.API_KEY;
+const API_URL =
+  (typeof window === "undefined"
+    ? process.env.API_BASE_URL
+    : process.env.NEXT_PUBLIC_API_BASE_URL) || "";
+const API_KEY =
+  (typeof window === "undefined"
+    ? process.env.API_KEY
+    : process.env.NEXT_PUBLIC_API_KEY) || "";
 
 // --- Base Client Configuration ---
 const baseConfig: AxiosRequestConfig = {
