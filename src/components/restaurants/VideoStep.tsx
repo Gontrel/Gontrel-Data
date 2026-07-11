@@ -94,21 +94,8 @@ export const VideoStep = ({
     }
     setIsSearchingCreators(true);
     try {
-      const baseUrl =
-        typeof window === "undefined"
-          ? process.env.API_BASE_URL
-          : process.env.NEXT_PUBLIC_API_BASE_URL;
-      const apiKey =
-        typeof window === "undefined"
-          ? process.env.API_KEY
-          : process.env.NEXT_PUBLIC_API_KEY;
       const res = await fetch(
-        `${baseUrl}get-user-search-suggestions?query=${encodeURIComponent(query)}&quantity=5&sessionToken=${user?.id || ""}`,
-        {
-          headers: {
-            "x-api-key": apiKey || "",
-          },
-        }
+        `/api/user-search-suggestions?query=${encodeURIComponent(query)}&quantity=5&sessionToken=${user?.id || ""}`
       );
       if (!res.ok) throw new Error("Failed to search creators");
       const data = await res.json();

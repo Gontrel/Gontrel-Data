@@ -285,34 +285,14 @@ export default class APIRequest {
       formData.append("userId", userId);
     }
 
-    // Standalone axios instance for upload using env config
+    // Route through server-side Next.js API route to keep API_BASE_URL/API_KEY server-side
     const uploadClient = axios.create({
-      baseURL:
-        (typeof window === "undefined"
-          ? process.env.API_BASE_URL
-          : process.env.NEXT_PUBLIC_API_BASE_URL) || "",
+      baseURL: "",
       timeout: 3600000,
-      headers: {
-        "x-api-key":
-          (typeof window === "undefined"
-            ? process.env.API_KEY
-            : process.env.NEXT_PUBLIC_API_KEY) || "",
-      },
-    });
-
-    // eslint-disable-next-line no-console
-    console.log("[uploadVideo] Request:", {
-      url: "/upload-file",
-      method: "POST",
-      fileName: file.name,
-      fileType: file.type,
-      fileSize: file.size,
-      userId: userId || "not set",
-      baseURL: uploadClient.defaults.baseURL,
     });
 
     try {
-      const response = await uploadClient.post(`/upload-file`, formData, {
+      const response = await uploadClient.post(`/api/upload-file`, formData, {
         onUploadProgress,
       });
 
