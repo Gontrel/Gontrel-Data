@@ -285,19 +285,10 @@ export default class APIRequest {
       formData.append("userId", userId);
     }
 
-    // Standalone axios instance for upload using env config
+    // Upload through Next.js server-side proxy to keep API_BASE_URL server-side
     const uploadClient = axios.create({
-      baseURL:
-        (typeof window === "undefined"
-          ? process.env.API_BASE_URL
-          : process.env.NEXT_PUBLIC_API_BASE_URL) || "",
+      baseURL: "",
       timeout: 3600000,
-      headers: {
-        "x-api-key":
-          (typeof window === "undefined"
-            ? process.env.API_KEY
-            : process.env.NEXT_PUBLIC_API_KEY) || "",
-      },
     });
 
     // eslint-disable-next-line no-console
