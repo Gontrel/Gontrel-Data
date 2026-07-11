@@ -10,13 +10,14 @@ interface TimestampViewProps {
   locationId: string;
   postId: string;
   existingTimeStamps?: TargetTimeStamp[];
+  onSaveTimestamps?: (timestamps: { time: number; tags: string[] }[]) => void;
 }
 
 const FRAME_WIDTH = 33;
 const FRAME_HEIGHT = 60;
 const FRAMES_PER_SECOND = 1;
 
-export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTimeStamps }: TimestampViewProps) => {
+export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTimeStamps, onSaveTimestamps }: TimestampViewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -236,6 +237,12 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
   };
 
   const handleSaveChanges = async () => {
+    if (!postId && onSaveTimestamps) {
+      onSaveTimestamps(savedTimestamps);
+      onBack();
+      return;
+    }
+
     setIsSaving(true);
     try {
       const response = await fetch('/api/admin-post', {
@@ -744,13 +751,13 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
               <div className="flex justify-end mt-4">
                 <button
                   onClick={handleSaveChanges}
-                  disabled={isSaving || !postId}
+                  disabled={isSaving}
                   style={{
                     width: 120,
                     height: 44,
                     minWidth: 120,
                     borderRadius: 8,
-                    opacity: isSaving || !postId ? 0.5 : 1,
+                    opacity: isSaving ? 0.5 : 1,
                     paddingTop: 6,
                     paddingRight: 16,
                     paddingBottom: 6,
