@@ -555,7 +555,7 @@ export const ResubmitVideoStepStep = ({
                   className="w-4 h-4"
                 />
                 <label htmlFor="low-quality">
-                  Video is low quality
+                 First frame is low quality
                 </label>
               </div>
             }

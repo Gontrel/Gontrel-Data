@@ -94,11 +94,19 @@ export const VideoStep = ({
     }
     setIsSearchingCreators(true);
     try {
+      const baseUrl =
+        typeof window === "undefined"
+          ? process.env.API_BASE_URL
+          : process.env.NEXT_PUBLIC_API_BASE_URL;
+      const apiKey =
+        typeof window === "undefined"
+          ? process.env.API_KEY
+          : process.env.NEXT_PUBLIC_API_KEY;
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}get-user-search-suggestions?query=${encodeURIComponent(query)}&quantity=5&sessionToken=${user?.id || ""}`,
+        `${baseUrl}get-user-search-suggestions?query=${encodeURIComponent(query)}&quantity=5&sessionToken=${user?.id || ""}`,
         {
           headers: {
-            "x-api-key": process.env.NEXT_PUBLIC_API_KEY || "",
+            "x-api-key": apiKey || "",
           },
         }
       );
@@ -712,7 +720,7 @@ export const VideoStep = ({
                   className="w-4 h-4"
                 />
                 <label htmlFor="low-quality">
-                  Video is low quality
+                  First frame is low quality
                 </label>
               </div>
             }
