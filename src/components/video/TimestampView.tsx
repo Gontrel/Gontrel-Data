@@ -10,7 +10,7 @@ interface TimestampViewProps {
   locationId: string;
   postId: string;
   existingTimeStamps?: TargetTimeStamp[];
-  onSaveTimestamps?: (timestamps: { time: number; tags: string[] }[]) => void;
+  onSaveTimestamps?: (timestamps: { time: number; tags: string[]; thumbUrl: string }[]) => void;
 }
 
 const FRAME_WIDTH = 33;
@@ -32,8 +32,8 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
   const [isPlaying, setIsPlaying] = useState(false);
   const [frameTags, setFrameTags] = useState<Record<number, string[]>>({});
   const [tagInput, setTagInput] = useState("");
-  const [savedTimestamps, setSavedTimestamps] = useState<{ time: number; tags: string[] }[]>(
-    existingTimeStamps?.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags })) || []
+  const [savedTimestamps, setSavedTimestamps] = useState<{ time: number; tags: string[]; thumbUrl: string }[]>(
+    existingTimeStamps?.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags, thumbUrl: ts.thumbUrl || "" })) || []
   );
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,7 +41,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
   // Sync savedTimestamps when existingTimeStamps changes (e.g. after refetch)
   useEffect(() => {
     if (existingTimeStamps) {
-      setSavedTimestamps(existingTimeStamps.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags })));
+      setSavedTimestamps(existingTimeStamps.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags, thumbUrl: ts.thumbUrl || "" })));
     }
   }, [existingTimeStamps]);
 
@@ -56,6 +56,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     const canvas = canvasRef.current;
     if (!video || !canvas) {
       isExtractingRef.current = false;
+      setIsExtracting(false);
       return;
     }
 
@@ -69,12 +70,14 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     const ctx = canvas.getContext("2d");
     if (!ctx) {
       isExtractingRef.current = false;
+      setIsExtracting(false);
       return;
     }
 
     const videoDuration = video.duration;
     if (!videoDuration || isNaN(videoDuration)) {
       isExtractingRef.current = false;
+      setIsExtracting(false);
       return;
     }
 
@@ -86,21 +89,50 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     for (let i = 0; i < frameCount; i++) {
       const seekTime = Math.max(0.01, Math.min(i * interval, videoDuration - 0.1));
       await new Promise<void>((resolve) => {
-        const onSeeked = () => {
-          requestAnimationFrame(() => {
-            try {
-              ctx.drawImage(video, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-              const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
-              extractedFrames.push(dataUrl);
-            } catch (err) {
-              // Error drawing frame, skip it
-            }
-            video.removeEventListener("seeked", onSeeked);
-            resolve();
-          });
+        let done = false;
+        const capture = () => {
+          if (done) return;
+          done = true;
+          try {
+            ctx.drawImage(video, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
+            extractedFrames.push(dataUrl);
+          } catch (err) {
+            extractedFrames.push("");
+          }
+          video.removeEventListener("seeked", onSeeked);
+          resolve();
         };
+
+        const onSeeked = () => {
+          // Use requestVideoFrameCallback if available (Chrome) for accurate frame capture
+          if ("requestVideoFrameCallback" in video) {
+            const videoWithFrameCallback = video as HTMLVideoElement & {
+              requestVideoFrameCallback: (callback: () => void) => number;
+            };
+            videoWithFrameCallback.requestVideoFrameCallback(() => capture());
+          } else {
+            requestAnimationFrame(() => setTimeout(capture, 20));
+          }
+        };
+
         video.addEventListener("seeked", onSeeked);
         video.currentTime = seekTime;
+
+        // Safety timeout in case seeked never fires
+        setTimeout(() => {
+          if (!done) {
+            done = true;
+            video.removeEventListener("seeked", onSeeked);
+            try {
+              ctx.drawImage(video, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+              extractedFrames.push(canvas.toDataURL("image/jpeg", 0.6));
+            } catch {
+              extractedFrames.push("");
+            }
+            resolve();
+          }
+        }, 1000);
       });
     }
 
@@ -131,6 +163,9 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
 
     video.addEventListener("loadeddata", handleCanPlay);
     video.addEventListener("error", handleError);
+    if (video.readyState >= 2) {
+      void handleCanPlay();
+    }
     const handleSeeked = () => {
       isSeekingRef.current = false;
     };
@@ -199,11 +234,12 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     if (selectedFrameIndex === null) return;
     const time = selectedFrameIndex / FRAMES_PER_SECOND;
     const tags = frameTags[selectedFrameIndex] || [];
+    const thumbUrl = frames[selectedFrameIndex] || "";
 
     if (editingIndex !== null) {
       // Update existing timestamp (via edit button)
       setSavedTimestamps(prev => prev.map((item, i) =>
-        i === editingIndex ? { time, tags } : item
+        i === editingIndex ? { time, tags, thumbUrl } : item
       ));
       setEditingIndex(null);
     } else {
@@ -212,11 +248,11 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
       if (existingIndex !== -1) {
         // Update existing timestamp at same time
         setSavedTimestamps(prev => prev.map((item, i) =>
-          i === existingIndex ? { time, tags } : item
+          i === existingIndex ? { time, tags, thumbUrl } : item
         ));
       } else {
         // Add new timestamp
-        setSavedTimestamps(prev => [...prev, { time, tags }]);
+        setSavedTimestamps(prev => [...prev, { time, tags, thumbUrl }]);
       }
     }
   };
@@ -237,8 +273,13 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
   };
 
   const handleSaveChanges = async () => {
+    const timestampsToSave = savedTimestamps.map(timestamp => ({
+      ...timestamp,
+      thumbUrl: timestamp.thumbUrl || frames[Math.floor(timestamp.time * FRAMES_PER_SECOND)] || "",
+    }));
+
     if (!postId && onSaveTimestamps) {
-      onSaveTimestamps(savedTimestamps);
+      onSaveTimestamps(timestampsToSave);
       onBack();
       return;
     }
@@ -253,9 +294,10 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
         body: JSON.stringify({
           locationId,
           postId,
-          targetTimeStamps: savedTimestamps.map(ts => ({
+          targetTimeStamps: timestampsToSave.map(ts => ({
             time: ts.time.toString(),
             tags: ts.tags,
+            thumbUrl: ts.thumbUrl,
           })),
         }),
       });
@@ -315,11 +357,12 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
           const tags = frameTags[selectedFrameIndex];
           if (tags && tags.length > 0) {
             const existingIndex = savedTimestamps.findIndex(ts => ts.time === selectedTime);
+            const thumbUrl = frames[selectedFrameIndex] || "";
             if (existingIndex === -1) {
-              setSavedTimestamps(prev => [...prev, { time: selectedTime, tags }]);
+              setSavedTimestamps(prev => [...prev, { time: selectedTime, tags, thumbUrl }]);
             } else if (JSON.stringify(savedTimestamps[existingIndex].tags) !== JSON.stringify(tags)) {
               setSavedTimestamps(prev => prev.map((item, i) =>
-                i === existingIndex ? { time: selectedTime, tags } : item
+                i === existingIndex ? { time: selectedTime, tags, thumbUrl } : item
               ));
             }
           }
@@ -686,8 +729,29 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
                       border: "1px solid rgba(240, 241, 242, 1)",
                     }}
                   >
-                    {/* Left side: Timestamp and tags column */}
-                    <div className="flex flex-col gap-2">
+                    {/* Left-aligned group: frame + timestamp + tags */}
+                    <div className="flex items-center gap-4">
+                      {/* Frame thumbnail */}
+                      {(() => {
+                        const frameIdx = Math.floor(savedTimestamp.time * FRAMES_PER_SECOND);
+                        const frame = savedTimestamp.thumbUrl || frames[frameIdx];
+                        return frame ? (
+                          <img
+                            src={frame}
+                            alt={`Frame at ${formatTime(savedTimestamp.time)}`}
+                            className="flex-shrink-0 rounded object-cover"
+                            style={{ width: 45, height: 56 }}
+                          />
+                        ) : (
+                          <div
+                            className="flex-shrink-0 rounded bg-gray-200"
+                            style={{ width: 45, height: 56 }}
+                          />
+                        );
+                      })()}
+
+                      {/* Timestamp and tags column */}
+                      <div className="flex flex-col gap-2">
                       {/* Timestamp */}
                       <div
                         style={{
@@ -724,6 +788,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
                             {tag}
                           </div>
                         ))}
+                      </div>
                       </div>
                     </div>
 
