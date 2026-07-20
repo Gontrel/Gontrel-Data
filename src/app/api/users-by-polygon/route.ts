@@ -11,11 +11,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${process.env.API_BASE_URL}users-by-polygon`, {
+    const apiBaseUrl = process.env.API_BASE_URL?.trim();
+    if (!apiBaseUrl) {
+      return NextResponse.json({ error: "API_BASE_URL is not configured" }, { status: 500 });
+    }
+    const token = request.cookies.get("user_token")?.value;
+    const endpoint = new URL("users-by-polygon", `${apiBaseUrl.replace(/\/$/, "")}/`).toString();
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "x-api-key": process.env.API_KEY || "",
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify({ polygon: body.polygon }),
     });
@@ -30,8 +37,9 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
+    console.error("users-by-polygon proxy error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch users by polygon" },
+      { error: error instanceof Error ? error.message : "Failed to fetch users by polygon" },
       { status: 500 }
     );
   }
