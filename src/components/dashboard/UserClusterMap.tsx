@@ -37,6 +37,14 @@ interface UserClusterMapProps {
 
 const DUBLIN_CENTER: [number, number] = [53.344, -6.2675];
 
+const DUBLIN_POLYGON = [
+  { lat: 53.46, lng: -6.50 },
+  { lat: 53.46, lng: -6.03 },
+  { lat: 53.19, lng: -6.03 },
+  { lat: 53.19, lng: -6.50 },
+  { lat: 53.46, lng: -6.50 },
+];
+
 function createUserClusterIcon(): L.DivIcon {
   return L.divIcon({
     html: `<div class="user-cluster"></div>`,
@@ -209,7 +217,6 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"restaurants" | "users" | StatusType | null>(null);
-  const fitRequestedRef = useRef(false);
   const requestIdRef = useRef(0);
   const abortControllerRef = useRef<AbortController | null>(null);
   const userClusterRef = useRef<L.MarkerClusterGroup | null>(null);
@@ -217,7 +224,7 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
   const statusLayerRef = useRef<L.LayerGroup | null>(null);
   const mapRef = useRef<L.Map | null>(null);
 
-  const fetchData = useCallback(async (bounds: L.LatLngBounds) => {
+  const fetchData = useCallback(async () => {
     const requestId = ++requestIdRef.current;
     abortControllerRef.current?.abort();
     const controller = new AbortController();
@@ -225,13 +232,7 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
     setLoading(true);
     setError(null);
     try {
-      const polygon = [
-        { lat: bounds.getNorth(), lng: bounds.getWest() },
-        { lat: bounds.getNorth(), lng: bounds.getEast() },
-        { lat: bounds.getSouth(), lng: bounds.getEast() },
-        { lat: bounds.getSouth(), lng: bounds.getWest() },
-        { lat: bounds.getNorth(), lng: bounds.getWest() },
-      ];
+      const polygon = DUBLIN_POLYGON;
 
       const [usersRes, restaurantsRes] = await Promise.all([
         fetch("/api/users-by-polygon", {
@@ -257,18 +258,8 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
       const newUsers = Array.isArray(usersData) ? usersData : [];
       const newRestaurants = Array.isArray(restaurantsData) ? restaurantsData : [];
 
-      setUsers(prev => {
-        const merged = new Map(prev.map(user => [user.id, user]));
-        newUsers.forEach(user => merged.set(user.id, user));
-        const nextUsers = Array.from(merged.values());
-        return JSON.stringify(prev) === JSON.stringify(nextUsers) ? prev : nextUsers;
-      });
-      setRestaurants(prev => {
-        const merged = new Map(prev.map(restaurant => [restaurant.id, restaurant]));
-        newRestaurants.forEach(restaurant => merged.set(restaurant.id, restaurant));
-        const nextRestaurants = Array.from(merged.values());
-        return JSON.stringify(prev) === JSON.stringify(nextRestaurants) ? prev : nextRestaurants;
-      });
+      setUsers(newUsers);
+      setRestaurants(newRestaurants);
     } catch (requestError) {
       if (requestError instanceof DOMException && requestError.name === "AbortError") return;
       if (requestId === requestIdRef.current) setError("Failed to load map data");
@@ -277,18 +268,9 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
     }
   }, []);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const skipNextMoveFetchRef = useRef(false);
   const handleMoveEnd = useCallback(
-    (bounds: L.LatLngBounds) => {
-      if (skipNextMoveFetchRef.current) {
-        skipNextMoveFetchRef.current = false;
-        return;
-      }
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      debounceRef.current = setTimeout(() => fetchData(bounds), 400);
-    },
-    [fetchData]
+    (_bounds: L.LatLngBounds) => {},
+    []
   );
 
   const handleMapReady = useCallback(
@@ -297,14 +279,10 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
       userClusterRef.current = userClusterGroup;
       restaurantClusterRef.current = restaurantClusterGroup;
       statusLayerRef.current = statusLayer;
-      fetchData(map.getBounds());
+      fetchData();
     },
     [fetchData]
   );
-
-  useEffect(() => {
-    fitRequestedRef.current = true;
-  }, [activeFilter]);
 
   useEffect(() => {
     if (!userClusterRef.current || !mapRef.current) return;
@@ -337,17 +315,6 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
       clusterGroup.addLayer(marker);
     });
 
-    if (fitRequestedRef.current && activeFilter === "users") {
-      fitRequestedRef.current = false;
-      const validUsers = users.filter((u) => u.lat != null && u.lng != null);
-      if (validUsers.length > 0) {
-        const bounds = L.latLngBounds(validUsers.map((u) => [u.lat, u.lng] as [number, number]));
-        if (bounds.isValid()) {
-          skipNextMoveFetchRef.current = true;
-          map.fitBounds(bounds, { padding: [50, 50] });
-        }
-      }
-    }
   }, [users, restaurants, activeFilter]);
 
   useEffect(() => {
@@ -381,17 +348,6 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
       clusterGroup.addLayer(marker);
     });
 
-    if (fitRequestedRef.current && activeFilter === "restaurants") {
-      fitRequestedRef.current = false;
-      const validRestaurants = restaurants.filter((r) => r.lat != null && r.lng != null);
-      if (validRestaurants.length > 0) {
-        const bounds = L.latLngBounds(validRestaurants.map((r) => [r.lat, r.lng] as [number, number]));
-        if (bounds.isValid()) {
-          skipNextMoveFetchRef.current = true;
-          map.fitBounds(bounds, { padding: [50, 50] });
-        }
-      }
-    }
   }, [users, restaurants, activeFilter]);
 
   useEffect(() => {
@@ -446,14 +402,6 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
       }
     }
 
-    if (fitRequestedRef.current && matchingCellBounds.length > 0) {
-      fitRequestedRef.current = false;
-      const combinedBounds = matchingCellBounds.reduce((acc, b) => acc.extend(b));
-      if (combinedBounds.isValid()) {
-        skipNextMoveFetchRef.current = true;
-        map.fitBounds(combinedBounds, { padding: [50, 50] });
-      }
-    }
   }, [users, restaurants, activeFilter]);
 
   return (
@@ -489,7 +437,7 @@ const UserClusterMap = ({ height = 500 }: UserClusterMapProps) => {
       >
         <MapContainer
           center={DUBLIN_CENTER}
-          zoom={16}
+          zoom={18}
           style={{ height: "100%", width: "100%" }}
         >
           <TileLayer
