@@ -272,6 +272,21 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     setEditingIndex(index);
   };
 
+  const uploadThumbnail = async (dataUrl: string): Promise<string> => {
+    if (!dataUrl || dataUrl.startsWith("http")) return dataUrl;
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+    const formData = new FormData();
+    formData.append("file", blob, `timestamp_${Date.now()}.jpg`);
+    const uploadResponse = await fetch("/api/upload-file", {
+      method: "POST",
+      body: formData,
+    });
+    if (!uploadResponse.ok) throw new Error("Failed to upload thumbnail");
+    const data = await uploadResponse.json();
+    return data.url || data.videoUrl || data.thumbUrl || data.location || "";
+  };
+
   const handleSaveChanges = async () => {
     const timestampsToSave = savedTimestamps.map(timestamp => ({
       ...timestamp,
@@ -286,6 +301,13 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
 
     setIsSaving(true);
     try {
+      const uploadedTimestamps = await Promise.all(
+        timestampsToSave.map(async ts => ({
+          ...ts,
+          thumbUrl: await uploadThumbnail(ts.thumbUrl),
+        }))
+      );
+
       const response = await fetch('/api/admin-post', {
         method: 'PUT',
         headers: {
@@ -294,7 +316,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
         body: JSON.stringify({
           locationId,
           postId,
-          targetTimeStamps: timestampsToSave.map(ts => ({
+          targetTimeStamps: uploadedTimestamps.map(ts => ({
             time: ts.time.toString(),
             tags: ts.tags,
             thumbUrl: ts.thumbUrl,
