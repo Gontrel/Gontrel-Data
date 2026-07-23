@@ -18,7 +18,12 @@ export async function POST(request: NextRequest) {
       uploadFormData.append("userId", userId as string);
     }
 
-    const response = await fetch(`${process.env.API_BASE_URL}upload-file`, {
+    const apiBaseUrl = process.env.API_BASE_URL?.trim();
+    if (!apiBaseUrl) {
+      return NextResponse.json({ error: "API_BASE_URL is not configured" }, { status: 500 });
+    }
+    const endpoint = new URL("upload-file", `${apiBaseUrl.replace(/\/$/, "")}/`).toString();
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "x-api-key": process.env.API_KEY || "",

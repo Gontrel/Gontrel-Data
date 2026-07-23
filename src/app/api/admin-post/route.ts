@@ -4,10 +4,18 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Get token from cookies
     const token = request.cookies.get('user_token')?.value;
+    const apiBaseUrl = process.env.API_BASE_URL?.trim();
 
-    const response = await fetch(`${process.env.API_BASE_URL}admin-post`, {
+    if (!apiBaseUrl) {
+      return NextResponse.json(
+        { error: 'API_BASE_URL is not configured' },
+        { status: 500 }
+      );
+    }
+
+    const endpoint = new URL('admin-post', `${apiBaseUrl.replace(/\/$/, '')}/`).toString();
+    const response = await fetch(endpoint, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -29,8 +37,9 @@ export async function PUT(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
+    console.error('admin-post proxy error:', error);
     return NextResponse.json(
-      { error: 'Failed to proxy request' },
+      { error: error instanceof Error ? error.message : 'Failed to proxy request' },
       { status: 500 }
     );
   }
