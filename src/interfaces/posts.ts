@@ -33,6 +33,7 @@ export interface Post {
 export interface TargetTimeStamp {
   time: string;
   tags: string[];
+  thumbUrl: string;
 }
 
 export interface Tag {

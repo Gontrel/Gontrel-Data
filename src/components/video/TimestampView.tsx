@@ -10,30 +10,26 @@ interface TimestampViewProps {
   locationId: string;
   postId: string;
   existingTimeStamps?: TargetTimeStamp[];
-  onSaveTimestamps?: (timestamps: { time: number; tags: string[] }[]) => void;
+  onSaveTimestamps?: (timestamps: { time: number; tags: string[]; thumbUrl: string }[]) => void;
 }
 
-const FRAME_WIDTH = 33;
-const FRAME_HEIGHT = 60;
-const FRAMES_PER_SECOND = 1;
+const THUMB_WIDTH = 720;
+const THUMB_HEIGHT = 1280;
+const THUMB_QUALITY = 0.9;
 
 export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTimeStamps, onSaveTimestamps }: TimestampViewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const proxyUrl = `/api/video-proxy?url=${encodeURIComponent(videoUrl)}`;
-  const [frames, setFrames] = useState<string[]>([]);
-  const [selectedFrameIndex, setSelectedFrameIndex] = useState<number | null>(
-    null
-  );
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [isExtracting, setIsExtracting] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [frameTags, setFrameTags] = useState<Record<number, string[]>>({});
   const [tagInput, setTagInput] = useState("");
-  const [savedTimestamps, setSavedTimestamps] = useState<{ time: number; tags: string[] }[]>(
-    existingTimeStamps?.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags })) || []
+  const [viewingThumb, setViewingThumb] = useState<string | null>(null);
+  const [savedTimestamps, setSavedTimestamps] = useState<{ time: number; tags: string[]; thumbUrl: string }[]>(
+    existingTimeStamps?.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags, thumbUrl: ts.thumbUrl || "" })) || []
   );
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -41,182 +37,87 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
   // Sync savedTimestamps when existingTimeStamps changes (e.g. after refetch)
   useEffect(() => {
     if (existingTimeStamps) {
-      setSavedTimestamps(existingTimeStamps.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags })));
+      setSavedTimestamps(existingTimeStamps.map(ts => ({ time: parseFloat(ts.time), tags: ts.tags, thumbUrl: ts.thumbUrl || "" })));
     }
   }, [existingTimeStamps]);
 
-  const isExtractingRef = useRef(false);
-  const isSeekingRef = useRef(false);
-
-  const extractFrames = useCallback(async () => {
-    if (isExtractingRef.current) return;
-    isExtractingRef.current = true;
-    setIsExtracting(true);
+  const captureThumbnail = useCallback((): string => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas) {
-      isExtractingRef.current = false;
-      return;
-    }
-
-    // Pause video before extracting frames to avoid Chrome seeking glitches
-    video.pause();
-    setIsPlaying(false);
-    video.muted = true;
-
-    canvas.width = FRAME_WIDTH;
-    canvas.height = FRAME_HEIGHT;
+    if (!video || !canvas) return "";
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+    if (!videoWidth || !videoHeight) return "";
+    canvas.width = THUMB_WIDTH;
+    canvas.height = THUMB_HEIGHT;
     const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      isExtractingRef.current = false;
-      return;
-    }
-
-    const videoDuration = video.duration;
-    if (!videoDuration || isNaN(videoDuration)) {
-      isExtractingRef.current = false;
-      return;
-    }
-
-    setDuration(videoDuration);
-    const frameCount = Math.ceil(videoDuration * FRAMES_PER_SECOND);
-    const interval = 1 / FRAMES_PER_SECOND;
-    const extractedFrames: string[] = [];
-
-    for (let i = 0; i < frameCount; i++) {
-      const seekTime = Math.max(0.01, Math.min(i * interval, videoDuration - 0.1));
-      await new Promise<void>((resolve) => {
-        const onSeeked = () => {
-          requestAnimationFrame(() => {
-            try {
-              ctx.drawImage(video, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-              const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
-              extractedFrames.push(dataUrl);
-            } catch (err) {
-              // Error drawing frame, skip it
-            }
-            video.removeEventListener("seeked", onSeeked);
-            resolve();
-          });
-        };
-        video.addEventListener("seeked", onSeeked);
-        video.currentTime = seekTime;
-      });
-    }
-
-    setFrames(extractedFrames);
-    setIsExtracting(false);
-    video.currentTime = 0;
-    video.muted = false;
-    isExtractingRef.current = false;
+    if (!ctx) return "";
+    const scale = Math.max(THUMB_WIDTH / videoWidth, THUMB_HEIGHT / videoHeight);
+    const scaledWidth = videoWidth * scale;
+    const scaledHeight = videoHeight * scale;
+    const offsetX = (THUMB_WIDTH - scaledWidth) / 2;
+    const offsetY = (THUMB_HEIGHT - scaledHeight) / 2;
+    ctx.drawImage(video, offsetX, offsetY, scaledWidth, scaledHeight);
+    return canvas.toDataURL("image/jpeg", THUMB_QUALITY);
   }, []);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    const handleCanPlay = async () => {
-      // Wait for frames to finish extracting before playing
-      await extractFrames();
-      video.play().then(() => {
-        setIsPlaying(true);
-      }).catch(() => {
-        // Autoplay was blocked by browser
-      });
+    const handleLoaded = () => {
+      setDuration(video.duration || 0);
+      video.play().then(() => setIsPlaying(true)).catch(() => {});
     };
-
-    const handleError = (e: Event) => {
-      // Video error occurred
-    };
-
-    video.addEventListener("loadeddata", handleCanPlay);
-    video.addEventListener("error", handleError);
-    const handleSeeked = () => {
-      isSeekingRef.current = false;
-    };
-    video.addEventListener("seeked", handleSeeked);
-    return () => {
-      video.removeEventListener("loadeddata", handleCanPlay);
-      video.removeEventListener("error", handleError);
-      video.removeEventListener("seeked", handleSeeked);
-    };
-  }, [extractFrames, videoUrl]);
-
-  const seekToFrame = (index: number) => {
-    setSelectedFrameIndex(index);
-    const video = videoRef.current;
-    if (video && duration) {
-      isSeekingRef.current = true;
-      video.currentTime = Math.min(index / FRAMES_PER_SECOND, duration - 0.1);
-      // Move indicator to this frame's position
-      const indicator = indicatorRef.current;
-      if (indicator) {
-        const indicatorPos = index * FRAME_WIDTH + FRAME_WIDTH / 2;
-        indicator.style.left = `${indicatorPos}px`;
-      }
-    }
-  };
-
-  const handleFrameClick = (index: number) => {
-    seekToFrame(index);
-    // Reset editing state when clicking a new frame
-    setEditingIndex(null);
-    // Load existing saved tags for this frame into frameTags
-    const frameTime = index / FRAMES_PER_SECOND;
-    const existingIndex = savedTimestamps.findIndex(ts => ts.time === frameTime);
-    if (existingIndex !== -1) {
-      setFrameTags(prev => ({
-        ...prev,
-        [index]: savedTimestamps[existingIndex].tags,
-      }));
-    }
-    // Pause when a frame is clicked
-    const video = videoRef.current;
-    if (video && !video.paused) {
-      video.pause();
-      setIsPlaying(false);
-    }
-  };
+    video.addEventListener("loadedmetadata", handleLoaded);
+    if (video.readyState >= 1) void handleLoaded();
+    return () => video.removeEventListener("loadedmetadata", handleLoaded);
+  }, [videoUrl]);
 
   const addTagToFrame = () => {
-    if (selectedFrameIndex === null || !tagInput.trim()) return;
+    if (!tagInput.trim()) return;
+    const video = videoRef.current;
+    const time = video ? video.currentTime : currentTime;
     const tag = tagInput.trim();
+    const timeKey = Math.floor(time);
     setFrameTags((prev) => ({
       ...prev,
-      [selectedFrameIndex]: [...(prev[selectedFrameIndex] || []), tag],
+      [timeKey]: [...(prev[timeKey] || []), tag],
     }));
     setTagInput("");
   };
 
-  const removeTagFromFrame = (frameIndex: number, tagToRemove: string) => {
+  const removeTagFromFrame = (tagToRemove: string) => {
+    const video = videoRef.current;
+    const time = video ? video.currentTime : currentTime;
+    const timeKey = Math.floor(time);
     setFrameTags((prev) => ({
       ...prev,
-      [frameIndex]: prev[frameIndex]?.filter((t) => t !== tagToRemove) || [],
+      [timeKey]: prev[timeKey]?.filter((t) => t !== tagToRemove) || [],
     }));
   };
 
   const handleSave = () => {
-    if (selectedFrameIndex === null) return;
-    const time = selectedFrameIndex / FRAMES_PER_SECOND;
-    const tags = frameTags[selectedFrameIndex] || [];
+    const video = videoRef.current;
+    if (!video) return;
+    const time = video.currentTime;
+    const timeKey = Math.floor(time);
+    const tags = frameTags[timeKey] || [];
+    if (tags.length === 0) return;
+    const thumbUrl = captureThumbnail();
 
     if (editingIndex !== null) {
-      // Update existing timestamp (via edit button)
       setSavedTimestamps(prev => prev.map((item, i) =>
-        i === editingIndex ? { time, tags } : item
+        i === editingIndex ? { time, tags, thumbUrl } : item
       ));
       setEditingIndex(null);
     } else {
-      // Check if a timestamp already exists for this time
-      const existingIndex = savedTimestamps.findIndex(ts => ts.time === time);
+      const existingIndex = savedTimestamps.findIndex(ts => Math.abs(ts.time - time) < 0.5);
       if (existingIndex !== -1) {
-        // Update existing timestamp at same time
         setSavedTimestamps(prev => prev.map((item, i) =>
-          i === existingIndex ? { time, tags } : item
+          i === existingIndex ? { time, tags, thumbUrl } : item
         ));
       } else {
-        // Add new timestamp
-        setSavedTimestamps(prev => [...prev, { time, tags }]);
+        setSavedTimestamps(prev => [...prev, { time, tags, thumbUrl }]);
       }
     }
   };
@@ -227,24 +128,55 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
 
   const handleEdit = (index: number) => {
     const timestamp = savedTimestamps[index];
-    const frameIndex = Math.floor(timestamp.time * FRAMES_PER_SECOND);
-    setSelectedFrameIndex(frameIndex);
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = timestamp.time;
+      setCurrentTime(timestamp.time);
+    }
+    const timeKey = Math.floor(timestamp.time);
     setFrameTags(prev => ({
       ...prev,
-      [frameIndex]: timestamp.tags
+      [timeKey]: timestamp.tags
     }));
     setEditingIndex(index);
   };
 
+  const uploadThumbnail = async (dataUrl: string): Promise<string> => {
+    if (!dataUrl || dataUrl.startsWith("http")) return dataUrl;
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+    const formData = new FormData();
+    formData.append("file", blob, `timestamp_${Date.now()}.jpg`);
+    const uploadResponse = await fetch("/api/upload-file", {
+      method: "POST",
+      body: formData,
+    });
+    if (!uploadResponse.ok) throw new Error("Failed to upload thumbnail");
+    const data = await uploadResponse.json();
+    return data.url || data.videoUrl || data.thumbUrl || data.location || "";
+  };
+
   const handleSaveChanges = async () => {
+    const timestampsToSave = savedTimestamps.map(timestamp => ({
+      ...timestamp,
+      thumbUrl: timestamp.thumbUrl || "",
+    }));
+
     if (!postId && onSaveTimestamps) {
-      onSaveTimestamps(savedTimestamps);
+      onSaveTimestamps(timestampsToSave);
       onBack();
       return;
     }
 
     setIsSaving(true);
     try {
+      const uploadedTimestamps = await Promise.all(
+        timestampsToSave.map(async ts => ({
+          ...ts,
+          thumbUrl: await uploadThumbnail(ts.thumbUrl),
+        }))
+      );
+
       const response = await fetch('/api/admin-post', {
         method: 'PUT',
         headers: {
@@ -253,9 +185,10 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
         body: JSON.stringify({
           locationId,
           postId,
-          targetTimeStamps: savedTimestamps.map(ts => ({
+          targetTimeStamps: uploadedTimestamps.map(ts => ({
             time: ts.time.toString(),
             tags: ts.tags,
+            thumbUrl: ts.thumbUrl,
           })),
         }),
       });
@@ -279,8 +212,6 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     }
   };
 
-  const rafRef = useRef<number | null>(null);
-  const indicatorRef = useRef<HTMLDivElement>(null);
   const isPlayingRef = useRef(false);
 
   // Keep isPlayingRef in sync
@@ -288,42 +219,25 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     isPlayingRef.current = isPlaying;
   }, [isPlaying]);
 
-  const updateIndicator = (scrollLeft: number) => {
-    const el = scrollRef.current;
-    const indicator = indicatorRef.current;
-    if (!el || !indicator) return;
-    // Indicator position = scroll position + half viewport (center of view)
-    const indicatorPos = scrollLeft + el.clientWidth / 2;
-    indicator.style.left = `${indicatorPos}px`;
-  };
-
   const handleTimeUpdate = () => {
-    if (isSeekingRef.current) return;
     const video = videoRef.current;
     if (!video) return;
-    if (duration > 0) {
-      const frameIndex = Math.min(
-        Math.floor(video.currentTime * FRAMES_PER_SECOND),
-        Math.ceil(duration * FRAMES_PER_SECOND) - 1
-      );
-      setSelectedFrameIndex((prev) => (prev === frameIndex ? prev : frameIndex));
+    setCurrentTime(video.currentTime);
 
-      // Auto-save: if we just played past a frame that had tags, save them
-      if (selectedFrameIndex !== null) {
-        const selectedTime = selectedFrameIndex / FRAMES_PER_SECOND;
-        if (video.currentTime > selectedTime + 0.5) {
-          const tags = frameTags[selectedFrameIndex];
-          if (tags && tags.length > 0) {
-            const existingIndex = savedTimestamps.findIndex(ts => ts.time === selectedTime);
-            if (existingIndex === -1) {
-              setSavedTimestamps(prev => [...prev, { time: selectedTime, tags }]);
-            } else if (JSON.stringify(savedTimestamps[existingIndex].tags) !== JSON.stringify(tags)) {
-              setSavedTimestamps(prev => prev.map((item, i) =>
-                i === existingIndex ? { time: selectedTime, tags } : item
-              ));
-            }
-          }
-        }
+    // Auto-save: if we just played past a time that had tags, save them
+    const timeKey = Math.floor(video.currentTime);
+    const tags = frameTags[timeKey];
+    if (tags && tags.length > 0) {
+      const tagTime = timeKey;
+      const existingIndex = savedTimestamps.findIndex(ts => Math.abs(ts.time - tagTime) < 0.5);
+      if (existingIndex === -1) {
+        const thumbUrl = captureThumbnail();
+        setSavedTimestamps(prev => [...prev, { time: tagTime, tags, thumbUrl }]);
+      } else if (JSON.stringify(savedTimestamps[existingIndex].tags) !== JSON.stringify(tags)) {
+        const thumbUrl = captureThumbnail();
+        setSavedTimestamps(prev => prev.map((item, i) =>
+          i === existingIndex ? { time: tagTime, tags, thumbUrl } : item
+        ));
       }
     }
   };
@@ -331,41 +245,16 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
   useEffect(() => {
     if (duration <= 0) return;
     let rafId: number;
-
     const animate = () => {
       const video = videoRef.current;
-      const el = scrollRef.current;
-      const indicator = indicatorRef.current;
-      if (video && el && indicator && isPlayingRef.current && !isDragging.current) {
-        const progress = video.currentTime / duration;
-        const totalWidth = frames.length * FRAME_WIDTH;
-        const indicatorPos = progress * totalWidth;
-
-        // Move the indicator
-        indicator.style.left = `${indicatorPos}px`;
-
-        // Only scroll when indicator nears the edges
-        const viewportWidth = el.clientWidth;
-        const currentScroll = el.scrollLeft;
-        const indicatorInView = indicatorPos - currentScroll;
-        const margin = viewportWidth * 0.3;
-
-        if (indicatorInView > viewportWidth - margin) {
-          // Indicator nearing right edge, scroll right
-          const targetScroll = indicatorPos - viewportWidth + margin;
-          el.scrollLeft = Math.min(targetScroll, totalWidth - viewportWidth);
-        } else if (indicatorInView < margin) {
-          // Indicator nearing left edge, scroll left
-          const targetScroll = indicatorPos - margin;
-          el.scrollLeft = Math.max(0, targetScroll);
-        }
+      if (video && isPlayingRef.current) {
+        setCurrentTime(video.currentTime);
       }
       rafId = requestAnimationFrame(animate);
     };
-
     rafId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(rafId);
-  }, [duration, frames.length]);
+  }, [duration]);
 
   const togglePlayPause = () => {
     const video = videoRef.current;
@@ -397,58 +286,16 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
     setIsPlaying(false);
   };
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollStart = useRef(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    isDragging.current = true;
-    startX.current = e.pageX;
-    scrollStart.current = el.scrollLeft;
-    el.style.cursor = "grabbing";
-    // Pause video when user starts dragging
+  const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const video = videoRef.current;
-    if (video && !video.paused) {
+    if (!video || duration <= 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const progress = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    video.currentTime = progress * duration;
+    setCurrentTime(video.currentTime);
+    if (!video.paused) {
       video.pause();
       setIsPlaying(false);
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current) return;
-    const el = scrollRef.current;
-    if (!el) return;
-    e.preventDefault();
-    el.scrollLeft = scrollStart.current - (e.pageX - startX.current);
-
-    // Move indicator to center of viewport
-    updateIndicator(el.scrollLeft);
-
-    // Seek video based on indicator position (center of viewport)
-    if (duration > 0) {
-      const totalWidth = frames.length * FRAME_WIDTH;
-      const indicatorPos = el.scrollLeft + el.clientWidth / 2;
-      const progress = Math.max(0, Math.min(1, indicatorPos / totalWidth));
-      const video = videoRef.current;
-      if (video) {
-        video.currentTime = progress * duration;
-        setCurrentTime(video.currentTime);
-        const frameIndex = Math.min(
-          Math.floor(progress * duration * FRAMES_PER_SECOND),
-          Math.ceil(duration * FRAMES_PER_SECOND) - 1
-        );
-        setSelectedFrameIndex(frameIndex);
-      }
-    }
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    if (scrollRef.current) {
-      scrollRef.current.style.cursor = "grab";
     }
   };
 
@@ -461,13 +308,23 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
 
   return (
     <div className="flex flex-col h-full w-full p-6 overflow-y-auto relative">
-      {/* Loading overlay */}
-      {isExtracting && (
-        <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0070F3]"></div>
-            <span className="text-sm text-gray-600">Extracting frames...</span>
-          </div>
+      {/* Thumbnail view modal */}
+      {viewingThumb && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+          onClick={() => setViewingThumb(null)}
+        >
+          <img
+            src={viewingThumb}
+            alt="Thumbnail preview"
+            style={{ maxHeight: "90vh", maxWidth: "90vw", borderRadius: 8 }}
+          />
+          <button
+            onClick={() => setViewingThumb(null)}
+            className="absolute top-4 right-4 text-white text-2xl"
+          >
+            ×
+          </button>
         </div>
       )}
 
@@ -498,7 +355,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
       </span>
 
       <div className="flex gap-6 w-full">
-        {/* Left side: Video preview + frame strip */}
+        {/* Left side: Video preview + timeline */}
         <div className="flex flex-col flex-shrink-0" style={{ width: 400, minWidth: 400 }}>
           {/* Video preview frame */}
           <div
@@ -528,78 +385,43 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
             </button>
           </div>
 
-          {/* Frame strip with indicator */}
-          <div className="mt-3 relative" style={{ width: 400 }}>
-            {/* Scrollable frame strip */}
+          {/* Timeline scrubber */}
+          <div className="mt-3" style={{ width: 400 }}>
+            <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
             <div
-              ref={scrollRef}
-              className="rounded select-none"
-              style={{
-                width: 400,
-                height: 60,
-                borderRadius: 4,
-                overflowX: "scroll",
-                overflowY: "hidden",
-                cursor: "grab",
-                WebkitOverflowScrolling: "touch",
-              }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
+              onClick={handleTimelineClick}
+              className="relative bg-gray-200 rounded-full"
+              style={{ width: "100%", height: 8, cursor: "pointer" }}
             >
-              {isExtracting ? (
-                <div className="flex items-center justify-center text-gray-400 text-xs" style={{ width: 400, height: 60 }}>
-                  Extracting frames...
-                </div>
-              ) : (
-                <div
-                  className="flex h-full relative"
-                  style={{
-                    width: `${frames.length * FRAME_WIDTH}px`,
-                  }}
-                >
-                  {/* Scrub indicator bar - inside scroll content, moves across frames */}
-                  <div
-                    ref={indicatorRef}
-                    className="absolute pointer-events-none z-10"
-                    style={{
-                      width: 3,
-                      height: 72,
-                      top: -6,
-                      left: 0,
-                      background: "rgba(0, 112, 243, 1)",
-                      borderRadius: 2,
-                      transform: "translateX(-50%)",
-                    }}
-                  />
-                  {frames.map((frame, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleFrameClick(index)}
-                      className="flex-shrink-0 overflow-hidden border-0 p-0"
-                      style={{
-                        width: FRAME_WIDTH,
-                        height: FRAME_HEIGHT,
-                      }}
-                    >
-                      <img
-                        src={frame}
-                        alt={`Frame ${index}`}
-                        className="w-full h-full object-cover"
-                        draggable={false}
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div
+                className="absolute top-0 left-0 rounded-full"
+                style={{
+                  width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
+                  height: "100%",
+                  background: "rgba(0, 112, 243, 1)",
+                }}
+              />
+              <div
+                className="absolute rounded-full bg-white border-2 border-[#0070F3]"
+                style={{
+                  width: 14,
+                  height: 14,
+                  top: -3,
+                  left: `${duration > 0 ? (currentTime / duration) * 100 : 0}%`,
+                  transform: "translateX(-50%)",
+                  cursor: "pointer",
+                }}
+              />
             </div>
           </div>
         </div>
 
-        {/* Right side: Selected frame info + saved timestamps list */}
+        {/* Right side: Current time info + saved timestamps list */}
         <div className="flex-1 flex flex-col">
-          {selectedFrameIndex !== null ? (
+          {duration > 0 ? (
             <div className="flex flex-col">
               {/* Time display */}
               <div
@@ -612,7 +434,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
                   marginBottom: 16,
                 }}
               >
-                {formatTime(selectedFrameIndex / FRAMES_PER_SECOND)}
+                {formatTime(currentTime)}
               </div>
 
               {/* Tag input */}
@@ -631,33 +453,47 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
 
               {/* Tags display */}
               <div className="flex flex-wrap gap-2 mb-4">
-                {frameTags[selectedFrameIndex]?.map((tag, i) => (
+                {frameTags[Math.floor(videoRef.current?.currentTime || currentTime)]?.map((tag, i) => (
                   <div
                     key={i}
                     className="flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700"
                   >
                     <span>{tag}</span>
                     <button
-                      onClick={() => removeTagFromFrame(selectedFrameIndex, tag)}
+                      onClick={() => removeTagFromFrame(tag)}
                       className="ml-2 text-gray-500 hover:text-gray-700"
                     >
                       ×
                     </button>
                   </div>
                 ))}
-                {(!frameTags[selectedFrameIndex] || frameTags[selectedFrameIndex].length === 0) && (
+                {(!frameTags[Math.floor(videoRef.current?.currentTime || currentTime)] || frameTags[Math.floor(videoRef.current?.currentTime || currentTime)].length === 0) && (
                   <div className="text-sm text-gray-400">No tags added yet</div>
                 )}
               </div>
 
-              {/* Auto-save hint */}
-              <div className="text-xs text-gray-400 mb-6">
-                Tags auto-save when video plays past this time
-              </div>
+              {/* Save timestamp button */}
+              <button
+                onClick={handleSave}
+                disabled={!(frameTags[Math.floor(videoRef.current?.currentTime || currentTime)]?.length > 0)}
+                style={{
+                  width: 140,
+                  height: 40,
+                  borderRadius: 8,
+                  opacity: frameTags[Math.floor(videoRef.current?.currentTime || currentTime)]?.length > 0 ? 1 : 0.5,
+                  background: "rgba(0, 112, 243, 1)",
+                  color: "white",
+                  fontWeight: 500,
+                  fontSize: 14,
+                  marginBottom: 24,
+                }}
+              >
+                {editingIndex !== null ? "Update Timestamp" : "Save Timestamp"}
+              </button>
             </div>
           ) : (
             <div className="text-gray-400 text-sm mb-6">
-              Click on a frame to add tags
+              Loading video...
             </div>
           )}
 
@@ -674,7 +510,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
                     className="flex items-center justify-between"
                     style={{
                       width: 574,
-                      height: 80,
+                      height: 110,
                       borderRadius: 8,
                       borderWidth: 1,
                       paddingTop: 12,
@@ -686,8 +522,29 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
                       border: "1px solid rgba(240, 241, 242, 1)",
                     }}
                   >
-                    {/* Left side: Timestamp and tags column */}
-                    <div className="flex flex-col gap-2">
+                    {/* Left-aligned group: frame + timestamp + tags */}
+                    <div className="flex items-center gap-4">
+                      {/* Frame thumbnail - clickable to view */}
+                      {(() => {
+                        const frame = savedTimestamp.thumbUrl;
+                        return frame ? (
+                          <img
+                            src={frame}
+                            alt={`Frame at ${formatTime(savedTimestamp.time)}`}
+                            className="flex-shrink-0 rounded object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                            style={{ width: 67, height: 90 }}
+                            onClick={() => setViewingThumb(frame)}
+                          />
+                        ) : (
+                          <div
+                            className="flex-shrink-0 rounded bg-gray-200"
+                            style={{ width: 67, height: 90 }}
+                          />
+                        );
+                      })()}
+
+                      {/* Timestamp and tags column */}
+                      <div className="flex flex-col gap-2">
                       {/* Timestamp */}
                       <div
                         style={{
@@ -724,6 +581,7 @@ export const TimestampView = ({ videoUrl, onBack, locationId, postId, existingTi
                             {tag}
                           </div>
                         ))}
+                      </div>
                       </div>
                     </div>
 

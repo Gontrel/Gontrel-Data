@@ -458,7 +458,7 @@ export const VideoStep = ({
 
   const [showTimestampView, setShowTimestampView] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [localTimestamps, setLocalTimestamps] = useState<{ time: number; tags: string[] }[]>([]);
+  const [localTimestamps, setLocalTimestamps] = useState<{ time: number; tags: string[]; thumbUrl: string }[]>([]);
 
   if (showTimestampView && currentVideo.videoUrl) {
     return createPortal(
@@ -468,7 +468,7 @@ export const VideoStep = ({
             onBack={() => setShowTimestampView(false)}
             locationId={locationId || ""}
             postId={postId || ""}
-            existingTimeStamps={existingTimeStamps || localTimestamps.map(ts => ({ time: ts.time.toString(), tags: ts.tags }))}
+            existingTimeStamps={existingTimeStamps || localTimestamps.map(ts => ({ time: ts.time.toString(), tags: ts.tags, thumbUrl: ts.thumbUrl }))}
             onSaveTimestamps={!postId ? (timestamps) => setLocalTimestamps(timestamps) : undefined}
           />
       </div>,

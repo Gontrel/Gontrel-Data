@@ -11,9 +11,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(videoUrl);
+    const range = request.headers.get("range");
+    const response = await fetch(videoUrl, {
+      headers: range ? { Range: range } : undefined,
+    });
 
-    if (!response.ok) {
+    if (!response.ok && response.status !== 206) {
       return NextResponse.json(
         { error: "Failed to fetch video" },
         { status: response.status }
@@ -25,11 +28,13 @@ export async function GET(request: NextRequest) {
     headers.set("Access-Control-Allow-Origin", "*");
     headers.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
     headers.set("Access-Control-Allow-Headers", "Range");
-    headers.set("Access-Control-Expose-Headers", "Content-Length, Content-Range");
+    headers.set("Access-Control-Expose-Headers", "Accept-Ranges, Content-Length, Content-Range, Content-Type");
 
-    const contentLength = response.headers.get("content-length");
-    if (contentLength) {
-      headers.set("Content-Length", contentLength);
+    for (const headerName of ["accept-ranges", "content-length", "content-range"]) {
+      const headerValue = response.headers.get(headerName);
+      if (headerValue) {
+        headers.set(headerName, headerValue);
+      }
     }
 
     return new NextResponse(response.body, {

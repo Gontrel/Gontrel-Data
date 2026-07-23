@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import DashboardGrid from "@/components/ui/DashboardGrid";
 import IntentSelectorCard from "@/components/dashboard/IntentSelectorCard";
 import { IChartData, IPieConfig } from "@/components/charts/PieTwoAngleChart";
@@ -10,6 +11,7 @@ import { TIconNames } from "@/components/svgs/IconNames";
 import RestaurantAnalyticsChart from "@/components/dashboard/RestaurantAnalyticsChart";
 import ActiveRestaurants from "@/components/restaurants/tables/ActiveRestaurants";
 import LineChart from "@/components/charts/LineChart";
+const UserClusterMap = dynamic(() => import("@/components/dashboard/UserClusterMap"), { ssr: false });
 
 export default function DashboardPage() {
   const [startDate, setStartDate] = useState("");
@@ -213,6 +215,9 @@ export default function DashboardPage() {
           showLegend={false}
         />
       </section>
+
+      {/* User Cluster Map */}
+      <UserClusterMap height={500} />
     </div>
   );
 }
