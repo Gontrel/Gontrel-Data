@@ -1,34 +1,27 @@
 "use client";
 
-import { useState, use, useRef, useEffect, useCallback } from "react";
-import { Plus } from "lucide-react";
-import { LivePostCard } from "@/components/restaurants/LivePostCard";
-import { NewPostSheet } from "@/components/posts/NewPostsModal";
-import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
-import { useVideoStore } from "@/stores/videoStore";
+import { useState, use, useCallback, useEffect } from "react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 import { RestaurantDetailsSkeleton } from "@/components/Loader/restaurants/RestaurantDetailsSkeleton";
-import { Post } from "@/interfaces/posts";
-import Icon from "@/components/svgs/Icons";
-import {
-  ApprovalStatusEnum,
-  ApprovalType,
-  ManagerTableTabsEnum,
-} from "@/types/enums";
+import { Post, Tag } from "@/interfaces/posts";
+import { ApprovalStatusEnum, ApprovalType } from "@/types/enums";
 import { errorToast, successToast } from "@/utils/toast";
-import { usePendingRestaurantsStore } from "@/stores/tableStore";
-import { useHeaderStore } from "@/stores/headerStore";
-import ConfirmationModal from "@/components/modals/ConfirmationModal";
+import { RestaurantDetailLeftPanel, LeftPanelFieldData } from "@/components/restaurants/details/RestaurantDetailLeftPanel";
+import { RestaurantDetailRightPanel } from "@/components/restaurants/details/RestaurantDetailRightPanel";
+import { DeleteRestaurantModal } from "@/components/restaurants/details/DeleteRestaurantModal";
+import { MediaCarousel } from "@/components/restaurants/details/MediaCarousel";
+import { NewPostSheet } from "@/components/posts/NewPostsModal";
+import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
+import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
+import { useVideoStore } from "@/stores/videoStore";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
-import { EditVideo } from "@/components/modals/EditPostModal";
-import { RestaurantInfoCard } from "@/components/restaurants/details/RestaurantInfoCard";
-import { AccountSummary } from "@/components/restaurants/details/AccountSummary";
+import Icon from "@/components/svgs/Icons";
 import { PAGE_SIZE } from "@/constants";
+import { Location, GontrelRestaurantData, Restaurant } from "@/interfaces/restaurants";
+import { Admin } from "@/interfaces/user";
 
-interface IPostMeta {
-  pendingCount: number;
-  approvalCount: number;
-}
 
 const RestaurantDetailsPage = ({
   params,
@@ -36,124 +29,163 @@ const RestaurantDetailsPage = ({
   params: Promise<{ restaurantId: string }>;
 }) => {
   const { restaurantId } = use(params);
-  const [activeTab, setActiveTab] = useState<"approved" | "pending">(
-    "approved"
-  );
-  const [showNewPostModal, setShowNewPostModal] = useState(false);
-  const { activeVideoUrl, setActiveVideoUrl } =
-    useVideoStore();
-  const { isConfirmationModalOpen, setConfirmationModalOpen, isActive } =
-    useHeaderStore();
-  const { approveRestaurant, declineRestaurant } = usePendingRestaurantsStore();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [page, setPage] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [currentPostId, setCurrentPostId] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [meta, setMetadata] = useState<IPostMeta>({
-    pendingCount: 0,
-    approvalCount: 0,
-  });
-  const [comment, setComment] = useState<string>("");
-  const [declineFeedback, setDeclineFeedback] = useState<{
-    isOpen: boolean;
-    comment: string;
-    postId: string;
-  }>({ isOpen: false, comment: "", postId: "" });
-  const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
-
-  const { setIsActive, setIsActiveText } = useHeaderStore();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const utils = trpc.useContext();
 
-  const { mutate: approveRestaurantStatus } =
-    trpc.restaurant.approveRestaurantStatus.useMutation({
-      onSuccess: () => {
-        successToast("Restaurant status updated successfully");
-      },
-      onError: (error) => {
-        errorToast(error.message);
-      },
-    });
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [currentPostIndex, setCurrentPostIndex] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [postCount, setPostCount] = useState(0);
+
+  const [showNewPostModal, setShowNewPostModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteMediaModal, setShowDeleteMediaModal] = useState(false);
+  const [mediaToDelete, setMediaToDelete] = useState<string | null>(null);
+
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [cuisines, setCuisines] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [availableCuisines, setAvailableCuisines] = useState<string[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [hasLeftPanelChanges, setHasLeftPanelChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [leftPanelFields, setLeftPanelFields] = useState<LeftPanelFieldData | null>(null);
+
+  const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
 
   const {
     data: restaurant,
     isLoading,
     isError,
     error,
-    refetch: refetchRest,
+    refetch: refetchRestaurant,
   } = trpc.restaurant.getRestaurantById.useQuery(
     { locationId: restaurantId },
     { enabled: !!restaurantId }
   );
 
-  const { mutate } = trpc.restaurant.getToggleLocation.useMutation({
+  // Fetch available cuisines from API
+  const { data: cuisinesData } = trpc.restaurant.getCuisines.useQuery();
+
+  // Update availableCuisines when data changes
+  useEffect(() => {
+    if (cuisinesData) {
+      setAvailableCuisines(cuisinesData.map((c: { name: string }) => c.name));
+    }
+  }, [cuisinesData]);
+
+  // Fetch tag suggestions for this restaurant
+  const { data: tagSuggestionsData } = trpc.restaurant.getTagSuggestions.useQuery(
+    { placeId: restaurant?.placeId || "", quantity: 20 },
+    { enabled: !!restaurant?.placeId }
+  );
+
+  // Update availableTags when data changes
+  useEffect(() => {
+    if (tagSuggestionsData) {
+      setAvailableTags(tagSuggestionsData.map((t: { id: string; name: string; isTaste?: boolean }) => ({
+        id: t.id,
+        name: t.name,
+        createdAt: "",
+        modifiedAt: "",
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy: null,
+        firebaseId: null,
+        count: 0,
+        image: "",
+        resource: "",
+        type: "",
+        isTaste: t.isTaste || false,
+      })));
+    }
+  }, [tagSuggestionsData]);
+
+  const { mutate: deleteRestaurant, isPending: isDeleting } =
+    trpc.restaurant.deleteRestaurant.useMutation({
+      onSuccess: () => {
+        successToast("Restaurant deleted successfully");
+        router.push("/restaurants");
+      },
+      onError: (error) => {
+        errorToast(error.message || "Failed to delete restaurant");
+      },
+    });
+
+  const { mutate: deletePostMutation } = trpc.post.deletePost.useMutation({
     onSuccess: () => {
-      successToast("Restaurant status updated successfully");
+      successToast("Media deleted successfully");
+      setShowDeleteMediaModal(false);
+      setMediaToDelete(null);
+      refetchPosts();
     },
     onError: (error) => {
-      errorToast(error.message);
+      errorToast(error.message || "Failed to delete media");
     },
   });
 
-  const { mutate: deleteVideoMutation } = trpc.post.deletePost.useMutation({
+  const { mutate: updateRestaurant } = trpc.restaurant.updateRestaurant.useMutation({
     onSuccess: () => {
-      setIsDeleteModalOpen(false);
-      setCurrentPostId(null);
-      successToast("Post successfully deleted");
-      refetch();
+      successToast("Changes saved successfully");
+      setIsSaving(false);
+      setHasChanges(false);
+      refetchRestaurant();
+    },
+    onError: (error) => {
+      errorToast(error.message || "Failed to save changes");
+      setIsSaving(false);
     },
   });
+
+  const { mutate: approveRestaurantStatus } =
+    trpc.restaurant.approveRestaurantStatus.useMutation({
+      onSuccess: () => {
+        refetchRestaurant();
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+    });
 
   const fetchPosts = useCallback(
-    async (pageNumber: number, status: ApprovalStatusEnum) => {
+    async (pageNumber: number) => {
       setIsFetching(true);
       try {
         const res = await utils.post.getPosts.fetch({
           locationId: restaurantId,
-          status,
+          status: ApprovalStatusEnum.APPROVED,
           quantity: PAGE_SIZE,
           pageNumber,
         });
 
         const newPosts: Post[] = res.data;
-        const metaRaw = res.meta;
-        const meta: IPostMeta = {
-          pendingCount:
-            typeof metaRaw?.pendingCount === "number"
-              ? metaRaw.pendingCount
-              : 0,
-          approvalCount:
-            typeof metaRaw?.approvalCount === "number"
-              ? metaRaw.approvalCount
-              : 0,
-        };
-
-        setMetadata(meta);
+        const meta = res.meta as { approvalCount?: number; pendingCount?: number } | undefined;
+        setPostCount(meta?.approvalCount ?? 0);
 
         if (newPosts.length === 0) {
           setHasMore(false);
           if (pageNumber === 1) {
-            setPosts([]); // No posts at all
+            setPosts([]);
           }
         } else {
+          if (newPosts.length < PAGE_SIZE) {
+            setHasMore(false);
+          }
           setPosts((prev) => {
-            // For first page, replace all posts
             if (pageNumber === 1) {
               return newPosts;
             }
-            // For subsequent pages, append new posts
             const existingIds = new Set(prev.map((p) => p.id));
-            const filteredNewPosts = newPosts.filter(
-              (p) => !existingIds.has(p.id)
-            );
+            const filteredNewPosts = newPosts.filter((p) => !existingIds.has(p.id));
             return [...prev, ...filteredNewPosts];
           });
         }
 
-        setInitialLoadComplete(true);
+        if (pageNumber === 1 && newPosts.length > 0) {
+          setTags(newPosts[0].tags || []);
+        }
       } finally {
         setIsFetching(false);
       }
@@ -161,182 +193,104 @@ const RestaurantDetailsPage = ({
     [utils, restaurantId]
   );
 
-  const refetch = useCallback(() => {
+  const refetchPosts = useCallback(() => {
     setPage(1);
     setHasMore(true);
     setPosts([]);
-    fetchPosts(
-      1,
-      activeTab === "pending"
-        ? ApprovalStatusEnum.PENDING
-        : ApprovalStatusEnum.APPROVED
-    );
-  }, [activeTab, fetchPosts]);
-
-  const handleApprovePost = useCallback(
-    (locationId: string, postId: string) => {
-      approveRestaurant(
-        ManagerTableTabsEnum.PENDING_RESTAURANTS,
-        locationId,
-        "posts",
-        postId
-      );
-      approveRestaurantStatus({
-        resourceId: postId,
-        locationId,
-        type: ApprovalType.POST,
-        status: ApprovalStatusEnum.APPROVED,
-      });
-      refetch();
-    },
-    [approveRestaurant, approveRestaurantStatus, refetch]
-  );
-
-  const handleDeclinePost = useCallback(
-    (locationId: string, postId: string, comment: string) => {
-      declineRestaurant(
-        ManagerTableTabsEnum.PENDING_RESTAURANTS,
-        locationId,
-        "posts",
-        postId
-      );
-      approveRestaurantStatus({
-        resourceId: postId,
-        locationId,
-        type: ApprovalType.POST,
-        status: ApprovalStatusEnum.REJECTED,
-        comment,
-      });
-      refetch();
-    },
-    [declineRestaurant, approveRestaurantStatus, refetch]
-  );
-
-  const openDeclineModal = useCallback((postId: string) => {
-    setDeclineFeedback({ isOpen: true, comment: "", postId });
-  }, []);
-
-  const closeDeclineModal = useCallback(() => {
-    setDeclineFeedback({ isOpen: false, comment: "", postId: "" });
-  }, []);
-
-  const handleDeclineCommentChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setDeclineFeedback((prev) => ({ ...prev, comment: event.target.value }));
-  };
-
-  const submitDecline = () => {
-    if (!declineFeedback.postId) return;
-    handleDeclinePost(
-      restaurantId,
-      declineFeedback.postId,
-      declineFeedback.comment
-    );
-    closeDeclineModal();
-  };
-
-  const toggleLocation = useCallback(async () => {
-    mutate({ locationId: restaurantId });
-  }, [restaurantId, mutate]);
-
-  const handleConfirmation = () => {
-    toggleLocation();
-    setConfirmationModalOpen(false);
-    refetch();
-    refetchRest();
-  };
-
-  const handleCloseModal = () => {
-    setConfirmationModalOpen(false);
-  };
-
-  const handleOpenEditModal = useCallback((postId: string) => {
-    setCurrentPostId(postId);
-    setEditModalOpen(true);
-  }, []);
-
-  const handleOpenDeleteModal = useCallback((postId: string) => {
-    setCurrentPostId(postId);
-    setIsDeleteModalOpen(true);
-  }, []);
-
-  const handleDeleteVideo = useCallback(() => {
-    if (!currentPostId) return;
-
-    deleteVideoMutation({ postId: currentPostId });
-  }, [currentPostId, deleteVideoMutation]);
+    setCurrentPostIndex(0);
+    fetchPosts(1);
+  }, [fetchPosts]);
 
   useEffect(() => {
     if (restaurantId) {
-      setPosts([]);
-      setPage(1);
-      fetchPosts(1, ApprovalStatusEnum.APPROVED);
+      fetchPosts(1);
     }
   }, [restaurantId, fetchPosts]);
 
   useEffect(() => {
-    if (restaurant) {
-      setIsActive(restaurant.isActive);
+    if (posts.length > 0 && posts[currentPostIndex]?.tags) {
+      setTags(posts[currentPostIndex].tags);
     }
-  }, [restaurant, setIsActive, setIsActiveText]);
+  }, [currentPostIndex, posts]);
 
-  const handleTabChange = (tab: "approved" | "pending") => {
-    setActiveTab(tab);
-    setPage(1);
-    setHasMore(true);
+  const handleSaveChanges = useCallback(() => {
+    if (!restaurant || !leftPanelFields) return;
 
-    if (tab === "pending") {
-      setPosts([]);
-      fetchPosts(1, ApprovalStatusEnum.PENDING);
+    setIsSaving(true);
+
+    updateRestaurant({
+      locationId: restaurantId,
+      address: leftPanelFields.address.content,
+      website: leftPanelFields.website,
+      menu: leftPanelFields.menu.content,
+      orderLink: leftPanelFields.orderLink.content,
+      reservation: leftPanelFields.reservation.content,
+    });
+  }, [restaurant, restaurantId, leftPanelFields, updateRestaurant]);
+
+  const handleLeftPanelFieldsChange = useCallback((data: LeftPanelFieldData, panelHasChanges: boolean) => {
+    setLeftPanelFields(data);
+    setHasLeftPanelChanges(panelHasChanges);
+  }, []);
+
+  const handleDeleteRestaurant = useCallback(() => {
+    deleteRestaurant({ locationId: restaurantId });
+  }, [deleteRestaurant, restaurantId]);
+
+  const handleDeleteMedia = useCallback((postId: string) => {
+    setMediaToDelete(postId);
+    setShowDeleteMediaModal(true);
+  }, []);
+
+  const confirmDeleteMedia = useCallback(() => {
+    if (mediaToDelete) {
+      deletePostMutation({ postId: mediaToDelete });
     }
+  }, [mediaToDelete, deletePostMutation]);
 
-    if (tab === "approved") {
-      setPosts([]);
-      fetchPosts(1, ApprovalStatusEnum.APPROVED);
-    }
-  };
-  // Infinite scroll logic
-  const handleScroll = useCallback(() => {
-    if (!scrollContainerRef.current || isFetching || !hasMore) return;
+  const handleTagsChange = useCallback((newTags: Tag[]) => {
+    setTags(newTags);
+    setHasChanges(true);
+  }, []);
 
-    const { scrollTop, scrollHeight, clientHeight } =
-      scrollContainerRef.current;
-    // Trigger load when user scrolls to 80% of the container
-    if (scrollTop + clientHeight >= scrollHeight * 0.8) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchPosts(
-        nextPage,
-        activeTab === "approved"
-          ? ApprovalStatusEnum.APPROVED
-          : ApprovalStatusEnum.PENDING
-      );
-    }
-  }, [page, activeTab, isFetching, hasMore, fetchPosts]);
+  const handleCuisinesChange = useCallback((newCuisines: string[]) => {
+    setCuisines(newCuisines);
+    setHasChanges(true);
+  }, []);
 
   const handlePostCreated = useCallback(async () => {
-    await refetch();
-    successToast("Posts list updated");
-  }, [refetch]);
+    await refetchPosts();
+    successToast("Post added successfully");
+  }, [refetchPosts]);
 
-  useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
+  const handlePostIndexChange = useCallback((index: number) => {
+    setCurrentPostIndex(index);
+  }, []);
 
-    el.addEventListener("scroll", handleScroll);
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+  const handlePreviousPost = useCallback(() => {
+    if (currentPostIndex > 0) {
+      setCurrentPostIndex(currentPostIndex - 1);
+    }
+  }, [currentPostIndex]);
 
-  // Handle loading and error states
-  if (isLoading && isFetching) {
+  const handleNextPost = useCallback(() => {
+    if (currentPostIndex < posts.length - 1) {
+      setCurrentPostIndex(currentPostIndex + 1);
+    } else if (hasMore && !isFetching) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchPosts(nextPage);
+    }
+  }, [currentPostIndex, posts.length, hasMore, isFetching, page, fetchPosts]);
+
+  if (isLoading) {
     return <RestaurantDetailsSkeleton />;
   }
 
   if (isError) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Error: {error.message}
+        <p className="text-red-500">Error: {error.message}</p>
       </div>
     );
   }
@@ -344,234 +298,185 @@ const RestaurantDetailsPage = ({
   if (!restaurant) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Restaurant not found.
+        <p className="text-gray-500">Restaurant not found.</p>
       </div>
     );
   }
 
-  const handleNewPostModalOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      setActiveVideoUrl(null);
-      setShowNewPostModal(false);
-    }
-  };
-
-  const onDateRangeChange = () => {};
-
-  const handleCommentChange = (
-    event: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setComment(event.target.value);
+  const currentPost = posts[currentPostIndex] || null;
+  const restaurantData: GontrelRestaurantData = {
+    id: restaurant.id,
+    name: restaurant.name,
+    videoUrl: currentPost?.videoUrl,
+    menu: restaurant.menu,
+    reservation: restaurant.reservation,
+    rating: restaurant.rating,
+    address: restaurant.address,
+    website: restaurant.website || "",
   };
 
   return (
-    <div className="bg-[#FAFAFA] p-8 relative">
+    <div className="bg-[#FAFAFA] min-h-screen">
       <PreviewVideoModal
         open={!!activeVideoUrl}
-        onOpenChange={handleNewPostModalOpenChange}
+        onOpenChange={(isOpen) => !isOpen && setActiveVideoUrl(null)}
         showCloseButton={false}
       />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column */}
-        <div className="lg:col-span-1 space-y-8 w-min-[512px]">
-          {/* Restaurant Info Card */}
-          <RestaurantInfoCard restaurant={restaurant} isActive={isActive} />
-          {/* Account Summary Card */}
-          <AccountSummary
-            totalPosts={restaurant?.summary?.totalPosts ?? 0}
-            tiktokPosts={restaurant?.summary?.tiktokPosts ?? 0}
-            userPosts={restaurant?.summary?.userPosts ?? 0}
+
+      <div className="flex gap-0 h-screen">
+        {/* Left Panel - Restaurant Info */}
+        <div className="w-[287px] min-w-[287px] border-r border-gray-200 bg-white">
+          <RestaurantDetailLeftPanel
+            restaurant={restaurant as Location & { admin?: Admin }}
+            onFieldsChange={handleLeftPanelFieldsChange}
+            onDeleteClick={() => setShowDeleteModal(true)}
+            isSaving={isSaving}
           />
         </div>
 
-        {/* Right Column */}
-        <div className="lg:col-span-2 bg-white p-6 ml-[91px] rounded-2xl shadow-sm flex flex-col w-[744px] h-[980px]">
-          {/* Header and Filters (fixed height) */}
-          <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex gap-8">
-                <button
-                  onClick={() => handleTabChange("approved")}
-                  className={`py-[10px] px-[20px] ${
-                    activeTab === "approved"
-                      ? "border-2 border-[#F0F1F2] font-semibold rounded-[10px]"
-                      : "text-[#9DA1A5]"
-                  }`}
-                >
-                  Live posts ({meta?.approvalCount ?? 0})
-                </button>
-                <button
-                  onClick={() => handleTabChange("pending")}
-                  className={`py-[10px] px-[20px] ${
-                    activeTab === "pending"
-                      ? "border-2 border-[#F0F1F2] font-semibold rounded-[10px]"
-                      : "text-gray-500"
-                  }`}
-                >
-                  Pending videos ({meta?.pendingCount ?? 0})
-                </button>
-              </div>
-              <button
-                onClick={() => setShowNewPostModal(true)}
-                className="bg-[#0070F3] text-white px-4 py-2 rounded-lg flex items-center gap-2"
-              >
-                <Plus size={16} /> New Post
-              </button>
-            </div>
-            <div className="flex flex-row justify-between mb-6">
-              <div className="w-48 p-2 border-[#D9D9D9] flex flex-row items-center justify-between rounded-lg text-gray-500">
-                <span> All post types</span>
-                <Icon
-                  name="arrowdownIcon"
-                  stroke="#0070F3"
-                  width={15}
-                  height={15}
-                />
-              </div>
+        {/* Center + Right Panel Container */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {/* Header - spans full width */}
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold text-[#2E3032]">{restaurant.name}</h1>
+            <p className="text-xs text-gray-400">#{restaurant.id}</p>
+          </div>
 
+          {/* Live Posts Header - spans full width */}
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-[#171A1C] p-2">
+              Live posts ({postCount})
+            </p>
+            <button
+              onClick={() => setShowNewPostModal(true)}
+              className="bg-[#0070F3] text-white px-3 py-2 rounded-lg flex items-center gap-1 hover:bg-blue-600 transition-colors text-sm font-medium cursor-pointer"
+            >
+              <Plus size={16} /> New Post
+            </button>
+          </div>
+
+          {/* Filters and Navigation - spans full width */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-[11px]">
+              <button className="flex items-center gap-1 px-2 py-2 bg-white border border-[#F0F1F2] rounded text-sm text-[#171A1C] cursor-pointer hover:bg-gray-50 w-[140px]">
+                <span className="flex-1 font-medium text-left">All post types</span>
+                <Icon name="arrowdownIcon" stroke="#4D5255" width={16} height={16} />
+              </button>
               <DateRangeFilter
                 value={{ startDate: new Date(), endDate: new Date() }}
-                onChange={() => {
-                  onDateRangeChange();
-                }}
+                onChange={() => {}}
                 placeholder="All Time"
-                className="w-[280px]"
+                className="w-[140px]"
               />
+            </div>
+            <div className="flex items-center gap-1 text-sm">
+              <button
+                onClick={handlePreviousPost}
+                disabled={currentPostIndex === 0}
+                className={`flex items-center gap-1 pl-2 pr-1 py-1 rounded hover:bg-gray-50 font-medium cursor-pointer ${
+                  currentPostIndex === 0
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-[#171A1C]"
+                }`}
+              >
+                <ChevronLeft size={16} /> Previous
+              </button>
+              <span className="w-1 h-1 bg-[#4D5255] rounded-full" />
+              <button
+                onClick={handleNextPost}
+                disabled={currentPostIndex >= posts.length - 1 && !hasMore}
+                className={`flex items-center gap-1 pl-2 pr-1 py-1 rounded hover:bg-gray-50 font-medium cursor-pointer ${
+                  currentPostIndex >= posts.length - 1 && !hasMore
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-[#171A1C]"
+                }`}
+              >
+                Next <ChevronRight size={16} />
+              </button>
             </div>
           </div>
 
-          {/* Scrollable Content Area */}
-          <div
-            ref={scrollContainerRef}
-            className="flex-grow overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 300px)" }}
-          >
-            {/* Initial loading state */}
-            {initialLoadComplete && isFetching && (
-              <div className="flex justify-center p-4">
-                <p className="text-gray-500">Loading posts...</p>
-              </div>
-            )}
+          <hr className="border-[#F0F1F2] mb-4" />
 
-            {/* No posts found (after initial load) */}
-            {!initialLoadComplete && posts.length === 0 && (
-              <div className="flex items-center justify-center h-64">
-                <p className="text-center text-gray-500">
-                  No {activeTab === "approved" ? "active" : "pending"} posts
-                  found.
-                </p>
-              </div>
-            )}
+          {/* Content area - Media Carousel + Right Panel side by side */}
+          <div className="flex gap-4">
+            {/* Media Carousel */}
+            <div className="flex-1">
+              {posts.length > 0 ? (
+                <MediaCarousel
+                  posts={posts}
+                  restaurant={restaurantData}
+                  currentIndex={currentPostIndex}
+                  onIndexChange={handlePostIndexChange}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-[500px] bg-gray-100 rounded-xl">
+                  <p className="text-gray-500">No posts available</p>
+                </div>
+              )}
+            </div>
 
-            {/* Render posts */}
-            {posts?.length > 0 && (
-              <>
-                {posts?.map((post: Post) => (
-                  <LivePostCard
-                    key={post.id}
-                    post={post}
-                    className="max-w-[556px]"
-                    restaurant={restaurant}
-                    RestaurantDetailsFlow={true}
-                    handleOpenEditModal={() => handleOpenEditModal(post.id)}
-                    handleOpenDeleteModal={() => handleOpenDeleteModal(post.id)}
-                    handleApprove={
-                      activeTab === "pending"
-                        ? () => handleApprovePost(restaurant.id, post.id)
-                        : undefined
-                    }
-                    handleDecline={
-                      activeTab === "pending"
-                        ? (_restaurantId: string, postId: string) =>
-                            openDeclineModal(postId)
-                        : undefined
-                    }
-                  />
-                ))}
-
-                {/* Loading more indicator */}
-                {isFetching && (
-                  <div className="flex justify-center p-4">
-                    <p className="text-gray-500">Loading more posts...</p>
-                  </div>
-                )}
-
-                {/* No more posts indicator */}
-                {!hasMore && !isFetching && posts?.length > 0 && (
-                  <div className="flex justify-center p-4 mb-8">
-                    <p className="text-gray-500">No more videos</p>
-                  </div>
-                )}
-              </>
-            )}
+            {/* Right Panel - Tags, Cuisine, Stats */}
+            <div className="w-[430px] min-w-[430px] border-l border-[#F0F1F2]">
+              <RestaurantDetailRightPanel
+                currentPost={currentPost}
+                tags={tags}
+                cuisines={cuisines}
+                availableTags={availableTags}
+                availableCuisines={availableCuisines}
+                onTagsChange={handleTagsChange}
+                onCuisinesChange={handleCuisinesChange}
+                onDeleteMedia={handleDeleteMedia}
+                onSaveChanges={handleSaveChanges}
+                isSaving={isSaving}
+                hasChanges={hasChanges || hasLeftPanelChanges}
+                googleRating={4.5}
+                gontrelRating={restaurant.rating}
+                stats={{
+                  totalLikes: 0,
+                  totalSaves: 0,
+                  totalViews: 0,
+                  totalShares: 0,
+                  totalBookings: 0,
+                  totalInteractions: 0,
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* New Restaurant Modal */}
+      {/* New Post Modal */}
       <NewPostSheet
         open={showNewPostModal}
-        restaurant={restaurant}
-        onOpenChange={handleNewPostModalOpenChange}
+        restaurant={restaurant as unknown as Restaurant}
+        onOpenChange={(isOpen) => !isOpen && setShowNewPostModal(false)}
         onPostCreated={handlePostCreated}
       />
 
-      {/* Restaurant Deactivation Modal */}
-      <ConfirmationModal
-        isOpen={isConfirmationModalOpen}
-        onClose={handleCloseModal}
-        title={`${
-          isActive ? "Deactivate restaurant?" : "Deactivate restaurant?"
-        }`}
-        description={`${
-          isActive
-            ? "Are you sure you want to deactivate this restaurant?"
-            : "Are you sure you want to re-activate this restaurant?"
-        }`}
-        comment={isActive ? comment : ""}
-        showCommentField={isActive ? true : false}
-        onCommentChange={handleCommentChange}
-        onConfirm={handleConfirmation}
-        confirmLabel={`${isActive ? "Deactivate" : "Re-activate?"}`}
-        commentPlaceholder="Add reason here"
-        commentLabel="Reason"
-        successButtonClassName={`w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold ${
-          isActive ? "bg-[#D80000]" : "bg-[#0070F3]"
-        }`}
+      {/* Delete Restaurant Modal */}
+      <DeleteRestaurantModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteRestaurant}
+        restaurantName={restaurant.name}
+        postCount={postCount}
+        isDeleting={isDeleting}
       />
 
-      {/* Decline Post Feedback Modal */}
+      {/* Delete Media Modal */}
       <ConfirmationModal
-        isOpen={declineFeedback.isOpen}
-        onClose={closeDeclineModal}
-        title="Decline post?"
-        description="Are you sure you want to decline this post?"
-        comment={declineFeedback.comment}
-        onCommentChange={handleDeclineCommentChange}
-        onConfirm={submitDecline}
-        confirmLabel="feedback sent"
-        cancelLabel="Cancel"
-      />
-
-      {/* Edit Restaurant Modal */}
-      <EditVideo
-        submissionId={currentPostId ?? ""}
-        title="Edit restaurant video"
-        description="The Edit video modal allows you to modify the details of the restaurant video"
-        open={editModalOpen}
-        onOpenChange={setEditModalOpen}
-      />
-
-      {/* Video Deletion Modal */}
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Delete video?"
-        description="Are you sure you want to delete this video? This action cannot be undone"
+        isOpen={showDeleteMediaModal}
+        onClose={() => {
+          setShowDeleteMediaModal(false);
+          setMediaToDelete(null);
+        }}
+        title="Delete media?"
+        description="Are you sure you want to delete this media? This action cannot be undone."
         showCommentField={false}
-        onConfirm={handleDeleteVideo}
+        onConfirm={confirmDeleteMedia}
         confirmLabel="Delete"
-        successButtonClassName="w-full h-18 text-white rounded-[20px] transition-colors text-[20px] font-semibold bg-[#D80000]"
+        successButtonClassName="w-full h-14 bg-red-600 text-white rounded-[20px] transition-colors text-lg font-semibold hover:bg-red-700"
       />
     </div>
   );

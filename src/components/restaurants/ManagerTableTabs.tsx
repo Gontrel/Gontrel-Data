@@ -31,9 +31,10 @@ export function ManagerTableTabs({
         ).map((key) => {
           const tabKey = ManagerTableTabsEnum[key];
           const tabLabels: Record<typeof tabKey, string> = {
-            [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: "Active restaurants",
-            [ManagerTableTabsEnum.PENDING_RESTAURANTS]: "Pending restaurants",
-            [ManagerTableTabsEnum.PENDING_VIDEOS]: "Pending videos",
+            [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: "Active Restaurants",
+            [ManagerTableTabsEnum.PENDING_RESTAURANTS]: "Pending Restaurants",
+            [ManagerTableTabsEnum.APPROVED_CONTENT]: "Approved Content",
+            [ManagerTableTabsEnum.PENDING_VIDEOS]: "Pending Content",
             [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: "Pending user videos",
             [ManagerTableTabsEnum.ACTIVE_VIDEOS]: "Active videos",
           };

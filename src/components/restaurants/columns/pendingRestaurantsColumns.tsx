@@ -5,6 +5,7 @@ import { Check, X } from "lucide-react";
 import { ActionButtons } from "@/components/ui/ActionButtons";
 import { ExternalLink } from "@/components/ui/ExternalLink";
 import Image from "next/image";
+import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { TABLE_COLUMN_SIZES } from "@/constants";
 import { ApprovalStatusEnum } from "@/types/enums";
@@ -60,14 +61,13 @@ export const createPendingRestaurantsColumns = (
     header: () => <TableHeader title="Restaurant name" />,
     cell: ({ row }) => {
       return (
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="View restaurant details"
-          className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] max-w-60 w-full h-full overflow-hidden"
+        <Link
+          href={`/restaurants/pending/${row.original.id}`}
+          className="absolute top-0 bottom-0 left-0 right-0 flex items-center py-5 px-2.5 cursor-pointer font-medium text-[#181D1F] hover:text-blue-600 max-w-60 w-full h-full overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
         >
           <span className="truncate w-full">{row.original.name ?? ""}</span>
-        </div>
+        </Link>
       );
     },
     minSize: TABLE_COLUMN_SIZES.NAME,

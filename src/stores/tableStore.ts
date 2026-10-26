@@ -53,6 +53,7 @@ export interface TableStore {
   pendingVideos: TableState<PendingVideoTableTypes>;
   activeVideos: TableState<ActiveVideoTableTypes>;
   activeRestaurants: TableState<ActiveRestaurantTableTypes>;
+  approvedContent: TableState<ActiveRestaurantTableTypes>;
   submittedRestaurants: TableState<SubmittedRestaurantTableTypes>;
   submittedVideos: TableState<SubmittedVideoTableTypes>;
   activeStaffs: TableState<StaffTableTypes>;
@@ -139,6 +140,7 @@ const tableStateCreator: StateCreator<TableStore> = (set, get) => ({
   activeVideos: createInitialTableState<ActiveVideoTableTypes>(),
   pendingUserVideos: createInitialTableState<PendingVideoTableTypes>(),
   activeRestaurants: createInitialTableState<ActiveRestaurantTableTypes>(),
+  approvedContent: createInitialTableState<ActiveRestaurantTableTypes>(),
   submittedRestaurants:
     createInitialTableState<SubmittedRestaurantTableTypes>(),
   submittedVideos: createInitialTableState<SubmittedVideoTableTypes>(),
