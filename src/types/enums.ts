@@ -33,6 +33,7 @@ export enum ApprovalType {
 export enum ManagerTableTabsEnum {
   ACTIVE_RESTAURANTS = "activeRestaurants",
   PENDING_RESTAURANTS = "pendingRestaurants",
+  APPROVED_CONTENT = "approvedContent",
   PENDING_VIDEOS = "pendingVideos",
   PENDING_USER_VIDEOS = "pendingUserVideos",
   ACTIVE_VIDEOS = "activeVideos",

@@ -12,6 +12,7 @@ import SubmittedVideos from "./tables/SubmittedVideos";
 import PendingUserVideos from "./tables/PendingUserVideos";
 import ActiveVideos from "./tables/ActiveVideos";
 import CommentedRestaurants from "./tables/CommentedRestaurants";
+import ApprovedContent from "./tables/ApprovedContent";
 
 /**
  * Props for TableContent component
@@ -94,6 +95,28 @@ export const TableContent: React.FC<TableContentProps> = ({
             handlePageSize={(pageSize: number) =>
               onPageSizeChange(
                 ManagerTableTabsEnum.PENDING_RESTAURANTS,
+                pageSize
+              )
+            }
+          />
+        );
+      case ManagerTableTabsEnum.APPROVED_CONTENT:
+        return (
+          <ApprovedContent
+            searchTerm={searchTerm}
+            selectedAnalyst={selectedAnalyst}
+            startDate={startDate}
+            endDate={endDate}
+            currentPage={
+              tablePageNumbers[ManagerTableTabsEnum.APPROVED_CONTENT]
+            }
+            pageSize={tablePageSizes[ManagerTableTabsEnum.APPROVED_CONTENT]}
+            handleCurrentPage={(page: number) =>
+              onPageChange(ManagerTableTabsEnum.APPROVED_CONTENT, page)
+            }
+            handlePageSize={(pageSize: number) =>
+              onPageSizeChange(
+                ManagerTableTabsEnum.APPROVED_CONTENT,
                 pageSize
               )
             }

@@ -16,6 +16,7 @@ import { TabState } from "@/interfaces";
 import { usePendingUserVideos } from "./usePendingUserVideos";
 import { useActiveVideos } from "./useActiveVideos";
 import { useReportedVideos } from "./useReportedVideos";
+import { useApprovedContent } from "./useApprovedContent";
 
 /**
  * Custom hook to fetch table totals for each tab independently using tRPC
@@ -120,6 +121,24 @@ export const useTableTotals = (
         .split("T")[0] || undefined,
     adminId:
       tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS]?.selectedAnalyst ||
+      undefined,
+  });
+
+  const { queryData: approvedContentTotal } = useApprovedContent({
+    currentPage: 1,
+    pageSize: 1,
+    searchTerm:
+      tabStates[ManagerTableTabsEnum.APPROVED_CONTENT]?.searchTerm || "",
+    startDate:
+      tabStates[ManagerTableTabsEnum.APPROVED_CONTENT]?.dateRange?.startDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    endDate:
+      tabStates[ManagerTableTabsEnum.APPROVED_CONTENT]?.dateRange?.endDate
+        ?.toISOString()
+        .split("T")[0] || undefined,
+    adminId:
+      tabStates[ManagerTableTabsEnum.APPROVED_CONTENT]?.selectedAnalyst ||
       undefined,
   });
 
@@ -246,6 +265,7 @@ export const useTableTotals = (
   const pendingVideosCount = getTotalFromResponse(pendingVideosTotal);
   const activeVideosCount = getTotalFromResponse(activeVideosTotal);
   const activeRestaurantsCount = getTotalFromResponse(activeRestaurantsTotal);
+  const approvedContentCount = getTotalFromResponse(approvedContentTotal);
   const submittedRestaurantsCount = getTotalFromResponse(
     submittedRestaurantsTotal
   );
@@ -269,6 +289,7 @@ export const useTableTotals = (
     [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: activeRestaurantsCount, // Also covers AnalystTableTabsEnum.ACTIVE_RESTAURANTS
     // Manager only
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: pendingRestaurantsCount,
+    [ManagerTableTabsEnum.APPROVED_CONTENT]: approvedContentCount,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: activeVideosCount,
     [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
