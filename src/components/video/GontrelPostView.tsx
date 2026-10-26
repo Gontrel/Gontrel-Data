@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { VideoOverlay } from "./VideoOverlay";
 import { VideoPlayer } from "./VideoPlayer";
 import { GontrelRestaurantData } from "@/interfaces/restaurants";
@@ -11,6 +12,8 @@ import { GontrelRestaurantData } from "@/interfaces/restaurants";
 interface GontrelPostViewProps {
   /** The URL of the video to display */
   videoUrl: string | null;
+  /** The URL of the thumbnail image (fallback when no video) */
+  thumbUrl?: string | null;
   restaurantData: GontrelRestaurantData | undefined;
   tiktokUsername?: string | null;
   width?: string;
@@ -26,6 +29,7 @@ interface GontrelPostViewProps {
 
 export const GontrelPostView = ({
   videoUrl,
+  thumbUrl,
   restaurantData,
   tiktokUsername = "",
   width = "w-[448px]",
@@ -77,6 +81,39 @@ export const GontrelPostView = ({
   }, [videoUrl]);
 
   if (!videoUrl) {
+    if (thumbUrl) {
+      return (
+        <div className={`relative ${className}`}>
+          <div className={`${width} ${height} ${borderRadius} overflow-hidden relative`}>
+            <Image
+              src={thumbUrl}
+              alt="Post thumbnail"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+          <VideoOverlay
+            onTogglePlay={() => {}}
+            restaurantName={restaurantData?.name || ""}
+            menuLink={
+              typeof restaurantData?.menu === "string"
+                ? restaurantData?.menu
+                : restaurantData?.menu?.content || ""
+            }
+            bookLink={
+              typeof restaurantData?.reservation === "string"
+                ? restaurantData?.reservation
+                : restaurantData?.reservation?.content || ""
+            }
+            deliveryTime={"0 min"}
+            openingHours="12:00pm - 2:00pm"
+            rating={restaurantData?.rating || 0}
+            tiktokUsername={tiktokUsername || ""}
+          />
+        </div>
+      );
+    }
     return (
       <div
         className={`${width} ${height} flex items-center justify-center bg-gray-100 ${borderRadius} ${className}`}
