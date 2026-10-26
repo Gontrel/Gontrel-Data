@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, use, useCallback, useEffect } from "react";
+import { useState, use, useCallback, useEffect, useRef } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 import { RestaurantDetailsSkeleton } from "@/components/Loader/restaurants/RestaurantDetailsSkeleton";
 import { Post, Tag } from "@/interfaces/posts";
 import { ApprovalStatusEnum, ApprovalType } from "@/types/enums";
-import { errorToast, successToast } from "@/utils/toast";
+import { errorToast, successToast, infoToast } from "@/utils/toast";
 import { RestaurantDetailLeftPanel, LeftPanelFieldData } from "@/components/restaurants/details/RestaurantDetailLeftPanel";
 import { RestaurantDetailRightPanel } from "@/components/restaurants/details/RestaurantDetailRightPanel";
 import { DeleteRestaurantModal } from "@/components/restaurants/details/DeleteRestaurantModal";
-import { MediaCarousel } from "@/components/restaurants/details/MediaCarousel";
+import { MediaCarousel, MediaCarouselRef } from "@/components/restaurants/details/MediaCarousel";
 import { NewPostSheet } from "@/components/posts/NewPostsModal";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
@@ -31,6 +31,7 @@ const RestaurantDetailsPage = ({
   const { restaurantId } = use(params);
   const router = useRouter();
   const utils = trpc.useContext();
+  const carouselRef = useRef<MediaCarouselRef>(null);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPostIndex, setCurrentPostIndex] = useState(0);
@@ -283,6 +284,16 @@ const RestaurantDetailsPage = ({
     }
   }, [currentPostIndex, posts.length, hasMore, isFetching, page, fetchPosts]);
 
+  const handleTimestampAdd = useCallback(() => {
+    if (carouselRef.current) {
+      const currentTime = carouselRef.current.getCurrentTime();
+      const minutes = Math.floor(currentTime / 60);
+      const seconds = Math.floor(currentTime % 60);
+      const timestamp = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      infoToast(`Timestamp captured at ${timestamp}`);
+    }
+  }, []);
+
   if (isLoading) {
     return <RestaurantDetailsSkeleton />;
   }
@@ -404,6 +415,7 @@ const RestaurantDetailsPage = ({
             <div className="flex-1">
               {posts.length > 0 ? (
                 <MediaCarousel
+                  ref={carouselRef}
                   posts={posts}
                   restaurant={restaurantData}
                   currentIndex={currentPostIndex}
@@ -428,6 +440,7 @@ const RestaurantDetailsPage = ({
                 onCuisinesChange={handleCuisinesChange}
                 onDeleteMedia={handleDeleteMedia}
                 onSaveChanges={handleSaveChanges}
+                onTimestampAdd={handleTimestampAdd}
                 isSaving={isSaving}
                 hasChanges={hasChanges || hasLeftPanelChanges}
                 googleRating={4.5}
