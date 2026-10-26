@@ -9,7 +9,7 @@ import { Post, Tag } from "@/interfaces/posts";
 import { ApprovalStatusEnum, ApprovalType } from "@/types/enums";
 import { errorToast, successToast, infoToast } from "@/utils/toast";
 import { RestaurantDetailLeftPanel, LeftPanelFieldData } from "@/components/restaurants/details/RestaurantDetailLeftPanel";
-import { RestaurantDetailRightPanel } from "@/components/restaurants/details/RestaurantDetailRightPanel";
+import { RestaurantDetailRightPanel, VideoTimestamp } from "@/components/restaurants/details/RestaurantDetailRightPanel";
 import { DeleteRestaurantModal } from "@/components/restaurants/details/DeleteRestaurantModal";
 import { MediaCarousel, MediaCarouselRef } from "@/components/restaurants/details/MediaCarousel";
 import { NewPostSheet } from "@/components/posts/NewPostsModal";
@@ -53,6 +53,7 @@ const RestaurantDetailsPage = ({
   const [hasLeftPanelChanges, setHasLeftPanelChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [leftPanelFields, setLeftPanelFields] = useState<LeftPanelFieldData | null>(null);
+  const [timestamps, setTimestamps] = useState<VideoTimestamp[]>([]);
 
   const { activeVideoUrl, setActiveVideoUrl } = useVideoStore();
 
@@ -163,7 +164,9 @@ const RestaurantDetailsPage = ({
 
         const newPosts: Post[] = res.data;
         const meta = res.meta as { approvalCount?: number; pendingCount?: number } | undefined;
-        setPostCount(meta?.approvalCount ?? 0);
+        const pagination = res.pagination;
+        const totalPosts = meta?.approvalCount ?? pagination?.total ?? newPosts.length;
+        setPostCount(totalPosts);
 
         if (newPosts.length === 0) {
           setHasMore(false);
@@ -289,9 +292,25 @@ const RestaurantDetailsPage = ({
       const currentTime = carouselRef.current.getCurrentTime();
       const minutes = Math.floor(currentTime / 60);
       const seconds = Math.floor(currentTime % 60);
-      const timestamp = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-      infoToast(`Timestamp captured at ${timestamp}`);
+      const label = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      const newTimestamp: VideoTimestamp = {
+        id: `ts-${Date.now()}`,
+        time: currentTime,
+        label,
+      };
+      setTimestamps(prev => [...prev, newTimestamp]);
+      infoToast(`Timestamp added at ${label}`);
     }
+  }, []);
+
+  const handleTimestampClick = useCallback((time: number) => {
+    if (carouselRef.current) {
+      carouselRef.current.seekTo(time);
+    }
+  }, []);
+
+  const handleTimestampRemove = useCallback((id: string) => {
+    setTimestamps(prev => prev.filter(ts => ts.id !== id));
   }, []);
 
   if (isLoading) {
@@ -441,6 +460,9 @@ const RestaurantDetailsPage = ({
                 onDeleteMedia={handleDeleteMedia}
                 onSaveChanges={handleSaveChanges}
                 onTimestampAdd={handleTimestampAdd}
+                onTimestampClick={handleTimestampClick}
+                onTimestampRemove={handleTimestampRemove}
+                timestamps={timestamps}
                 isSaving={isSaving}
                 hasChanges={hasChanges || hasLeftPanelChanges}
                 googleRating={4.5}
