@@ -17,6 +17,7 @@ interface RestaurantDetailRightPanelProps {
   onCuisinesChange: (cuisines: string[]) => void;
   onDeleteMedia: (postId: string) => void;
   onSaveChanges: () => void;
+  onTimestampAdd?: () => void;
   isSaving?: boolean;
   hasChanges?: boolean;
   stats?: {
@@ -41,6 +42,7 @@ export const RestaurantDetailRightPanel = ({
   onCuisinesChange,
   onDeleteMedia,
   onSaveChanges,
+  onTimestampAdd,
   isSaving = false,
   hasChanges = false,
   stats = {
@@ -175,7 +177,15 @@ export const RestaurantDetailRightPanel = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="text-sm font-semibold text-[#2E3032]">Tag</label>
-            <button className="flex items-center gap-1.5 text-sm text-blue-500 hover:text-blue-600 border border-blue-500 rounded-lg px-3 py-1.5 hover:bg-blue-50 transition-colors">
+            <button
+              onClick={onTimestampAdd}
+              disabled={!onTimestampAdd}
+              className={`flex items-center gap-1.5 text-sm border rounded-lg px-3 py-1.5 transition-colors ${
+                onTimestampAdd
+                  ? "text-blue-500 hover:text-blue-600 border-blue-500 hover:bg-blue-50 cursor-pointer"
+                  : "text-gray-400 border-gray-300 cursor-not-allowed"
+              }`}
+            >
               <Clock className="w-4 h-4" />
               Add time stamp
             </button>
