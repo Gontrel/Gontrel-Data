@@ -163,7 +163,9 @@ const RestaurantDetailsPage = ({
 
         const newPosts: Post[] = res.data;
         const meta = res.meta as { approvalCount?: number; pendingCount?: number } | undefined;
-        setPostCount(meta?.approvalCount ?? 0);
+        const pagination = res.pagination;
+        const totalPosts = meta?.approvalCount ?? pagination?.total ?? newPosts.length;
+        setPostCount(totalPosts);
 
         if (newPosts.length === 0) {
           setHasMore(false);

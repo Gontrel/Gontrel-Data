@@ -16,6 +16,7 @@ export const usePendingUserVideos = ({
   searchTerm,
   startDate,
   endDate,
+  userId,
 }: UsePendingUserVideosProps) => {
   const {
     data: queryData,
@@ -31,6 +32,7 @@ export const usePendingUserVideos = ({
     sortOrder: "DESC",
     startDate,
     endDate,
+    userId,
   });
   return { queryData, isLoading, error, refetch };
 };

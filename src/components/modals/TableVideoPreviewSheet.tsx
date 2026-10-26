@@ -8,7 +8,7 @@ import {
   GontrelRestaurantDetailedData,
 } from "@/interfaces/restaurants";
 import ConfirmationModal from "./ConfirmationModal";
-import { AnalystTableTabsEnum, ManagerTableTabsEnum } from "@/types/enums";
+import { AnalystTableTabsEnum, ApprovalStatusEnum, ManagerTableTabsEnum } from "@/types/enums";
 import { trpc } from "@/lib/trpc-client";
 import { LivePostCardSkeleton } from "../Loader/restaurants/LivePostCardSkeleton";
 
@@ -71,17 +71,27 @@ const TableVideoPreviewSheetHeader = ({
   );
 };
 
+interface TableVideoPreviewSheetContentProps2 extends TableVideoPreviewSheetContentProps {
+  isLoading?: boolean;
+}
+
 const TableVideoPreviewSheetContent = ({
   posts,
   onApprove,
   onDecline,
   restaurant,
-}: TableVideoPreviewSheetContentProps) => (
+  isLoading = false,
+}: TableVideoPreviewSheetContentProps2) => (
   <section className="flex flex-col gap-y-4.5 py-5 items-center">
-    {posts.length > 0 ? (
+    {isLoading ? (
+      <div className="flex flex-col gap-y-4.5">
+        <LivePostCardSkeleton />
+        <LivePostCardSkeleton />
+      </div>
+    ) : posts.length > 0 ? (
       posts.map((post, index) => (
         <LivePostCard
-          key={index}
+          key={post.id || index}
           handleApprove={onApprove ?? undefined}
           handleDecline={
             onDecline ? () => onDecline(restaurant.id, post.id, "") : undefined
@@ -91,8 +101,8 @@ const TableVideoPreviewSheetContent = ({
         />
       ))
     ) : (
-      <div className="flex flex-col gap-y-4.5">
-        <LivePostCardSkeleton />
+      <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+        <p>No videos found</p>
       </div>
     )}
   </section>
@@ -138,16 +148,27 @@ export const TableVideoPreviewSheet = ({
     });
   };
 
-  if (
-    table === ManagerTableTabsEnum.PENDING_VIDEOS ||
-    table === ManagerTableTabsEnum.PENDING_USER_VIDEOS ||
-    table === AnalystTableTabsEnum.SUBMITTED_VIDEOS
-  ) {
-    const { data: queryData } = trpc.post.getPosts.useQuery({
-      submissionId: submissionId ?? "",
-    });
+  const shouldFetchPosts =
+    (table === ManagerTableTabsEnum.PENDING_VIDEOS ||
+      table === ManagerTableTabsEnum.PENDING_USER_VIDEOS ||
+      table === AnalystTableTabsEnum.SUBMITTED_VIDEOS) &&
+    !!submissionId;
+
+  const { data: queryData, isLoading: postsLoading } = trpc.post.getPosts.useQuery(
+    {
+      submissionId: submissionId || undefined,
+      status: ApprovalStatusEnum.PENDING,
+    },
+    {
+      enabled: shouldFetchPosts && open,
+    }
+  );
+
+  if (shouldFetchPosts) {
     posts = queryData?.data ?? [];
   }
+
+  const isLoadingPosts = shouldFetchPosts && postsLoading;
 
   const handleDecline = (
     restaurantId: string,
@@ -179,6 +200,7 @@ export const TableVideoPreviewSheet = ({
         onApprove={onApprove}
         onDecline={handleDecline}
         restaurant={restaurant}
+        isLoading={isLoadingPosts}
       />
       <ConfirmationModal
         isOpen={feedbackModal.isOpen && open}
