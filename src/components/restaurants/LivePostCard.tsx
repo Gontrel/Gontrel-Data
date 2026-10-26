@@ -63,6 +63,7 @@ export const LivePostCard = ({
         {/* Added wrapper div */}
         <GontrelPostView
           videoUrl={post?.videoUrl}
+          thumbUrl={post?.thumbUrl}
           restaurantData={gontrelRestaurantData}
           width="w-full"
           height="h-[564px]"
