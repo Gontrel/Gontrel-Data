@@ -519,6 +519,14 @@ export default class APIRequest {
     return this.handleResponse(response);
   };
 
+  deleteRestaurant = async (data: { locationId: string }) => {
+    const params = this.buildSearchParams(data);
+    const response = await this.authenticatedClient.delete(
+      `/admin-delete-location?${params.toString()}`
+    );
+    return this.handleResponse(response);
+  };
+
   toggleStaffActive = async (data: ToggleStaffActive) => {
     const params = this.buildSearchParams(data);
     const response = await this.authenticatedClient.patch(
@@ -856,6 +864,33 @@ export default class APIRequest {
 
   createErrorLog = async (data: ErrorLogRequest) => {
     const response = await this.authenticatedClient.post("/error-log", data);
+    return this.handleResponse(response);
+  };
+
+  /**
+   * Get all available cuisines from the database
+   */
+  getCuisines = async (): Promise<{ name: string; imageUrl?: string }[]> => {
+    const response = await this.authenticatedClient.get("/cuisines");
+    return this.handleResponse(response);
+  };
+
+  /**
+   * Get tag suggestions for a location based on search query
+   */
+  getTagSuggestions = async (data: {
+    query?: string;
+    placeId: string;
+    quantity?: number;
+  }): Promise<{ id: string; name: string; isTaste?: boolean }[]> => {
+    const params = this.buildSearchParams({
+      query: data.query,
+      placeId: data.placeId,
+      quantity: data.quantity || 10,
+    });
+    const response = await this.authenticatedClient.get(
+      `/get-location-tag-suggestions?${params.toString()}`
+    );
     return this.handleResponse(response);
   };
 }
