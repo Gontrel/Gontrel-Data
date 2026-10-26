@@ -7,6 +7,12 @@ import { Post, Tag } from "@/interfaces/posts";
 import { formatPostTime } from "@/lib/utils";
 import { AdminRoleEnum } from "@/types/enums";
 
+export interface VideoTimestamp {
+  id: string;
+  time: number;
+  label: string;
+}
+
 interface RestaurantDetailRightPanelProps {
   currentPost: Post | null;
   tags: Tag[];
@@ -18,6 +24,9 @@ interface RestaurantDetailRightPanelProps {
   onDeleteMedia: (postId: string) => void;
   onSaveChanges: () => void;
   onTimestampAdd?: () => void;
+  onTimestampClick?: (time: number) => void;
+  onTimestampRemove?: (id: string) => void;
+  timestamps?: VideoTimestamp[];
   isSaving?: boolean;
   hasChanges?: boolean;
   stats?: {
@@ -43,6 +52,9 @@ export const RestaurantDetailRightPanel = ({
   onDeleteMedia,
   onSaveChanges,
   onTimestampAdd,
+  onTimestampClick,
+  onTimestampRemove,
+  timestamps = [],
   isSaving = false,
   hasChanges = false,
   stats = {
@@ -190,6 +202,30 @@ export const RestaurantDetailRightPanel = ({
               Add time stamp
             </button>
           </div>
+
+          {timestamps.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {timestamps.map((ts) => (
+                <button
+                  key={ts.id}
+                  onClick={() => onTimestampClick?.(ts.time)}
+                  className="group flex items-center gap-1 bg-blue-50 text-blue-600 text-sm pl-3 pr-1 py-1.5 rounded-full hover:bg-blue-100 transition-colors"
+                >
+                  <Clock className="w-3 h-3" />
+                  <span>{ts.label}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTimestampRemove?.(ts.id);
+                    }}
+                    className="ml-1 p-0.5 text-blue-400 hover:text-blue-600 hover:bg-blue-200 rounded-full"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
