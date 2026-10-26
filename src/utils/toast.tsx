@@ -21,3 +21,14 @@ export const errorToast = (message: string) => {
     },
   });
 };
+
+export const infoToast = (message: string) => {
+  toast(message, {
+    duration: 3000,
+    position: "top-right",
+    style: {
+      background: "#2196F3",
+      color: "white",
+    },
+  });
+};
