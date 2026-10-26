@@ -55,7 +55,12 @@ export const EditableLinkField = ({
 
   const handleOpenLink = () => {
     if (localValue) {
-      const url = localValue.startsWith("http") ? localValue : `https://${localValue}`;
+      let url: string;
+      if (label.toLowerCase() === "address") {
+        url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(localValue)}`;
+      } else {
+        url = localValue.startsWith("http") ? localValue : `https://${localValue}`;
+      }
       window.open(url, "_blank", "noopener,noreferrer");
     }
   };
@@ -77,7 +82,7 @@ export const EditableLinkField = ({
           onClick={handleOpenLink}
           disabled={!localValue}
           className="text-blue-500 hover:text-blue-600 disabled:text-gray-300 disabled:cursor-not-allowed"
-          title={`Open ${label} in new tab`}
+          title={label.toLowerCase() === "address" ? "Open Address in Google Maps" : `Open ${label} in new tab`}
         >
           <ExternalLink className="w-4 h-4" />
         </button>
