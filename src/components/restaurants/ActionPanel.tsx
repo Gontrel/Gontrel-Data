@@ -92,8 +92,8 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
         {/* Filters */}
         {showFilters && (
           <div>
-            {/* Pending user videos */}
-            {activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS && (
+            {/* Pending Content (user submissions) */}
+            {activeTab === ManagerTableTabsEnum.PENDING_VIDEOS && (
               <FilterDropdowns
                 selectedUser={selectedUser}
                 activeTab={activeTab}
@@ -114,7 +114,7 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
               />
             )}
 
-            {activeTab !== ManagerTableTabsEnum.PENDING_USER_VIDEOS &&
+            {activeTab !== ManagerTableTabsEnum.PENDING_VIDEOS &&
               activeTab !== ManagerTableTabsEnum.ACTIVE_VIDEOS && (
                 <FilterDropdowns
                   selectedUser={selectedAnalyst}

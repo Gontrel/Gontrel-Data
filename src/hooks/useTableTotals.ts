@@ -5,7 +5,6 @@ import {
   StaffTableTabsEnum,
 } from "@/types/enums";
 import { usePendingRestaurants } from "./usePendingRestaurants";
-import { usePendingVideos } from "./usePendingVideos";
 import { useActiveRestaurants } from "./useActiveRestaurants";
 import { useSubmittedRestaurants } from "./useSubmittedRestaurants";
 import { useSubmittedVideos } from "./useSubmittedVideos";
@@ -67,27 +66,8 @@ export const useTableTotals = (
         .split("T")[0] || undefined,
   });
 
-  // Fetch pending videos total with tab-specific search
-  const { queryData: pendingUserVideosTotal } = usePendingUserVideos({
-    currentPage: 1,
-    pageSize: 1,
-    searchTerm:
-      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.searchTerm || "",
-    startDate:
-      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.dateRange?.startDate
-        ?.toISOString()
-        .split("T")[0] || undefined,
-    endDate:
-      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.dateRange?.endDate
-        ?.toISOString()
-        .split("T")[0] || undefined,
-    userId:
-      tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS]?.selectedAnalyst ||
-      undefined,
-  });
-
-  // Fetch pending videos total with tab-specific search
-  const { queryData: pendingVideosTotal } = usePendingVideos({
+  // Fetch pending content (user submissions) total with tab-specific search
+  const { queryData: pendingVideosTotal } = usePendingUserVideos({
     currentPage: 1,
     pageSize: 1,
     searchTerm:
@@ -100,9 +80,8 @@ export const useTableTotals = (
       tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.dateRange?.endDate
         ?.toISOString()
         .split("T")[0] || undefined,
-    adminId:
-      tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.selectedAnalyst ||
-      undefined,
+    userId:
+      tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.user || undefined,
   });
 
   const { queryData: activeVideosTotal } = useActiveVideos({
@@ -273,7 +252,6 @@ export const useTableTotals = (
   const commentedRestaurantsCount = getTotalFromResponse(
     commentedRestaurantsTotal
   );
-  const pendingUserVideosCount = getTotalFromResponse(pendingUserVideosTotal);
   const activeStaffsCount = getTotalFromResponse(activeStaffsTotal);
   const deactivatedStaffsCount = getTotalFromResponse(deactivatedStaffsTotal);
   const reportedVideosCount = getTotalFromResponse(reportedVideosTotal);
@@ -292,7 +270,6 @@ export const useTableTotals = (
     [ManagerTableTabsEnum.APPROVED_CONTENT]: approvedContentCount,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: pendingVideosCount,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: activeVideosCount,
-    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: pendingUserVideosCount,
     // Analyst only
     [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]: submittedRestaurantsCount,
     [AnalystTableTabsEnum.SUBMITTED_VIDEOS]: submittedVideosCount,
