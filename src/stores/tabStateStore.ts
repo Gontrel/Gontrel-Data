@@ -51,7 +51,6 @@ const createInitialTabStates = (): Record<TabKey, TabState> => ({
   [ManagerTableTabsEnum.ACTIVE_RESTAURANTS]: createDefaultTabState(),
   [ManagerTableTabsEnum.PENDING_RESTAURANTS]: createDefaultTabState(),
   [ManagerTableTabsEnum.APPROVED_CONTENT]: createDefaultTabState(),
-  [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: createDefaultTabState(),
   [ManagerTableTabsEnum.PENDING_VIDEOS]: createDefaultTabState(),
   [ManagerTableTabsEnum.ACTIVE_VIDEOS]: {
     ...createDefaultTabState(),

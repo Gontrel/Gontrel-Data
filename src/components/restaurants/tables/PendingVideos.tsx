@@ -2,14 +2,13 @@ import React, { useCallback, useMemo, useState } from "react";
 
 // External dependencies
 import { TableVideoPreviewSheet } from "@/components/modals/TableVideoPreviewSheet";
-import { createPendingVideosColumns } from "../columns/pendingVideosColumns";
 
 // Store and API
 import { usePendingVideosStore } from "@/stores/tableStore";
 import { trpc } from "@/lib/trpc-client";
 
 // Types and enums
-import { PendingVideoTableTypes } from "@/types/restaurant";
+import { PendingUserVideoTableTypes } from "@/types/restaurant";
 import {
   ApprovalStatusEnum,
   ApprovalType,
@@ -22,10 +21,11 @@ import {
 
 // Utils
 import { errorToast, successToast } from "@/utils/toast";
-import { usePendingVideos } from "@/hooks/usePendingVideos";
 import { GenericTable } from "@/components/tables/GenericTable";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import RestaurantCard from "@/components/cards/RestaurantCard";
+import { usePendingUserVideos } from "@/hooks/usePendingUserVideos";
+import { createPendingUserVideosColumns } from "../columns/pendingUserVideosColumns";
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -33,7 +33,7 @@ import RestaurantCard from "@/components/cards/RestaurantCard";
 
 interface PendingVideosProps {
   searchTerm: string;
-  selectedAnalyst?: string;
+  selectedUser?: string;
   currentPage: number;
   pageSize: number;
   handleCurrentPage: (page: number) => void;
@@ -48,7 +48,7 @@ interface PendingVideosProps {
 
 const PendingVideos = ({
   searchTerm,
-  selectedAnalyst,
+  selectedUser,
   currentPage,
   pageSize,
   handleCurrentPage,
@@ -69,17 +69,13 @@ const PendingVideos = ({
     posts: [],
     currentRestaurantId: null,
   });
-
-  const { queryData, isLoading, refetch } = usePendingVideos({
+  const { queryData, isLoading, refetch } = usePendingUserVideos({
     currentPage,
     pageSize,
     searchTerm,
     startDate,
     endDate,
-    adminId:
-      selectedAnalyst && selectedAnalyst !== "all"
-        ? selectedAnalyst
-        : undefined,
+    userId: selectedUser !== "all" ? selectedUser : undefined,
   });
 
   // ---------------------------------------------------------------------------
@@ -154,7 +150,7 @@ const PendingVideos = ({
   );
 
   const handleRowSelection = useCallback(
-    (selectedRows: PendingVideoTableTypes[]) => {
+    (selectedRows: PendingUserVideoTableTypes[]) => {
       const selectedIds = selectedRows.map((row) => row.location?.id ?? "");
       setSelectedRows(selectedIds);
     },
@@ -177,34 +173,31 @@ const PendingVideos = ({
 
     return currentRestaurant
       ? {
-          id: currentRestaurant.location?.id ?? "",
+          id: currentRestaurant?.location?.id ?? "",
           name: currentRestaurant.location?.name ?? "",
-          menu: currentRestaurant.location?.menu?.content || "",
-          reservation: currentRestaurant.location?.reservation?.content || "",
-          rating: currentRestaurant.location?.rating,
-          adminName: currentRestaurant.admin.name,
-          adminId: currentRestaurant.admin.id,
-          address: currentRestaurant.location.address.content,
-          website: currentRestaurant.location.website,
-          mapLink: currentRestaurant.location.mapLink,
-          submissionId: currentRestaurant.submission.id,
-          submissionDate: currentRestaurant?.submission?.date,
+          reservation: currentRestaurant.location?.address?.content || "",
+          adminName: currentRestaurant.user.name,
+          adminId: currentRestaurant.user.id,
+          address: currentRestaurant.location?.address?.content,
+          submissionId: currentRestaurant.submission?.id,
+          mapLink: currentRestaurant.location?.mapLink,
+          website: currentRestaurant.location?.website,
+          createdAt: currentRestaurant.location?.createdAt,
         }
       : {
           id: "",
           name: "",
-          menu: "",
-          reservation: "",
-          rating: 0,
           adminName: "",
           adminId: "",
           submissionId: "",
-          submissionDate: "",
+          mapLink: "",
+          website: "",
+          createdAt: "",
         };
   }, [videos, videoPreview.currentRestaurantId]);
 
   const columns = useMemo(
-    () => createPendingVideosColumns(handleOpenVideoPreview),
+    () => createPendingUserVideosColumns(handleOpenVideoPreview),
     [handleOpenVideoPreview]
   );
 
@@ -232,7 +225,7 @@ const PendingVideos = ({
         submissionId={currentSubmissionId}
       />
 
-      <GenericTable<PendingVideoTableTypes>
+      <GenericTable<PendingUserVideoTableTypes>
         data={videos}
         loading={isLoading}
         onRowSelect={handleRowSelection}

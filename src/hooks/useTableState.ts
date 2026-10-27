@@ -12,7 +12,6 @@ export const useTableState = () => {
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: 1,
     [ManagerTableTabsEnum.APPROVED_CONTENT]: 1,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: 1,
-    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: 1,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: 1,
   });
 
@@ -23,7 +22,6 @@ export const useTableState = () => {
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: 10,
     [ManagerTableTabsEnum.APPROVED_CONTENT]: 10,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: 10,
-    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: 10,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: 10,
   });
 
@@ -34,7 +32,6 @@ export const useTableState = () => {
     [ManagerTableTabsEnum.PENDING_RESTAURANTS]: 0,
     [ManagerTableTabsEnum.APPROVED_CONTENT]: 0,
     [ManagerTableTabsEnum.PENDING_VIDEOS]: 0,
-    [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: 0,
     [ManagerTableTabsEnum.ACTIVE_VIDEOS]: 0,
   });
 

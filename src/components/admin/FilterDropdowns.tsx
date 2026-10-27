@@ -74,7 +74,7 @@ export function FilterDropdowns({
   );
 
   const optionsWithAll = [
-    activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS
+    activeTab === ManagerTableTabsEnum.PENDING_VIDEOS
       ? { value: "all", label: "All users" }
       : { value: undefined, label: "All analysts" },
     ...(usersOptions ?? []),
