@@ -9,7 +9,6 @@ import React from "react"; // Added missing import for React
 import ActiveRestaurants from "./tables/ActiveRestaurants";
 import SubmittedRestaurants from "./tables/SubmittedRestaurants";
 import SubmittedVideos from "./tables/SubmittedVideos";
-import PendingUserVideos from "./tables/PendingUserVideos";
 import ActiveVideos from "./tables/ActiveVideos";
 import CommentedRestaurants from "./tables/CommentedRestaurants";
 import ApprovedContent from "./tables/ApprovedContent";
@@ -126,7 +125,7 @@ export const TableContent: React.FC<TableContentProps> = ({
         return (
           <PendingVideos
             searchTerm={searchTerm}
-            selectedAnalyst={selectedAnalyst}
+            selectedUser={user}
             startDate={startDate}
             endDate={endDate}
             currentPage={tablePageNumbers[ManagerTableTabsEnum.PENDING_VIDEOS]}
@@ -154,28 +153,6 @@ export const TableContent: React.FC<TableContentProps> = ({
             }
             handlePageSize={(pageSize: number) =>
               onPageSizeChange(ManagerTableTabsEnum.ACTIVE_VIDEOS, pageSize)
-            }
-          />
-        );
-      case ManagerTableTabsEnum.PENDING_USER_VIDEOS:
-        return (
-          <PendingUserVideos
-            searchTerm={searchTerm}
-            selectedUser={user}
-            startDate={startDate}
-            endDate={endDate}
-            currentPage={
-              tablePageNumbers[ManagerTableTabsEnum.PENDING_USER_VIDEOS]
-            }
-            pageSize={tablePageSizes[ManagerTableTabsEnum.PENDING_USER_VIDEOS]}
-            handleCurrentPage={(page: number) =>
-              onPageChange(ManagerTableTabsEnum.PENDING_USER_VIDEOS, page)
-            }
-            handlePageSize={(pageSize: number) =>
-              onPageSizeChange(
-                ManagerTableTabsEnum.PENDING_USER_VIDEOS,
-                pageSize
-              )
             }
           />
         );

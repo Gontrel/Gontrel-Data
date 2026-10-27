@@ -35,7 +35,6 @@ export function ManagerTableTabs({
             [ManagerTableTabsEnum.PENDING_RESTAURANTS]: "Pending Restaurants",
             [ManagerTableTabsEnum.APPROVED_CONTENT]: "Approved Content",
             [ManagerTableTabsEnum.PENDING_VIDEOS]: "Pending Content",
-            [ManagerTableTabsEnum.PENDING_USER_VIDEOS]: "Pending user videos",
             [ManagerTableTabsEnum.ACTIVE_VIDEOS]: "Active videos",
           };
           const total = tableTotals[tabKey];

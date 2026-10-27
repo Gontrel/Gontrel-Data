@@ -120,10 +120,6 @@ function RestaurantsPageContent() {
         activeTab === ManagerTableTabsEnum.ACTIVE_VIDEOS
           ? urlPage || tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage
           : tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].currentPage,
-      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
-        activeTab === ManagerTableTabsEnum.PENDING_USER_VIDEOS
-          ? urlPage || tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage
-          : tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].currentPage,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
         activeTab === AnalystTableTabsEnum.SUBMITTED_RESTAURANTS
           ? urlPage || tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].currentPage
@@ -155,8 +151,6 @@ function RestaurantsPageContent() {
         tabStates[ManagerTableTabsEnum.PENDING_VIDEOS].pageSize,
       [ManagerTableTabsEnum.ACTIVE_VIDEOS]:
         tabStates[ManagerTableTabsEnum.ACTIVE_VIDEOS].pageSize,
-      [ManagerTableTabsEnum.PENDING_USER_VIDEOS]:
-        tabStates[ManagerTableTabsEnum.PENDING_USER_VIDEOS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_RESTAURANTS]:
         tabStates[AnalystTableTabsEnum.SUBMITTED_RESTAURANTS].pageSize,
       [AnalystTableTabsEnum.SUBMITTED_VIDEOS]:
