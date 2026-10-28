@@ -75,7 +75,7 @@ const PendingVideos = ({
     searchTerm,
     startDate,
     endDate,
-    userId: selectedUser !== "all" ? selectedUser : undefined,
+    userId: selectedUser && selectedUser !== "all" ? selectedUser : undefined,
   });
 
   // ---------------------------------------------------------------------------
