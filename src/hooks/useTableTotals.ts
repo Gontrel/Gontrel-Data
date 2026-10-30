@@ -66,6 +66,8 @@ export const useTableTotals = (
         .split("T")[0] || undefined,
   });
 
+  const pendingContentUser =
+    tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.user;
   // Fetch pending content (user submissions) total with tab-specific search
   const { queryData: pendingVideosTotal } = usePendingUserVideos({
     currentPage: 1,
@@ -81,7 +83,9 @@ export const useTableTotals = (
         ?.toISOString()
         .split("T")[0] || undefined,
     userId:
-      tabStates[ManagerTableTabsEnum.PENDING_VIDEOS]?.user || undefined,
+      pendingContentUser && pendingContentUser !== "all"
+        ? pendingContentUser
+        : undefined,
   });
 
   const { queryData: activeVideosTotal } = useActiveVideos({
