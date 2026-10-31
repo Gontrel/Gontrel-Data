@@ -13,6 +13,7 @@ import { MediaCarousel } from "@/components/restaurants/details/MediaCarousel";
 import { PreviewVideoModal } from "@/components/modals/PreviewVideoModal";
 import { ConfirmationModal } from "@/components/modals/ConfirmationModal";
 import { useVideoStore } from "@/stores/videoStore";
+import { useCurrentUser } from "@/stores/authStore";
 import DateRangeFilter from "@/components/filters/DateRangeFilter";
 import Icon from "@/components/svgs/Icons";
 import { Location, GontrelRestaurantData } from "@/interfaces/restaurants";
@@ -28,6 +29,7 @@ const PendingContentDetailPage = ({
   const searchParams = useSearchParams();
   const submissionId = searchParams.get("submissionId");
   const utils = trpc.useContext();
+  const currentUser = useCurrentUser();
 
   const [currentPost, setCurrentPost] = useState<Post | null>(null);
   const [postCount, setPostCount] = useState(0);
@@ -130,6 +132,13 @@ const PendingContentDetailPage = ({
     },
   });
 
+  const { mutate: updatePost } = trpc.post.updatePost.useMutation({
+    onError: (error) => {
+      errorToast(error.message || "Failed to save tags");
+      setIsSaving(false);
+    },
+  });
+
   const { mutate: approveRestaurantStatus } =
     trpc.restaurant.approveRestaurantStatus.useMutation({
       onSuccess: () => {
@@ -171,16 +180,34 @@ const PendingContentDetailPage = ({
       },
       {
         onSuccess: () => {
-          approveRestaurantStatus({
-            resourceId: currentPost.id,
-            locationId,
-            type: ApprovalType.POST,
-            status: ApprovalStatusEnum.APPROVED,
-          });
+          const approvePost = () =>
+            approveRestaurantStatus({
+              resourceId: currentPost.id,
+              locationId,
+              type: ApprovalType.POST,
+              status: ApprovalStatusEnum.APPROVED,
+            });
+
+          const userId = currentPost.user?.id ?? currentPost.admin?.id ?? currentUser?.id;
+          if (tags.length === 0 || !userId) {
+            approvePost();
+            return;
+          }
+
+          // Save tags on the post before approving it
+          updatePost(
+            {
+              postId: currentPost.id,
+              locationId,
+              userId,
+              tags: tags.map((t) => t.name),
+            },
+            { onSuccess: approvePost }
+          );
         },
       }
     );
-  }, [restaurant, locationId, leftPanelFields, currentPost, updateRestaurant, approveRestaurantStatus]);
+  }, [restaurant, locationId, leftPanelFields, currentPost, tags, currentUser, updateRestaurant, updatePost, approveRestaurantStatus]);
 
   const handleLeftPanelFieldsChange = useCallback((data: LeftPanelFieldData, panelHasChanges: boolean) => {
     setLeftPanelFields(data);
