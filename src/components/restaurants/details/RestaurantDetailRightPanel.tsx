@@ -111,14 +111,35 @@ export const RestaurantDetailRightPanel = ({
   };
 
   const handleAddTagFromInput = () => {
-    if (tagInput.trim()) {
-      const existingTag = availableTags.find(
-        (t) => t.name.toLowerCase() === tagInput.toLowerCase()
-      );
-      if (existingTag && !tags.some((t) => t.id === existingTag.id)) {
-        handleAddTag(existingTag);
-      }
+    const name = tagInput.trim();
+    if (!name) return;
+
+    if (tags.some((t) => t.name.toLowerCase() === name.toLowerCase())) {
+      setTagInput("");
+      return;
     }
+
+    // Reuse a suggested tag if the name matches, otherwise add it as a new tag
+    const existingTag = availableTags.find(
+      (t) => t.name.toLowerCase() === name.toLowerCase()
+    );
+    handleAddTag(
+      existingTag ?? {
+        id: name,
+        name,
+        createdAt: "",
+        modifiedAt: "",
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy: null,
+        firebaseId: null,
+        count: 0,
+        image: "",
+        resource: "",
+        type: "",
+        isTaste: false,
+      }
+    );
   };
 
   const handleAddCuisine = (cuisine: string) => {
