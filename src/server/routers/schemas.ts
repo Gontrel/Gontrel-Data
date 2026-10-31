@@ -241,6 +241,7 @@ export const updatePostSchema = z.object({
   visibleFood: z.string().optional(),
   thumbUrl: z.string().optional(),
   postId: z.string().uuid(),
+  userId: z.string().uuid().optional(),
   username: z.string().optional(),
   tags: z.array(z.string()).min(1).optional(),
 });
